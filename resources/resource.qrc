@@ -1,0 +1,24 @@
+<RCC>
+    <qresource prefix="/spectrum">
+        <file alias="cie_si_a.csv">spectrum/illuminant/cie_si_a.csv</file>
+        <file alias="cie_si_d65.csv">spectrum/illuminant/cie_si_d65.csv</file>
+        <file alias="cie_1931_blue.csv">spectrum/observer/cie_1931_blue.csv</file>
+        <file alias="cie_1931_green.csv">spectrum/observer/cie_1931_green.csv</file>
+        <file alias="cie_1931_red.csv">spectrum/observer/cie_1931_red.csv</file>
+        <file alias="cie_sco_2degree_xbar.csv">spectrum/observer/cie_sco_2degree_xbar.csv</file>
+        <file alias="cie_sco_2degree_ybar.csv">spectrum/observer/cie_sco_2degree_ybar.csv</file>
+        <file alias="cie_sco_2degree_zbar.csv">spectrum/observer/cie_sco_2degree_zbar.csv</file>
+        <file alias="cie_sco_10degree_xbar.csv">spectrum/observer/cie_sco_10degree_xbar.csv</file>
+        <file alias="cie_sco_10degree_ybar.csv">spectrum/observer/cie_sco_10degree_ybar.csv</file>
+        <file alias="cie_sco_10degree_zbar.csv">spectrum/observer/cie_sco_10degree_zbar.csv</file>
+    </qresource>
+    <qresource prefix="/scene">
+        <file alias="DefaultScene.nana">scene/DefaultScene.nana</file>
+        <file alias="CornellBox.nana">scene/CornellBox.nana</file>
+        <file alias="JensenCornellBox.nana">scene/JensenCornellBox.nana</file>
+        <file alias="CausticsTest.nana">scene/CausticsTest.nana</file>
+        <file alias="VeachMisTest.nana">scene/VeachMisTest.nana</file>
+        <file alias="MaterialTest.nana">scene/MaterialTest.nana</file>
+        <file alias="FitnessRoom.nana">scene/FitnessRoom.nana</file>
+    </qresource>
+</RCC>

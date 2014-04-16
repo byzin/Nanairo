@@ -1,0 +1,24 @@
+/*!
+  \file nanairo_renderer_config.hpp
+  \author Sho Ikeda
+
+  Copyright (c) 2015 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+#ifndef _NANAIRO_NANAIRO_RENDERER_CONFIG_HPP_
+#define _NANAIRO_NANAIRO_RENDERER_CONFIG_HPP_
+
+namespace nanairo {
+
+//! \addtogroup Renderer
+//! \{
+
+constexpr int kMaxFps = @NANAIRO_MAX_FPS@;
+
+//! \} Renderer
+
+} // namespace nanairo
+
+#endif // _NANAIRO_NANAIRO_RENDERER_CONFIG_HPP_

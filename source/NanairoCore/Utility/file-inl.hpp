@@ -1,0 +1,40 @@
+/*!
+  \file file-inl.hpp
+  \author Sho Ikeda
+
+  Copyright (c) 2015 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+#ifndef _NANAIRO_FILE_INL_HPP_
+#define _NANAIRO_FILE_INL_HPP_
+
+// Standard C++ library
+#include <cstddef>
+// Zisc
+#include "zisc/utility.hpp"
+// Qt
+#include <QByteArray>
+
+namespace nanairo {
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Type> inline
+std::size_t write(QByteArray* array, const Type& value)
+{
+  using zisc::cast;
+
+  constexpr int size = cast<int>(sizeof(Type));
+  const char* data = zisc::treatAs<const char*>(&value);
+  array->append(data, size);
+
+  return sizeof(Type);
+}
+
+} // namespace nanairo
+
+#endif // _NANAIRO_FILE_INL_HPP_

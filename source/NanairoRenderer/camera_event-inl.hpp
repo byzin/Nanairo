@@ -1,0 +1,156 @@
+/*!
+  \file camera_event-inl.hpp
+  \author Sho Ikeda
+
+  Copyright (c) 2015 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+#ifndef _NANAIRO_CAMERA_EVENT_INL_HPP_
+#define _NANAIRO_CAMERA_EVENT_INL_HPP_
+
+#include "camera_event.hpp"
+// Qt
+#include <Qt>
+// Zisc
+#include "zisc/error.hpp"
+// Nanairo
+#include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/LinearAlgebra/transformation.hpp"
+#include "NanairoCore/LinearAlgebra/vector.hpp"
+
+namespace nanairo {
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+CameraEvent::CameraEvent()
+{
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+void CameraEvent::addEvent(const int buttons, 
+                           const int x, 
+                           const int y, 
+                           const int /* wheel */)
+{
+  using zisc::cast;
+  constexpr Float tk = 0.005;
+  constexpr Float dk = 0.01;
+  constexpr Float rk = 0.0005;
+
+  switch (buttons) {
+   case Qt::LeftButton:
+    rotation_[0] += rk * cast<Float>(x);
+    rotation_[1] += rk * cast<Float>(y);
+    break;
+   case Qt::RightButton:
+    distance_[0] += dk * cast<Float>(x);
+    distance_[1] += dk * cast<Float>(y);
+    break;
+   case Qt::MiddleButton:
+    translation_[0] += tk * cast<Float>(x);
+    translation_[1] += tk * cast<Float>(y);
+    break;
+   default:
+    break;
+  }
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+void CameraEvent::clear()
+{
+  translation_[0] = 0.0;
+  translation_[1] = 0.0;
+  distance_[0] = 0.0;
+  distance_[1] = 0.0;
+  rotation_[0] = 0.0;
+  rotation_[1] = 0.0;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+const Vector2& CameraEvent::distance() const
+{
+  return distance_;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+bool CameraEvent::isEventOccured() const
+{
+  return isTranslationEventOccured() ||
+         isDistanceEventOccured() ||
+         isRotationEventOccured();
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+bool CameraEvent::isDistanceEventOccured() const
+{
+  return !((distance_[0] == 0.0) && (distance_[1] == 0.0));
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+bool CameraEvent::isRotationEventOccured() const
+{
+  return !((rotation_[0] == 0.0) && (rotation_[1] == 0.0));
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+bool CameraEvent::isTranslationEventOccured() const
+{
+  return !((translation_[0] == 0.0) && (translation_[1] == 0.0));
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+const Vector2& CameraEvent::rotation() const
+{
+  return rotation_;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+const Vector2& CameraEvent::translation() const
+{
+  return translation_;
+}
+
+} // namespace nanairo
+
+#endif // _NANAIRO_CAMERA_EVENT_INL_HPP_

@@ -1,0 +1,36 @@
+/*!
+  \file zisc_config.hpp
+  \author Sho Ikeda
+
+  Copyright (c) 2015 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+#ifndef _ZISC_CONFIG_HPP_
+#define _ZISC_CONFIG_HPP_
+
+// Standard C++ library
+#include <cstdint>
+
+constexpr unsigned int kZiscVersionMajor = @zisc_version_major@;
+constexpr unsigned int kZiscVersionMinor = @zisc_version_minor@;
+constexpr unsigned int kZiscVersionPatch = @zisc_version_patch@;
+constexpr char kZiscVersion[] = "@zisc_version@";
+
+namespace zisc {
+
+// General
+using int8 = std::int8_t;
+using int16 = std::int16_t;
+using int32 = std::int32_t;
+using int64 = std::int64_t;
+using uint = unsigned int;
+using uint8 = std::uint8_t;
+using uint16 = std::uint16_t;
+using uint32 = std::uint32_t;
+using uint64 = std::uint64_t;
+
+} // namespace zisc
+
+#endif // _ZISC_CONFIG_HPP_

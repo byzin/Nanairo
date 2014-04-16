@@ -1,0 +1,52 @@
+// Module
+
+/*!
+  \defgroup Common
+  \brief Common classes and functions of Nanairo
+  \details
+  No detailed.
+  */
+
+/*!
+  \defgroup Core
+  \brief Core classes and functions of Nanairo
+  \details
+  No detailed.
+  */
+
+/*!
+  \defgroup Renderer
+  \brief Renderer classes and functions of Nanairo
+  \details
+  No detailed.
+  */
+
+/*!
+  \defgroup Gui
+  \brief GUI classes and functions of Nanairo
+  \details
+  No detailed.
+  */
+
+// Namespace
+
+/*!
+  \namespace nanairo
+  \brief Main classes and functions of Nanairo
+  \details
+  No detailed.
+  */
+
+/*!
+  \namespace nanairo::keyword
+  \brief Keywords of Nanairo
+  \details
+  No detailed.
+  */
+
+/*!
+  \namespace nanairo::inner
+  \brief Helper classes and functions of Nanairo
+  \details
+  No detailed.
+  */

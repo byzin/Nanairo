@@ -1,0 +1,89 @@
+/*!
+  \file nanairo_core_config.hpp
+  \author Sho Ikeda
+
+  Copyright (c) 2015 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+#ifndef _NANAIRO_NANAIRO_CORE_CONFIG_HPP_
+#define _NANAIRO_NANAIRO_CORE_CONFIG_HPP_
+
+// Standard C++ library
+#include <cstdint>
+#include <type_traits>
+// Zisc
+#include "@nanairo_core_sampler_header_path@"
+
+// Forward declaration
+namespace zisc {
+template <typename, uint> class Point;
+template <typename, uint> class Vector;
+template <typename, uint, uint> class Matrix;
+template <uint, uint> class AlignedMemoryPool;
+template <typename, uint> class ArithmeticArray;
+} // namespace zisc
+
+namespace nanairo {
+
+//! \addtogroup Core
+//! \{
+
+// General
+using int8 = std::int8_t;
+using int16 = std::int16_t;
+using int32 = std::int32_t;
+using int64 = std::int64_t;
+using uint = unsigned int;
+using uint8 = std::uint8_t;
+using uint16 = std::uint16_t;
+using uint32 = std::uint32_t;
+using uint64 = std::uint64_t;
+using Float = @NANAIRO_FLOATING_POINT_TYPE@;
+// System
+constexpr uint kMemoryPoolSize = @NANAIRO_MEMORY_POOL_SIZE@;
+constexpr uint kMemoryAlignment = std::alignment_of<void*>::value;
+using SamplerType = @nanairo_core_sampler_type@;
+using MemoryPool = zisc::AlignedMemoryPool<kMemoryPoolSize, kMemoryAlignment>;
+// Color
+constexpr uint16 kBlueWavelength = 440;
+constexpr uint16 kGreenWavelength = 540;
+constexpr uint16 kRedWavelength = 700;
+constexpr uint16 kShortestWavelength = @NANAIRO_SHORTEST_WAVELENGTH@;
+constexpr uint16 kLongestWavelength = @NANAIRO_LONGEST_WAVELENGTH@;
+static_assert(360 <= kShortestWavelength,
+              "## The shortest wavelength must be greater than equal to 360nm.");
+static_assert(kLongestWavelength <= 830,
+              "## The longest wavelength must be less than equal to 830nm.");
+static_assert(kShortestWavelength < kLongestWavelength,
+              "## The shortest wavelength must be less than to the longest.");
+constexpr uint kWavelengthRange = kLongestWavelength - kShortestWavelength;
+constexpr uint kWavelengthResolution = @NANAIRO_WAVELENGTH_RESOLUTION@;
+static_assert((kWavelengthRange % kWavelengthResolution == 0) ||
+              ((kBlueWavelength-kShortestWavelength) % kWavelengthResolution == 0) ||
+              ((kGreenWavelength-kShortestWavelength) % kWavelengthResolution == 0) ||
+              ((kRedWavelength-kShortestWavelength) % kWavelengthResolution == 0),
+              "## Invalid wavelength resolution.");
+constexpr uint kSpectraSize = kWavelengthRange / kWavelengthResolution;
+// DataStructure
+constexpr uint kMaxNumOfObjectsPerNode = @NANAIRO_MAX_NUM_OF_OBJECTS@;
+// LinearAlgebra
+using Vector3 = zisc::Vector<Float, 3>;
+using Vector2 = zisc::Vector<Float, 2>;
+using Point3 = zisc::Point<Float, 3>;
+using Point2 = zisc::Point<Float, 2>;
+using Matrix4x4 = zisc::Matrix<Float, 4, 4>;
+using Matrix3x3 = zisc::Matrix<Float, 3, 3>;
+// Sampling
+template <uint kSampleSize>
+using IntensitySamples = zisc::ArithmeticArray<Float, kSampleSize>;
+constexpr uint kWavelengthSampleSize = @NANAIRO_WAVELENGTH_SAMPLE_SIZE@;
+// RenderingMethod
+constexpr uint kMisHeuristicBeta = @NANAIRO_MIS_HEURISTIC_BETA@;
+
+//! \} Core
+
+} // namespace nanairo
+
+#endif // _NANAIRO_NANAIRO_CORE_CONFIG_HPP_
