@@ -39,8 +39,8 @@ endmacro(setClangCompilerOptionsForCxx11)
 # GCC configuration
 macro(setGccCompilerOptionsForCxx14)
   # Version check
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0.0)
-    message(FATAL_ERROR "Use GCC version 5.0 or later.")
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.1.0)
+    message(FATAL_ERROR "Use GCC version 5.1 or later.")
   endif()
   # Add Compile options
   add_compile_options(-std=c++14)
