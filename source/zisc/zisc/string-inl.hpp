@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_STRING_INL_HPP_
-#define _ZISC_STRING_INL_HPP_
+#ifndef ZISC_STRING_INL_HPP
+#define ZISC_STRING_INL_HPP
 
 #include "string.hpp"
 // Standard C++ library
@@ -19,6 +19,7 @@
 #include <string>
 #include <utility>
 // Zisc
+#include "error.hpp"
 #include "utility.hpp"
 #include "type_traits.hpp"
 #include "zisc/zisc_config.hpp"
@@ -30,7 +31,7 @@ namespace zisc {
   No detailed.
   */
 template <typename CharType, uint N> inline
-constexpr BasicString<CharType, N>::BasicString(const CharType (&string)[N])
+constexpr BasicString<CharType, N>::BasicString(const CharType (&string)[N]) noexcept
 {
   initialize(string);
 }
@@ -40,7 +41,8 @@ constexpr BasicString<CharType, N>::BasicString(const CharType (&string)[N])
   No detailed.
   */
 template <typename CharType, uint N> inline
-constexpr bool BasicString<CharType, N>::operator==(const CharType* other) const
+constexpr bool BasicString<CharType, N>::operator==(
+    const CharType* other) const noexcept
 {
   uint m = 0;
   while (other[m] != '\0')
@@ -48,13 +50,10 @@ constexpr bool BasicString<CharType, N>::operator==(const CharType* other) const
   ++m;
 
   bool flag = (N == m);
-  if (flag) {
-    for (uint i = 0; i < N; ++i) {
-      if (string_[i] != other[i]) {
-        flag = false;
-        break;
-      }
-    }
+  uint i = 0;
+  while (flag && (i != N)) {
+    flag = (get(i) == other[i]);
+    ++i;
   }
   return flag;
 }
@@ -65,16 +64,13 @@ constexpr bool BasicString<CharType, N>::operator==(const CharType* other) const
   */
 template <typename CharType, uint N> template <uint M> inline
 constexpr bool BasicString<CharType, N>::operator==(
-    const BasicString<CharType, M>& other) const
+    const BasicString<CharType, M>& other) const noexcept
 {
   bool flag = (N == M);
-  if (flag) {
-    for (uint i = 0; i < N; ++i) {
-      if (string_[i] != other[i]) {
-        flag = false;
-        break;
-      }
-    }
+  uint i = 0;
+  while (flag && (i != N)) {
+    flag = (get(i) == other[i]);
+    ++i;
   }
   return flag;
 }
@@ -84,7 +80,8 @@ constexpr bool BasicString<CharType, N>::operator==(
   No detailed.
   */
 template <typename CharType, uint N> inline
-constexpr bool BasicString<CharType, N>::operator!=(const CharType* other) const
+constexpr bool BasicString<CharType, N>::operator!=(
+    const CharType* other) const noexcept
 {
   return !(*this == other);
 }
@@ -95,7 +92,7 @@ constexpr bool BasicString<CharType, N>::operator!=(const CharType* other) const
   */
 template <typename CharType, uint N> template <uint M> inline
 constexpr bool BasicString<CharType, N>::operator!=(
-    const BasicString<CharType, M>& other) const
+    const BasicString<CharType, M>& other) const noexcept
 {
   return !(*this == other);
 }
@@ -105,7 +102,30 @@ constexpr bool BasicString<CharType, N>::operator!=(
   No detailed.
   */
 template <typename CharType, uint N> inline
-constexpr CharType& BasicString<CharType, N>::operator[](const uint index)
+constexpr CharType& BasicString<CharType, N>::operator[](
+    const uint index) noexcept
+{
+  return get(index);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename CharType, uint N> inline
+constexpr const CharType& BasicString<CharType, N>::operator[](
+    const uint index) const noexcept
+{
+  return get(index);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename CharType, uint N> inline
+constexpr CharType& BasicString<CharType, N>::get(
+    const uint index) noexcept
 {
   return string_[index];
 }
@@ -115,7 +135,8 @@ constexpr CharType& BasicString<CharType, N>::operator[](const uint index)
   No detailed.
   */
 template <typename CharType, uint N> inline
-constexpr const CharType& BasicString<CharType, N>::operator[](const uint index) const
+constexpr const CharType& BasicString<CharType, N>::get(
+    const uint index) const noexcept
 {
   return string_[index];
 }
@@ -125,7 +146,7 @@ constexpr const CharType& BasicString<CharType, N>::operator[](const uint index)
   No detailed.
   */
 template <typename CharType, uint N> inline
-constexpr uint BasicString<CharType, N>::size() const
+constexpr uint BasicString<CharType, N>::size() const noexcept
 {
   return N - 1;
 }
@@ -135,7 +156,7 @@ constexpr uint BasicString<CharType, N>::size() const
   No detailed.
   */
 template <typename CharType, uint N> inline
-const CharType* BasicString<CharType, N>::toCString() const
+const CharType* BasicString<CharType, N>::toCString() const noexcept
 {
   return string_;
 }
@@ -145,7 +166,7 @@ const CharType* BasicString<CharType, N>::toCString() const
   No detailed.
   */
 template <typename CharType, uint N> inline
-std::string BasicString<CharType, N>::toStdString() const
+std::string BasicString<CharType, N>::toStdString() const noexcept
 {
   return std::string{string_};
 }
@@ -155,7 +176,8 @@ std::string BasicString<CharType, N>::toStdString() const
   No detailed.
   */
 template <typename CharType, uint N> inline
-constexpr void BasicString<CharType, N>::initialize(const CharType (&string)[N])
+constexpr void BasicString<CharType, N>::initialize(
+    const CharType (&string)[N]) noexcept
 {
   for (uint i = 0; i < size(); ++i)
     string_[i] = string[i];
@@ -168,7 +190,7 @@ constexpr void BasicString<CharType, N>::initialize(const CharType (&string)[N])
 template <typename CharType, uint N1, uint N2> inline
 constexpr BasicString<CharType, N1 + N2 - 1> operator+(
     const BasicString<CharType, N1>& string1,
-    const BasicString<CharType, N2>& string2)
+    const BasicString<CharType, N2>& string2) noexcept
 {
   return concatenate(string1, string2);
 }
@@ -180,7 +202,7 @@ constexpr BasicString<CharType, N1 + N2 - 1> operator+(
 template <typename CharType, uint N1, uint N2> inline
 constexpr BasicString<CharType, N1 + N2 - 1> operator+(
     const char (&string1)[N1],
-    const BasicString<CharType, N2>& string2)
+    const BasicString<CharType, N2>& string2) noexcept
 {
   return toString(string1) + string2;
 }
@@ -192,7 +214,7 @@ constexpr BasicString<CharType, N1 + N2 - 1> operator+(
 template <typename CharType, uint N1, uint N2> inline
 constexpr BasicString<CharType, N1 + N2 - 1> operator+(
     const BasicString<CharType, N1>& string1,
-    const char (&string2)[N2])
+    const char (&string2)[N2]) noexcept
 {
   return string1 + toString(string2);
 }
@@ -204,7 +226,7 @@ constexpr BasicString<CharType, N1 + N2 - 1> operator+(
 template <typename CharType, uint N1, uint N2> inline
 constexpr BasicString<CharType, N1 + N2 - 1> concatenate(
     const BasicString<CharType, N1>& string1,
-    const BasicString<CharType, N2>& string2)
+    const BasicString<CharType, N2>& string2) noexcept
 {
   constexpr uint size = N1 + N2 - 1;
   char string[size] = {'\0'};
@@ -222,7 +244,7 @@ constexpr BasicString<CharType, N1 + N2 - 1> concatenate(
 template <typename CharType, uint N1, uint N2> inline
 constexpr BasicString<CharType, N1 + N2 - 1> concatenate(
     const char (&string1)[N1],
-    const BasicString<CharType, N2>& string2)
+    const BasicString<CharType, N2>& string2) noexcept
 {
   return concatenate(toString(string1), string2);
 }
@@ -234,7 +256,7 @@ constexpr BasicString<CharType, N1 + N2 - 1> concatenate(
 template <typename CharType, uint N1, uint N2> inline
 constexpr BasicString<CharType, N1 + N2 - 1> concatenate(
     const BasicString<CharType, N1>& string1,
-    const char (&string2)[N2])
+    const char (&string2)[N2]) noexcept 
 {
   return concatenate(string1, toString(string2));
 }
@@ -244,7 +266,7 @@ constexpr BasicString<CharType, N1 + N2 - 1> concatenate(
   No detailed.
   */
 template <uint N> inline
-constexpr String<N> toString(const char (&string)[N])
+constexpr String<N> toString(const char (&string)[N]) noexcept
 {
   return String<N>{string};
 }
@@ -274,25 +296,25 @@ class ValueStringPattern
   static constexpr auto string_ = R"("(?:)" + character_ + "|" + escaped_ + R"()*")";
 
  public:
-  static constexpr auto boolean() -> decltype(boolean_)
+  static constexpr auto boolean() noexcept -> decltype(boolean_)
   {
     constexpr auto boolean = boolean_;
     return boolean;
   }
 
-  static constexpr auto floatingPoint() -> decltype(float_)
+  static constexpr auto floatingPoint() noexcept -> decltype(float_)
   {
     constexpr auto floating_point = float_;
     return floating_point;
   }
 
-  static constexpr auto integer() -> decltype(int_)
+  static constexpr auto integer() noexcept -> decltype(int_)
   {
     constexpr auto integer = int_;
     return integer;
   }
 
-  static constexpr auto string() -> decltype(string_)
+  static constexpr auto string() noexcept -> decltype(string_)
   {
     constexpr auto string = string_;
     return string;
@@ -306,7 +328,7 @@ class ValueStringPattern
   No detailed.
   */
 inline
-ValueString::ValueString() : 
+ValueString::ValueString() noexcept : 
     float_pattern_{zisc_string::ValueStringPattern::floatingPoint().toCString(),
                    regexOption()},
     int_pattern_{zisc_string::ValueStringPattern::integer().toCString(), 
@@ -321,7 +343,7 @@ ValueString::ValueString() :
   No detailed.
   */
 inline
-bool ValueString::isBoolean(const char* string) const
+bool ValueString::isBoolean(const char* string) const noexcept
 {
   return isBooleanString(string);
 }
@@ -331,7 +353,7 @@ bool ValueString::isBoolean(const char* string) const
   No detailed.
   */
 inline
-bool ValueString::isBoolean(const std::string& string) const
+bool ValueString::isBoolean(const std::string& string) const noexcept
 {
   return isBooleanString(string);
 }
@@ -341,7 +363,7 @@ bool ValueString::isBoolean(const std::string& string) const
   No detailed.
   */
 inline
-bool ValueString::isFloat(const char* string) const
+bool ValueString::isFloat(const char* string) const noexcept
 {
   return std::regex_match(string, float_pattern_);
 }
@@ -351,7 +373,7 @@ bool ValueString::isFloat(const char* string) const
   No detailed.
   */
 inline
-bool ValueString::isFloat(const std::string& string) const
+bool ValueString::isFloat(const std::string& string) const noexcept
 {
   return std::regex_match(string, float_pattern_);
 }
@@ -361,7 +383,7 @@ bool ValueString::isFloat(const std::string& string) const
   No detailed.
   */
 inline
-bool ValueString::isInteger(const char* string) const
+bool ValueString::isInteger(const char* string) const noexcept
 {
   return std::regex_match(string, int_pattern_);
 }
@@ -371,7 +393,7 @@ bool ValueString::isInteger(const char* string) const
   No detailed.
   */
 inline
-bool ValueString::isInteger(const std::string& string) const
+bool ValueString::isInteger(const std::string& string) const noexcept
 {
   return std::regex_match(string, int_pattern_);
 }
@@ -381,7 +403,7 @@ bool ValueString::isInteger(const std::string& string) const
   No detailed.
   */
 inline
-bool ValueString::isCxxString(const char* string) const
+bool ValueString::isCxxString(const char* string) const noexcept
 {
   return std::regex_match(string, string_pattern_);
 }
@@ -391,7 +413,7 @@ bool ValueString::isCxxString(const char* string) const
   No detailed.
   */
 inline
-bool ValueString::isCxxString(const std::string& string) const
+bool ValueString::isCxxString(const std::string& string) const noexcept
 {
   return std::regex_match(string, string_pattern_);
 }
@@ -401,7 +423,7 @@ bool ValueString::isCxxString(const std::string& string) const
   No detailed.
   */
 inline
-constexpr auto ValueString::regexOption() -> RegexOptionType
+constexpr auto ValueString::regexOption() noexcept -> RegexOptionType
 {
   return std::regex_constants::nosubs |
          std::regex_constants::optimize |
@@ -413,7 +435,7 @@ constexpr auto ValueString::regexOption() -> RegexOptionType
  No detailed.
  */
 inline
-bool toBoolean(const char* string)
+bool toBoolean(const char* string) noexcept
 {
   return (toString("true") == string);
 }
@@ -423,7 +445,7 @@ bool toBoolean(const char* string)
  No detailed.
  */
 inline
-bool toBoolean(const std::string& string)
+bool toBoolean(const std::string& string) noexcept
 {
   return (toString("true") == string.c_str());
 }
@@ -433,9 +455,9 @@ bool toBoolean(const std::string& string)
   No detailed.
   */
 template <typename Float> inline
-Float toFloat(const char* string)
+Float toFloat(const char* string) noexcept
 {
-  static_assert(kIsFloat<Float>, "Float must be float type.");
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
   return cast<Float>(std::atof(string));
 }
 
@@ -444,9 +466,9 @@ Float toFloat(const char* string)
   No detailed.
   */
 template <typename Float> inline
-Float toFloat(const std::string& string)
+Float toFloat(const std::string& string) noexcept
 {
-  static_assert(kIsFloat<Float>, "Float must be float type.");
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
   return cast<Float>(std::stod(string));
 }
 
@@ -455,7 +477,7 @@ Float toFloat(const std::string& string)
   No detailed.
   */
 template <> inline
-float toFloat(const std::string& string)
+float toFloat(const std::string& string) noexcept
 {
   return std::stof(string);
 }
@@ -465,7 +487,7 @@ float toFloat(const std::string& string)
   No detailed.
   */
 template <> inline
-long double toFloat(const std::string& string)
+long double toFloat(const std::string& string) noexcept
 {
   return std::stold(string);
 }
@@ -475,9 +497,9 @@ long double toFloat(const std::string& string)
   No detailed.
   */
 template <typename Integer> inline
-Integer toInteger(const char* string)
+Integer toInteger(const char* string) noexcept
 {
-  static_assert(kIsInteger<Integer>, "Integer must be integer type.");
+  static_assert(kIsInteger<Integer>, "Integer isn't integer type.");
   return cast<Integer>(std::atoi(string));
 }
 
@@ -486,7 +508,7 @@ Integer toInteger(const char* string)
   No detailed.
   */
 template <> inline
-long toInteger(const char* string)
+long toInteger(const char* string) noexcept
 {
   return std::atol(string);
 }
@@ -496,7 +518,7 @@ long toInteger(const char* string)
   No detailed.
   */
 template <> inline
-long long toInteger(const char* string)
+long long toInteger(const char* string) noexcept
 {
   return std::atoll(string);
 }
@@ -506,9 +528,9 @@ long long toInteger(const char* string)
   No detailed.
   */
 template <typename Integer> inline
-Integer toInteger(const std::string& string)
+Integer toInteger(const std::string& string) noexcept
 {
-  static_assert(kIsInteger<Integer>, "Integer must be integer type.");
+  static_assert(kIsInteger<Integer>, "Integer isn't integer type.");
   return cast<Integer>(std::stoi(string));
 }
 
@@ -517,7 +539,7 @@ Integer toInteger(const std::string& string)
   No detailed.
   */
 template <> inline
-long toInteger(const std::string& string)
+long toInteger(const std::string& string) noexcept
 {
   return std::stol(string);
 }
@@ -527,7 +549,7 @@ long toInteger(const std::string& string)
   No detailed.
   */
 template <> inline
-long long toInteger(const std::string& string)
+long long toInteger(const std::string& string) noexcept
 {
   return std::stoll(string);
 }
@@ -537,7 +559,7 @@ long long toInteger(const std::string& string)
   No detailed.
   */
 template <> inline
-unsigned int toInteger(const std::string& string)
+unsigned int toInteger(const std::string& string) noexcept
 {
   return cast<unsigned int>(std::stoul(string));
 }
@@ -547,7 +569,7 @@ unsigned int toInteger(const std::string& string)
   No detailed.
   */
 template <> inline
-unsigned long toInteger(const std::string& string)
+unsigned long toInteger(const std::string& string) noexcept
 {
   return std::stoul(string);
 }
@@ -557,7 +579,7 @@ unsigned long toInteger(const std::string& string)
   No detailed.
   */
 template <> inline
-unsigned long long toInteger(const std::string& string)
+unsigned long long toInteger(const std::string& string) noexcept
 {
   return std::stoull(string);
 }
@@ -567,7 +589,7 @@ unsigned long long toInteger(const std::string& string)
   No detailed.
   */
 inline
-std::string toCxxString(const char* string)
+std::string toCxxString(const char* string) noexcept
 {
   return toCxxString(std::string{string});
 }
@@ -577,7 +599,7 @@ std::string toCxxString(const char* string)
   No detailed.
   */
 inline
-std::string toCxxString(const std::string& string)
+std::string toCxxString(const std::string& string) noexcept
 {
   return string.substr(1, string.size() - 2);
 }
@@ -585,25 +607,25 @@ std::string toCxxString(const std::string& string)
 namespace zisc_string {
 
 template <typename String, typename Type> inline
-Type toCxxValue(const String& string, EnableIfBoolean<Type> = kEnabler)
+Type toCxxValue(const String& string, EnableIfBoolean<Type> = kEnabler) noexcept
 {
   return toBoolean(string);
 }
 
 template <typename String, typename Type> inline
-Type toCxxValue(const String& string, EnableIfFloat<Type> = kEnabler)
+Type toCxxValue(const String& string, EnableIfFloat<Type> = kEnabler) noexcept
 {
   return toFloat<Type>(string);
 }
 
 template <typename String, typename Type> inline
-Type toCxxValue(const String& string, EnableIfInteger<Type> = kEnabler)
+Type toCxxValue(const String& string, EnableIfInteger<Type> = kEnabler) noexcept
 {
   return toInteger<Type>(string);
 }
 
 template <typename String, typename Type> inline
-Type toCxxValue(const String& string, EnableIfSame<std::string, Type> = kEnabler)
+Type toCxxValue(const String& string, EnableIfSame<std::string, Type> = kEnabler) noexcept
 {
   return toCxxString(string);
 }
@@ -615,7 +637,7 @@ Type toCxxValue(const String& string, EnableIfSame<std::string, Type> = kEnabler
   No detailed.
   */
 template <typename Type> inline
-Type toCxxValue(const char* string)
+Type toCxxValue(const char* string) noexcept
 {
   return zisc_string::toCxxValue<const char*, Type>(string);
 }
@@ -625,7 +647,7 @@ Type toCxxValue(const char* string)
   No detailed.
   */
 template <typename Type> inline
-Type toCxxValue(const std::string& string)
+Type toCxxValue(const std::string& string) noexcept
 {
   return zisc_string::toCxxValue<std::string, Type>(string);
 }
@@ -637,7 +659,7 @@ namespace zisc_string {
   No detailed.
   */
 template <typename Type> inline
-bool isFloatString(const Type& string)
+bool isFloatString(const Type& string) noexcept
 {
   using Pattern = ValueStringPattern;
   constexpr auto regex_option =  std::regex_constants::nosubs | 
@@ -651,7 +673,7 @@ bool isFloatString(const Type& string)
   No detailed.
   */
 template <typename Type> inline
-bool isIntegerString(const Type& string)
+bool isIntegerString(const Type& string) noexcept
 {
   using Pattern = ValueStringPattern;
   constexpr auto regex_option =  std::regex_constants::nosubs | 
@@ -665,7 +687,7 @@ bool isIntegerString(const Type& string)
   No detailed.
   */
 template <typename Type> inline
-bool isCxxStringString(const Type& string)
+bool isCxxStringString(const Type& string) noexcept
 {
   using Pattern = ValueStringPattern;
   constexpr auto regex_option =  std::regex_constants::nosubs | 
@@ -681,7 +703,7 @@ bool isCxxStringString(const Type& string)
  No detailed.
  */
 inline
-bool isBooleanString(const char* string)
+bool isBooleanString(const char* string) noexcept
 {
   return (toString("true") == string) || 
          (toString("false") == string);
@@ -692,7 +714,7 @@ bool isBooleanString(const char* string)
  No detailed.
  */
 inline
-bool isBooleanString(const std::string& string)
+bool isBooleanString(const std::string& string) noexcept
 {
   return (toString("true") == string.c_str()) || 
          (toString("false") == string.c_str());
@@ -703,7 +725,7 @@ bool isBooleanString(const std::string& string)
  No detailed.
  */
 inline
-bool isFloatString(const char* string)
+bool isFloatString(const char* string) noexcept
 {
   return zisc_string::isFloatString(string);
 }
@@ -713,7 +735,7 @@ bool isFloatString(const char* string)
  No detailed.
  */
 inline
-bool isFloatString(const std::string& string)
+bool isFloatString(const std::string& string) noexcept
 {
   return zisc_string::isFloatString(string);
 }
@@ -723,7 +745,7 @@ bool isFloatString(const std::string& string)
  No detailed.
  */
 inline
-bool isIntegerString(const char* string)
+bool isIntegerString(const char* string) noexcept
 {
   return zisc_string::isIntegerString(string);
 }
@@ -733,7 +755,7 @@ bool isIntegerString(const char* string)
  No detailed.
  */
 inline
-bool isIntegerString(const std::string& string)
+bool isIntegerString(const std::string& string) noexcept
 {
   return zisc_string::isIntegerString(string);
 }
@@ -743,7 +765,7 @@ bool isIntegerString(const std::string& string)
  No detailed.
  */
 inline
-bool isCxxStringString(const char* string)
+bool isCxxStringString(const char* string) noexcept
 {
   return zisc_string::isCxxStringString(string);
 }
@@ -753,7 +775,7 @@ bool isCxxStringString(const char* string)
  No detailed.
  */
 inline
-bool isCxxStringString(const std::string& string)
+bool isCxxStringString(const std::string& string) noexcept
 {
   return zisc_string::isCxxStringString(string);
 }
@@ -763,7 +785,7 @@ bool isCxxStringString(const std::string& string)
   No detailed.
   */
 inline
-std::string& trim(std::string* string)
+std::string& trim(std::string* string) noexcept
 {
   using std::find_if;
 
@@ -784,11 +806,50 @@ std::string& trim(std::string* string)
   No detailed.
   */
 inline
-std::string trimmed(const std::string& string)
+std::string trimmed(const std::string& string) noexcept
 {
   auto str = string;
   trim(&str);
   return str;
+}
+
+/*!
+  */
+inline
+void replaceLineFeedCodeToUnixStyle(std::string* text) noexcept
+{
+  ZISC_ASSERT(text != nullptr, "The text is NULL.");
+  constexpr char lf = '\n';
+  std::string::size_type position = 0;
+  // Replace CR + LF to LF
+  constexpr char crlf[] = "\r\n";
+  position = text->find(crlf, position);
+  while (position != std::string::npos) {
+    (*text)[position] = ' ';
+    (*text)[position + 1] = lf;
+    position = text->find(crlf, position);
+  }
+  // Replace CR to LF
+  constexpr char cr = '\r';
+  for (position = 0; position < text->size(); ++position) {
+    if ((*text)[position] == cr)
+      (*text)[position] = lf;
+  }
+}
+
+/*!
+  */
+inline
+void replaceLineFeedCodeToSpaces(std::string* text) noexcept
+{
+  ZISC_ASSERT(text != nullptr, "The text is NULL.");
+  constexpr char cr = '\r';
+  constexpr char lf = '\n';
+  for (std::string::size_type i = 0; i < (text->size()); ++i) {
+    auto& c = (*text)[i];
+    if ((c == cr) || (c == lf))
+      c = ' ';
+  }
 }
 
 } // namespace zisc

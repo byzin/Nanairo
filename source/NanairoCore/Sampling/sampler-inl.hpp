@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SAMPLER_INL_HPP_
-#define _NANAIRO_SAMPLER_INL_HPP_
+#ifndef NANAIRO_SAMPLER_INL_HPP
+#define NANAIRO_SAMPLER_INL_HPP
 
 #include "sampler.hpp"
 // Nanairo
@@ -21,7 +21,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-Sampler::Sampler(const uint32 seed) :
+Sampler::Sampler(const uint32 seed) noexcept :
     sampler_{seed}
 {
 }
@@ -31,8 +31,8 @@ Sampler::Sampler(const uint32 seed) :
   No detailed.
   */
 template <typename Arithmetic> inline
-Arithmetic Sampler::sample(const Arithmetic min, const Arithmetic max)
-{
+Arithmetic Sampler::sample(const Arithmetic min, const Arithmetic max) noexcept
+{ 
   return sampler_.generate(min, max);
 }
 
@@ -41,11 +41,11 @@ Arithmetic Sampler::sample(const Arithmetic min, const Arithmetic max)
   No detailed.
   */
 inline
-void Sampler::setSeed(const uint32 seed)
+void Sampler::setSeed(const uint32 seed) noexcept
 {
   sampler_.setSeed(seed);
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_SAMPLER_INL_HPP_
+#endif // NANAIRO_SAMPLER_INL_HPP

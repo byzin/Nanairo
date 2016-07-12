@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SURFACE_MODEL_INL_HPP_
-#define _NANAIRO_SURFACE_MODEL_INL_HPP_
+#ifndef NANAIRO_SURFACE_MODEL_INL_HPP
+#define NANAIRO_SURFACE_MODEL_INL_HPP
 
 #include "surface_model.hpp"
 // Zisc
@@ -41,7 +41,7 @@ auto SurfaceModel::makeBxdf(
     const Point2& texture_coordinate,
     const bool is_reverse_face,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) const -> ShaderPointer<kSampleSize>
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
   using zisc::cast;
 
@@ -69,6 +69,7 @@ auto SurfaceModel::makeBxdf(
     shader = makeGgxConductorBrdf(this, texture_coordinate,
                                   wavelengths, memory_pool);
     break;
+   case SurfaceType::RoughPlastic:
    default:
     zisc::raiseError("SurfaceModelError: (type=", cast<int>(surface_type),
                      ") makeBxdf method is not implemented.");
@@ -80,4 +81,4 @@ auto SurfaceModel::makeBxdf(
 
 } // namespace nanairo
 
-#endif // _NANAIRO_SURFACE_MODEL_INL_HPP_
+#endif // NANAIRO_SURFACE_MODEL_INL_HPP

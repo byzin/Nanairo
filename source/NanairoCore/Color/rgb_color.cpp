@@ -21,7 +21,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-XyzColor RgbColor::toXyz(const Matrix3x3& to_xyz_matrix) const
+XyzColor RgbColor::toXyz(const Matrix3x3& to_xyz_matrix) const noexcept
 {
   return XyzColor{to_xyz_matrix * color_};
 }

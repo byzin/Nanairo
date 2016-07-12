@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SMOOTH_DIFFUSE_SURFACE_INL_HPP_
-#define _NANAIRO_SMOOTH_DIFFUSE_SURFACE_INL_HPP_
+#ifndef NANAIRO_SMOOTH_DIFFUSE_SURFACE_INL_HPP
+#define NANAIRO_SMOOTH_DIFFUSE_SURFACE_INL_HPP
 
 #include "smooth_diffuse_surface.hpp"
 // Zisc
@@ -35,7 +35,7 @@ template <uint kSampleSize> inline
 auto SmoothDiffuseSurface::makeLambertBrdf(
     const Point2& texture_coordinate,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) const -> ShaderPointer<kSampleSize>
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
   const auto reflectance = 
       reflectance_->spectraValue(texture_coordinate, wavelengths);
@@ -56,7 +56,7 @@ SurfaceModel::ShaderPointer<kSampleSize> makeLambertBrdf(
     const SurfaceModel* surface,
     const Point2& texture_coordinate,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool)
+    MemoryPool& memory_pool) noexcept
 {
   using zisc::cast;
 
@@ -66,4 +66,4 @@ SurfaceModel::ShaderPointer<kSampleSize> makeLambertBrdf(
 
 } // namespace nanairo
 
-#endif // _NANAIRO_SMOOTH_DIFFUSE_SURFACE_INL_HPP_
+#endif // NANAIRO_SMOOTH_DIFFUSE_SURFACE_INL_HPP

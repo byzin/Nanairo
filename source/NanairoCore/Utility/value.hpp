@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_VALUE_HPP_
-#define _NANAIRO_VALUE_HPP_
+#ifndef NANAIRO_VALUE_HPP
+#define NANAIRO_VALUE_HPP
 
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -19,10 +19,10 @@ namespace nanairo {
 //! \{
 
 //! Get the index from the wavelength
-constexpr uint getIndex(const uint16 wavelength);
+constexpr uint getIndex(const uint16 wavelength) noexcept;
 
 //! Get the wavelength from the index
-constexpr uint16 getWavelength(const uint index);
+constexpr uint16 getWavelength(const uint index) noexcept;
 
 //! \} Core
 
@@ -30,4 +30,4 @@ constexpr uint16 getWavelength(const uint index);
 
 #include "value-inl.hpp"
 
-#endif // _NANAIRO_VALUE_HPP_
+#endif // NANAIRO_VALUE_HPP

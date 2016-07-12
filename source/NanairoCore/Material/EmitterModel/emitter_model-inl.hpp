@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_EMITTER_MODEL_INL_HPP_
-#define _NANAIRO_EMITTER_MODEL_INL_HPP_
+#ifndef NANAIRO_EMITTER_MODEL_INL_HPP
+#define NANAIRO_EMITTER_MODEL_INL_HPP
 
 #include "emitter_model.hpp"
 // Zisc
@@ -31,7 +31,7 @@ template <uint kSampleSize> inline
 auto EmitterModel::makeLight(
     const Point2& /* texture_coordinate */,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) const -> ShaderPointer<kSampleSize>
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
   using zisc::cast;
 
@@ -55,7 +55,7 @@ auto EmitterModel::makeLight(
   No detailed.
   */
 inline
-const SpectralDistribution& EmitterModel::powerDistribution() const
+const SpectralDistribution& EmitterModel::powerDistribution() const noexcept
 {
   return power_distribution_;
 }
@@ -65,11 +65,11 @@ const SpectralDistribution& EmitterModel::powerDistribution() const
   No detailed.
   */
 inline
-Float EmitterModel::radiantExitance() const
+Float EmitterModel::radiantExitance() const noexcept
 {
   return radiant_exitance_;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_EMITTER_MODEL_INL_HPP_
+#endif // NANAIRO_EMITTER_MODEL_INL_HPP

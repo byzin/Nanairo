@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_COMPENSATED_SUMMATION_INL_HPP_
-#define _ZISC_COMPENSATED_SUMMATION_INL_HPP_
+#ifndef ZISC_COMPENSATED_SUMMATION_INL_HPP
+#define ZISC_COMPENSATED_SUMMATION_INL_HPP
 
 #include "compensated_summation.hpp"
 // Zisc
@@ -21,7 +21,7 @@ namespace zisc {
   No detailed.
   */
 template <typename Float> inline
-CompensatedSummation<Float>::CompensatedSummation() :
+CompensatedSummation<Float>::CompensatedSummation() noexcept :
     sum_{cast<Float>(0.0)},
     compensation_{cast<Float>(0.0)}
 {
@@ -32,7 +32,7 @@ CompensatedSummation<Float>::CompensatedSummation() :
   No detailed.
   */
 template <typename Float> inline
-CompensatedSummation<Float>::CompensatedSummation(const Float value) :
+CompensatedSummation<Float>::CompensatedSummation(const Float value) noexcept :
     sum_{value},
     compensation_{cast<Float>(0.0)}
 {
@@ -43,7 +43,7 @@ CompensatedSummation<Float>::CompensatedSummation(const Float value) :
   No detailed.
   */
 template <typename Float> inline
-Float CompensatedSummation<Float>::get() const
+Float CompensatedSummation<Float>::get() const noexcept
 {
   return sum_;
 }
@@ -53,7 +53,7 @@ Float CompensatedSummation<Float>::get() const
   No detailed.
   */
 template <typename Float> inline
-void CompensatedSummation<Float>::set(const Float value)
+void CompensatedSummation<Float>::set(const Float value) noexcept
 {
   sum_ = value;
   compensation_ = cast<Float>(0.0);
@@ -64,13 +64,15 @@ void CompensatedSummation<Float>::set(const Float value)
   No detailed.
   */
 template <typename Float> inline
-void CompensatedSummation<Float>::add(const Float value)
+void CompensatedSummation<Float>::add(const Float value) noexcept
 {
-  const volatile Float c = compensation_;
-  const volatile Float tmp1 = value - c;
-  const volatile Float tmp2 = sum_ + tmp1;
-  compensation_ = (tmp2 - sum_) - tmp1;
-  sum_ = tmp2;
+  {
+    const volatile Float c = compensation_;
+    const volatile Float tmp1 = value - c;
+    const volatile Float tmp2 = sum_ + tmp1;
+    compensation_ = (tmp2 - sum_) - tmp1;
+    sum_ = tmp2;
+  }
 }
 
 /*!
@@ -78,7 +80,8 @@ void CompensatedSummation<Float>::add(const Float value)
   No detailed.
   */
 template <typename Float> template <typename ...Types> inline
-void CompensatedSummation<Float>::add(const Float value, const Types... values)
+void CompensatedSummation<Float>::add(const Float value, 
+                                      const Types... values) noexcept
 {
   add(value);
   add(values...);
@@ -86,4 +89,4 @@ void CompensatedSummation<Float>::add(const Float value, const Types... values)
 
 } // namespace zisc
 
-#endif // _ZISC_COMPENSATED_SUMMATION_INL_HPP_
+#endif // ZISC_COMPENSATED_SUMMATION_INL_HPP

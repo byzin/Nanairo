@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_CAMERA_EVENT_HPP_
-#define _NANAIRO_CAMERA_EVENT_HPP_
+#ifndef NANAIRO_CAMERA_EVENT_HPP
+#define NANAIRO_CAMERA_EVENT_HPP
 
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -27,35 +27,35 @@ class CameraEvent
 {
  public:
   //! Initialize the event
-  CameraEvent();
+  CameraEvent() noexcept;
 
 
   //! Add event
-  void addEvent(const int buttons, const int x, const int y, const int wheel);
+  void addEvent(const int buttons, const int x, const int y, const int wheel) noexcept;
 
   //! Clear the event
-  void clear();
+  void clear() noexcept;
 
   //! Return the distance value
-  const Vector2& distance() const;
+  const Vector2& distance() const noexcept;
 
   //! Check if event occured
-  bool isEventOccured() const;
+  bool isEventOccured() const noexcept;
 
   //! Check if the distance event occured
-  bool isDistanceEventOccured() const;
+  bool isDistanceEventOccured() const noexcept;
 
   //! Check if the rotation event occured
-  bool isRotationEventOccured() const;
+  bool isRotationEventOccured() const noexcept;
 
   //! Check if the translation event occured
-  bool isTranslationEventOccured() const;
+  bool isTranslationEventOccured() const noexcept;
 
   //! Return the rotation value
-  const Vector2& rotation() const;
+  const Vector2& rotation() const noexcept;
 
   //! Return the translation
-  const Vector2& translation() const;
+  const Vector2& translation() const noexcept;
 
  private:
   Vector2 translation_,
@@ -69,4 +69,4 @@ class CameraEvent
 
 #include "camera_event-inl.hpp"
 
-#endif // _NANAIRO_CAMERA_EVENT_HPP_
+#endif // NANAIRO_CAMERA_EVENT_HPP

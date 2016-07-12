@@ -53,7 +53,7 @@ namespace nanairo {
   */
 World::World(System& system,
              const SceneSettings& settings, 
-             const std::function<void (const QString&)>& message_sender)
+             const std::function<void (const QString&)>& message_sender) noexcept
 {
   initialize(system, settings, message_sender);
 }
@@ -62,7 +62,7 @@ World::World(System& system,
   \details
   No detailed.
   */
-World::~World()
+World::~World() noexcept
 {
 }
 
@@ -96,7 +96,7 @@ World::~World()
   \details
   No detailed.
   */
-std::vector<const Texture*> World::textureList() const
+std::vector<const Texture*> World::textureList() const noexcept
 {
   std::vector<const Texture*> texture_list;
   texture_list.reserve(texture_list_.size());
@@ -109,7 +109,7 @@ std::vector<const Texture*> World::textureList() const
   \details
   No detailed.
   */
-std::size_t World::getMaterialSize() const
+std::size_t World::getMaterialSize() const noexcept
 {
   std::size_t size = 0;
   for (const auto& texture : texture_list_)
@@ -125,7 +125,7 @@ std::size_t World::getMaterialSize() const
   \details
   No detailed.
   */
-std::size_t World::getObjectSize(const std::vector<Object>& object_list) const
+std::size_t World::getObjectSize(const std::vector<Object>& object_list) const noexcept
 {
   std::size_t object_size = 0;
   for (const auto& object : object_list)
@@ -139,7 +139,7 @@ std::size_t World::getObjectSize(const std::vector<Object>& object_list) const
   */
 void World::initialize(System& system,
                        const SceneSettings& settings, 
-                       const std::function<void (const QString&)>& message_sender)
+                       const std::function<void (const QString&)>& message_sender) noexcept
 {
   using std::chrono::duration_cast;
   using Millis = std::chrono::milliseconds;
@@ -225,7 +225,7 @@ void World::initialize(System& system,
   \details
   No detailed.
   */
-void World::initializeEmitter(System& system, const SceneSettings& settings)
+void World::initializeEmitter(System& system, const SceneSettings& settings) noexcept
 {
   using zisc::cast;
 
@@ -254,7 +254,7 @@ void World::initializeEmitter(System& system, const SceneSettings& settings)
   No detailed.
   */
 std::vector<Object> World::initializeObject(System& system, 
-                                            const SceneSettings& settings)
+                                            const SceneSettings& settings) noexcept
 {
   auto results = makeObjects(system, settings);
 
@@ -281,7 +281,7 @@ std::vector<Object> World::initializeObject(System& system,
   \details
   No detailed.
   */
-void World::initializeWorldLightSource()
+void World::initializeWorldLightSource() noexcept
 {
   zisc::CompensatedSummation<Float> total_flux{0.0};
   std::list<const Object*> light_source_list;
@@ -303,7 +303,7 @@ void World::initializeWorldLightSource()
   \details
   No detailed.
   */
-void World::initializeSurface(System& system, const SceneSettings& settings)
+void World::initializeSurface(System& system, const SceneSettings& settings) noexcept
 {
   using zisc::cast;
 
@@ -332,7 +332,7 @@ void World::initializeSurface(System& system, const SceneSettings& settings)
   \details
   No detailed.
   */
-void World::initializeTexture(System& system, const SceneSettings& settings)
+void World::initializeTexture(System& system, const SceneSettings& settings) noexcept
 {
   using zisc::cast;
 
@@ -361,7 +361,7 @@ void World::initializeTexture(System& system, const SceneSettings& settings)
   */
 std::list<std::future<std::vector<Object>>> World::makeObjects(
     System& system,
-    const SceneSettings& settings) const
+    const SceneSettings& settings) const noexcept
 {
   using zisc::cast;
   using zisc::toHash32;
@@ -406,7 +406,7 @@ std::list<std::future<std::vector<Object>>> World::makeObjects(
   */
 std::vector<Object> World::makeSingleObject(const SceneSettings& settings,
                                             const QString& prefix,
-                                            const Matrix4x4& transformation) const
+                                            const Matrix4x4& transformation) const noexcept
 {
   auto geometry_list = makeGeometry(settings, prefix);
   const auto t = transformation * makeTransformationMatrix(settings, prefix);
@@ -447,7 +447,7 @@ std::list<std::future<std::vector<Object>>> World::makeGroupObject(
     const QString& prefix,
     const Matrix4x4& transformation,
     const uint count,
-    uint& index) const
+    uint& index) const noexcept
 {
   using zisc::toHash32;
 

@@ -34,7 +34,7 @@ namespace nanairo {
   No detailed.
   */
 BinaryRadixTreeBvh::BinaryRadixTreeBvh(const SceneSettings& settings, 
-                                       const QString& prefix) :
+                                       const QString& prefix) noexcept :
     Bvh(settings, prefix)
 {
 }
@@ -46,7 +46,7 @@ BinaryRadixTreeBvh::BinaryRadixTreeBvh(const SceneSettings& settings,
 void BinaryRadixTreeBvh::constructBinaryRadixTreeBvh(
     System& system,
     const std::vector<Object>& object_list,
-    std::vector<BvhNode>& tree)
+    std::vector<BvhNode>& tree) noexcept
 {
   // Create leaf node list
   std::vector<BvhNode> leaf_node_list;
@@ -70,7 +70,7 @@ void BinaryRadixTreeBvh::constructBinaryRadixTreeBvh(
   */
 void BinaryRadixTreeBvh::constructBvh(System& system,
                                       const std::vector<Object>& object_list,
-                                      std::vector<BvhNode>& tree) const
+                                      std::vector<BvhNode>& tree) const noexcept
 {
   // Allocate memory
   tree.resize((object_list.size() * 2) - 1);
@@ -89,8 +89,10 @@ void BinaryRadixTreeBvh::splitInMortonCode(System& system,
                                            std::vector<BvhNode>& tree,
                                            MortonCodeIterator first,
                                            MortonCodeIterator begin,
-                                           MortonCodeIterator end)
+                                           MortonCodeIterator end) noexcept
 {
+  using zisc::cast;
+
   // Check if node is leaf node
   if ((tree.size() >> 1) <= index) {
     tree[index] = std::move(*std::get<0>(*begin));
@@ -113,13 +115,13 @@ void BinaryRadixTreeBvh::splitInMortonCode(System& system,
   }
 
   const uint64 next_bit = (bit != 1) ? bit - 1 : bit;
-  uint32 right_child_index = std::distance(first, split_position);
-  uint32 left_child_index = right_child_index - 1;
+  uint32 right_child_index = cast<uint32>(std::distance(first, split_position));
+  uint32 left_child_index = cast<uint32>(right_child_index - 1);
   left_child_index = (std::distance(begin, split_position) == 1)
-      ? left_child_index + (tree.size() >> 1)
+      ? left_child_index + cast<uint32>(tree.size() >> 1)
       : left_child_index;
   right_child_index = (std::distance(split_position, end) == 1)
-      ? right_child_index + (tree.size() >> 1)
+      ? right_child_index + cast<uint32>(tree.size() >> 1)
       : right_child_index;
   ZISC_ASSERT(left_child_index < tree.size(), "BVH buffer is overrun!.");
   ZISC_ASSERT(right_child_index < tree.size(), "BVH buffer is overrun!.");

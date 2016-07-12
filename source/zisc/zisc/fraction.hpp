@@ -7,22 +7,18 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_FRACTION_HPP_
-#define _ZISC_FRACTION_HPP_
+#ifndef ZISC_FRACTION_HPP
+#define ZISC_FRACTION_HPP
 
-// 標準C++ライブラリ
-#include <cstdint>
-#include <string>
+// Standard C++ library
 #include <type_traits>
-// Ziscライブラリ
+// Zisc
 #include "type_traits.hpp"
+#include "zisc/zisc_config.hpp"
 
 namespace zisc {
 
 /*!
- \brief 有理数を表します。
- \details
- 値が負になる場合は，必ず分子にマイナスが付きます．
  */
 template <typename SignedInteger>
 class Fraction
@@ -31,90 +27,121 @@ class Fraction
                 "Fraction must be specified a signed integral type.");
           
  public:
-  //! 0の有理数を作成します
-  constexpr Fraction();
+  //! Creata a fraction (0 / 1)
+  constexpr Fraction() noexcept;
 
-  //! 分母が1の有理数を作成します
-  constexpr Fraction(const SignedInteger numerator);
+  //! Create a fraction (numerator / 1)
+  constexpr Fraction(const SignedInteger n) noexcept;
 
-  //! 有理数を作成します
-  constexpr Fraction(const SignedInteger numerator, const SignedInteger denominator);
-
-
-  Fraction& operator+=(const Fraction& fraction);
-
-  Fraction& operator-=(const Fraction& fraction);
-
-  Fraction& operator*=(const Fraction& fraction);
-
-  Fraction& operator/=(const Fraction& fraction);
+  //! Create a fraction (numerator / denominator)
+  constexpr Fraction(const SignedInteger n, const SignedInteger d) noexcept;
 
 
-  //! 浮動小数点に変換した値を取得します
-  template <typename FloatingPoint>
-  constexpr FloatingPoint toFloat() const;
+  //!
+  Fraction& operator+=(const Fraction& other) noexcept;
 
-  //! 分母の絶対値を取得します
-  constexpr SignedInteger getDenominator() const;
+  //!
+  Fraction& operator-=(const Fraction& other) noexcept;
 
-  //! 分子の絶対値を取得します
-  constexpr SignedInteger getNumerator() const;
+  //!
+  Fraction& operator*=(const Fraction& other) noexcept;
+
+  //!
+  Fraction& operator/=(const Fraction& other) noexcept;
+
+
+  //! Return the denominator
+  constexpr SignedInteger denominator() const noexcept;
+
+  //! Return the numerator 
+  constexpr SignedInteger numerator() const noexcept;
+
+  //! Return a inverse fraction
+  constexpr Fraction invert() const noexcept;
+
+  //! Multiplay two fractions
+  constexpr Fraction multiply(const Fraction& other) const noexcept;
+
+  //! Convert a fraction to a float
+  template <typename Float>
+  constexpr Float toFloat() const noexcept;
 
  private:
+  //! Return the absolute value
+  static constexpr SignedInteger abs(const SignedInteger n) noexcept;
+
+  //! Return the greatest common divisor of two integer m and n
+  static constexpr SignedInteger gcd(SignedInteger m, SignedInteger n) noexcept;
+
+
   SignedInteger numerator_,
                 denominator_;
 };
 
-// よく使う型に別名をつけます
-using Fraction16 = Fraction<std::int16_t>;
-using Fraction32 = Fraction<std::int32_t>;
-using Fraction64 = Fraction<std::int64_t>;
+// Aliases
+using Fraction16 = Fraction<int16>;
+using Fraction32 = Fraction<int32>;
+using Fraction64 = Fraction<int64>;
 
+//! 
 template <typename SignedInteger>
-constexpr Fraction<SignedInteger> operator+(const Fraction<SignedInteger>& a,
-                                            const Fraction<SignedInteger>& b);
+constexpr Fraction<SignedInteger> operator+(
+    const Fraction<SignedInteger>& lhs,
+    const Fraction<SignedInteger>& rhs) noexcept;
+ 
+//!
+template <typename SignedInteger>
+constexpr Fraction<SignedInteger> operator-(
+    const Fraction<SignedInteger>& lhs,
+    const Fraction<SignedInteger>& rhs) noexcept;
 
+//!
 template <typename SignedInteger>
-constexpr Fraction<SignedInteger> operator-(const Fraction<SignedInteger>& a,
-                                            const Fraction<SignedInteger>& b);
+constexpr Fraction<SignedInteger> operator*(
+    const Fraction<SignedInteger>& lhs,
+    const Fraction<SignedInteger>& rhs) noexcept;
 
+//!
 template <typename SignedInteger>
-constexpr Fraction<SignedInteger> operator*(const Fraction<SignedInteger>& a,
-                                            const Fraction<SignedInteger>& b);
+constexpr Fraction<SignedInteger> operator/(
+    const Fraction<SignedInteger>& lhs,
+    const Fraction<SignedInteger>& rhs) noexcept;
 
+//! Check if two fractions are equal in value
 template <typename SignedInteger>
-constexpr Fraction<SignedInteger> operator/(const Fraction<SignedInteger>& a,
-                                            const Fraction<SignedInteger>& b);
+constexpr bool operator==(
+    const Fraction<SignedInteger>& lhs,
+    const Fraction<SignedInteger>& rhs) noexcept;
 
-//! a と b の有理数が等しいか判定します
+//! Check if two fractions aren't equal in value
 template <typename SignedInteger>
-constexpr bool operator==(const Fraction<SignedInteger>& a,
-                          const Fraction<SignedInteger>& b);
+constexpr bool operator!=(
+    const Fraction<SignedInteger>& lhs,
+    const Fraction<SignedInteger>& rhs) noexcept;
 
-//! a と b が等しくないか判定します
+//!
 template <typename SignedInteger>
-constexpr bool operator!=(const Fraction<SignedInteger>& a,
-                          const Fraction<SignedInteger>& b);
+constexpr bool operator<(
+    const Fraction<SignedInteger>& lhs,
+    const Fraction<SignedInteger>& rhs) noexcept;
 
-//! a が b よりも小さいか判定します
+//!
 template <typename SignedInteger>
-constexpr bool operator<(const Fraction<SignedInteger>& a,
-                         const Fraction<SignedInteger>& b);
+constexpr bool operator<=(
+    const Fraction<SignedInteger>& lhs,
+    const Fraction<SignedInteger>& rhs) noexcept;
 
-//! a が b 以下か判定します
+//!
 template <typename SignedInteger>
-constexpr bool operator<=(const Fraction<SignedInteger>& a,
-                          const Fraction<SignedInteger>& b);
+constexpr bool operator>(
+    const Fraction<SignedInteger>& lhs,
+    const Fraction<SignedInteger>& rhs) noexcept;
 
-//! a が b よりも大きいか判定します
+//!
 template <typename SignedInteger>
-constexpr bool operator>(const Fraction<SignedInteger>& a,
-                         const Fraction<SignedInteger>& b);
-
-//! a が b 以上か判定します
-template <typename SignedInteger>
-constexpr bool operator>=(const Fraction<SignedInteger>& a,
-                          const Fraction<SignedInteger>& b);
+constexpr bool operator>=(
+    const Fraction<SignedInteger>& lhs,
+    const Fraction<SignedInteger>& rhs) noexcept;
 
 } // namespace zisc
 
@@ -122,8 +149,8 @@ constexpr bool operator>=(const Fraction<SignedInteger>& a,
 
 namespace zisc {
 
-constexpr Fraction32 kPiFraction{355, 113}; //! 円周率
+constexpr Fraction32 kPiFraction{355, 113};
 
 } // namespace zisc
 
-#endif // _ZISC_FRACTION_HPP_
+#endif // ZISC_FRACTION_HPP

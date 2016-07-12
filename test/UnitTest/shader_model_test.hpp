@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SHADER_MODEL_TEST_HPP_
-#define _NANAIRO_SHADER_MODEL_TEST_HPP_
+#ifndef NANAIRO_SHADER_MODEL_TEST_HPP
+#define NANAIRO_SHADER_MODEL_TEST_HPP
 
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -52,4 +52,4 @@ void testBxdfHelmholtzReciprocity(
     nanairo::MemoryPool& memory_pool,
     const char* bxdf_name);
 
-#endif // _NANAIRO_SHADER_MODEL_TEST_HPP_
+#endif // NANAIRO_SHADER_MODEL_TEST_HPP

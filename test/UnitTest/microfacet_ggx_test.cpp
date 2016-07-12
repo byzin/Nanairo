@@ -23,8 +23,10 @@
 // Test
 #include "test.hpp"
 
-void testGgxDEvaluation(const nanairo::Float roughness, 
-                        nanairo::Sampler& sampler)
+// Forward declaration
+void testGgxDEvaluation(const nanairo::Float roughness, nanairo::Sampler& sampler);
+
+void testGgxDEvaluation(const nanairo::Float roughness, nanairo::Sampler& sampler)
 {
   using namespace nanairo;
   using namespace zisc;

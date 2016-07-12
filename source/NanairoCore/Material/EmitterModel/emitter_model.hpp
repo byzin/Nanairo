@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_EMITTER_MODEL_HPP_
-#define _NANAIRO_EMITTER_MODEL_HPP_
+#ifndef NANAIRO_EMITTER_MODEL_HPP
+#define NANAIRO_EMITTER_MODEL_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -55,39 +55,39 @@ class EmitterModel
   //! Create a emitter model
   EmitterModel(const System& system,
                const SceneSettings& settings, 
-               const QString& prefix);
+               const QString& prefix) noexcept;
 
   //! Finalize the emitter model
-  virtual ~EmitterModel() {};
+  virtual ~EmitterModel() noexcept;
 
 
   //! Return the emitter model size
-  std::size_t emitterSize() const {return sizeof(*this);}
+  std::size_t emitterSize() const noexcept {return sizeof(*this);}
 
   template <uint kSampleSize>
   ShaderPointer<kSampleSize> makeLight(
       const Point2& texture_coordinate,
       const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const;
+      MemoryPool& memory_pool) const noexcept;
 
   //! Return the spectral power distribution
-  const SpectralDistribution& powerDistribution() const;
+  const SpectralDistribution& powerDistribution() const noexcept;
 
   //! Return the radiant exitance 
-  Float radiantExitance() const;
+  Float radiantExitance() const noexcept;
 
   //! Return the emitter type
-  virtual EmitterType type() const = 0;
+  virtual EmitterType type() const noexcept = 0;
  
  protected:
   //! Set the spectral power distribution
-  void setPowerDistribution(const SpectralDistribution& distribution);
+  void setPowerDistribution(const SpectralDistribution& distribution) noexcept;
 
  private:
   //! Initialize
   void initialize(const System& system,
                   const SceneSettings& settings, 
-                  const QString& prefix);
+                  const QString& prefix) noexcept;
 
 
   SpectralDistribution power_distribution_;
@@ -100,12 +100,12 @@ EmitterModel::ShaderPointer<kSampleSize> makeNonDirectionalLight(
     const EmitterModel* emitter,
     const Point2& texture_coordinate,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool);
+    MemoryPool& memory_pool) noexcept;
 
 //! Make a emitter model
 UniquePointer<EmitterModel> makeEmitter(const System& system,
                                         const SceneSettings& settings,
-                                        const QString& prefix);
+                                        const QString& prefix) noexcept;
 
 //! \} Core
 
@@ -113,4 +113,4 @@ UniquePointer<EmitterModel> makeEmitter(const System& system,
 
 #include "emitter_model-inl.hpp"
 
-#endif // _NANAIRO_EMITTER_MODEL_HPP_
+#endif // NANAIRO_EMITTER_MODEL_HPP

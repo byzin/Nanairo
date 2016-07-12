@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_UNIQUE_POINTER_HPP_
-#define _NANAIRO_UNIQUE_POINTER_HPP_
+#ifndef NANAIRO_UNIQUE_POINTER_HPP
+#define NANAIRO_UNIQUE_POINTER_HPP
 
 namespace nanairo {
 
@@ -24,51 +24,51 @@ class UniquePointer
 {
  public:
   //! Create a empty pointer
-  UniquePointer();
+  UniquePointer() noexcept;
 
   //! Create a unique pointer
-  UniquePointer(Type* pointer);
+  UniquePointer(Type* pointer) noexcept;
 
   //! Receive the pointer from an another unique pointer
-  UniquePointer(UniquePointer&& pointer);
+  UniquePointer(UniquePointer&& pointer) noexcept;
 
   //! Delete the managed object
-  ~UniquePointer();
+  ~UniquePointer() noexcept;
 
 
   //! Access to the object
-  Type& operator*();
+  Type& operator*() noexcept;
 
   //! Access to the object
-  const Type& operator*() const;
+  const Type& operator*() const noexcept;
 
   //! Access to the object pointer
-  Type* operator->();
+  Type* operator->() noexcept;
 
   //! Access to the object pointer
-  const Type* operator->() const;
+  const Type* operator->() const noexcept;
 
   //! It is same as calling reset(pointer)
-  UniquePointer& operator=(Type* pointer);
+  UniquePointer& operator=(Type* pointer) noexcept;
 
   //! Move the pointer
-  UniquePointer& operator=(UniquePointer&& pointer);
+  UniquePointer& operator=(UniquePointer&& pointer) noexcept;
 
 
   //! Return a pointer to the managed object 
-  Type* get();
+  Type* get() noexcept;
 
   //! Return a pointer to the managed object 
-  const Type* get() const;
+  const Type* get() const noexcept;
 
   //! Check if there is not associated managed object
-  bool isNull() const;
+  bool isNull() const noexcept;
 
   //! Replace the managed object
-  void reset(Type* pointer = nullptr);
+  void reset(Type* pointer = nullptr) noexcept;
 
   //! Swap the managed objects with another
-  void swap(UniquePointer& pointer);
+  void swap(UniquePointer& pointer) noexcept;
 
  private:
   Type* pointer_;
@@ -76,7 +76,7 @@ class UniquePointer
 
 //! Compare the pointer address
 template <typename Type>
-bool operator<(const UniquePointer<Type>& a, const UniquePointer<Type>& b);
+bool operator<(const UniquePointer<Type>& a, const UniquePointer<Type>& b) noexcept;
   
 //! \} Core
 
@@ -84,4 +84,4 @@ bool operator<(const UniquePointer<Type>& a, const UniquePointer<Type>& b);
 
 #include "unique_pointer-inl.hpp"
 
-#endif // _NANAIRO_UNIQUE_POINTER_HPP_
+#endif // NANAIRO_UNIQUE_POINTER_HPP

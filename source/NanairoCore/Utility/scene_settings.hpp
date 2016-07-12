@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SCENE_SETTINGS_HPP_
-#define _NANAIRO_SCENE_SETTINGS_HPP_
+#ifndef NANAIRO_SCENE_SETTINGS_HPP
+#define NANAIRO_SCENE_SETTINGS_HPP
 
 // Qt
 #include <QColor>
@@ -103,4 +103,4 @@ class SceneSettings : public QObject
 
 } // namespace nanairo
 
-#endif // _NANAIRO_SCENE_SETTINGS_HPP_
+#endif // NANAIRO_SCENE_SETTINGS_HPP

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_XSADD_ENGINE_INL_HPP_
-#define _ZISC_XSADD_ENGINE_INL_HPP_
+#ifndef ZISC_XSADD_ENGINE_INL_HPP
+#define ZISC_XSADD_ENGINE_INL_HPP
 
 #include "xsadd_engine.hpp"
 // Standard C++ library
@@ -18,6 +18,7 @@
 #include <type_traits>
 #include <vector>
 // Zisc
+#include "error.hpp"
 #include "pseudo_random_number_engine.hpp"
 #include "utility.hpp"
 #include "zisc/zisc_config.hpp"
@@ -29,7 +30,7 @@ namespace zisc {
   No detailed.
   */
 inline
-XsaddEngine::XsaddEngine()
+XsaddEngine::XsaddEngine() noexcept
 {
   setSeed(0);
 }
@@ -39,7 +40,7 @@ XsaddEngine::XsaddEngine()
   No detailed.
   */
 inline
-XsaddEngine::XsaddEngine(const uint32 seed)
+XsaddEngine::XsaddEngine(const uint32 seed) noexcept
 {
   setSeed(seed);
 }
@@ -49,10 +50,12 @@ XsaddEngine::XsaddEngine(const uint32 seed)
   No detailed.
   */
 inline
-uint32 XsaddEngine::generate()
+uint32 XsaddEngine::generate() noexcept
 {
   nextState();
-  return state_[3] + state_[2];
+  const auto random = state_[3] + state_[2];
+  ZISC_ASSERT(isInClosedBounds(random, min(), max()), "The random is out of range.");
+  return random;
 }
 
 /*!
@@ -60,8 +63,9 @@ uint32 XsaddEngine::generate()
   No detailed.
   */
 template <typename Float> inline
-Float XsaddEngine::generate(const Float lower, const Float upper,
-                            EnableIfFloat<Float>)
+Float XsaddEngine::generate(const Float lower, 
+                            const Float upper,
+                            EnableIfFloat<Float>) noexcept
 {
   const auto random = generateFloat();
   return bound(random, lower, upper);
@@ -72,7 +76,7 @@ Float XsaddEngine::generate(const Float lower, const Float upper,
   No detailed.
   */
 inline
-double XsaddEngine::generateFloat()
+double XsaddEngine::generateFloat() noexcept
 {
   constexpr double k = 1.0 / 18446744073709551616.0;
   constexpr uint32 t = 0xffffffe0u;
@@ -88,7 +92,7 @@ double XsaddEngine::generateFloat()
   No detailed.
   */
 inline
-constexpr uint32 XsaddEngine::max()
+constexpr uint32 XsaddEngine::max() noexcept
 {
   return std::numeric_limits<uint32>::max();
 }
@@ -98,7 +102,7 @@ constexpr uint32 XsaddEngine::max()
   No detailed.
   */
 inline
-constexpr uint32 XsaddEngine::min()
+constexpr uint32 XsaddEngine::min() noexcept
 {
   return std::numeric_limits<uint32>::min();
 }
@@ -107,7 +111,7 @@ constexpr uint32 XsaddEngine::min()
   \details
   No detailed.
   */
-void XsaddEngine::setSeed(const uint32 seed)
+void XsaddEngine::setSeed(const uint32 seed) noexcept
 {
   state_[0] = seed;
   state_[1] = 0;
@@ -127,7 +131,7 @@ void XsaddEngine::setSeed(const uint32 seed)
   \details
   No detailed.
   */
-void XsaddEngine::setSeed(const std::vector<uint32>& seed_array)
+void XsaddEngine::setSeed(const std::vector<uint32>& seed_array) noexcept
 {
   constexpr int lag = 1;
   constexpr int mid = 1;
@@ -138,7 +142,9 @@ void XsaddEngine::setSeed(const std::vector<uint32>& seed_array)
   state_[2] = 0;
   state_[3] = 0;
 
-  uint count;
+  using SizeType = 
+      typename std::remove_reference<decltype(seed_array)>::type::size_type;
+  SizeType count;
   if (seed_array.size() + 1 > loop_)
     count = seed_array.size() + 1;
   else
@@ -193,8 +199,10 @@ void XsaddEngine::setSeed(const std::vector<uint32>& seed_array)
   No detailed.
   */
 template <typename Float> inline
-Float XsaddEngine::bound(const double random, const Float lower, const Float upper,
-                         EnableIfFloat<Float>)
+Float XsaddEngine::bound(const double random, 
+                         const Float lower, 
+                         const Float upper,
+                         EnableIfFloat<Float>) noexcept
 {
   return lower + cast<Float>(random) * (upper - lower);
 }
@@ -204,7 +212,7 @@ Float XsaddEngine::bound(const double random, const Float lower, const Float upp
   No detailed.
   */
 inline
-uint32 XsaddEngine::initializeValue1(const uint32 x) const
+uint32 XsaddEngine::initializeValue1(const uint32 x) const noexcept
 {
   constexpr uint32 t = 1664525u;
   return (x ^ (x >> 27)) * t;
@@ -215,7 +223,7 @@ uint32 XsaddEngine::initializeValue1(const uint32 x) const
   No detailed.
   */
 inline
-uint32 XsaddEngine::initializeValue2(const uint32 x) const
+uint32 XsaddEngine::initializeValue2(const uint32 x) const noexcept
 {
   constexpr uint32 t = 1566083941u;
   return (x ^ (x >> 27)) * t;
@@ -226,7 +234,7 @@ uint32 XsaddEngine::initializeValue2(const uint32 x) const
   No detailed.
   */
 inline
-void XsaddEngine::nextState()
+void XsaddEngine::nextState() noexcept
 {
   constexpr int sh1 = 15;
   constexpr int sh2 = 18;
@@ -247,7 +255,7 @@ void XsaddEngine::nextState()
   No detailed.
   */
 inline
-void XsaddEngine::periodCertification()
+void XsaddEngine::periodCertification() noexcept
 {
   if (state_[0] == 0 && state_[1] == 0 && state_[2] == 0 && state_[3] == 0) {
     state_[0] = 'X';
@@ -259,4 +267,4 @@ void XsaddEngine::periodCertification()
 
 } // namespace zisc
 
-#endif // _ZISC_XSADD_ENGINE_INL_HPP_
+#endif // ZISC_XSADD_ENGINE_INL_HPP

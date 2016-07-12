@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_ALIGNED_MEMORY_POOL_HPP_
-#define _ZISC_ALIGNED_MEMORY_POOL_HPP_
+#ifndef ZISC_ALIGNED_MEMORY_POOL_HPP
+#define ZISC_ALIGNED_MEMORY_POOL_HPP
 
 // Standard C++ library
 #include <type_traits>
@@ -27,7 +27,7 @@ class AlignedMemoryPool : public NonCopyable
 {
  public:
   //! Create a memory pool
-  AlignedMemoryPool();
+  AlignedMemoryPool() noexcept;
 
   //! Move memory data
   AlignedMemoryPool(AlignedMemoryPool&& memory_pool);
@@ -35,16 +35,16 @@ class AlignedMemoryPool : public NonCopyable
 
   //! Allocate memory
   template <typename Type, typename ...Arguments>
-  Type* allocate(Arguments&& ...arguments);
+  Type* allocate(Arguments&& ...arguments) noexcept;
 
   //! Reset memory pool
-  void reset();
+  void reset() noexcept;
 
   //! Return the size of memory pool
-  static constexpr uint size();
+  static constexpr uint size() noexcept;
 
   //! Return the used memory
-  uint usedMemory() const;
+  uint usedMemory() const noexcept;
 
  private:
   using AlignedBlock = typename std::aligned_storage<kAlignment, kAlignment>::type;
@@ -63,4 +63,4 @@ class AlignedMemoryPool : public NonCopyable
 
 #include "aligned_memory_pool-inl.hpp"
 
-#endif // _ZISC_ALIGNED_MEMORY_POOL_HPP_
+#endif // ZISC_ALIGNED_MEMORY_POOL_HPP

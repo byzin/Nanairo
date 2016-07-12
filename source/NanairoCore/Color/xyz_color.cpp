@@ -22,7 +22,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-RgbColor XyzColor::toRgb(const Matrix3x3& to_rgb_matrix) const
+RgbColor XyzColor::toRgb(const Matrix3x3& to_rgb_matrix) const noexcept
 {
   return RgbColor{to_rgb_matrix * color_};
 }
@@ -31,7 +31,7 @@ RgbColor XyzColor::toRgb(const Matrix3x3& to_rgb_matrix) const
   \details
   No detailed.
   */
-YxyColor XyzColor::toYxy() const
+YxyColor XyzColor::toYxy() const noexcept
 {
   const Float normalization = 1.0 / color_.sum();
   return YxyColor{y(), x() * normalization, y() * normalization};

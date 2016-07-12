@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_MATERIAL_INL_HPP_
-#define _NANAIRO_MATERIAL_INL_HPP_
+#ifndef NANAIRO_MATERIAL_INL_HPP
+#define NANAIRO_MATERIAL_INL_HPP
 
 #include "material.hpp"
 // Zisc
@@ -25,7 +25,7 @@ class SurfaceModel;
   No detailed.
   */
 inline
-Material::Material(const SurfaceModel* surface, const EmitterModel* emitter) :
+Material::Material(const SurfaceModel* surface, const EmitterModel* emitter) noexcept :
     surface_{surface},
     emitter_{emitter}
 {
@@ -37,7 +37,7 @@ Material::Material(const SurfaceModel* surface, const EmitterModel* emitter) :
   No detailed.
   */
 inline
-const SurfaceModel& Material::surface() const
+const SurfaceModel& Material::surface() const noexcept
 {
   return *surface_;
 }
@@ -47,7 +47,7 @@ const SurfaceModel& Material::surface() const
   No detailed.
   */
 inline
-bool Material::isLightSource() const
+bool Material::isLightSource() const noexcept
 {
   return emitter_ != nullptr;
 }
@@ -57,11 +57,11 @@ bool Material::isLightSource() const
   No detailed.
   */
 inline
-const EmitterModel& Material::emitter() const
+const EmitterModel& Material::emitter() const noexcept
 {
   return *emitter_;
 }
   
 } // namespace nanairo
 
-#endif // _NANAIRO_MATERIAL_INL_HPP_
+#endif // NANAIRO_MATERIAL_INL_HPP

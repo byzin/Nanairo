@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_HDR_IMAGE_HPP_
-#define _NANAIRO_HDR_IMAGE_HPP_
+#ifndef NANAIRO_HDR_IMAGE_HPP
+#define NANAIRO_HDR_IMAGE_HPP
 
 // Standard C++ library
 #include <vector>
@@ -29,33 +29,33 @@ class HdrImage
 {
  public:
   //! Create a hdr image
-  HdrImage(const uint width, const uint height);
+  HdrImage(const uint width, const uint height) noexcept;
 
   //! Returh the pixel color by index
-  XyzColor& operator[](const uint index);
+  XyzColor& operator[](const uint index) noexcept;
 
   //! Returh the pixel color by index
-  const XyzColor& operator[](const uint index) const;
+  const XyzColor& operator[](const uint index) const noexcept;
 
 
   //! Return the buffer memory size
-  uint bufferMemorySize() const;
+  uint bufferMemorySize() const noexcept;
 
   //! Return the pixel color
-  const XyzColor& get(const uint x, const uint y) const;
+  const XyzColor& get(const uint x, const uint y) const noexcept;
 
   //! Return the height resolution
-  uint heightResolution() const;
+  uint heightResolution() const noexcept;
 
   //! Set pixel color
-  void set(const uint x, const uint y, const XyzColor& color);
+  void set(const uint x, const uint y, const XyzColor& color) noexcept;
 
   //! Return the height resolution
-  uint widthResolution() const;
+  uint widthResolution() const noexcept;
 
  private:
   //! Initialize
-  void initialize();
+  void initialize() noexcept;
 
 
   std::vector<XyzColor> buffer_;
@@ -69,4 +69,4 @@ class HdrImage
 
 #include "hdr_image-inl.hpp"
 
-#endif // _NANAIRO_HDR_IMAGE_HPP_
+#endif // NANAIRO_HDR_IMAGE_HPP

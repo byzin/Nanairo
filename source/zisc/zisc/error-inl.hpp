@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_ERROR_INL_HPP_
-#define _ZISC_ERROR_INL_HPP_
+#ifndef ZISC_ERROR_INL_HPP
+#define ZISC_ERROR_INL_HPP
 
 #include "error.hpp"
 // Standard C++ library
@@ -20,28 +20,21 @@ namespace zisc {
 namespace zisc_error {
 
 /*!
- \brief エラーメッセージを出力します
- \details
- No detailed.
-
- \param[in] message エラーメッセージ
- */
+  \details
+  No detailed.
+  */
 template <typename Type> inline
-void outputErrorMessage(const Type& message)
+void outputErrorMessage(const Type& message) noexcept
 {
   std::cerr << message;
 }
 
 /*!
- \brief エラーメッセージを出力します
- \details
- No detailed.
-
- \param[in] message エラーメッセージ
- \param[in] messages エラーメッセージ
- */
+  \details
+  No detailed.
+  */
 template <typename Type, typename ...Types> inline
-void outputErrorMessage(const Type& message, const Types&... messages)
+void outputErrorMessage(const Type& message, const Types&... messages) noexcept
 {
   outputErrorMessage(message);
   outputErrorMessage(messages...);
@@ -54,27 +47,24 @@ void outputErrorMessage(const Type& message, const Types&... messages)
   No detailed.
   */
 template <typename ...Types> inline
-void assertError(const bool condition, const Types& ...messages)
+void assertError(const bool condition, const Types& ...messages) noexcept
 {
   if (!condition) {
-    zisc_error::outputErrorMessage(messages..., "\n");
-    std::exit(EXIT_FAILURE);
+    raiseError(messages...);
   }
 }
 
 /*!
- \details
- No detailed.
-
- \param[in] messages エラーメッセージ
- */
+  \details
+  No detailed.
+  */
 template <typename ...Types> inline
-void raiseError(const Types&... messages)
+void raiseError(const Types&... messages) noexcept
 {
-  zisc_error::outputErrorMessage("## ERROR: ", messages..., "\n");
+  zisc_error::outputErrorMessage(messages..., "\n");
   std::exit(EXIT_FAILURE);
 }
 
 } // namespace zisc
 
-#endif // _ZISC_ERROR_INL_HPP_
+#endif // ZISC_ERROR_INL_HPP

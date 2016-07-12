@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_NON_DIRECTIONAL_EMITTER_HPP_
-#define _NANAIRO_NON_DIRECTIONAL_EMITTER_HPP_
+#ifndef NANAIRO_NON_DIRECTIONAL_EMITTER_HPP
+#define NANAIRO_NON_DIRECTIONAL_EMITTER_HPP
 
 // Nanairo
 #include "emitter_model.hpp"
@@ -38,23 +38,23 @@ class NonDirectionalEmitter : public EmitterModel
   //! Create a non directional emitter
   NonDirectionalEmitter(const System& system,
                         const SceneSettings& settings, 
-                        const QString& prefix);
+                        const QString& prefix) noexcept;
 
 
   //! Make non-directional light
   template <uint kSampleSize>
   ShaderPointer<kSampleSize> makeNonDirectionalLight(
       const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const;
+      MemoryPool& memory_pool) const noexcept;
 
   //! Return the non-directional emitter type
-  EmitterType type() const override;
+  EmitterType type() const noexcept override;
 
  private:
   //! Initialize the emitter
   void initialize(const System& system,
                   const SceneSettings& settings,
-                  const QString& prefix);
+                  const QString& prefix) noexcept;
 };
 
 //! \} Core
@@ -63,4 +63,4 @@ class NonDirectionalEmitter : public EmitterModel
 
 #include "non_directional_emitter-inl.hpp"
 
-#endif // _NANAIRO_NON_DIRECTIONAL_EMITTER_HPP_
+#endif // NANAIRO_NON_DIRECTIONAL_EMITTER_HPP

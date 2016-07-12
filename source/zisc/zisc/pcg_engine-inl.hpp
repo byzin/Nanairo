@@ -7,14 +7,15 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_PCG_ENGINE_INL_HPP_
-#define _ZISC_PCG_ENGINE_INL_HPP_
+#ifndef ZISC_PCG_ENGINE_INL_HPP
+#define ZISC_PCG_ENGINE_INL_HPP
 
 #include "pcg_engine.hpp"
 // Standard C++ library
 #include <limits>
 #include <type_traits>
 // Zisc
+#include "error.hpp"
 #include "type_traits.hpp"
 #include "utility.hpp"
 #include "zisc/zisc_config.hpp"
@@ -26,7 +27,7 @@ namespace zisc {
   No detailed.
   */
 template <PcgBase Base, PcgAlgorithm Algorithm, typename Seed, typename Result> inline
-PcgEngine<Base, Algorithm, Seed, Result>::PcgEngine()
+PcgEngine<Base, Algorithm, Seed, Result>::PcgEngine() noexcept
 {
   constexpr SeedType seed = cast<SeedType>(0xcafef00dd15ea5e5ULL);
   setSeed(seed);
@@ -37,7 +38,7 @@ PcgEngine<Base, Algorithm, Seed, Result>::PcgEngine()
   No detailed.
   */
 template <PcgBase Base, PcgAlgorithm Algorithm, typename Seed, typename Result> inline
-PcgEngine<Base, Algorithm, Seed, Result>::PcgEngine(const SeedType seed)
+PcgEngine<Base, Algorithm, Seed, Result>::PcgEngine(const SeedType seed) noexcept
 {
   setSeed(seed);
 }
@@ -49,7 +50,7 @@ namespace pcg {
   No detailed.
   */
 template <typename SeedType, typename ResultType> inline
-ResultType rotateRight(ResultType value, const SeedType rot)
+ResultType rotateRight(ResultType value, const SeedType rot) noexcept
 {
   constexpr SeedType bits = cast<SeedType>(sizeof(ResultType) * 8);
   constexpr SeedType mask = bits - 1;
@@ -66,7 +67,7 @@ struct PcgMixin;
 template <typename SeedType, typename ResultType>
 struct PcgMixin<PcgAlgorithm::XshRr, SeedType, ResultType>
 {
-  static ResultType output(SeedType internal)
+  static ResultType output(SeedType internal) noexcept
   {
     // Constant values
     constexpr SeedType bits = cast<SeedType>(sizeof(SeedType) * 8);
@@ -95,11 +96,11 @@ struct PcgMixin<PcgAlgorithm::XshRr, SeedType, ResultType>
   }
 };
 
-template <typename Type> constexpr Type mcgMultiplier();
-template <> inline constexpr uint8 mcgMultiplier() {return 217U;}
-template <> inline constexpr uint16 mcgMultiplier() {return 62169U;}
-template <> inline constexpr uint32 mcgMultiplier() {return 277803737U;}
-template <> inline constexpr uint64 mcgMultiplier() {return 12605985483714917081ULL;}
+template <typename Type> constexpr Type mcgMultiplier() noexcept;
+template <> inline constexpr uint8 mcgMultiplier() noexcept {return 217U;}
+template <> inline constexpr uint16 mcgMultiplier() noexcept {return 62169U;}
+template <> inline constexpr uint32 mcgMultiplier() noexcept {return 277803737U;}
+template <> inline constexpr uint64 mcgMultiplier() noexcept {return 12605985483714917081ULL;}
 
 /*!
   \details
@@ -108,7 +109,7 @@ template <> inline constexpr uint64 mcgMultiplier() {return 12605985483714917081
 template <typename SeedType, typename ResultType>
 struct PcgMixin<PcgAlgorithm::RxsMXs, SeedType, ResultType>
 {
-  static ResultType output(SeedType internal)
+  static ResultType output(SeedType internal) noexcept
   {
     // Constant values
     constexpr SeedType xtypebits = cast<SeedType>(sizeof(ResultType) * 8);
@@ -138,9 +139,10 @@ struct PcgMixin<PcgAlgorithm::RxsMXs, SeedType, ResultType>
   No detailed.
   */
 template <PcgBase Base, PcgAlgorithm Algorithm, typename Seed, typename Result> inline
-auto PcgEngine<Base, Algorithm, Seed, Result>::generate() -> ResultType
+auto PcgEngine<Base, Algorithm, Seed, Result>::generate() noexcept -> ResultType
 {
   const auto random = pcg::PcgMixin<Algorithm, Seed, Result>::output(state_);
+  ZISC_ASSERT(isInClosedBounds(random, min(), max()), "The random is out of range.");
   next();
   return random;
 }
@@ -151,12 +153,14 @@ auto PcgEngine<Base, Algorithm, Seed, Result>::generate() -> ResultType
   */
 template <PcgBase Base, PcgAlgorithm Algorithm, typename Seed, typename Result>
 template <typename Arithmetic> inline
-Arithmetic PcgEngine<Base, Algorithm, Seed, Result>::generate(const Arithmetic lower,
-                                                              const Arithmetic upper)
+Arithmetic PcgEngine<Base, Algorithm, Seed, Result>::generate(
+    const Arithmetic lower,
+    const Arithmetic upper) noexcept
 {
   static_assert(std::is_arithmetic<Arithmetic>::value,
-                "## Arithmetic must be arithmetic type.");
+                "Arithmetic isn't arithmetic type.");
   const auto random = generate();
+  ZISC_ASSERT(isInClosedBounds(random, min(), max()), "The random is out of range.");
   return bound(random, lower, upper);
 }
 
@@ -165,7 +169,7 @@ Arithmetic PcgEngine<Base, Algorithm, Seed, Result>::generate(const Arithmetic l
   No detailed.
   */
 template <PcgBase Base, PcgAlgorithm Algorithm, typename Seed, typename Result> inline
-constexpr  auto PcgEngine<Base, Algorithm, Seed, Result>::max() -> ResultType
+constexpr  auto PcgEngine<Base, Algorithm, Seed, Result>::max() noexcept -> ResultType
 {
   return std::numeric_limits<ResultType>::max();
 }
@@ -175,7 +179,7 @@ constexpr  auto PcgEngine<Base, Algorithm, Seed, Result>::max() -> ResultType
   No detailed.
   */
 template <PcgBase Base, PcgAlgorithm Algorithm, typename Seed, typename Result> inline
-constexpr auto PcgEngine<Base, Algorithm, Seed, Result>::min() -> ResultType
+constexpr auto PcgEngine<Base, Algorithm, Seed, Result>::min() noexcept -> ResultType
 {
   return std::numeric_limits<ResultType>::min();
 }
@@ -185,7 +189,7 @@ constexpr auto PcgEngine<Base, Algorithm, Seed, Result>::min() -> ResultType
   No detailed.
   */
 template <PcgBase Base, PcgAlgorithm Algorithm, typename Seed, typename Result> inline
-void PcgEngine<Base, Algorithm, Seed, Result>::setSeed(const SeedType seed)
+void PcgEngine<Base, Algorithm, Seed, Result>::setSeed(const SeedType seed) noexcept
 {
   constexpr bool is_lcg = (Base == PcgBase::Lcg);
   state_ = is_lcg ? bump(seed + increment()) : (seed | cast<SeedType>(3U));
@@ -196,7 +200,7 @@ void PcgEngine<Base, Algorithm, Seed, Result>::setSeed(const SeedType seed)
   No detailed.
   */
 template <PcgBase Base, PcgAlgorithm Algorithm, typename Seed, typename Result> inline
-auto PcgEngine<Base, Algorithm, Seed, Result>::bump(const SeedType state) const
+auto PcgEngine<Base, Algorithm, Seed, Result>::bump(const SeedType state) const noexcept
     -> SeedType
 {
   return state * multiplier() + increment();
@@ -208,7 +212,7 @@ template <typename PcgEngine, typename ResultType, typename Integer> inline
 Integer pcgBound(const ResultType random,
                  const Integer lower,
                  const Integer upper,
-                 EnableIfInteger<Integer> = kEnabler)
+                 EnableIfInteger<Integer> = kEnabler) noexcept
 {
   const auto range = cast<ResultType>(upper - lower);
   return cast<Integer>(cast<ResultType>(lower) + random % range);
@@ -218,7 +222,7 @@ template <typename PcgEngine, typename ResultType, typename Float> inline
 Float pcgBound(const ResultType random,
                const Float lower,
                const Float upper,
-               EnableIfFloat<Float> = kEnabler)
+               EnableIfFloat<Float> = kEnabler) noexcept
 {
   constexpr Float epsilon = std::numeric_limits<Float>::epsilon();
   constexpr Float normalizer = (cast<Float>(1.0) - epsilon) / 
@@ -231,29 +235,29 @@ Float pcgBound(const ResultType random,
 
 namespace pcg {
 
-template <typename Type> constexpr Type increment();
-template <> constexpr uint8 increment() {return 77U;}
-template <> constexpr uint16 increment() {return 47989U;}
-template <> constexpr uint32 increment() {return 2891336453U;}
-template <> constexpr uint64 increment() {return 1442695040888963407ULL;}
+template <typename Type> constexpr Type increment() noexcept;
+template <> constexpr uint8 increment() noexcept {return 77U;}
+template <> constexpr uint16 increment() noexcept {return 47989U;}
+template <> constexpr uint32 increment() noexcept {return 2891336453U;}
+template <> constexpr uint64 increment() noexcept {return 1442695040888963407ULL;}
 
-template <typename Type> constexpr Type multiplier();
-template <> constexpr uint8 multiplier() {return 141U;}
-template <> constexpr uint16 multiplier() {return 12829U;}
-template <> constexpr uint32 multiplier() {return 747796405U;}
-template <> constexpr uint64 multiplier() {return 6364136223846793005ULL;}
+template <typename Type> constexpr Type multiplier() noexcept;
+template <> constexpr uint8 multiplier() noexcept {return 141U;}
+template <> constexpr uint16 multiplier() noexcept {return 12829U;}
+template <> constexpr uint32 multiplier() noexcept {return 747796405U;}
+template <> constexpr uint64 multiplier() noexcept {return 6364136223846793005ULL;}
 
 } // namespace pcg
 
 template <PcgBase Base, PcgAlgorithm Algorithm, typename Seed, typename Result> inline
-constexpr auto PcgEngine<Base, Algorithm, Seed, Result>::increment() -> SeedType
+constexpr auto PcgEngine<Base, Algorithm, Seed, Result>::increment() noexcept -> SeedType
 {
   constexpr bool is_mcg = (Base == PcgBase::Mcg);
   return is_mcg ? 0 : pcg::increment<SeedType>();
 }
 
 template <PcgBase Base, PcgAlgorithm Algorithm, typename Seed, typename Result> inline
-constexpr auto PcgEngine<Base, Algorithm, Seed, Result>::multiplier() -> SeedType
+constexpr auto PcgEngine<Base, Algorithm, Seed, Result>::multiplier() noexcept -> SeedType
 {
   return pcg::multiplier<SeedType>();
 }
@@ -266,7 +270,7 @@ template <PcgBase Base, PcgAlgorithm Algorithm, typename Seed, typename Result>
 template <typename Type> inline
 Type PcgEngine<Base, Algorithm, Seed, Result>::bound(const ResultType random,
                                                      const Type lower,
-                                                     const Type upper) const
+                                                     const Type upper) const noexcept
 {
   return zisc_pcg_engine::pcgBound<PcgEngine>(random, lower, upper);
 }
@@ -276,11 +280,11 @@ Type PcgEngine<Base, Algorithm, Seed, Result>::bound(const ResultType random,
   No detailed.
   */
 template <PcgBase Base, PcgAlgorithm Algorithm, typename Seed, typename Result> inline
-void PcgEngine<Base, Algorithm, Seed, Result>::next()
+void PcgEngine<Base, Algorithm, Seed, Result>::next() noexcept
 {
   state_ = bump(state_);
 }
 
 } // namespace zisc
 
-#endif // _ZISC_PCG_ENGINE_INL_HPP_
+#endif // ZISC_PCG_ENGINE_INL_HPP

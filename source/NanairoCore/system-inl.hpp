@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SYSTEM_INL_HPP_
-#define _NANAIRO_SYSTEM_INL_HPP_
+#ifndef NANAIRO_SYSTEM_INL_HPP
+#define NANAIRO_SYSTEM_INL_HPP
 
 #include "system.hpp"
 // Standard C++ library
@@ -28,7 +28,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-MemoryPool& System::globalMemoryPool()
+MemoryPool& System::globalMemoryPool() noexcept
 {
   return memory_pool_list_[0];
 }
@@ -38,7 +38,7 @@ MemoryPool& System::globalMemoryPool()
   No detailed.
   */
 inline
-Sampler& System::globalSampler()
+Sampler& System::globalSampler() noexcept
 {
   return sampler_list_[0];
 }
@@ -48,7 +48,7 @@ Sampler& System::globalSampler()
   No detailed.
   */
 inline
-uint System::imageHeightResolution() const
+uint System::imageHeightResolution() const noexcept
 {
   return image_height_resolution_;
 }
@@ -58,7 +58,7 @@ uint System::imageHeightResolution() const
   No detailed.
   */
 inline
-uint System::imageWidthResolution() const
+uint System::imageWidthResolution() const noexcept
 {
   return image_width_resolution_;
 }
@@ -68,7 +68,7 @@ uint System::imageWidthResolution() const
   No detailed.
   */
 inline
-zisc::ThreadPool& System::threadPool()
+zisc::ThreadPool& System::threadPool() noexcept
 {
   return *thread_pool_;
 }
@@ -78,7 +78,7 @@ zisc::ThreadPool& System::threadPool()
   No detailed.
   */
 inline
-const zisc::ThreadPool& System::threadPool() const
+const zisc::ThreadPool& System::threadPool() const noexcept
 {
   return *thread_pool_;
 }
@@ -88,7 +88,7 @@ const zisc::ThreadPool& System::threadPool() const
   No detailed.
   */
 inline
-MemoryPool& System::threadMemoryPool(const uint thread_number)
+MemoryPool& System::threadMemoryPool(const uint thread_number) noexcept
 {
   return memory_pool_list_[thread_number + 1];
 }
@@ -98,7 +98,7 @@ MemoryPool& System::threadMemoryPool(const uint thread_number)
   No detailed.
   */
 inline
-Sampler& System::threadSampler(const uint thread_number)
+Sampler& System::threadSampler(const uint thread_number) noexcept
 {
   return sampler_list_[thread_number + 1];
 }
@@ -110,7 +110,7 @@ Sampler& System::threadSampler(const uint thread_number)
   No detailed.
   */
 inline
-uint32 System::colorSpace() const
+uint32 System::colorSpace() const noexcept
 {
   return color_space_;
 }
@@ -120,7 +120,7 @@ uint32 System::colorSpace() const
   No detailed.
   */
 inline
-Float System::gamma() const
+Float System::gamma() const noexcept
 {
   return gamma_;
 }
@@ -130,7 +130,7 @@ Float System::gamma() const
   No detailed.
   */
 inline
-bool System::isRgbRenderingMode() const
+bool System::isRgbRenderingMode() const noexcept
 {
   return is_rgb_rendering_mode_;
 }
@@ -140,7 +140,7 @@ bool System::isRgbRenderingMode() const
   No detailed.
   */
 inline
-const RgbColorMatchingFunction& System::rgbColorMatchingFunction() const
+const RgbColorMatchingFunction& System::rgbColorMatchingFunction() const noexcept
 {
   return *rgb_color_matching_function_;
 }
@@ -150,11 +150,11 @@ const RgbColorMatchingFunction& System::rgbColorMatchingFunction() const
   No detailed.
   */
 inline
-const XyzColorMatchingFunction& System::xyzColorMatchingFunction() const
+const XyzColorMatchingFunction& System::xyzColorMatchingFunction() const noexcept
 {
   return *xyz_color_matching_function_;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_SYSTEM_INL_HPP_
+#endif // NANAIRO_SYSTEM_INL_HPP

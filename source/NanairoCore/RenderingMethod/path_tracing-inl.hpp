@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_PATH_TRACING_INL_HPP_
-#define _NANAIRO_PATH_TRACING_INL_HPP_
+#ifndef NANAIRO_PATH_TRACING_INL_HPP
+#define NANAIRO_PATH_TRACING_INL_HPP
 
 #include "path_tracing.hpp"
 // Standard C++ library
@@ -59,7 +59,7 @@ namespace nanairo {
   No detailed.
   */
 template <uint kSampleSize> inline
-PathTracing<kSampleSize>::PathTracing(const SceneSettings& settings) :
+PathTracing<kSampleSize>::PathTracing(const SceneSettings& settings) noexcept :
     RenderingMethod<kSampleSize>(settings)
 {
   initialize(settings);
@@ -72,7 +72,7 @@ PathTracing<kSampleSize>::PathTracing(const SceneSettings& settings) :
 template <uint kSampleSize>
 void PathTracing<kSampleSize>::render(System& system,
                                       Scene& scene,
-                                      const Wavelengths& sampled_wavelengths)
+                                      const Wavelengths& sampled_wavelengths) noexcept
 {
   traceCameraPath(system, scene, sampled_wavelengths);
 }
@@ -90,7 +90,7 @@ void PathTracing<kSampleSize>::evaluateExplicitConnection(
     const Spectra& ray_weight,
     Sampler& sampler,
     MemoryPool& memory_pool,
-    Spectra* contribution) const
+    Spectra* contribution) const noexcept
 {
 #ifdef NANAIRO_PATH_TRACING_IMPLICIT_CONNECTION_ONLY
   return;
@@ -193,7 +193,7 @@ void PathTracing<kSampleSize>::evaluateImplicitConnection(
     const IntersectionInfo& intersection,
     const Spectra& ray_weight,
     MemoryPool& memory_pool,
-    Spectra* contribution) const
+    Spectra* contribution) const noexcept
 {
 #ifdef NANAIRO_PATH_TRACING_EXPLICIT_CONNECTION_ONLY
   return;
@@ -249,7 +249,7 @@ Ray PathTracing<kSampleSize>::generateRay(
     Sampler& sampler,
     MemoryPool& memory_pool,
     Spectra* weight,
-    Float* inverse_direction_pdf) const
+    Float* inverse_direction_pdf) const noexcept
 {
   const auto& wavelengths = weight->wavelengths();
   // Sample a ray origin
@@ -271,7 +271,7 @@ Ray PathTracing<kSampleSize>::generateRay(
   No detailed.
   */
 template <uint kSampleSize> inline
-void PathTracing<kSampleSize>::initialize(const SceneSettings& /* settings */)
+void PathTracing<kSampleSize>::initialize(const SceneSettings& /* settings */) noexcept
 {
 }
 
@@ -282,7 +282,7 @@ void PathTracing<kSampleSize>::initialize(const SceneSettings& /* settings */)
 template <uint kSampleSize> inline
 Float PathTracing<kSampleSize>::calcMisWeight(
     const Float pdf1, 
-    const Float inverse_pdf2) const
+    const Float inverse_pdf2) const noexcept
 {
   const Float p = zisc::power<kMisHeuristicBeta>(pdf1 * inverse_pdf2);
   return 1.0 / (p + 1.0);
@@ -296,7 +296,7 @@ template <uint kSampleSize> inline
 void PathTracing<kSampleSize>::traceCameraPath(
     System& system, 
     Scene& scene,
-    const Wavelengths& sampled_wavelengths)
+    const Wavelengths& sampled_wavelengths) noexcept
 {
   auto& sampler = system.globalSampler();
 
@@ -309,8 +309,8 @@ void PathTracing<kSampleSize>::traceCameraPath(
   [this, &system, &scene, &sampled_wavelengths]
   (const int thread_id, const uint y)
   {
-    const auto& camera = scene.camera();
-    for (uint x = 0; x < camera.widthResolution(); ++x) {
+    const auto& c = scene.camera();
+    for (uint x = 0; x < c.widthResolution(); ++x) {
       traceCameraPath(system, scene, sampled_wavelengths, thread_id, x, y);
     }
   }};
@@ -333,7 +333,7 @@ void PathTracing<kSampleSize>::traceCameraPath(
     const Wavelengths& sampled_wavelengths,
     const int thread_id,
     const uint x,
-    const uint y)
+    const uint y) noexcept
 {
   // System
   auto& sampler = system.threadSampler(thread_id);
@@ -413,4 +413,4 @@ void PathTracing<kSampleSize>::traceCameraPath(
 
 } // namespace nanairo
 
-#endif // _NANAIRO_PATH_TRACING_INL_HPP_
+#endif // NANAIRO_PATH_TRACING_INL_HPP

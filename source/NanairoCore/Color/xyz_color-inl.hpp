@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _REFLECT_XYZ_COLOR_INL_HPP_
-#define _REFLECT_XYZ_COLOR_INL_HPP_
+#ifndef REFLECT_XYZ_COLOR_INL_HPP
+#define REFLECT_XYZ_COLOR_INL_HPP
 
 #include "xyz_color.hpp"
 // Zisc
@@ -25,7 +25,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-XyzColor::XyzColor()
+XyzColor::XyzColor() noexcept
 {
 }
 
@@ -34,7 +34,7 @@ XyzColor::XyzColor()
   No detailed.
   */
 inline
-XyzColor::XyzColor(const Float x, const Float y, const Float z) :
+XyzColor::XyzColor(const Float x, const Float y, const Float z) noexcept :
     Color(x, y, z)
 {
 }
@@ -44,7 +44,7 @@ XyzColor::XyzColor(const Float x, const Float y, const Float z) :
   No detailed.
   */
 inline
-XyzColor::XyzColor(const zisc::ArithmeticArray<Float, 3>& color) :
+XyzColor::XyzColor(const zisc::ArithmeticArray<Float, 3>& color) noexcept :
     Color(color)
 {
 }
@@ -54,7 +54,7 @@ XyzColor::XyzColor(const zisc::ArithmeticArray<Float, 3>& color) :
   No detailed.
   */
 inline
-Float& XyzColor::x()
+Float& XyzColor::x() noexcept
 {
   return color_[0];
 }
@@ -64,7 +64,7 @@ Float& XyzColor::x()
   No detailed.
   */
 inline
-const Float& XyzColor::x() const
+const Float& XyzColor::x() const noexcept
 {
   return color_[0];
 }
@@ -74,7 +74,7 @@ const Float& XyzColor::x() const
   No detailed.
   */
 inline
-Float& XyzColor::y()
+Float& XyzColor::y() noexcept
 {
   return color_[1];
 }
@@ -84,7 +84,7 @@ Float& XyzColor::y()
   No detailed.
   */
 inline
-const Float& XyzColor::y() const
+const Float& XyzColor::y() const noexcept
 {
   return color_[1];
 }
@@ -94,7 +94,7 @@ const Float& XyzColor::y() const
   No detailed.
   */
 inline
-Float& XyzColor::z()
+Float& XyzColor::z() noexcept
 {
   return color_[2];
 }
@@ -104,11 +104,11 @@ Float& XyzColor::z()
   No detailed.
   */
 inline
-const Float& XyzColor::z() const
+const Float& XyzColor::z() const noexcept
 {
   return color_[2];
 }
 
 } // namespace nanairo
 
-#endif // _REFLECT_XYZ_COLOR_INL_HPP_
+#endif // REFLECT_XYZ_COLOR_INL_HPP

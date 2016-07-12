@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SENSOR_TEST_HPP_
-#define _NANAIRO_SENSOR_TEST_HPP_
+#ifndef NANAIRO_SENSOR_TEST_HPP
+#define NANAIRO_SENSOR_TEST_HPP
 
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -40,4 +40,4 @@ void testSensorImportanceSampling(
     nanairo::MemoryPool& memory_pool,
     const char* sensor_name);
 
-#endif // _NANAIRO_SENSOR_TEST_HPP_
+#endif // NANAIRO_SENSOR_TEST_HPP

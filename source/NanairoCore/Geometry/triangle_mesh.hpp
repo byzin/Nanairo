@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_TRIANGLE_MESH_HPP_
-#define _NANAIRO_TRIANGLE_MESH_HPP_
+#ifndef NANAIRO_TRIANGLE_MESH_HPP
+#define NANAIRO_TRIANGLE_MESH_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -53,10 +53,10 @@ class TriangleMesh : public Geometry
   //! Set vertex texture coordinate
   void setTextureCoordinate(const Point2& texture_coordinate0,
                             const Point2& texture_coordinate1,
-                            const Point2& texture_coordinate2);
+                            const Point2& texture_coordinate2) noexcept;
 
   //! Calculate the texture coordinate using Barycentric coordinate system
-  Point2 textureCoordinate(const Float* barycentric) const;
+  Point2 textureCoordinate(const Float* barycentric) const noexcept;
 
  private:
   Point2 texture_coordinate_[3];
@@ -67,11 +67,11 @@ bool calculateBarycentricCoordinate(const Ray& ray,
                                     const Point3& vertex,
                                     const Vector3* edge,
                                     Float* barycentric,
-                                    Float* t);
+                                    Float* t) noexcept;
 
 //! Make a polygon
 std::vector<UniquePointer<Geometry>> makeMeshes(const SceneSettings& settings,
-                                                const QString& prefix);
+                                                const QString& prefix) noexcept;
 
 //! \} Core 
 
@@ -79,4 +79,4 @@ std::vector<UniquePointer<Geometry>> makeMeshes(const SceneSettings& settings,
 
 #include "triangle_mesh-inl.hpp"
 
-#endif // _NANAIRO_TRIANGLE_MESH_HPP_
+#endif // NANAIRO_TRIANGLE_MESH_HPP

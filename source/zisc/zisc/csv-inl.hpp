@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_CSV_INL_HPP_
-#define _ZISC_CSV_INL_HPP_
+#ifndef ZISC_CSV_INL_HPP
+#define ZISC_CSV_INL_HPP
 
 #include "csv.hpp"
 // Standard C++ library
@@ -31,37 +31,37 @@ namespace zisc {
 namespace zisc_csv {
 
 template <typename Type> inline
-constexpr auto getValuePattern(EnableIfBoolean<Type> = kEnabler)
+constexpr auto getValuePattern(EnableIfBoolean<Type> = kEnabler) noexcept
 {
   return getBooleanPattern();
 }
 
 template <typename Type> inline
-constexpr auto getValuePattern(EnableIfFloat<Type> = kEnabler)
+constexpr auto getValuePattern(EnableIfFloat<Type> = kEnabler) noexcept
 {
   return getFloatPattern();
 }
 
 template <typename Type> inline
-constexpr auto getValuePattern(EnableIfInteger<Type> = kEnabler)
+constexpr auto getValuePattern(EnableIfInteger<Type> = kEnabler) noexcept
 {
   return getIntegerPattern();
 }
 
 template <typename Type> inline
-constexpr auto getValuePattern(EnableIfSame<std::string, Type> = kEnabler)
+constexpr auto getValuePattern(EnableIfSame<std::string, Type> = kEnabler) noexcept
 {
   return getStringPattern();
 }
 
 template <typename Type> inline
-constexpr auto getCsvPattern()
+constexpr auto getCsvPattern() noexcept
 {
   return R"(\s*()" + getValuePattern<Type>() + R"()\s*)";
 }
 
 template <typename Type1, typename Type2, typename ...Types> inline
-constexpr auto getCsvPattern()
+constexpr auto getCsvPattern() noexcept
 {
   return getCsvPattern<Type1>() + "," + getCsvPattern<Type2, Types...>();
 }
@@ -75,7 +75,7 @@ constexpr auto getCsvPattern()
   No detailed.
   */
 template <typename Type, typename ...Types> inline
-Csv<Type, Types...>::Csv() : 
+Csv<Type, Types...>::Csv() noexcept : 
     csv_pattern_{zisc_csv::getCsvPattern<Type, Types...>().toCString(), 
                  std::regex_constants::optimize | std::regex_constants::ECMAScript}
 {
@@ -86,10 +86,11 @@ Csv<Type, Types...>::Csv() :
  No detailed.
  */
 template <typename Type, typename ...Types> inline
-void Csv<Type, Types...>::append(const std::string& csv)
+void Csv<Type, Types...>::append(const std::string& csv,
+                                 std::list<std::string>* message_list) noexcept
 {
   std::istringstream csv_text{csv};
-  append(csv_text);
+  append(csv_text, message_list);
 }
 
 /*!
@@ -98,7 +99,7 @@ void Csv<Type, Types...>::append(const std::string& csv)
  */
 template <typename Type, typename ...Types> inline
 void Csv<Type, Types...>::append(std::istream& csv,
-                                 std::list<std::string>* message_list)
+                                 std::list<std::string>* message_list) noexcept
 {
   for (std::string line; std::getline(csv, line);) {
     auto&& record = parseCsvLine(line, message_list);
@@ -111,7 +112,7 @@ void Csv<Type, Types...>::append(std::istream& csv,
   No detailed.
   */
 template <typename Type, typename ...Types> inline
-void Csv<Type, Types...>::clear()
+void Csv<Type, Types...>::clear() noexcept
 {
   data_.clear();
 }
@@ -121,7 +122,7 @@ void Csv<Type, Types...>::clear()
   No detailed.
   */
 template <typename Type, typename ...Types> inline
-constexpr uint Csv<Type, Types...>::columnSize()
+constexpr uint Csv<Type, Types...>::columnSize() noexcept
 {
   constexpr uint size = 1 + sizeof...(Types);
   return size;
@@ -132,10 +133,11 @@ constexpr uint Csv<Type, Types...>::columnSize()
  No detailed.
  */
 template <typename Type, typename ...Types> inline
-auto Csv<Type, Types...>::record(const uint row) const -> const RecordType&
+auto Csv<Type, Types...>::record(const uint row) const noexcept -> const RecordType&
 {
-  using DiffType = typename std::list<RecordType>::difference_type;
-  auto&& record = std::next(data_.begin(), cast<DiffType>(row));
+  ZISC_ASSERT(row < rowSize(), "The row is out of range.");
+  auto record = data_.begin();
+  std::advance(record, row);
   return *record;
 }
 
@@ -144,9 +146,9 @@ auto Csv<Type, Types...>::record(const uint row) const -> const RecordType&
  No detailed.
  */
 template <typename Type, typename ...Types> inline
-uint Csv<Type, Types...>::rowSize() const
+uint Csv<Type, Types...>::rowSize() const noexcept
 {
-  return data_.size();
+  return cast<uint>(data_.size());
 }
 
 /*!
@@ -154,7 +156,7 @@ uint Csv<Type, Types...>::rowSize() const
  No detailed.
  */
 template <typename Type, typename ...Types> template <uint column> inline
-auto Csv<Type, Types...>::get(const uint row) const -> const FieldType<column>&
+auto Csv<Type, Types...>::get(const uint row) const noexcept -> const FieldType<column>&
 {
   const auto& record = this->record(row);
   return std::get<column>(record);
@@ -167,7 +169,7 @@ struct CsvConverter
 {
   using FieldType = typename std::tuple_element<index - 1, RecordType>::type;
   template <typename ...Types>
-  static RecordType toCxx(const std::smatch& results, Types&&... record)
+  static RecordType toCxx(const std::smatch& results, Types&&... record) noexcept
   {
     using Converter = CsvConverter<index - 1, RecordType>;
     FieldType field = toCxxValue<FieldType>(results[index]);
@@ -182,7 +184,7 @@ struct CsvConverter<1, RecordType>
 {
   using FieldType = typename std::tuple_element<0, RecordType>::type;
   template <typename ...Types>
-  static RecordType toCxx(const std::smatch& results, Types&&... record)
+  static RecordType toCxx(const std::smatch& results, Types&&... record) noexcept
   {
     FieldType field = toCxxValue<FieldType>(results[1]);
     return std::make_tuple(std::move(field), std::forward<Types>(record)...);
@@ -196,18 +198,18 @@ struct CsvConverter<1, RecordType>
   No detailed.
   */
 template <typename Type, typename ...Types> inline
-auto Csv<Type, Types...>::parseCsvLine(const std::string& line,
-                                       std::list<std::string>* message_list) const
-    -> RecordType
+auto Csv<Type, Types...>::parseCsvLine(
+    const std::string& line,
+    std::list<std::string>* message_list) const noexcept -> RecordType
 {
   std::smatch results;
-  const auto success = std::regex_match(line, results, csv_pattern_);
-  if ((message_list != nullptr) && !success) {
+  const auto is_success = std::regex_match(line, results, csv_pattern_);
+  if ((message_list != nullptr) && !is_success) {
     std::ostringstream error;
     error << R"(Parsing ")" << line << R"(" failed.)" << std::endl;
     message_list->emplace_back(error.str());
   }
-  if (success) {
+  if (is_success) {
     constexpr uint size = columnSize();
     return zisc_csv::CsvConverter<size, RecordType>::toCxx(results);
   }
@@ -218,4 +220,4 @@ auto Csv<Type, Types...>::parseCsvLine(const std::string& line,
 
 } // namespace zisc
 
-#endif // _ZISC_CSV_INL_HPP_
+#endif // ZISC_CSV_INL_HPP

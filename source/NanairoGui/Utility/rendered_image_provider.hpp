@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_RENDERED_IMAGE_PROVIDER_HPP_
-#define _NANAIRO_RENDERED_IMAGE_PROVIDER_HPP_
+#ifndef NANAIRO_RENDERED_IMAGE_PROVIDER_HPP
+#define NANAIRO_RENDERED_IMAGE_PROVIDER_HPP
 
 // Qt
 #include <QImage>
@@ -31,16 +31,16 @@ class RenderedImageProvider : public QQuickImageProvider
 {
  public:
   //! Initialize image provider
-  RenderedImageProvider();
+  RenderedImageProvider() noexcept;
 
 
   //! Return the rendered image
   QImage requestImage(const QString& id, 
                       QSize* size, 
-                      const QSize& requested_size) override;
+                      const QSize& requested_size) noexcept override;
 
   //! Set image
-  void setImage(const QImage* image);
+  void setImage(const QImage* image) noexcept;
 
  private:
   const QImage* image_;
@@ -52,4 +52,4 @@ class RenderedImageProvider : public QQuickImageProvider
 
 #include "rendered_image_provider-inl.hpp"
 
-#endif // _NANAIRO_RENDERED_IMAGE_PROVIDER_HPP_
+#endif // NANAIRO_RENDERED_IMAGE_PROVIDER_HPP

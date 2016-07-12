@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_YXY_COLOR_HPP_
-#define _NANAIRO_YXY_COLOR_HPP_
+#ifndef NANAIRO_YXY_COLOR_HPP
+#define NANAIRO_YXY_COLOR_HPP
 
 // Zisc
 #include "zisc/arithmetic_array.hpp"
@@ -32,32 +32,32 @@ class YxyColor : public Color<3>
 {
  public:
   //! Create Yxy
-  YxyColor();
+  YxyColor() noexcept;
 
   //! Create Yxy
-  YxyColor(const Float Y, const Float x, const Float y);
+  YxyColor(const Float Y, const Float x, const Float y) noexcept;
 
 
   //! Return the x element reference
-  Float& x();
+  Float& x() noexcept;
 
   //! Return the x element reference
-  const Float& x() const;
+  const Float& x() const noexcept;
 
   //! Return the y element reference
-  Float& y();
+  Float& y() noexcept;
 
   //! Return the y element reference
-  const Float& y() const;
+  const Float& y() const noexcept;
 
   //! Return the Y element reference
-  Float& Y();
+  Float& Y() noexcept;
 
   //! Return the Y element reference
-  const Float& Y() const;
+  const Float& Y() const noexcept;
 
   //! Convert to XYZ
-  XyzColor toXyz() const;
+  XyzColor toXyz() const noexcept;
 };
 
 //! \} Core
@@ -66,4 +66,4 @@ class YxyColor : public Color<3>
 
 #include "yxy_color-inl.hpp"
 
-#endif // _NANAIRO_YXY_COLOR_HPP_
+#endif // NANAIRO_YXY_COLOR_HPP

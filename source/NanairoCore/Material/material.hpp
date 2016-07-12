@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_MATERIAL_HPP_
-#define _NANAIRO_MATERIAL_HPP_
+#ifndef NANAIRO_MATERIAL_HPP
+#define NANAIRO_MATERIAL_HPP
 
 namespace nanairo {
 
@@ -27,17 +27,17 @@ class Material
 {
  public:
   //! Create a material
-  Material(const SurfaceModel* surface, const EmitterModel* emitter);
+  Material(const SurfaceModel* surface, const EmitterModel* emitter) noexcept;
 
 
   //! Return the emitter model
-  const EmitterModel& emitter() const;
+  const EmitterModel& emitter() const noexcept;
 
   //! Return the surface scattering model
-  const SurfaceModel& surface() const;
+  const SurfaceModel& surface() const noexcept;
 
   //! Check if this material is light source
-  bool isLightSource() const;
+  bool isLightSource() const noexcept;
 
  private:
   const SurfaceModel* surface_;
@@ -50,4 +50,4 @@ class Material
 
 #include "material-inl.hpp"
 
-#endif // _NANAIRO_MATERIAL_HPP_
+#endif // NANAIRO_MATERIAL_HPP

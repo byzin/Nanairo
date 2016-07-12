@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_INTERSECTION_INFO_INL_HPP_
-#define _NANAIRO_INTERSECTION_INFO_INL_HPP_
+#ifndef NANAIRO_INTERSECTION_INFO_INL_HPP
+#define NANAIRO_INTERSECTION_INFO_INL_HPP
 
 #include "intersection_info.hpp"
 // Nanairo
@@ -22,7 +22,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-IntersectionInfo::IntersectionInfo() :
+IntersectionInfo::IntersectionInfo() noexcept :
     object_{nullptr},
     is_reverse_face_{false}
 {
@@ -36,7 +36,7 @@ inline
 IntersectionInfo::IntersectionInfo(const Point3& point,
                                    const Vector3& normal,
                                    const Object* object,
-                                   const bool is_reverse_face) :
+                                   const bool is_reverse_face) noexcept :
     point_{point},
     normal_{is_reverse_face ? -normal : normal},
     object_{object},
@@ -49,7 +49,7 @@ IntersectionInfo::IntersectionInfo(const Point3& point,
   No detailed.
   */
 inline
-bool IntersectionInfo::isIntersected() const
+bool IntersectionInfo::isIntersected() const noexcept
 {
   return object_ != nullptr;
 }
@@ -59,7 +59,7 @@ bool IntersectionInfo::isIntersected() const
   No detailed.
   */
 inline
-bool IntersectionInfo::isReverseFace() const
+bool IntersectionInfo::isReverseFace() const noexcept
 {
   return is_reverse_face_;
 }
@@ -69,7 +69,7 @@ bool IntersectionInfo::isReverseFace() const
   No detailed.
   */
 inline
-const Vector3& IntersectionInfo::normal() const
+const Vector3& IntersectionInfo::normal() const noexcept
 {
   return normal_;
 }
@@ -79,7 +79,7 @@ const Vector3& IntersectionInfo::normal() const
   No detailed.
   */
 inline
-const Object* IntersectionInfo::object() const
+const Object* IntersectionInfo::object() const noexcept
 {
   return object_;
 }
@@ -89,7 +89,7 @@ const Object* IntersectionInfo::object() const
   No detailed.
   */
 inline
-const Point3& IntersectionInfo::point() const
+const Point3& IntersectionInfo::point() const noexcept
 {
   return point_;
 }
@@ -99,7 +99,7 @@ const Point3& IntersectionInfo::point() const
   No detailed.
   */
 inline
-void IntersectionInfo::setReverseFace(const bool is_reverse_face)
+void IntersectionInfo::setReverseFace(const bool is_reverse_face) noexcept
 {
   is_reverse_face_ = is_reverse_face;
 }
@@ -109,7 +109,7 @@ void IntersectionInfo::setReverseFace(const bool is_reverse_face)
   No detailed.
   */
 inline
-void IntersectionInfo::setNormal(const Vector3& normal)
+void IntersectionInfo::setNormal(const Vector3& normal) noexcept
 {
   normal_ = is_reverse_face_ ? -normal : normal;
 }
@@ -119,7 +119,7 @@ void IntersectionInfo::setNormal(const Vector3& normal)
   No detailed.
   */
 inline
-void IntersectionInfo::setObject(const Object* object)
+void IntersectionInfo::setObject(const Object* object) noexcept
 {
   object_ = object;
 }
@@ -129,7 +129,7 @@ void IntersectionInfo::setObject(const Object* object)
   No detailed.
   */
 inline
-void IntersectionInfo::setPoint(const Point3& point)
+void IntersectionInfo::setPoint(const Point3& point) noexcept
 {
   point_ = point;
 }
@@ -139,7 +139,7 @@ void IntersectionInfo::setPoint(const Point3& point)
   No detailed.
   */
 inline
-void IntersectionInfo::setTextureCoordinate(const Point2& texture_coordinate)
+void IntersectionInfo::setTextureCoordinate(const Point2& texture_coordinate) noexcept
 {
   texture_coordinate_ = texture_coordinate;
 }
@@ -149,11 +149,11 @@ void IntersectionInfo::setTextureCoordinate(const Point2& texture_coordinate)
   No detailed.
   */
 inline
-const Point2& IntersectionInfo::textureCoordinate() const
+const Point2& IntersectionInfo::textureCoordinate() const noexcept
 {
   return texture_coordinate_;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_INTERSECTION_INFO_INL_HPP_
+#endif // NANAIRO_INTERSECTION_INFO_INL_HPP

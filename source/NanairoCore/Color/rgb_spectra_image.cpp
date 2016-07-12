@@ -34,7 +34,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-RgbSpectraImage::RgbSpectraImage(const uint width, const uint height) :
+RgbSpectraImage::RgbSpectraImage(const uint width, const uint height) noexcept :
     SpectraImageInterface(width, height)
 {
   initialize();
@@ -44,7 +44,7 @@ RgbSpectraImage::RgbSpectraImage(const uint width, const uint height) :
   \details
   No detailed.
   */
-std::size_t RgbSpectraImage::bufferMemorySize() const
+std::size_t RgbSpectraImage::bufferMemorySize() const noexcept
 {
   constexpr std::size_t pixel_memory_size = sizeof(RgbColor);
   const std::size_t pixels = widthResolution() * heightResolution();
@@ -56,7 +56,7 @@ std::size_t RgbSpectraImage::bufferMemorySize() const
   \details
   No detailed.
   */
-void RgbSpectraImage::clear()
+void RgbSpectraImage::clear() noexcept
 {
   for (auto& pixel : buffer_) {
     pixel[0] = 0.0;
@@ -75,7 +75,7 @@ void RgbSpectraImage::clear()
   No detailed.
   */
 void RgbSpectraImage::save(const quint64 /* cycle */, 
-                           const QString& /* file_path */) const
+                           const QString& /* file_path */) const noexcept
 {
 }
 
@@ -85,7 +85,7 @@ void RgbSpectraImage::save(const quint64 /* cycle */,
   */
 void RgbSpectraImage::toHdrImage(System& system,
                                  const quint64 cycle,
-                                 HdrImage* hdr_image) const
+                                 HdrImage* hdr_image) const noexcept
 {
   using zisc::cast;
 
@@ -112,7 +112,7 @@ void RgbSpectraImage::toHdrImage(System& system,
   \details
   No detailed.
   */
-SpectraImageType RgbSpectraImage::type() const
+SpectraImageType RgbSpectraImage::type() const noexcept
 {
   return SpectraImageType::Rgb;
 }
@@ -121,7 +121,7 @@ SpectraImageType RgbSpectraImage::type() const
   \details
   No detailed.
   */
-void RgbSpectraImage::initialize()
+void RgbSpectraImage::initialize() noexcept
 {
   const uint buffer_size = widthResolution() * heightResolution();
   buffer_.resize(buffer_size);

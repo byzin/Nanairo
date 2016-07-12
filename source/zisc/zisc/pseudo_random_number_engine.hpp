@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_PSEUDO_RANDOM_NUMBER_ENGINE_HPP_
-#define _ZISC_PSEUDO_RANDOM_NUMBER_ENGINE_HPP_
+#ifndef ZISC_PSEUDO_RANDOM_NUMBER_ENGINE_HPP
+#define ZISC_PSEUDO_RANDOM_NUMBER_ENGINE_HPP
 
 // Standard C++ library
 #include <cstdint>
@@ -30,29 +30,29 @@ class PseudoRandomNumberEngine
 
 
   //! Generate a random number
-  ResultType operator()();
+  ResultType operator()() noexcept;
 
   //! Generate a random number x satisfying lower <= x < upper 
   template <typename Arithmetic>
-  Arithmetic operator()(const Arithmetic lower, const Arithmetic upper);
+  Arithmetic operator()(const Arithmetic lower, const Arithmetic upper) noexcept;
 
 
   //! Generate a random number
-  ResultType generate();
+  ResultType generate() noexcept;
 
   //! Generate a random number x satisfying lower <= x < upper
   template <typename Arithmetic>
-  Arithmetic generate(const Arithmetic lower, const Arithmetic upper);
+  Arithmetic generate(const Arithmetic lower, const Arithmetic upper) noexcept;
 
   //! Set random seed
-  void setSeed(const SeedType seed);
+  void setSeed(const SeedType seed) noexcept;
 
  protected:
   //! Initialize the PRN
-  PseudoRandomNumberEngine();
+  PseudoRandomNumberEngine() noexcept;
 
   //! Copy a PRN
-  PseudoRandomNumberEngine(const PseudoRandomNumberEngine&);
+  PseudoRandomNumberEngine(const PseudoRandomNumberEngine&) noexcept;
 
   PseudoRandomNumberEngine& operator=(const PseudoRandomNumberEngine&) = delete;
 };
@@ -66,4 +66,4 @@ using RandomNumberEngine = PseudoRandomNumberEngine<GeneratorClass,
 
 #include "pseudo_random_number_engine-inl.hpp"
 
-#endif // _ZISC_PSEUDO_RANDOM_NUMBER_ENGINE_HPP_
+#endif // ZISC_PSEUDO_RANDOM_NUMBER_ENGINE_HPP

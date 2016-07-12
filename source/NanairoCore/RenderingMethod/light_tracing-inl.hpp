@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_LIGHT_TRACING_INL_HPP_
-#define _NANAIRO_LIGHT_TRACING_INL_HPP_
+#ifndef NANAIRO_LIGHT_TRACING_INL_HPP
+#define NANAIRO_LIGHT_TRACING_INL_HPP
 
 #include "light_tracing.hpp"
 // Standard C++ library
@@ -64,7 +64,7 @@ namespace nanairo {
   */
 template <uint kSampleSize> inline
 LightTracing<kSampleSize>::LightTracing(const System& system,
-                                        const SceneSettings& settings) :
+                                        const SceneSettings& settings) noexcept :
     RenderingMethod<kSampleSize>(settings)
 {
   initialize(system, settings);
@@ -77,7 +77,7 @@ LightTracing<kSampleSize>::LightTracing(const System& system,
 template <uint kSampleSize>
 void LightTracing<kSampleSize>::render(System& system,
                                        Scene& scene,
-                                       const Wavelengths& sampled_wavelengths)
+                                       const Wavelengths& sampled_wavelengths) noexcept
 {
   traceLightPath(system, scene, sampled_wavelengths);
 }
@@ -95,7 +95,7 @@ void LightTracing<kSampleSize>::evaluateExplicitConnection(
     const IntersectionInfo& intersection,
     const Vector3* vin,
     const Spectra& ray_weight,
-    MemoryPool& memory_pool)
+    MemoryPool& memory_pool) noexcept
 {
   if (bxdf->type() == ShaderType::Specular)
     return;
@@ -168,7 +168,7 @@ Ray LightTracing<kSampleSize>::generateRay(const World& world,
                                            const int thread_id,
                                            Sampler& sampler,
                                            MemoryPool& memory_pool,
-                                           Spectra* weight)
+                                           Spectra* weight) noexcept
 {
   const auto& wavelengths = weight->wavelengths();
   // Sample a light point
@@ -216,7 +216,7 @@ Ray LightTracing<kSampleSize>::generateRay(const World& world,
   */
 template <uint kSampleSize>
 void LightTracing<kSampleSize>::addContribution(const System& system,
-                                                CameraModel& camera)
+                                                CameraModel& camera) noexcept
 {
   const auto& thread_pool = system.threadPool();
   uint index = 0;
@@ -240,7 +240,7 @@ void LightTracing<kSampleSize>::addLightContribution(const CameraModel& camera,
                                                      const int thread_id,
                                                      const uint x,
                                                      const uint y,
-                                                     const Spectra& contribution)
+                                                     const Spectra& contribution) noexcept 
 {
   using zisc::cast;
   const uint index = (cast<uint>(thread_id) * camera.heightResolution() + y) * 
@@ -259,7 +259,7 @@ void LightTracing<kSampleSize>::addLightContribution(const CameraModel& camera,
   No detailed.
   */
 template <uint kSampleSize> inline
-void LightTracing<kSampleSize>::clearLightContribution()
+void LightTracing<kSampleSize>::clearLightContribution() noexcept
 {
   for (auto& flag : light_contribution_flag_)
     flag.reset();
@@ -270,7 +270,7 @@ void LightTracing<kSampleSize>::clearLightContribution()
   No detailed.
   */
 template <uint kSampleSize> inline
-bool LightTracing<kSampleSize>::hasLightContribution(const uint index) const
+bool LightTracing<kSampleSize>::hasLightContribution(const uint index) const noexcept
 {
   const uint i = index / flagBitsetSize();
   const uint position = index - (i * flagBitsetSize());
@@ -283,7 +283,7 @@ bool LightTracing<kSampleSize>::hasLightContribution(const uint index) const
   */
 template <uint kSampleSize>
 void LightTracing<kSampleSize>::initialize(const System& system,
-                                           const SceneSettings& /* settings */)
+                                           const SceneSettings& /* settings */) noexcept
 {
   using zisc::cast;
 
@@ -303,8 +303,8 @@ void LightTracing<kSampleSize>::initialize(const System& system,
   ZISC_ASSERT(0 < light_contribution_buffer_.size(), "Invalid buffer size.");
 
   const uint flag_size = ((light_contribution_buffer_.size() % flagBitsetSize()) == 0)
-      ? light_contribution_buffer_.size() / flagBitsetSize()
-      : light_contribution_buffer_.size() / flagBitsetSize() + 1;
+      ? cast<uint>(light_contribution_buffer_.size()) / flagBitsetSize()
+      : cast<uint>(light_contribution_buffer_.size()) / flagBitsetSize() + 1;
   light_contribution_flag_.resize(flag_size);
   ZISC_ASSERT(0 < light_contribution_flag_.size(), "Invalid flag size.");
   ZISC_ASSERT(sizeof(light_contribution_flag_[0]) == 8, "Invalid flag data size.");
@@ -315,7 +315,7 @@ void LightTracing<kSampleSize>::initialize(const System& system,
   No detailed.
   */
 template <uint kSampleSize> inline
-uint LightTracing<kSampleSize>::numOfThreadRays() const
+uint LightTracing<kSampleSize>::numOfThreadRays() const noexcept
 {
   return num_of_thread_rays_;
 }
@@ -326,7 +326,7 @@ uint LightTracing<kSampleSize>::numOfThreadRays() const
   */
 template <uint kSampleSize> inline
 void LightTracing<kSampleSize>::setLightContributionFlag(const uint index,
-                                                         const bool flag)
+                                                         const bool flag) noexcept
 {
   const uint i = index / flagBitsetSize();
   const uint position = index - (i * flagBitsetSize());
@@ -340,7 +340,7 @@ void LightTracing<kSampleSize>::setLightContributionFlag(const uint index,
 template <uint kSampleSize>
 void LightTracing<kSampleSize>::traceLightPath(System& system,
                                                Scene& scene,
-                                               const Wavelengths& sampled_wavelengths)
+                                               const Wavelengths& sampled_wavelengths) noexcept 
 {
   auto& sampler = system.globalSampler();
 
@@ -375,7 +375,7 @@ template <uint kSampleSize>
 void LightTracing<kSampleSize>::traceLightPath(System& system,
                                                Scene& scene,
                                                const Wavelengths& sampled_wavelengths,
-                                               const int thread_id)
+                                               const int thread_id) noexcept
 {
   // System
   auto& sampler = system.threadSampler(thread_id);

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_BVH_TREE_NODE_HPP_
-#define _NANAIRO_BVH_TREE_NODE_HPP_
+#ifndef NANAIRO_BVH_TREE_NODE_HPP
+#define NANAIRO_BVH_TREE_NODE_HPP
 
 // Standard C++ library
 #include <limits>
@@ -30,35 +30,35 @@ class BvhTreeNode
 {
  public:
   //! Create a empty node
-  BvhTreeNode();
+  BvhTreeNode() noexcept;
 
 
   //! Return the bounding box
-  const Aabb& boundingBox() const;
+  const Aabb& boundingBox() const noexcept;
 
   //! Check if the node is leaf node
-  bool isLeafNode() const;
+  bool isLeafNode() const noexcept;
 
   //! Return the next node index if this node and a ray intersection test failed.
-  uint32 failureNextIndex() const;
+  uint32 failureNextIndex() const noexcept;
 
   //! Return the number of objects
-  uint numOfObjects() const;
+  uint numOfObjects() const noexcept;
 
   //! Return the first object index
-  uint32 objectIndex() const;
+  uint32 objectIndex() const noexcept;
 
   //! Set the bounding box
-  void setBoundingBox(const Aabb& bounding_box);
+  void setBoundingBox(const Aabb& bounding_box) noexcept;
 
   //! Set the failure next index
-  void setFailureNextIndex(const uint32 failure_next_index);
+  void setFailureNextIndex(const uint32 failure_next_index) noexcept;
 
   //! Set the num of objects
-  void setNumOfObjects(const uint num_of_objects);
+  void setNumOfObjects(const uint num_of_objects) noexcept;
 
   //! Set the first object index
-  void setObjectIndex(const uint32 object_index);
+  void setObjectIndex(const uint32 object_index) noexcept;
 
  private:
   Aabb bounding_box_;
@@ -73,4 +73,4 @@ class BvhTreeNode
 
 #include "bvh_tree_node-inl.hpp"
 
-#endif // _NANAIRO_BVH_TREE_NODE_HPP_
+#endif // NANAIRO_BVH_TREE_NODE_HPP

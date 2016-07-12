@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SAMPLED_POINT_INL_HPP_
-#define _NANAIRO_SAMPLED_POINT_INL_HPP_
+#ifndef NANAIRO_SAMPLED_POINT_INL_HPP
+#define NANAIRO_SAMPLED_POINT_INL_HPP
 
 #include "sampled_point.hpp"
 // Nanairo
@@ -22,7 +22,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-SampledPoint::SampledPoint() :
+SampledPoint::SampledPoint() noexcept :
     inverse_pdf_{1.0}
 {
 }
@@ -32,7 +32,7 @@ SampledPoint::SampledPoint() :
   No detailed.
   */
 inline
-SampledPoint::SampledPoint(const Point3& point, const Float inverse_pdf) :
+SampledPoint::SampledPoint(const Point3& point, const Float inverse_pdf) noexcept :
     point_{point},
     inverse_pdf_{inverse_pdf}
 {
@@ -43,7 +43,7 @@ SampledPoint::SampledPoint(const Point3& point, const Float inverse_pdf) :
   No detailed.
   */
 inline
-Float SampledPoint::inversePdf() const
+Float SampledPoint::inversePdf() const noexcept
 {
   return inverse_pdf_;
 }
@@ -53,7 +53,7 @@ Float SampledPoint::inversePdf() const
   No detailed.
   */
 inline
-const Point3& SampledPoint::point() const
+const Point3& SampledPoint::point() const noexcept
 {
   return point_;
 }
@@ -63,7 +63,7 @@ const Point3& SampledPoint::point() const
   No detailed.
   */
 inline
-Float SampledPoint::pdf() const
+Float SampledPoint::pdf() const noexcept
 {
   return 1.0 / inverse_pdf_;
 }
@@ -73,7 +73,7 @@ Float SampledPoint::pdf() const
   No detailed.
   */
 inline
-void SampledPoint::setInversePdf(const Float inverse_pdf)
+void SampledPoint::setInversePdf(const Float inverse_pdf) noexcept
 {
   inverse_pdf_ = inverse_pdf;
 }
@@ -83,7 +83,7 @@ void SampledPoint::setInversePdf(const Float inverse_pdf)
   No detailed.
   */
 inline
-void SampledPoint::setPoint(const Point3& point)
+void SampledPoint::setPoint(const Point3& point) noexcept 
 {
   point_ = point;
 }
@@ -93,11 +93,11 @@ void SampledPoint::setPoint(const Point3& point)
   No detailed.
   */
 inline
-void SampledPoint::setPdf(const Float pdf)
+void SampledPoint::setPdf(const Float pdf) noexcept
 {
   inverse_pdf_ = 1.0 / pdf;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_SAMPLED_POINT_INL_HPP_
+#endif // NANAIRO_SAMPLED_POINT_INL_HPP

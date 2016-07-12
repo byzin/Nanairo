@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_ALIGNED_MEMORY_POOL_INL_HPP_
-#define _ZISC_ALIGNED_MEMORY_POOL_INL_HPP_
+#ifndef ZISC_ALIGNED_MEMORY_POOL_INL_HPP
+#define ZISC_ALIGNED_MEMORY_POOL_INL_HPP
 
 #include "aligned_memory_pool.hpp"
 // Standard C++ library
@@ -26,7 +26,7 @@ namespace zisc {
   No detailed.
   */
 template <uint kSize, uint kAlignment> inline
-AlignedMemoryPool<kSize, kAlignment>::AlignedMemoryPool() :
+AlignedMemoryPool<kSize, kAlignment>::AlignedMemoryPool() noexcept :
     index_{0}
 {
 }
@@ -48,11 +48,9 @@ AlignedMemoryPool<kSize, kAlignment>::AlignedMemoryPool(
   */
 template <uint kSize, uint kAlignment> 
 template <typename Type, typename ...Arguments> inline
-Type* AlignedMemoryPool<kSize, kAlignment>::allocate(Arguments&& ...arguments)
+Type* AlignedMemoryPool<kSize, kAlignment>::allocate(
+    Arguments&& ...arguments) noexcept
 {
-//  static_assert(kAlignment == std::alignment_of<Type>::value,
-//                "## Type alignment doesn't match memory alignment.");
-
   void* position = static_cast<void*>(&memory_[index_]);
 
   constexpr uint length = (sizeof(Type) % kAlignment) == 0
@@ -67,7 +65,7 @@ Type* AlignedMemoryPool<kSize, kAlignment>::allocate(Arguments&& ...arguments)
   No detailed.
   */
 template <uint kSize, uint kAlignment> inline
-void AlignedMemoryPool<kSize, kAlignment>::reset()
+void AlignedMemoryPool<kSize, kAlignment>::reset() noexcept
 {
   index_ = 0;
 }
@@ -77,7 +75,7 @@ void AlignedMemoryPool<kSize, kAlignment>::reset()
   No detailed.
   */
 template <uint kSize, uint kAlignment> inline
-constexpr uint AlignedMemoryPool<kSize, kAlignment>::size()
+constexpr uint AlignedMemoryPool<kSize, kAlignment>::size() noexcept
 {
   return kLength * kAlignment;
 }
@@ -87,11 +85,11 @@ constexpr uint AlignedMemoryPool<kSize, kAlignment>::size()
   No detailed.
   */
 template <uint kSize, uint kAlignment> inline
-uint AlignedMemoryPool<kSize, kAlignment>::usedMemory() const
+uint AlignedMemoryPool<kSize, kAlignment>::usedMemory() const noexcept
 {
   return index_ * kAlignment;
 }
 
 } // namespace zisc
 
-#endif // _ZISC_ALIGNED_MEMORY_POOL_INL_HPP_
+#endif // ZISC_ALIGNED_MEMORY_POOL_INL_HPP

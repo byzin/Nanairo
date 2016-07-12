@@ -23,12 +23,18 @@
 namespace nanairo {
 
 /*!
+  */
+EmitterModel::~EmitterModel() noexcept
+{
+}
+
+/*!
   \details
   No detailed.
   */
 EmitterModel::EmitterModel(const System& system,
                            const SceneSettings& settings, 
-                           const QString& prefix)
+                           const QString& prefix) noexcept
 {
   initialize(system, settings, prefix);
 }
@@ -39,7 +45,7 @@ EmitterModel::EmitterModel(const System& system,
   */
 void EmitterModel::initialize(const System& /* system */,
                               const SceneSettings& /* settings */, 
-                              const QString& /* prefix */)
+                              const QString& /* prefix */) noexcept
 {
 }
 
@@ -48,7 +54,7 @@ void EmitterModel::initialize(const System& /* system */,
   No detailed.
   */
 void EmitterModel::setPowerDistribution(
-    const SpectralDistribution& distribution)
+    const SpectralDistribution& distribution) noexcept
 {
   radiant_exitance_ = distribution.sum();
   power_distribution_ = distribution;
@@ -60,7 +66,7 @@ void EmitterModel::setPowerDistribution(
   */
 UniquePointer<EmitterModel> makeEmitter(const System& system,
                                         const SceneSettings& settings,
-                                        const QString& prefix)
+                                        const QString& prefix) noexcept
 {
   using zisc::toHash32;
 

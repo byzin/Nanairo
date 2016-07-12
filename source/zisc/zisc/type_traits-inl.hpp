@@ -7,13 +7,15 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_TYPE_TRAITS_INL_HPP_
-#define _ZISC_TYPE_TRAITS_INL_HPP_
+#ifndef ZISC_TYPE_TRAITS_INL_HPP
+#define ZISC_TYPE_TRAITS_INL_HPP
 
 #include "type_traits.hpp"
 // Standard C++ library
 #include <type_traits>
 #include <iterator>
+// Zisc
+#include "utility.hpp"
 
 namespace zisc {
 
@@ -51,19 +53,68 @@ struct IsSignedInteger
                                 !IsUnsignedInteger<Type>::value;
 };
 
-//! Check if Iterator and IteratorTag are same iterator condition
-template <typename Iterator, typename IteratorTag>
-using IsSameIteratorCondition = 
-    std::is_same<IteratorTag, 
-                 typename std::iterator_traits<Iterator>::iterator_category>;
-
-//! Check if Type is random access iterator
 template <typename Type>
-using IsRandomAccessIterator =
-    IsSameIteratorCondition<Type, std::random_access_iterator_tag>;
+struct IteratorTrue : std::true_type {};
+
+//!
+struct IsIteratorTester
+{
+  template <typename Type>
+  static IteratorTrue<typename std::iterator_traits<Type>::iterator_category> test(int);
+
+  template <typename Type>
+  static std::false_type test(...);
+
+  static constexpr int kValue = 0;
+};
+
+//! Check if Type is iterator type
+template <typename Type>
+struct IsIterator : decltype(IsIteratorTester::test<Type>(IsIteratorTester::kValue)) {};
+
+//! Check if Type is iterator type
+template <>
+struct IsIterator<void> : std::false_type {};
+
+//! Check if Type is iterator type
+template <>
+struct IsIterator<void*> : std::false_type {};
+
+template <typename Type>
+struct RandomAccessIteratorTrue : std::false_type {};
+
+template <>
+struct RandomAccessIteratorTrue<std::random_access_iterator_tag> : std::true_type {};
+
+//!
+struct IsRandomAccessIteratorTester
+{
+  template <typename Type>
+  static RandomAccessIteratorTrue<typename std::iterator_traits<Type>::
+      iterator_category> test(int);
+
+  template <typename Type>
+  static std::false_type test(...);
+
+  static constexpr int kValue = 0;
+};
+
+//! Check if Type is iterator type
+template <typename Type>
+struct IsRandomAccessIterator : 
+    decltype(IsRandomAccessIteratorTester::test<Type>(IsRandomAccessIteratorTester::
+        kValue)) {};
+
+//! Check if Type is iterator type
+template <>
+struct IsRandomAccessIterator<void> : std::false_type {};
+
+//! Check if Type is iterator type
+template <>
+struct IsRandomAccessIterator<void*> : std::false_type {};
 
 } // namespace zisc_type_traits
 
 } // namespace zisc
 
-#endif // _ZISC_TYPE_TRAITS_INL_HPP_
+#endif // ZISC_TYPE_TRAITS_INL_HPP

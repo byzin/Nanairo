@@ -37,7 +37,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-CuiRendererManager::CuiRendererManager(const QString& scene_file_path) :
+CuiRendererManager::CuiRendererManager(const QString& scene_file_path) noexcept :
     scene_file_path_{scene_file_path}
 {
   initialize();
@@ -47,7 +47,7 @@ CuiRendererManager::CuiRendererManager(const QString& scene_file_path) :
   \details
   No detailed.
   */
-void CuiRendererManager::render()
+void CuiRendererManager::render() noexcept
 {
   // Load the scene settings
   QScopedPointer<SceneSettings> settings{new SceneSettings};
@@ -79,7 +79,7 @@ void CuiRendererManager::render()
   \details
   No detailed.
   */
-QString CuiRendererManager::getCurrentTime() const
+QString CuiRendererManager::getCurrentTime() const noexcept
 {
   const auto current_date = QDate::currentDate().toString("yyyy_MM_dd");
   const auto current_time = QTime::currentTime().toString("HH_mm_ss");
@@ -90,7 +90,7 @@ QString CuiRendererManager::getCurrentTime() const
   \details
   No detailed.
   */
-void CuiRendererManager::initialize()
+void CuiRendererManager::initialize() noexcept
 {
   QFileInfo scene_file_info{scene_file_path_};
   if (!scene_file_info.exists())
@@ -101,7 +101,7 @@ void CuiRendererManager::initialize()
   \details
   No detailed.
   */
-void CuiRendererManager::setRenderer(const SceneRendererBase* renderer)
+void CuiRendererManager::setRenderer(const SceneRendererBase* renderer) noexcept
 {
   QSharedPointer<QTextStream> cout{new QTextStream{stdout}};
 

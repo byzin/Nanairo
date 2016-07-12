@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_BVH_INL_HPP_
-#define _NANAIRO_BVH_INL_HPP_
+#ifndef NANAIRO_BVH_INL_HPP
+#define NANAIRO_BVH_INL_HPP
 
 #include "bvh.hpp"
 // Standard C++ library
@@ -29,7 +29,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-const std::vector<BvhTreeNode>& Bvh::bvhTree() const
+const std::vector<BvhTreeNode>& Bvh::bvhTree() const noexcept
 {
   return tree_;
 }
@@ -39,7 +39,7 @@ const std::vector<BvhTreeNode>& Bvh::bvhTree() const
   No detailed.
   */
 inline
-const std::vector<Object>& Bvh::objectList() const
+const std::vector<Object>& Bvh::objectList() const noexcept
 {
   return object_list_;
 }
@@ -51,7 +51,7 @@ const std::vector<Object>& Bvh::objectList() const
 template <bool multithreading>
 void Bvh::setBoundingBox(System& system, 
                          std::vector<BvhNode>& tree, 
-                         const uint32 index)
+                         const uint32 index) noexcept
 {
   auto& node = tree[index];
   if (!node.isLeafNode()) {
@@ -98,7 +98,7 @@ void Bvh::setBoundingBox(System& system,
   No detailed.
   */
 inline
-uint32 Bvh::endIndex() const
+uint32 Bvh::endIndex() const noexcept
 {
   return end_index_;
 }
@@ -111,7 +111,7 @@ inline
 void Bvh::testRayObjectsIntersection(const Ray& ray, 
                                      const BvhTreeNode& leaf_node,
                                      IntersectionInfo* intersection,
-                                     Float* shortest_distance2) const
+                                     Float* shortest_distance2) const noexcept
 {
   IntersectionInfo current;
   const auto& object_list = objectList();
@@ -132,4 +132,4 @@ void Bvh::testRayObjectsIntersection(const Ray& ray,
 
 } // namespace nanairo
 
-#endif // _NANAIRO_BVH_INL_HPP_
+#endif // NANAIRO_BVH_INL_HPP

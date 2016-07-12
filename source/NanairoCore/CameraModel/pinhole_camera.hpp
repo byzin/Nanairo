@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_PINHOLE_CAMERA_HPP_
-#define _NANAIRO_PINHOLE_CAMERA_HPP_
+#ifndef NANAIRO_PINHOLE_CAMERA_HPP
+#define NANAIRO_PINHOLE_CAMERA_HPP
 
 // Standard C++ library
 #include <tuple>
@@ -41,56 +41,56 @@ class PinholeCamera : public CameraModel
 {
  public:
   //! Create a pinhole camera
-  PinholeCamera(const SceneSettings& settings, const QString& prefix);
+  PinholeCamera(const SceneSettings& settings, const QString& prefix) noexcept;
 
 
   //! Calculate the pdf
-  Float calcPdf(const Vector3& vout) const override;
+  Float calcPdf(const Vector3& vout) const noexcept override;
 
   //! Calculate the radiance
-  Float calcRadiance(const Vector3& vout) const override;
+  Float calcRadiance(const Vector3& vout) const noexcept override;
 
   //! Calculate the radiance and pdf
-  std::tuple<Float, Float> calcRadianceAndPdf(const Vector3& vout) const override;
+  std::tuple<Float, Float> calcRadianceAndPdf(const Vector3& vout) const noexcept override;
 
   //! Get the pixel location of the film
   bool getPixelLocation(const Vector3& ray_direction, 
                         uint* x, 
-                        uint* y) const override;
+                        uint* y) const noexcept override;
 
   //! Return the camera position
-  const Point3& position() const override;
+  const Point3& position() const noexcept override;
 
   //! Sample ray direction
-  SampledDirection sampleDirection(const uint x, const uint y) const override;
+  SampledDirection sampleDirection(const uint x, const uint y) const noexcept override;
 
   //! Sample pinhole point
-  void sampleLensPoint(Sampler& sampler) override;
+  void sampleLensPoint(Sampler& sampler) noexcept override;
 
   //! Apply affine transformation
-  void transform(const Matrix4x4& matrix) override;
+  void transform(const Matrix4x4& matrix) noexcept override;
 
   //! Return the pinhole camera type
-  CameraType type() const override;
+  CameraType type() const noexcept override;
 
   //! Return the x axis vector
-  Vector3 xAxis() const override;
+  Vector3 xAxis() const noexcept override;
 
   //! Return the y axis vector
-  Vector3 yAxis() const override;
+  Vector3 yAxis() const noexcept override;
 
  private:
   //! Calculate the inverse pdf
-  Float calcInversePdf(const Float cos_theta) const;
+  Float calcInversePdf(const Float cos_theta) const noexcept;
 
   //! Return the film area
-  Float filmArea() const;
+  Float filmArea() const noexcept;
 
   //! Initialize
-  void initialize(const SceneSettings& settings, const QString& prefix);
+  void initialize(const SceneSettings& settings, const QString& prefix) noexcept;
 
   //! Initialize camera film
-  void initializeFilm() override;
+  void initializeFilm() noexcept override;
 
 
   Point3 pinhole_position_; //!< The position of pinhole
@@ -109,4 +109,4 @@ class PinholeCamera : public CameraModel
 
 } // namespace nanairo
 
-#endif // _NANAIRO_PINHOLE_CAMERA_HPP_
+#endif // NANAIRO_PINHOLE_CAMERA_HPP

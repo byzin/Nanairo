@@ -6,15 +6,13 @@
 # http://opensource.org/licenses/mit-license.php
 #
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.4)
 
 set(__nanairo_common_root__ ${CMAKE_CURRENT_LIST_DIR})
 
 
-# Inner functions and macros
-
-function(makeNanairoCommonKeywordFile dest_dir)
-  configure_file(${__nanairo_common_root__}/keyword.hpp.in ${dest_dir}/keyword.hpp)
+function(makeNanairoCommonKeywordFile keyword_dir)
+  configure_file(${__nanairo_common_root__}/keyword.hpp.in ${keyword_dir}/keyword.hpp)
 
   set(keyword_list ${ARGN})
   list(LENGTH keyword_list list_size)
@@ -24,19 +22,17 @@ function(makeNanairoCommonKeywordFile dest_dir)
     math(EXPR keyword_index "${variable_index} + 1")
     list(GET keyword_list ${variable_index} variable)
     list(GET keyword_list ${keyword_index} keyword)
-    file(APPEND ${dest_dir}/keyword.hpp "constexpr char ${variable}[] = \"${keyword}\";\n")
+    file(APPEND ${keyword_dir}/keyword.hpp "constexpr char ${variable}[] = \"${keyword}\";\n")
   endforeach()
-  file(APPEND ${dest_dir}/keyword.hpp "\n} // namespace keyword\n")
-  file(APPEND ${dest_dir}/keyword.hpp "\n//! \\} Common\n")
-  file(APPEND ${dest_dir}/keyword.hpp "\n} // namespace nanairo\n")
-  file(APPEND ${dest_dir}/keyword.hpp "\n#endif // _NANAIRO_KEYWORD_HPP_")
+  file(APPEND ${keyword_dir}/keyword.hpp "\n} // namespace keyword\n")
+  file(APPEND ${keyword_dir}/keyword.hpp "\n//! \\} Common\n")
+  file(APPEND ${keyword_dir}/keyword.hpp "\n} // namespace nanairo\n")
+  file(APPEND ${keyword_dir}/keyword.hpp "\n#endif // NANAIRO_KEYWORD_HPP\n")
 endfunction()
 
 
-# Functions and macros
-
 # Load nanairo common files
-function(loadNanairoCommon)
+function(getNanairoCommon)
   set(common_config_dir ${PROJECT_BINARY_DIR}/include/NanairoCommon)
   configure_file(${__nanairo_common_root__}/keyword.hpp.in
                  ${common_config_dir}/keyword.hpp)
@@ -46,4 +42,4 @@ function(loadNanairoCommon)
   source_group(NanairoCommon FILES 
                ${common_config_dir}/keyword.hpp
                ${common_config_dir}/nanairo_common_config.hpp)
-endfunction(loadNanairoCommon)
+endfunction(getNanairoCommon)

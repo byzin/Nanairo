@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SAMPLED_DIRECTION_HPP_
-#define _NANAIRO_SAMPLED_DIRECTION_HPP_
+#ifndef NANAIRO_SAMPLED_DIRECTION_HPP
+#define NANAIRO_SAMPLED_DIRECTION_HPP
 
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -30,32 +30,32 @@ class SampledDirection
 {
  public:
   //! Create sample
-  SampledDirection();
+  SampledDirection() noexcept;
 
   //! Create sample
-  SampledDirection(const Vector3& direction, const Float inverse_pdf);
+  SampledDirection(const Vector3& direction, const Float inverse_pdf) noexcept;
 
 
   //! Return the sampled direction
-  Vector3& direction();
+  Vector3& direction() noexcept;
 
   //! Return the sampled direction
-  const Vector3& direction() const;
+  const Vector3& direction() const noexcept;
 
   //! Return the inverse pdf
-  Float inversePdf() const;
+  Float inversePdf() const noexcept;
 
   //! Return the pdf (probability density function) of the sampled direction
-  Float pdf() const;
+  Float pdf() const noexcept;
 
   //! Set direction
-  void setDirection(const Vector3& direction);
+  void setDirection(const Vector3& direction) noexcept;
 
   //! Set inverse pdf
-  void setInversePdf(const Float inverse_pdf);
+  void setInversePdf(const Float inverse_pdf) noexcept;
 
   //! Set pdf of the sampled direction
-  void setPdf(const Float pdf);
+  void setPdf(const Float pdf) noexcept;
 
  private:
   Vector3 direction_;
@@ -64,11 +64,11 @@ class SampledDirection
 
 //! Sample direction on hemisphere following cos theta pdf
 template <uint kN>
-SampledDirection sampleDirectionOnHemisphere(Sampler& sampler);
+SampledDirection sampleDirectionOnHemisphere(Sampler& sampler) noexcept;
 
 //! Sample direction on hemisphere following cos theta pdf
 template <uint kN>
-SampledDirection sampleDirectionOnHemisphere(const Vector3& normal, Sampler& sampler);
+SampledDirection sampleDirectionOnHemisphere(const Vector3& normal, Sampler& sampler) noexcept;
 
 //! \} Core
 
@@ -76,4 +76,4 @@ SampledDirection sampleDirectionOnHemisphere(const Vector3& normal, Sampler& sam
 
 #include "sampled_direction-inl.hpp"
 
-#endif // _NANAIRO_SAMPLED_DIRECTION_HPP_
+#endif // NANAIRO_SAMPLED_DIRECTION_HPP

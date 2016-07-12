@@ -38,7 +38,7 @@ namespace nanairo {
   No detailed.
   */
 ModifiedReinhard::ModifiedReinhard(const System& system,
-                                   const SceneSettings& settings) :
+                                   const SceneSettings& settings) noexcept :
     ToneMappingMethod(system, settings)
 {
   initialize(system, settings);
@@ -50,7 +50,7 @@ ModifiedReinhard::ModifiedReinhard(const System& system,
   */
 void ModifiedReinhard::toneMap(System& system,
                                const HdrImage& hdr_image, 
-                               QImage& ldr_image)
+                               QImage& ldr_image) noexcept
 {
   using zisc::cast;
 
@@ -97,7 +97,7 @@ void ModifiedReinhard::toneMap(System& system,
   No detailed.
   */
 void ModifiedReinhard::initialize(const System& system, 
-                                  const SceneSettings& /* settings */)
+                                  const SceneSettings& /* settings */) noexcept
 {
   const int width = system.imageWidthResolution(); 
   const int height = system.imageHeightResolution();

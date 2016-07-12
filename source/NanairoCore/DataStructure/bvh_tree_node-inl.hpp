@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_BVH_TREE_NODE_INL_HPP_
-#define _NANAIRO_BVH_TREE_NODE_INL_HPP_
+#ifndef NANAIRO_BVH_TREE_NODE_INL_HPP
+#define NANAIRO_BVH_TREE_NODE_INL_HPP
 
 #include "bvh_tree_node.hpp"
 // Standard C++ library
@@ -26,7 +26,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-BvhTreeNode::BvhTreeNode()
+BvhTreeNode::BvhTreeNode() noexcept
 {
 }
 
@@ -35,7 +35,7 @@ BvhTreeNode::BvhTreeNode()
   No detailed.
   */
 inline
-const Aabb& BvhTreeNode::boundingBox() const
+const Aabb& BvhTreeNode::boundingBox() const noexcept
 {
   return bounding_box_;
 }
@@ -45,7 +45,7 @@ const Aabb& BvhTreeNode::boundingBox() const
   No detailed.
   */
 inline
-bool BvhTreeNode::isLeafNode() const
+bool BvhTreeNode::isLeafNode() const noexcept
 {
   return numOfObjects() != 0;
 }
@@ -55,7 +55,7 @@ bool BvhTreeNode::isLeafNode() const
   No detailed.
   */
 inline
-uint32 BvhTreeNode::failureNextIndex() const
+uint32 BvhTreeNode::failureNextIndex() const noexcept
 {
   return failure_next_index_;
 }
@@ -65,7 +65,7 @@ uint32 BvhTreeNode::failureNextIndex() const
   No detailed.
   */
 inline
-uint BvhTreeNode::numOfObjects() const
+uint BvhTreeNode::numOfObjects() const noexcept
 {
   return zisc::cast<uint>(num_of_objects_);
 }
@@ -75,7 +75,7 @@ uint BvhTreeNode::numOfObjects() const
   No detailed.
   */
 inline
-uint32 BvhTreeNode::objectIndex() const
+uint32 BvhTreeNode::objectIndex() const noexcept
 {
   return object_index_;
 }
@@ -85,7 +85,7 @@ uint32 BvhTreeNode::objectIndex() const
   No detailed.
   */
 inline
-void BvhTreeNode::setBoundingBox(const Aabb& bounding_box)
+void BvhTreeNode::setBoundingBox(const Aabb& bounding_box) noexcept
 {
   bounding_box_ = bounding_box;
 }
@@ -95,7 +95,7 @@ void BvhTreeNode::setBoundingBox(const Aabb& bounding_box)
   No detailed.
   */
 inline
-void BvhTreeNode::setFailureNextIndex(const uint32 failure_next_index)
+void BvhTreeNode::setFailureNextIndex(const uint32 failure_next_index) noexcept
 {
   failure_next_index_ = failure_next_index;
 }
@@ -105,7 +105,7 @@ void BvhTreeNode::setFailureNextIndex(const uint32 failure_next_index)
   No detailed.
   */
 inline
-void BvhTreeNode::setNumOfObjects(const uint num_of_objects)
+void BvhTreeNode::setNumOfObjects(const uint num_of_objects) noexcept
 {
   num_of_objects_ = zisc::cast<uint32>(num_of_objects);
 }
@@ -115,11 +115,11 @@ void BvhTreeNode::setNumOfObjects(const uint num_of_objects)
   No detailed.
   */
 inline
-void BvhTreeNode::setObjectIndex(const uint32 object_index)
+void BvhTreeNode::setObjectIndex(const uint32 object_index) noexcept
 {
   object_index_ = object_index;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_BVH_TREE_NODE_INL_HPP_
+#endif // NANAIRO_BVH_TREE_NODE_INL_HPP

@@ -23,7 +23,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-Matrix3x3 getXyzToRgbMatrix(const uint32 color_space)
+Matrix3x3 getXyzToRgbMatrix(const uint32 color_space) noexcept
 {
   using zisc::toHash32;
 
@@ -55,7 +55,7 @@ Matrix3x3 getXyzToRgbMatrix(const uint32 color_space)
   \details
   No detailed.
   */
-Matrix3x3 getRgbToXyzMatrix(const uint32 color_space)
+Matrix3x3 getRgbToXyzMatrix(const uint32 color_space) noexcept
 {
   using zisc::toHash32;
 

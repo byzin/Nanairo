@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_BVH_HPP_
-#define _NANAIRO_BVH_HPP_
+#ifndef NANAIRO_BVH_HPP
+#define NANAIRO_BVH_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -43,66 +43,66 @@ class Bvh
 {
  public:
   //! Initialize BVH
-  Bvh(const SceneSettings& settings, const QString& prefix);
+  Bvh(const SceneSettings& settings, const QString& prefix) noexcept;
 
   //! Finalize BVH
-  virtual ~Bvh() {}
+  virtual ~Bvh() noexcept;
 
 
   //! Build BVH
-  void construct(System& system, std::vector<Object>&& object_list);
+  void construct(System& system, std::vector<Object>&& object_list) noexcept;
 
   //! Return the BVH byte size
-  std::size_t getBvhSize() const;
+  std::size_t getBvhSize() const noexcept;
 
   //! Cast the ray and find the intersection closest to the ray origin
-  IntersectionInfo castRay(const Ray& ray, const Float max_distance2) const;
+  IntersectionInfo castRay(const Ray& ray, const Float max_distance2) const noexcept;
 
   //! Return the object list
-  const std::vector<Object>& objectList() const;
+  const std::vector<Object>& objectList() const noexcept;
 
   //! Return the tree of BVH
-  const std::vector<BvhTreeNode>& bvhTree() const;
+  const std::vector<BvhTreeNode>& bvhTree() const noexcept;
 
  protected:
   //! Build BVH
   virtual void constructBvh(System& system,
                             const std::vector<Object>& object_list,
-                            std::vector<BvhNode>& tree) const = 0;
+                            std::vector<BvhNode>& tree) const noexcept = 0;
 
   //! Set the bounding box of the node
   template <bool multithreading>
   static void setBoundingBox(System& system,
                              std::vector<BvhNode>& tree, 
-                             const uint32 index = 0);
+                             const uint32 index = 0) noexcept;
 
  private:
   //! Return the end index of the ray traversal
-  uint32 endIndex() const;
+  uint32 endIndex() const noexcept;
 
   //! Set the tree node and the object list
   void setTreeInfo(const std::vector<BvhNode>& tree,
                    std::vector<Object>& object_list,
                    const uint32 failure_next_index,
-                   const uint32 index = 0);
+                   const uint32 index = 0) noexcept;
 
   //! Set
-  void setUniqueObject(std::vector<Object>& object_list);
+  void setUniqueObject(std::vector<Object>& object_list) noexcept;
 
   //! Sort nodes by the search order
-  void sortTreeNode(std::vector<BvhNode>& tree) const;
+  void sortTreeNode(std::vector<BvhNode>& tree) const noexcept;
 
   //! Sort nodes by the search order
   void sortTreeNode(const std::vector<BvhNode>& old_tree, 
                     std::vector<BvhNode>& tree,
                     const uint32 old_index,
-                    uint32& index) const;
+                    uint32& index) const noexcept;
 
   //! Test ray-objects of a leaf node intersection
   void testRayObjectsIntersection(const Ray& ray,
                                   const BvhTreeNode& leaf_node,
                                   IntersectionInfo* intersection,
-                                  Float* shortest_distance2) const;
+                                  Float* shortest_distance2) const noexcept;
 
 
   std::vector<BvhTreeNode> tree_;
@@ -111,20 +111,20 @@ class Bvh
 
  protected:
   //! Return the max number of objects per node
-  static constexpr uint maxNumOfObjectsPerNode()
+  static constexpr uint maxNumOfObjectsPerNode() noexcept
   {
     return kMaxNumOfObjectsPerNode;
   }
 
   //! Check if multi-threading is enabled
-  static constexpr bool multithreadingIsEnabled()
+  static constexpr bool multithreadingIsEnabled() noexcept
   {
     return true;
   }
 };
 
 //! Make BVH
-UniquePointer<Bvh> makeBvh(const SceneSettings& settings);
+UniquePointer<Bvh> makeBvh(const SceneSettings& settings) noexcept;
 
 //! \} Core
 
@@ -132,4 +132,4 @@ UniquePointer<Bvh> makeBvh(const SceneSettings& settings);
 
 #include "bvh-inl.hpp"
 
-#endif // _NANAIRO_BVH_HPP_
+#endif // NANAIRO_BVH_HPP

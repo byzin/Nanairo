@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_CAMERA_MODEL_INL_HPP_
-#define _NANAIRO_CAMERA_MODEL_INL_HPP_
+#ifndef NANAIRO_CAMERA_MODEL_INL_HPP
+#define NANAIRO_CAMERA_MODEL_INL_HPP
 
 #include "camera_model.hpp"
 // Standard C++ library
@@ -34,7 +34,7 @@ namespace nanairo {
 template <uint kSampleSize> inline
 void CameraModel::addContribution(const uint x, 
                                   const uint y, 
-                                  const SampledSpectra<kSampleSize>& contribution)
+                                  const SampledSpectra<kSampleSize>& contribution) noexcept
 {
   auto& spectra_buffer = film().spectraBuffer();
   spectra_buffer.addContribution(x, y, contribution);
@@ -45,7 +45,7 @@ void CameraModel::addContribution(const uint x,
   No detailed.
   */
 inline
-Film& CameraModel::film()
+Film& CameraModel::film() noexcept
 {
   return *film_;
 }
@@ -55,7 +55,7 @@ Film& CameraModel::film()
   No detailed.
   */
 inline
-const Film& CameraModel::film() const
+const Film& CameraModel::film() const noexcept
 {
   return *film_;
 }
@@ -69,7 +69,7 @@ auto CameraModel::makeSensor(
     const uint x,
     const uint y,
     const WavelengthSamples<kSampleSize>& /* wavelengths */,
-    MemoryPool& memory_pool) const -> ShaderPointer<kSampleSize>
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
   auto sensor = memory_pool.allocate<Sensor<kSampleSize>>(this, x, y);
   return ShaderPointer<kSampleSize>{sensor};
@@ -80,7 +80,7 @@ auto CameraModel::makeSensor(
   No detailed.
   */
 inline
-const Vector3& CameraModel::normal() const
+const Vector3& CameraModel::normal() const noexcept
 {
   return normal_;
 }
@@ -90,7 +90,7 @@ const Vector3& CameraModel::normal() const
   No detailed.
   */
 inline
-uint CameraModel::heightResolution() const
+uint CameraModel::heightResolution() const noexcept
 {
   return film().heightResolution();
 }
@@ -100,7 +100,7 @@ uint CameraModel::heightResolution() const
   No detailed.
   */
 inline
-void CameraModel::jitter(Sampler& sampler)
+void CameraModel::jitter(Sampler& sampler) noexcept
 {
   if (is_jittering_enabled_) {
     jittering_[0] = sampler.sample(0.0, 1.0);
@@ -117,7 +117,7 @@ void CameraModel::jitter(Sampler& sampler)
   No detailed.
   */
 inline
-const Vector2& CameraModel::jittering() const
+const Vector2& CameraModel::jittering() const noexcept
 {
   return jittering_;
 }
@@ -127,7 +127,7 @@ const Vector2& CameraModel::jittering() const
   No detailed.
   */
 inline
-const Point3& CameraModel::sampledLensPoint() const
+const Point3& CameraModel::sampledLensPoint() const noexcept
 {
   return sampled_lens_point_;
 }
@@ -137,7 +137,7 @@ const Point3& CameraModel::sampledLensPoint() const
   No detailed.
   */
 inline
-void CameraModel::setFilm(Film* film)
+void CameraModel::setFilm(Film* film) noexcept
 {
   film_ = film;
   initializeFilm();
@@ -148,7 +148,7 @@ void CameraModel::setFilm(Film* film)
   No detailed.
   */
 inline
-uint CameraModel::widthResolution() const
+uint CameraModel::widthResolution() const noexcept
 {
   return film().widthResolution();
 }
@@ -158,7 +158,7 @@ uint CameraModel::widthResolution() const
   No detailed.
   */
 inline
-void CameraModel::setNormal(const Vector3& normal)
+void CameraModel::setNormal(const Vector3& normal) noexcept
 {
   normal_ = normal;
 }
@@ -168,11 +168,11 @@ void CameraModel::setNormal(const Vector3& normal)
   No detailed.
   */
 inline
-void CameraModel::setSampledLensPoint(const Point3& sampled_point)
+void CameraModel::setSampledLensPoint(const Point3& sampled_point) noexcept
 {
   sampled_lens_point_ = sampled_point;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_CAMERA_MODEL_INL_HPP_
+#endif // NANAIRO_CAMERA_MODEL_INL_HPP

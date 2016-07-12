@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SCENE_INL_HPP_
-#define _NANAIRO_SCENE_INL_HPP_
+#ifndef NANAIRO_SCENE_INL_HPP
+#define NANAIRO_SCENE_INL_HPP
 
 #include "scene.hpp"
 // Standard C++ library
@@ -25,7 +25,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-CameraModel& Scene::camera()
+CameraModel& Scene::camera() noexcept
 {
   return *camera_;
 }
@@ -35,7 +35,7 @@ CameraModel& Scene::camera()
   No detailed.
   */
 inline
-const CameraModel& Scene::camera() const
+const CameraModel& Scene::camera() const noexcept
 {
   return *camera_;
 }
@@ -45,7 +45,7 @@ const CameraModel& Scene::camera() const
   No detailed.
   */
 inline
-Film& Scene::film()
+Film& Scene::film() noexcept
 {
   return *film_;
 }
@@ -55,7 +55,7 @@ Film& Scene::film()
   No detailed.
   */
 inline
-const Film& Scene::film() const
+const Film& Scene::film() const noexcept
 {
   return *film_;
 }
@@ -65,11 +65,11 @@ const Film& Scene::film() const
   No detailed.
   */
 inline
-const World& Scene::world() const
+const World& Scene::world() const noexcept
 {
   return *world_;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_SCENE_INL_HPP_
+#endif // NANAIRO_SCENE_INL_HPP

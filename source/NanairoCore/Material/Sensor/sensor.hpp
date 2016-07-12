@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SENSOR_HPP_
-#define _NANAIRO_SENSOR_HPP_
+#ifndef NANAIRO_SENSOR_HPP
+#define NANAIRO_SENSOR_HPP
 
 // Standard C++ library
 #include <tuple>
@@ -41,7 +41,7 @@ class Sensor : public GlossyShaderModel<kSampleSize>
 
    
   //! Create a Camera sensor
-  Sensor(const CameraModel* camera, const uint x, const uint y);
+  Sensor(const CameraModel* camera, const uint x, const uint y) noexcept;
 
 
   //! Evaluate the BRDF of the area sampling
@@ -49,38 +49,38 @@ class Sensor : public GlossyShaderModel<kSampleSize>
       const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,
-      const Wavelengths& wavelengths) const override;
+      const Wavelengths& wavelengths) const noexcept override;
 
   //! Evaluate the BRDF of the area sampling
   Spectra evaluateRadiance(
       const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,
-      const Wavelengths& wavelengths) const override;
+      const Wavelengths& wavelengths) const noexcept override;
 
   //! Evaluate the BRDF and pdf
   std::tuple<Spectra, Float> evaluateRadianceAndPdf(
       const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,
-      const Wavelengths& wavelengths) const override;
+      const Wavelengths& wavelengths) const noexcept override;
 
   //! Sample a camera ray direction and evaluate a ray weight
   std::tuple<SampledDirection, Spectra> sample(
       const Vector3* vin,
       const Vector3& normal, 
       const Wavelengths& wavelengths,
-      Sampler& sampler) const override;
+      Sampler& sampler) const noexcept override;
 
   //! Check is wavelength selection occured
-  bool wavelengthIsSelected() const override;
+  bool wavelengthIsSelected() const noexcept override;
 
  private:
   //! Return the camera
-  const CameraModel& camera() const;
+  const CameraModel& camera() const noexcept;
 
   //! Initialize sensor
-  void initialize(const uint x, const uint y);
+  void initialize(const uint x, const uint y) noexcept;
 
 
   const CameraModel* camera_;
@@ -94,4 +94,4 @@ class Sensor : public GlossyShaderModel<kSampleSize>
 
 #include "sensor-inl.hpp"
 
-#endif // _NANAIRO_SENSOR_HPP_
+#endif // NANAIRO_SENSOR_HPP

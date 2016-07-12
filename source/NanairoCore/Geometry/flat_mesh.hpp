@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_FLAT_MESH_HPP_
-#define _NANAIRO_FLAT_MESH_HPP_
+#ifndef NANAIRO_FLAT_MESH_HPP
+#define NANAIRO_FLAT_MESH_HPP
 
 // Standard C++ library
 #include <tuple>
@@ -40,33 +40,33 @@ class FlatMesh : public TriangleMesh
 {
  public:
   //! Create flat mesh
-  FlatMesh(const Point3& vertex0, const Point3& vertex1, const Point3& vertex2);
+  FlatMesh(const Point3& vertex0, const Point3& vertex1, const Point3& vertex2) noexcept;
 
 
   //! Return the bounding box
-  Aabb boundingBox() const override;
+  Aabb boundingBox() const noexcept override;
 
   //! Return the flat mesh size
-  std::size_t geometrySize() const override;
+  std::size_t geometrySize() const noexcept override;
 
   //! Return the cost of a ray-triangle intersection test
-  Float getTraversalCost() const override;
+  Float getTraversalCost() const noexcept override;
 
   //! Test ray-triangle intersection
   bool testIntersection(const Ray& ray, 
-                        IntersectionInfo* intersection) const override;
+                        IntersectionInfo* intersection) const noexcept override;
 
   //! Sample a point randomly on the surface of the triangle
-  std::tuple<SampledPoint, Vector3> samplePoint(Sampler& sampler) const override;
+  std::tuple<SampledPoint, Vector3> samplePoint(Sampler& sampler) const noexcept override;
 
   //! Apply affine transformation
-  void transform(const Matrix4x4& matrix) override;
+  void transform(const Matrix4x4& matrix) noexcept override;
 
  private:
-  void initialize(const Point3& vertex1, const Point3& vertex2);
+  void initialize(const Point3& vertex1, const Point3& vertex2) noexcept;
 
   //! Set normal vector
-  void setNormal();
+  void setNormal() noexcept;
 
 
   Point3 vertex_;
@@ -78,4 +78,4 @@ class FlatMesh : public TriangleMesh
 
 } // namespace nanairo
 
-#endif // _NANAIRO_FLAT_MESH_HPP_
+#endif // NANAIRO_FLAT_MESH_HPP

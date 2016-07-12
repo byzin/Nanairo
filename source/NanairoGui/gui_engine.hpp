@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_GUI_ENGINE_HPP_
-#define _NANAIRO_GUI_ENGINE_HPP_
+#ifndef NANAIRO_GUI_ENGINE_HPP
+#define NANAIRO_GUI_ENGINE_HPP
 
 // Qt
 #include <QQmlApplicationEngine>
@@ -35,15 +35,15 @@ class GuiEngine
 {
  public:
   //! Initialize GUI engine
-  GuiEngine();
+  GuiEngine() noexcept;
 
 
   //! Load window
-  void load(const QUrl& url);
+  void load(const QUrl& url) noexcept;
 
  private:
   //! Initialize GUI engine
-  void initialize();
+  void initialize() noexcept;
 
 
   QQmlApplicationEngine engine_;
@@ -56,4 +56,4 @@ class GuiEngine
 
 } // namespace nanairo
 
-#endif // _NANAIRO_GUI_ENGINE_HPP_
+#endif // NANAIRO_GUI_ENGINE_HPP

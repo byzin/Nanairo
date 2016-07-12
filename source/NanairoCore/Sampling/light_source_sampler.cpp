@@ -26,7 +26,7 @@ namespace nanairo {
   No detailed.
   */
 LightSourceSampler::LightSourceSampler(
-    const std::vector<LightSourceReference>& light_source_list)
+    const std::vector<LightSourceReference>& light_source_list) noexcept
 {
   initialize(light_source_list);
 }
@@ -36,7 +36,7 @@ LightSourceSampler::LightSourceSampler(
   No detailed.
   */
 void LightSourceSampler::initialize(
-    const std::vector<LightSourceReference>& light_source_list)
+    const std::vector<LightSourceReference>& light_source_list) noexcept
 {
   std::vector<const LightSourceReference*> light_list;
   std::vector<Float> pdf;
@@ -52,7 +52,7 @@ void LightSourceSampler::initialize(
                             pdf.begin(), pdf.end()};
 
   zisc::CompensatedSummation<Float> total_flux{0.0};
-  for (const auto light_source : light_source_list) {
+  for (const auto& light_source : light_source_list) {
     const auto object = light_source.object();
     const auto flux = object->geometry().surfaceArea() *
                       object->material().emitter().radiantExitance();

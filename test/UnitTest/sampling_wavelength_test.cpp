@@ -22,6 +22,15 @@
 
 constexpr nanairo::uint kSampleSize = nanairo::kWavelengthSampleSize;
 
+// Forward declaration
+template <nanairo::uint N>
+std::array<nanairo::uint, nanairo::kSpectraSize> testWavelengthDistribution(
+    const nanairo::WavelengthSampler<kSampleSize>& wavelength_sampler,
+    nanairo::Sampler& sampler);
+
+void testUniformWavelengthSampler(
+    const nanairo::WavelengthSampler<kSampleSize>& wavelength_sampler);
+
 /*!
   \details
   No detailed.

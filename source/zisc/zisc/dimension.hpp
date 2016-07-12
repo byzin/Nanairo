@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_DIMENSION_HPP_
-#define _ZISC_DIMENSION_HPP_
+#ifndef ZISC_DIMENSION_HPP
+#define ZISC_DIMENSION_HPP
 
 // Zisc
 #include "arithmetic_array.hpp"
@@ -29,40 +29,43 @@ class Dimension
 
 
   //! Initialize with 0
-  Dimension();
+  Dimension() noexcept;
 
   //! Initialize with values
   template <typename ...Types>
-  Dimension(const Types ...values);
+  Dimension(const Types ...values) noexcept;
 
   //! Initialize with array
-  Dimension(const ArrayType& array);
+  Dimension(const ArrayType& array) noexcept;
 
 
-  //! Get the reference by index.
-  Arithmetic& operator[](const uint index);
+  //! Return the reference by index.
+  Arithmetic& operator[](const uint index) noexcept;
 
-  //! Get the reference by index.
-  const Arithmetic& operator[](const uint index) const;
+  //! Return the reference by index.
+  const Arithmetic& operator[](const uint index) const noexcept;
 
-  //! Get array reference
-  ArrayType& data();
+  //! Return array reference
+  ArrayType& data() noexcept;
 
-  //! Get array reference
-  const ArrayType& data() const;
+  //! Return array reference
+  const ArrayType& data() const noexcept;
 
-  //! Get an element by index.
-  Arithmetic get(const uint index) const;
+  //! Return the reference by index.
+  Arithmetic& get(const uint index) noexcept;
+
+  //! Return the reference by index.
+  const Arithmetic& get(const uint index) const noexcept;
 
   //! Return the number of elements
-  static constexpr uint size();
+  static constexpr uint size() noexcept;
 
   //! Set value
-  void set(const uint index, const Arithmetic value);
+  void set(const uint index, const Arithmetic value) noexcept;
 
   //! Set values
   template <typename ...Types>
-  void setElements(const Types ...values);
+  void setElements(const Types ...values) noexcept;
 
  private:
   ArrayType elements_;
@@ -72,4 +75,4 @@ class Dimension
 
 #include "dimension-inl.hpp"
 
-#endif // _ZISC_DIMENSION_HPP_
+#endif // ZISC_DIMENSION_HPP

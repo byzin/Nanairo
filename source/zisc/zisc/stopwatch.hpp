@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_STOPWATCH_HPP_
-#define _ZISC_STOPWATCH_HPP_
+#ifndef ZISC_STOPWATCH_HPP
+#define ZISC_STOPWATCH_HPP
 
 // Standard C++ library
 #include <chrono>
@@ -31,32 +31,32 @@ class Stopwatch : public NonCopyable
 
 
   //! Initialize
-  Stopwatch();
+  Stopwatch() noexcept;
 
 
   //! Return the total elapsed time
-  Clock::duration elapsedTime() const;
+  Clock::duration elapsedTime() const noexcept;
 
   //! Check if stopwatch is idle state
-  bool isIdleState() const;
+  bool isIdleState() const noexcept;
 
   //! Check if stopwatch is pause state
-  bool isPauseState() const;
+  bool isPauseState() const noexcept;
 
   //! Check if stopwatch is run state
-  bool isRunState() const;
+  bool isRunState() const noexcept;
 
   //! Pause time measurement and return the elapsed time
-  Clock::duration pause();
+  Clock::duration pause() noexcept;
 
   //! Start to measure the time
-  void start();
+  void start() noexcept;
 
   //! Stop time measurement
-  void stop();
+  void stop() noexcept;
 
  private:
-  enum class State : int
+  enum class State : Clock::rep
   {
     Idle,
     Run,
@@ -73,4 +73,4 @@ class Stopwatch : public NonCopyable
 
 #include "stopwatch-inl.hpp"
 
-#endif // _ZISC_STOPWATCH_HPP_
+#endif // ZISC_STOPWATCH_HPP

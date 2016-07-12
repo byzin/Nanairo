@@ -7,11 +7,12 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_LINEAR_INTERP_HPP_
-#define _ZISC_LINEAR_INTERP_HPP_
+#ifndef ZISC_LINEAR_INTERP_HPP
+#define ZISC_LINEAR_INTERP_HPP
 
 // Standard C++ library
 #include <list>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 // Zisc
@@ -29,41 +30,44 @@ namespace zisc {
 template <typename Float>
 class LinearInterp : public NonCopyable
 {
-  static_assert(std::is_floating_point<Float>::value, "## Float must be float type.");
+  static_assert(std::is_floating_point<Float>::value, 
+                "Float isn't floating point type.");
 
-  using Pair = std::pair<Float, Float>;
+  using Pair = std::tuple<Float, Float>;
   using Iterator = typename std::list<Pair>::iterator;
   using ConstIterator = typename std::list<Pair>::const_iterator;
 
  public:
   //! Create empty instance
-  LinearInterp() {}
+  LinearInterp() noexcept;
 
   //! Move instance
-  LinearInterp(LinearInterp&& interpolation);
+  LinearInterp(LinearInterp&& other) noexcept;
 
 
   //! Interpolate 
-  Float operator()(const Float x) const;
+  Float operator()(const Float x) const noexcept;
 
 
   //! Add data
   template <typename XType, typename YType>
-  void add(const XType x, const YType y);
+  void add(const XType x, const YType y) noexcept;
 
   //! Check whether the data at x exists
-  template <typename Type>
-  bool exists(const Type x) const;
+  bool exists(const Float x) const noexcept;
 
   //! Interpolate 
-  Float interpolate(const Float x) const;
+  Float interpolate(const Float x) const noexcept;
 
  private:
-  Iterator lowerBound(const Float x);
+  //! Check whether the data at x exists
+  bool exists(const Float x, const ConstIterator& position) const noexcept;
 
-  ConstIterator lowerBound(const Float x) const;
+  //!
+  Iterator lowerBound(const Float x) noexcept;
 
-  bool isSamePosition(const ConstIterator& a, const Float b) const;
+  //!
+  ConstIterator lowerBound(const Float x) const noexcept;
 
 
   std::list<Pair> data_;
@@ -73,4 +77,4 @@ class LinearInterp : public NonCopyable
 
 #include "linear_interp-inl.hpp"
 
-#endif // _ZISC_LINEAR_INTERP_HPP_
+#endif // ZISC_LINEAR_INTERP_HPP

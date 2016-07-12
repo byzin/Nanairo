@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_BVH_NODE_HPP_
-#define _NANAIRO_BVH_NODE_HPP_
+#ifndef NANAIRO_BVH_NODE_HPP
+#define NANAIRO_BVH_NODE_HPP
 
 // Standard C++ library
 #include <array>
@@ -36,56 +36,56 @@ class BvhNode
 {
  public:
   //! Create empty node
-  BvhNode();
+  BvhNode() noexcept;
 
   //! Create a leaf node
-  BvhNode(const Object* object);
+  BvhNode(const Object* object) noexcept;
 
 
   //! Add object
-  void addObject(const Object* object);
+  void addObject(const Object* object) noexcept;
 
   //! Add object without updating the BoundingBox
-  void addObjectWithoutBoundingBox(const Object* object);
+  void addObjectWithoutBoundingBox(const Object* object) noexcept;
 
   //! Return the bounding box
-  const Aabb& boundingBox() const;
+  const Aabb& boundingBox() const noexcept;
 
   //! Check whether node is leaf node
-  bool isLeafNode() const;
+  bool isLeafNode() const noexcept;
 
   //! Return the left child index
-  uint32 leftChildIndex() const;
+  uint32 leftChildIndex() const noexcept;
 
   //! Return the number of objects
-  uint numOfObjects() const;
+  uint numOfObjects() const noexcept;
 
   //! Return the parent node index
-  uint32 parentIndex() const;
+  uint32 parentIndex() const noexcept;
 
   //! Return the right child node index
-  uint32 rightChildIndex() const;
+  uint32 rightChildIndex() const noexcept;
 
   //! Return the object list
-  const std::array<const Object*, kMaxNumOfObjectsPerNode>& objectList() const;
+  const std::array<const Object*, kMaxNumOfObjectsPerNode>& objectList() const noexcept;
 
   //! Return the SAH cost
-  Float sahCost() const;
+  Float sahCost() const noexcept;
 
   //! Set the bounding box
-  void setBoundingBox(const Aabb& bounding_box);
+  void setBoundingBox(const Aabb& bounding_box) noexcept;
 
   //! Set left child node index
-  void setLeftChildIndex(const uint32 left_child_index);
+  void setLeftChildIndex(const uint32 left_child_index) noexcept;
 
   //! Set parent node index
-  void setParentIndex(const uint32 parent_index);
+  void setParentIndex(const uint32 parent_index) noexcept;
 
   //! Set right child node index
-  void setRightChildIndex(const uint32 right_child_index);
+  void setRightChildIndex(const uint32 right_child_index) noexcept;
 
   //! Set the SAH cost
-  void setSahCost(const Float cost);
+  void setSahCost(const Float cost) noexcept;
 
  private:
   Aabb bounding_box_;
@@ -97,19 +97,19 @@ class BvhNode
 
  public:
   //! Return the max num of objects
-  static constexpr uint32 maxNumOfObjects()
+  static constexpr uint32 maxNumOfObjects() noexcept
   {
     return std::numeric_limits<uint32>::max() >> 1;
   }
 
   //! Return the max node index
-  static constexpr uint32 maxNodeIndex()
+  static constexpr uint32 maxNodeIndex() noexcept
   {
     return std::numeric_limits<uint32>::max() - 1;
   }
 
   //! Return the non object index
-  static constexpr uint32 nonObjectIndex()
+  static constexpr uint32 nonObjectIndex() noexcept
   {
     return std::numeric_limits<uint32>::max();
   }
@@ -120,22 +120,22 @@ using MortonCodeIterator = std::vector<MortonCode>::iterator;
 using NodeIterator = std::vector<BvhNode*>::iterator;
 
 //! Calculate the morton code of the node
-uint64 calc63bitMortonCode(const Float x, const Float y, const Float z);
+uint64 calc63bitMortonCode(const Float x, const Float y, const Float z) noexcept;
 
 //! Get the bounding box overlapping nodes
 Aabb combineBoundingBoxs(std::vector<BvhNode>::const_iterator begin,
-                         std::vector<BvhNode>::const_iterator end);
+                         std::vector<BvhNode>::const_iterator end) noexcept;
 
 //! Get the bounding box overlapping nodes
-Aabb combineBoundingBoxs(NodeIterator begin, NodeIterator end);
+Aabb combineBoundingBoxs(NodeIterator begin, NodeIterator end) noexcept;
 
 //! Find the split position
 MortonCodeIterator findSplitPosition(const uint64 bit,
                                      MortonCodeIterator begin,
-                                     MortonCodeIterator end);
+                                     MortonCodeIterator end) noexcept;
 
 //! Make a morton code list
-std::vector<MortonCode> makeMortonCodeList(std::vector<BvhNode>& leaf_node_list);
+std::vector<MortonCode> makeMortonCodeList(std::vector<BvhNode>& leaf_node_list) noexcept;
 
 //! \} Core
 
@@ -143,4 +143,4 @@ std::vector<MortonCode> makeMortonCodeList(std::vector<BvhNode>& leaf_node_list)
 
 #include "bvh_node-inl.hpp"
 
-#endif // _NANAIRO_BVH_NODE_HPP_
+#endif // NANAIRO_BVH_NODE_HPP

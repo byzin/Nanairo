@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SHADER_MODEL_HPP_
-#define _NANAIRO_SHADER_MODEL_HPP_
+#ifndef NANAIRO_SHADER_MODEL_HPP
+#define NANAIRO_SHADER_MODEL_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -55,17 +55,17 @@ class ShaderModel
 
 
   //! Create a shader model
-  ShaderModel();
+  ShaderModel() noexcept;
 
   //! Finalize the shader model
-  virtual ~ShaderModel() {}
+  virtual ~ShaderModel() noexcept {}
 
 
   // Dummy delete function
-  static void operator delete(void*);
+  static void operator delete(void*) noexcept;
 
   //! Dummy new function
-  static void* operator new(std::size_t, void* memory);
+  static void* operator new(std::size_t, void* memory) noexcept;
 
 
   //! Evaluate the weight (Fs(i, o, n) * cos(theta_o) / pdf)
@@ -78,37 +78,37 @@ class ShaderModel
       const Vector3* vin, 
       const Vector3* vout,
       const Vector3& normal,
-      const Wavelengths& wavelengths) const;
+      const Wavelengths& wavelengths) const noexcept;
 
   //! Evaluate the radiance
   virtual Spectra evaluateRadiance(
       const Vector3* vin, 
       const Vector3* vout,
       const Vector3& normal,
-      const Wavelengths& wavelengths) const;
+      const Wavelengths& wavelengths) const noexcept;
 
   //! Evaluate the radiance and pdf
   virtual std::tuple<Spectra, Float> evaluateRadianceAndPdf(
       const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,
-      const Wavelengths& wavelengths) const;
+      const Wavelengths& wavelengths) const noexcept;
 
   //! Sample a reflection direction and evaluate a reflection weight
   virtual std::tuple<SampledDirection, Spectra> sample(
       const Vector3* vin, 
       const Vector3& normal,
       const Wavelengths& wavelengths,
-      Sampler& sampler) const;
+      Sampler& sampler) const noexcept;
 
   //! Return the shader type
-  virtual ShaderType type() const = 0;
+  virtual ShaderType type() const noexcept = 0;
 
   //! Sample a next direction
 //  virtual SampledDirection sampleDirection(Sampler& sampler) const = 0;
 
   //! Check if wavelength selection occured
-  virtual bool wavelengthIsSelected() const = 0;
+  virtual bool wavelengthIsSelected() const noexcept = 0;
 };
 
 /*!
@@ -120,7 +120,7 @@ class DiffuseShaderModel : public ShaderModel<kSampleSize>
 {
  public:
   //! Return the diffuse type
-  ShaderType type() const override
+  ShaderType type() const noexcept override
   {
     return ShaderType::Diffuse;
   }
@@ -135,7 +135,7 @@ class SpecularShaderModel : public ShaderModel<kSampleSize>
 {
  public:
   //! Return the specular type
-  ShaderType type() const override
+  ShaderType type() const noexcept override
   {
     return ShaderType::Specular;
   }
@@ -150,7 +150,7 @@ class GlossyShaderModel : public ShaderModel<kSampleSize>
 {
  public:
   //! Return the glossy type
-  ShaderType type() const override
+  ShaderType type() const noexcept override
   {
     return ShaderType::Glossy;
   }
@@ -162,4 +162,4 @@ class GlossyShaderModel : public ShaderModel<kSampleSize>
 
 #include "shader_model-inl.hpp"
 
-#endif // _NANAIRO_SHADER_MODEL_HPP_
+#endif // NANAIRO_SHADER_MODEL_HPP

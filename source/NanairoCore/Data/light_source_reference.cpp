@@ -26,7 +26,7 @@ namespace nanairo {
   No detailed.
   */
 LightSourceReference::LightSourceReference(const Float total_flux,
-                                           const Object* light_source) :
+                                           const Object* light_source) noexcept :
     light_source_{light_source}
 {
   initialize(total_flux);
@@ -36,7 +36,7 @@ LightSourceReference::LightSourceReference(const Float total_flux,
   \details
   No detailed.
   */
-void LightSourceReference::initialize(const Float total_flux)
+void LightSourceReference::initialize(const Float total_flux) noexcept
 {
   const Float flux = light_source_->geometry().surfaceArea() *
                      light_source_->material().emitter().radiantExitance();

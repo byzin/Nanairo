@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SPECTRAL_DISTRIBUTION_HPP_
-#define _NANAIRO_SPECTRAL_DISTRIBUTION_HPP_
+#ifndef NANAIRO_SPECTRAL_DISTRIBUTION_HPP
+#define NANAIRO_SPECTRAL_DISTRIBUTION_HPP
 
 // Zisc
 #include "zisc/arithmetic_array.hpp"
@@ -37,102 +37,102 @@ class SpectralDistribution
 {
  public:
   //! Create empty distribution 
-  SpectralDistribution();
+  SpectralDistribution() noexcept;
 
   //! Create a distribution
-  SpectralDistribution(const zisc::ArithmeticArray<Float, kSpectraSize>& property);
+  SpectralDistribution(const zisc::ArithmeticArray<Float, kSpectraSize>& property) noexcept;
 
 
   //! Apply addition operation to each element
-  SpectralDistribution operator+(const SpectralDistribution& other) const;
+  SpectralDistribution operator+(const SpectralDistribution& other) const noexcept;
 
   //! Apply subtraction operation to each element
-  SpectralDistribution operator-(const SpectralDistribution& other) const;
+  SpectralDistribution operator-(const SpectralDistribution& other) const noexcept;
 
   //!
-  SpectralDistribution operator*(const Float scalar) const;
+  SpectralDistribution operator*(const Float scalar) const noexcept;
 
   //! Apply multiplication operation to each element
-  SpectralDistribution operator*(const SpectralDistribution& other) const;
+  SpectralDistribution operator*(const SpectralDistribution& other) const noexcept;
 
   //!
-  SpectralDistribution operator/(const Float scalar) const;
+  SpectralDistribution operator/(const Float scalar) const noexcept;
 
   //! Apply division operation to each element
-  SpectralDistribution operator/(const SpectralDistribution& other) const;
+  SpectralDistribution operator/(const SpectralDistribution& other) const noexcept;
 
   //!
-  SpectralDistribution& operator+=(const SpectralDistribution& other);
+  SpectralDistribution& operator+=(const SpectralDistribution& other) noexcept;
 
   //!
-  SpectralDistribution& operator-=(const SpectralDistribution& other);
+  SpectralDistribution& operator-=(const SpectralDistribution& other) noexcept;
 
   //! Apply multiplication operation to each element and asign the result
-  SpectralDistribution& operator*=(const Float scalar);
+  SpectralDistribution& operator*=(const Float scalar) noexcept;
 
   //!
-  SpectralDistribution& operator*=(const SpectralDistribution& other);
+  SpectralDistribution& operator*=(const SpectralDistribution& other) noexcept;
 
   //!
-  SpectralDistribution& operator/=(const Float scalar);
+  SpectralDistribution& operator/=(const Float scalar) noexcept;
 
   //!
-  SpectralDistribution& operator/=(const SpectralDistribution& other);
+  SpectralDistribution& operator/=(const SpectralDistribution& other) noexcept;
 
   //! Return the point of the distribution by the index
-  Float& operator[](const uint index);
+  Float& operator[](const uint index) noexcept;
 
   //! Return the point of the distribution by the index
-  const Float& operator[](const uint index) const;
+  const Float& operator[](const uint index) const noexcept;
 
 
   //! Clamp all elements to the range [min, max]
-  void clamp(const Float min, const Float max);
+  void clamp(const Float min, const Float max) noexcept;
 
   //! Apply gamma correction
-  void correctGamma(const Float gamma);
+  void correctGamma(const Float gamma) noexcept;
 
   //! Fill all elements by the value
-  void fill(const Float value);
+  void fill(const Float value) noexcept;
 
   //! Return the element by the index
-  Float get(const uint index) const;
+  Float get(const uint index) const noexcept;
 
   //! Return the element by the wavelength
-  Float getByWavelength(const uint16 wavelength) const;
+  Float getByWavelength(const uint16 wavelength) const noexcept;
 
   //! Check if all components are zero
-  bool isZero() const;
+  bool isZero() const noexcept;
 
   //! Return the largest element
-  Float max() const;
+  Float max() const noexcept;
 
   //! Return the smallest element
-  Float min() const;
+  Float min() const noexcept;
 
   //! Return the normalized distribution
-  SpectralDistribution normalized() const;
+  SpectralDistribution normalized() const noexcept;
 
   //! Return the spectral distribution 
-  const zisc::ArithmeticArray<Float, kSpectraSize>& distribution() const;
+  const zisc::ArithmeticArray<Float, kSpectraSize>& distribution() const noexcept;
 
   //! Set value by the index
-  void set(const uint index, const Float intensity);
+  void set(const uint index, const Float intensity) noexcept;
 
   //! Set value by the wavelength
-  void setByWavelength(const uint16 wavelength, const Float intensity);
+  void setByWavelength(const uint16 wavelength, const Float intensity) noexcept;
 
   //! Get the size of property
-  static constexpr uint size();
+  static constexpr uint size() noexcept;
 
   //! Get sum of intensities
-  Float sum() const;
+  Float sum() const noexcept;
 
   //! Return the emissive xyz color
-  XyzColor toEmissiveXyz(const System& system) const; 
+  XyzColor toEmissiveXyz(const System& system) const noexcept;
 
   //! Return the nanairoive xyz color
-  XyzColor toReflectiveXyz(const System& system) const;
+  XyzColor toReflectiveXyz(const System& system) const noexcept;
 
  private:
 
@@ -142,31 +142,31 @@ class SpectralDistribution
 //! Make a emissive spectra
 SpectralDistribution makeEmissiveDistribution(const System& system,
                                               const SceneSettings& settings,
-                                              const QString& prefix);
+                                              const QString& prefix) noexcept;
 
 //! Make a nanairoive spectra
 SpectralDistribution makeReflectiveDistribution(const System& system,
                                                 const SceneSettings& settings,
-                                                const QString& prefix);
+                                                const QString& prefix) noexcept;
 
 SpectralDistribution makeEmissiveSpectra(const SceneSettings& settings, 
-                                         const QString& prefix);
+                                         const QString& prefix) noexcept;
 
 SpectralDistribution makeReflectiveSpectra(const SceneSettings& settings, 
-                                           const QString& prefix);
+                                           const QString& prefix) noexcept;
 
 //! Make a spectral property
 SpectralDistribution makeSpectra(const SceneSettings& settings, 
-                                 const QString& prefix);
+                                 const QString& prefix) noexcept;
 
 //! Make a spectral property
-SpectralDistribution makeSpectra(const QString& file_path);
+SpectralDistribution makeSpectra(const QString& file_path) noexcept;
 
 //! Convert RGB to RGB spectra
-SpectralDistribution toRgbSpectra(const RgbColor& color);
+SpectralDistribution toRgbSpectra(const RgbColor& color) noexcept;
 
 //! Convert RGB to spectra
-SpectralDistribution toSpectra(const System& system, const RgbColor& color);
+SpectralDistribution toSpectra(const System& system, const RgbColor& color) noexcept;
 
 //! \} Core
 
@@ -174,4 +174,4 @@ SpectralDistribution toSpectra(const System& system, const RgbColor& color);
 
 #include "spectral_distribution-inl.hpp"
 
-#endif // _NANAIRO_SPECTRAL_DISTRIBUTION_HPP_
+#endif // NANAIRO_SPECTRAL_DISTRIBUTION_HPP

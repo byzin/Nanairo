@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_LIGHT_SOURCE_REFERENCE_INL_HPP_
-#define _NANAIRO_LIGHT_SOURCE_REFERENCE_INL_HPP_
+#ifndef NANAIRO_LIGHT_SOURCE_REFERENCE_INL_HPP
+#define NANAIRO_LIGHT_SOURCE_REFERENCE_INL_HPP
 
 #include "light_source_reference.hpp"
 // Nanairo
@@ -24,7 +24,7 @@ class Object;
   No detailed.
   */
 inline
-Float LightSourceReference::inverseWeight() const
+Float LightSourceReference::inverseWeight() const noexcept
 {
   return inverse_weight_;
 }
@@ -34,7 +34,7 @@ Float LightSourceReference::inverseWeight() const
   No detailed.
   */
 inline
-const Object* LightSourceReference::object() const
+const Object* LightSourceReference::object() const noexcept
 {
   return light_source_;
 }
@@ -44,11 +44,11 @@ const Object* LightSourceReference::object() const
   No detailed.
   */
 inline
-Float LightSourceReference::weight() const
+Float LightSourceReference::weight() const noexcept
 {
   return weight_;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_LIGHT_SOURCE_REFERENCE_INL_HPP_
+#endif // NANAIRO_LIGHT_SOURCE_REFERENCE_INL_HPP

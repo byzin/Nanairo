@@ -27,7 +27,7 @@ namespace nanairo {
   */
 SmoothDielectricSurface::SmoothDielectricSurface(
     const SceneSettings& settings,
-    const QString& prefix)
+    const QString& prefix) noexcept
 {
   initialize(settings, prefix);
 }
@@ -36,7 +36,7 @@ SmoothDielectricSurface::SmoothDielectricSurface(
   \details
   No detailed.
   */
-std::size_t SmoothDielectricSurface::surfaceSize() const
+std::size_t SmoothDielectricSurface::surfaceSize() const noexcept
 {
   return sizeof(eta_);
 }
@@ -45,7 +45,7 @@ std::size_t SmoothDielectricSurface::surfaceSize() const
   \details
   No detailed.
   */
-SurfaceType SmoothDielectricSurface::type() const
+SurfaceType SmoothDielectricSurface::type() const noexcept
 {
   return SurfaceType::SmoothDielectric;
 }
@@ -55,7 +55,7 @@ SurfaceType SmoothDielectricSurface::type() const
   No detailed.
   */
 void SmoothDielectricSurface::initialize(const SceneSettings& settings,
-                                         const QString& prefix)
+                                         const QString& prefix) noexcept
 {
   const auto p = prefix + "/" + keyword::smoothDielectricSurface;
 

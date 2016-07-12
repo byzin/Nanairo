@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SPECTRA_IMAGE_HPP_
-#define _NANAIRO_SPECTRA_IMAGE_HPP_
+#ifndef NANAIRO_SPECTRA_IMAGE_HPP
+#define NANAIRO_SPECTRA_IMAGE_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -43,7 +43,7 @@ class SpectraImage : public SpectraImageInterface
 {
  public:
   //! Create a spectra image
-  SpectraImage(const uint width, const uint height);
+  SpectraImage(const uint width, const uint height) noexcept;
 
 
   //! Add radiance from a sample
@@ -51,28 +51,28 @@ class SpectraImage : public SpectraImageInterface
   void addSpectraContribution(
       const uint x,
       const uint y,
-      const SampledSpectra<kSampleSize>& contribution);
+      const SampledSpectra<kSampleSize>& contribution) noexcept;
 
   //! Return the buffer memory size
-  std::size_t bufferMemorySize() const override;
+  std::size_t bufferMemorySize() const noexcept override;
 
   //! Clear the spectra image buffer to 0
-  void clear() override;
+  void clear() noexcept override;
 
   //! Save the spectra buffer
-  void save(const quint64 cycle, const QString& file_path) const override;
+  void save(const quint64 cycle, const QString& file_path) const noexcept override;
 
   //! Convert the spectra image to the HDR image
   void toHdrImage(System& system,
                   const quint64 cycle, 
-                  HdrImage* hdr_image) const override;
+                  HdrImage* hdr_image) const noexcept override;
 
   //! Return the spectra image type
-  SpectraImageType type() const override;
+  SpectraImageType type() const noexcept override;
 
  private:
   //! Initialize
-  void initialize();
+  void initialize() noexcept;
 
 
   std::vector<SpectralDistribution> buffer_;
@@ -85,4 +85,4 @@ class SpectraImage : public SpectraImageInterface
 
 #include "spectra_image-inl.hpp"
 
-#endif // _NANAIRO_SPECTRA_IMAGE_HPP_
+#endif // NANAIRO_SPECTRA_IMAGE_HPP

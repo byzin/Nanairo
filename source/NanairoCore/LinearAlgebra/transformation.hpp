@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_TRANSFORMATION_HPP_
-#define _NANAIRO_TRANSFORMATION_HPP_
+#ifndef NANAIRO_TRANSFORMATION_HPP
+#define NANAIRO_TRANSFORMATION_HPP
 
 // Standard C++ library
 #include <vector>
@@ -32,53 +32,53 @@ using Matrix3x3 = zisc::Matrix<Float, 3, 3>;
 using Matrix4x4 = zisc::Matrix<Float, 4, 4>;
 
 //! Make a change of basis matrix for converting to the standard basis
-Matrix3x3 makeChangeOfBasisMatrixFromLocal(const Vector3& normal);
+Matrix3x3 makeChangeOfBasisMatrixFromLocal(const Vector3& normal) noexcept;
 
 //! Make a change of basis matrix for converting to the standard basis
-Matrix3x3 makeChangeOfBasisMatrixToLocal(const Vector3& normal);
+Matrix3x3 makeChangeOfBasisMatrixToLocal(const Vector3& normal) noexcept;
 
 //! Make identity matrix
-Matrix4x4 makeIdentityMatrix();
+Matrix4x4 makeIdentityMatrix() noexcept;
 
 //! Make transformation matrix
 Matrix4x4 makeTransformationMatrix(const SceneSettings& settings, 
-                                   const QString& prefix);
+                                   const QString& prefix) noexcept;
 
 //! Make translation matrix
-Matrix4x4 makeTranslationMatrix(const Float x, const Float y, const Float z);
+Matrix4x4 makeTranslationMatrix(const Float x, const Float y, const Float z) noexcept;
 
 //! Make translation matrix
 Matrix4x4 makeTranslationMatrix(const SceneSettings& settings, 
-                                const QString& prefix);
+                                const QString& prefix) noexcept;
 
 //! Make scaling matrix
-Matrix4x4 makeScalingMatrix(const Float x, const Float y, const Float z);
+Matrix4x4 makeScalingMatrix(const Float x, const Float y, const Float z) noexcept;
 
 //! Make scaling matrix
 Matrix4x4 makeScalingMatrix(const SceneSettings& settings, 
-                            const QString& prefix);
+                            const QString& prefix) noexcept;
 
 //! Make rotation matrix
-Matrix4x4 makeRotationMatrix(const Vector3& a, const Vector3& b);
+Matrix4x4 makeRotationMatrix(const Vector3& a, const Vector3& b) noexcept;
 
 //! Make rotation matrix
 Matrix4x4 makeRotationMatrix(const SceneSettings& settings, 
-                             const QString& prefix);
+                             const QString& prefix) noexcept;
 
 //! Make x axis rotation matrix
-Matrix4x4 makeXAxisRotationMatrix(const Float theta);
+Matrix4x4 makeXAxisRotationMatrix(const Float theta) noexcept;
 
 //! Make y axis rotation matrix
-Matrix4x4 makeYAxisRotationMatrix(const Float theta);
+Matrix4x4 makeYAxisRotationMatrix(const Float theta) noexcept;
 
 //! Make z axis rotation matrix
-Matrix4x4 makeZAxisRotationMatrix(const Float theta);
+Matrix4x4 makeZAxisRotationMatrix(const Float theta) noexcept;
 
 //! Apply affine transformation to a point
-void affineTransform(const Matrix4x4& matrix, Point3* point);
+void affineTransform(const Matrix4x4& matrix, Point3* point) noexcept;
 
 //! Apply affine transformation to a vector
-void affineTransform(const Matrix4x4& matrix, Vector3* vector);
+void affineTransform(const Matrix4x4& matrix, Vector3* vector) noexcept;
 
 //! \} Core 
 
@@ -86,4 +86,4 @@ void affineTransform(const Matrix4x4& matrix, Vector3* vector);
 
 #include "transformation-inl.hpp"
 
-#endif // _NANAIRO_TRANSFORMATION_HPP_
+#endif // NANAIRO_TRANSFORMATION_HPP

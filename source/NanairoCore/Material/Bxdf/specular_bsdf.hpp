@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SPECULAR_BSDF_HPP_
-#define _NANAIRO_SPECULAR_BSDF_HPP_
+#ifndef NANAIRO_SPECULAR_BSDF_HPP
+#define NANAIRO_SPECULAR_BSDF_HPP
 
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -39,7 +39,7 @@ class SpecularBsdf : public SpecularShaderModel<kSampleSize>
 
 
   //! Create a specular BSDF
-  SpecularBsdf(const Float n);
+  SpecularBsdf(const Float n) noexcept;
 
 
   //! Evalute the weight of solid angle sampling
@@ -47,10 +47,10 @@ class SpecularBsdf : public SpecularShaderModel<kSampleSize>
       const Vector3* vin,
       const Vector3& normal,
       const Wavelengths& wavelengths,
-      Sampler& sampler) const override;
+      Sampler& sampler) const noexcept override;
 
   //! Check if wavelength selection occured
-  bool wavelengthIsSelected() const override;
+  bool wavelengthIsSelected() const noexcept override;
 
  private:
   Float n_;
@@ -62,4 +62,4 @@ class SpecularBsdf : public SpecularShaderModel<kSampleSize>
 
 #include "specular_bsdf-inl.hpp"
 
-#endif // _NANAIRO_SPECULAR_BSDF_HPP_
+#endif // NANAIRO_SPECULAR_BSDF_HPP

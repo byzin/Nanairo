@@ -28,7 +28,7 @@ namespace nanairo {
   No detailed.
   */
 SmoothConductorSurface::SmoothConductorSurface(const SceneSettings& settings,
-                                               const QString& prefix)
+                                               const QString& prefix) noexcept
 {
   initialize(settings, prefix);
 }
@@ -37,7 +37,7 @@ SmoothConductorSurface::SmoothConductorSurface(const SceneSettings& settings,
   \details
   No detailed.
   */
-std::size_t SmoothConductorSurface::surfaceSize() const
+std::size_t SmoothConductorSurface::surfaceSize() const noexcept
 {
   return sizeof(reflectance_0deg_);
 }
@@ -46,7 +46,7 @@ std::size_t SmoothConductorSurface::surfaceSize() const
   \details
   No detailed.
   */
-SurfaceType SmoothConductorSurface::type() const
+SurfaceType SmoothConductorSurface::type() const noexcept
 {
   return SurfaceType::SmoothConductor;
 }
@@ -56,7 +56,7 @@ SurfaceType SmoothConductorSurface::type() const
   No detailed.
   */
 void SmoothConductorSurface::initialize(const SceneSettings& settings, 
-                                        const QString& prefix)
+                                        const QString& prefix) noexcept
 {
   const auto p = prefix + "/" + keyword::smoothConductorSurface;
 

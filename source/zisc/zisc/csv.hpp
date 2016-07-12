@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_CSV_HPP_
-#define _ZISC_CSV_HPP_
+#ifndef ZISC_CSV_HPP
+#define ZISC_CSV_HPP
 
 // Standard C++ library
 #include <istream>
@@ -37,35 +37,37 @@ class Csv : public NonCopyable
 
 
   //! Initialize CSV
-  Csv();
+  Csv() noexcept;
 
 
   //! Add values
-  void append(const std::string& csv);
+  void append(const std::string& csv,
+              std::list<std::string>* message_list = nullptr) noexcept;
 
   //! Add values
-  void append(std::istream& csv, std::list<std::string>* message_list = nullptr);
+  void append(std::istream& csv, 
+              std::list<std::string>* message_list = nullptr) noexcept;
 
   //! Clear all csv data
-  void clear();
+  void clear() noexcept;
 
   //! Return the column size
-  static constexpr uint columnSize();
+  static constexpr uint columnSize() noexcept;
 
   //! Return the record by the row
-  const RecordType& record(const uint row) const;
+  const RecordType& record(const uint row) const noexcept;
 
   //! Return the row size
-  uint rowSize() const;
+  uint rowSize() const noexcept;
 
   //! Get value
   template <uint column>
-  const FieldType<column>& get(const uint row) const;
+  const FieldType<column>& get(const uint row) const noexcept;
 
  private:
   //! Parse csv line
   RecordType parseCsvLine(const std::string& line,
-                          std::list<std::string>* message_list) const;
+                          std::list<std::string>* message_list) const noexcept;
 
 
   std::list<RecordType> data_;
@@ -76,4 +78,4 @@ class Csv : public NonCopyable
 
 #include "csv-inl.hpp"
 
-#endif // _ZISC_CSV_HPP_
+#endif // ZISC_CSV_HPP

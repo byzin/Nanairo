@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_KEYWORD_HPP_
-#define _NANAIRO_KEYWORD_HPP_
+#ifndef NANAIRO_KEYWORD_HPP
+#define NANAIRO_KEYWORD_HPP
 
 // Standard C++ library
 #include <cstdint>

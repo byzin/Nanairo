@@ -29,7 +29,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-Film::Film(const System& system, const SceneSettings& settings)
+Film::Film(const System& system, const SceneSettings& settings) noexcept
 {
   initialize(system, settings);
 }
@@ -38,7 +38,7 @@ Film::Film(const System& system, const SceneSettings& settings)
   \details
   No detailed.
   */
-void Film::initialize(const System& system, const SceneSettings& /* settings */)
+void Film::initialize(const System& system, const SceneSettings& /* settings */) noexcept
 {
   using zisc::cast;
 

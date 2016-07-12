@@ -28,10 +28,16 @@
 namespace nanairo {
 
 /*!
+  */
+Geometry::~Geometry() noexcept
+{
+}
+
+/*!
   \details
   No detailed.
   */
-void Geometry::setSurfaceArea(const Float surface_area)
+void Geometry::setSurfaceArea(const Float surface_area) noexcept
 {
   ZISC_ASSERT(0.0 < surface_area, 
               "The surface area of the geometry must be greater than 0.");
@@ -43,7 +49,7 @@ void Geometry::setSurfaceArea(const Float surface_area)
   No detailed.
   */
 std::vector<UniquePointer<Geometry>> makeGeometry(const SceneSettings& settings,
-                                                  const QString& prefix)
+                                                  const QString& prefix) noexcept
 {
   using zisc::toHash32;
 

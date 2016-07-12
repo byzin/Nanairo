@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_GEOMETRY_HPP_
-#define _NANAIRO_GEOMETRY_HPP_
+#ifndef NANAIRO_GEOMETRY_HPP
+#define NANAIRO_GEOMETRY_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -43,33 +43,34 @@ class SceneSettings;
 class Geometry
 {
  public:
-  virtual ~Geometry() {}
+  //!
+  virtual ~Geometry() noexcept;
 
 
   //! Return the bounding box
-  virtual Aabb boundingBox() const = 0;
+  virtual Aabb boundingBox() const noexcept = 0;
 
   //! Return the geometry size
-  virtual std::size_t geometrySize() const = 0;
+  virtual std::size_t geometrySize() const noexcept = 0;
 
   //! Return the ray traversal cost
-  virtual Float getTraversalCost() const = 0;
+  virtual Float getTraversalCost() const noexcept = 0;
 
   //! Return the surface area of the geometry
-  Float surfaceArea() const;
+  Float surfaceArea() const noexcept;
 
   //! Test ray-geometry intersection
   virtual bool testIntersection(const Ray& ray,
-                                IntersectionInfo* intersection) const = 0;
+                                IntersectionInfo* intersection) const noexcept = 0;
 
   //! Sample a point randomly on the surface of the geometry
-  virtual std::tuple<SampledPoint, Vector3> samplePoint(Sampler& sampler) const = 0;
+  virtual std::tuple<SampledPoint, Vector3> samplePoint(Sampler& sampler) const noexcept = 0;
 
   //! Set surface area of geometry
-  void setSurfaceArea(const Float surface_area);
+  void setSurfaceArea(const Float surface_area) noexcept;
 
   //! Apply affine transformation
-  virtual void transform(const Matrix4x4& matrix) = 0;
+  virtual void transform(const Matrix4x4& matrix) noexcept = 0;
 
  private:
   Float surface_area_;
@@ -77,7 +78,7 @@ class Geometry
 
 //! Make geometries
 std::vector<UniquePointer<Geometry>> makeGeometry(const SceneSettings& settings,
-                                                  const QString& prefix);
+                                                  const QString& prefix) noexcept;
 
 //! \} Core
 
@@ -85,4 +86,4 @@ std::vector<UniquePointer<Geometry>> makeGeometry(const SceneSettings& settings,
 
 #include "geometry-inl.hpp"
 
-#endif // _NANAIRO_GEOMETRY_HPP_
+#endif // NANAIRO_GEOMETRY_HPP

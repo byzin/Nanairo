@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_CAMERA_MODEL_HPP_
-#define _NANAIRO_CAMERA_MODEL_HPP_
+#ifndef NANAIRO_CAMERA_MODEL_HPP
+#define NANAIRO_CAMERA_MODEL_HPP
 
 // Standard C++ library
 #include <tuple>
@@ -56,37 +56,37 @@ class CameraModel
 
 
   //! Initialize the camera
-  CameraModel(const SceneSettings& settings, const QString& prefix);
+  CameraModel(const SceneSettings& settings, const QString& prefix) noexcept;
 
   //! Finalize the camera
-  virtual ~CameraModel() {}
+  virtual ~CameraModel() noexcept;
 
 
   //! Add ray radiance to film
   template <uint kSampleSize>
   void addContribution(const uint x, 
                        const uint y, 
-                       const SampledSpectra<kSampleSize>& contribution);
+                       const SampledSpectra<kSampleSize>& contribution) noexcept;
 
   //! Calculate the pdf
-  virtual Float calcPdf(const Vector3& vout) const = 0;
+  virtual Float calcPdf(const Vector3& vout) const noexcept = 0;
 
   //! Calculate the radiance
-  virtual Float calcRadiance(const Vector3& vout) const = 0;
+  virtual Float calcRadiance(const Vector3& vout) const noexcept = 0;
 
   //! Calculate the radiance and pdf
-  virtual std::tuple<Float, Float> calcRadianceAndPdf(const Vector3& vout) const = 0;
+  virtual std::tuple<Float, Float> calcRadianceAndPdf(const Vector3& vout) const noexcept = 0;
 
   //! Return the film
-  Film& film();
+  Film& film() noexcept;
 
   //! Return the film
-  const Film& film() const;
+  const Film& film() const noexcept;
 
   //! Get the pixel location of the film
   virtual bool getPixelLocation(const Vector3& ray_direction, 
                                 uint* x, 
-                                uint* y) const = 0;
+                                uint* y) const noexcept = 0;
 
   //! Make a sensor
   template <uint kSampleSize>
@@ -94,72 +94,72 @@ class CameraModel
       const uint x,
       const uint y,
       const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const;
+      MemoryPool& memory_pool) const noexcept;
 
   //! Return the camera normal
-  const Vector3& normal() const;
+  const Vector3& normal() const noexcept;
 
   //! Return the height resolution of the film
-  uint heightResolution() const;
+  uint heightResolution() const noexcept;
 
   //! Jitter the point on the pixel
-  void jitter(Sampler& sampler);
+  void jitter(Sampler& sampler) noexcept;
 
   //! Return the jittering
-  const Vector2& jittering() const;
+  const Vector2& jittering() const noexcept;
 
   //! Return the camera position
-  virtual const Point3& position() const = 0;
+  virtual const Point3& position() const noexcept = 0;
 
   //! Rotate the camera
-  Matrix4x4 distance(const Vector2& value);
+  Matrix4x4 distance(const Vector2& value) noexcept;
 
   //! Rotate the camera
-  Matrix4x4 rotate(const Vector2& value);
+  Matrix4x4 rotate(const Vector2& value) noexcept;
 
   //! Rotate the camera
-  Matrix4x4 translate(const Vector2& value);
+  Matrix4x4 translate(const Vector2& value) noexcept;
 
   //! Return the sampled point
-  const Point3& sampledLensPoint() const;
+  const Point3& sampledLensPoint() const noexcept;
 
   //! Sample lens point
-  virtual void sampleLensPoint(Sampler& sampler) = 0;
+  virtual void sampleLensPoint(Sampler& sampler) noexcept = 0;
 
   //! Sample ray direction
-  virtual SampledDirection sampleDirection(const uint x, const uint y) const = 0;
+  virtual SampledDirection sampleDirection(const uint x, const uint y) const noexcept = 0;
 
   //! Set a film
-  void setFilm(Film* film);
+  void setFilm(Film* film) noexcept;
 
   //! Apply affine transformation
-  virtual void transform(const Matrix4x4& matrix) = 0;
+  virtual void transform(const Matrix4x4& matrix) noexcept = 0;
 
   //! Return the camera type
-  virtual CameraType type() const = 0;
+  virtual CameraType type() const noexcept = 0;
 
   //! Return the width resolution of the film
-  uint widthResolution() const;
+  uint widthResolution() const noexcept;
 
   //! Return the X axis vector
-  virtual Vector3 xAxis() const = 0;
+  virtual Vector3 xAxis() const noexcept = 0;
 
   //! Return the Y axis vector
-  virtual Vector3 yAxis() const = 0;
+  virtual Vector3 yAxis() const noexcept = 0;
 
  protected:
   //! Set normal
-  void setNormal(const Vector3& normal);
+  void setNormal(const Vector3& normal) noexcept;
 
   //! Set sampled lens point
-  void setSampledLensPoint(const Point3& sampled_point);
+  void setSampledLensPoint(const Point3& sampled_point) noexcept;
 
  private:
   //! Initialize
-  void initialize(const SceneSettings& settings, const QString& prefix);
+  void initialize(const SceneSettings& settings, const QString& prefix) noexcept;
 
   //! Initialize camera film
-  virtual void initializeFilm() = 0;
+  virtual void initializeFilm() noexcept = 0;
 
 
   Film* film_;
@@ -171,7 +171,7 @@ class CameraModel
 
 //! Make a camera
 UniquePointer<CameraModel> makeCameraModel(const SceneSettings& settings, 
-                                           const QString& prefix);
+                                           const QString& prefix) noexcept;
 
 //! \} Core
 
@@ -179,4 +179,4 @@ UniquePointer<CameraModel> makeCameraModel(const SceneSettings& settings,
 
 #include "camera_model-inl.hpp"
 
-#endif // _NANAIRO_CAMERA_MODEL_HPP_
+#endif // NANAIRO_CAMERA_MODEL_HPP

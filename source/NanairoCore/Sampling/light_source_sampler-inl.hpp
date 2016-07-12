@@ -3,8 +3,8 @@
   \author zin
   */
 
-#ifndef _NANAIRO_LIGHT_SOURCE_SAMPLER_INL_HPP_
-#define _NANAIRO_LIGHT_SOURCE_SAMPLER_INL_HPP_
+#ifndef NANAIRO_LIGHT_SOURCE_SAMPLER_INL_HPP
+#define NANAIRO_LIGHT_SOURCE_SAMPLER_INL_HPP
 
 #include "light_source_sampler.hpp"
 // Standard C++ library
@@ -26,7 +26,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-Float LightSourceSampler::getPdf(const Object* light_source) const
+Float LightSourceSampler::getPdf(const Object* light_source) const noexcept
 {
   const auto flux = light_source->geometry().surfaceArea() *
                     light_source->material().emitter().radiantExitance();
@@ -38,7 +38,7 @@ Float LightSourceSampler::getPdf(const Object* light_source) const
   No detailed.
   */
 inline
-const LightSourceReference& LightSourceSampler::sample(Sampler& sampler) const
+const LightSourceReference& LightSourceSampler::sample(Sampler& sampler) const noexcept
 {
   const Float y = sampler.sample(0.0, 1.0);
   const auto sampled_lihgt_source = cdf_->inverseFunction(y);
@@ -47,4 +47,4 @@ const LightSourceReference& LightSourceSampler::sample(Sampler& sampler) const
 
 } // namespace nanairo
 
-#endif // _NANAIRO_LIGHT_SOURCE_SAMPLER_INL_HPP_
+#endif // NANAIRO_LIGHT_SOURCE_SAMPLER_INL_HPP

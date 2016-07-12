@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_ROUGH_DIELECTRIC_SURFACE_HPP_
-#define _NANAIRO_ROUGH_DIELECTRIC_SURFACE_HPP_
+#ifndef NANAIRO_ROUGH_DIELECTRIC_SURFACE_HPP
+#define NANAIRO_ROUGH_DIELECTRIC_SURFACE_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -48,7 +48,7 @@ class RoughDielectricSurface : public SurfaceModel
   //! Create a rough dielectric surface
   RoughDielectricSurface(const SceneSettings& settings, 
                          const QString& prefix,
-                         const std::vector<const Texture*>& texture_list);
+                         const std::vector<const Texture*>& texture_list) noexcept;
 
 
   //! Make a GGX BSDF
@@ -57,19 +57,19 @@ class RoughDielectricSurface : public SurfaceModel
       const Point2& texture_coordinate,
       const bool is_reverse_face,
       const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const;
+      MemoryPool& memory_pool) const noexcept;
 
   //! Return the surface model size
-  std::size_t surfaceSize() const override;
+  std::size_t surfaceSize() const noexcept override;
 
   //! Return the rough dielectric surface type
-  SurfaceType type() const override;
+  SurfaceType type() const noexcept override;
 
  private:
   //! Initialize
   void initialize(const SceneSettings& settings,
                   const QString& prefix,
-                  const std::vector<const Texture*>& texture_list);
+                  const std::vector<const Texture*>& texture_list) noexcept;
   
 
   const Texture* roughness_;
@@ -82,4 +82,4 @@ class RoughDielectricSurface : public SurfaceModel
 
 #include "rough_dielectric_surface-inl.hpp"
 
-#endif // _NANAIRO_ROUGH_DIELECTRIC_SURFACE_HPP_
+#endif // NANAIRO_ROUGH_DIELECTRIC_SURFACE_HPP

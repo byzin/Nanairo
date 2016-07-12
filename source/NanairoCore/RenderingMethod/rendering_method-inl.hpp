@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_RENDERING_METHOD_INL_HPP_
-#define _NANAIRO_RENDERING_METHOD_INL_HPP_
+#ifndef NANAIRO_RENDERING_METHOD_INL_HPP
+#define NANAIRO_RENDERING_METHOD_INL_HPP
 
 #include "rendering_method.hpp"
 // Standard C++ library
@@ -47,7 +47,7 @@ class System;
   No detailed.
   */
 template <uint kSampleSize> inline
-RenderingMethod<kSampleSize>::RenderingMethod(const SceneSettings& settings) :
+RenderingMethod<kSampleSize>::RenderingMethod(const SceneSettings& settings) noexcept :
     clear_function_{[](){}}
 {
   initialize(settings);
@@ -60,7 +60,7 @@ RenderingMethod<kSampleSize>::RenderingMethod(const SceneSettings& settings) :
 template <uint kSampleSize> inline
 void RenderingMethod<kSampleSize>::operator()(System& system,
                                               Scene& scene,
-                                              const Wavelengths& sampled_wavelengths)
+                                              const Wavelengths& sampled_wavelengths) noexcept
 {
   render(system, scene, sampled_wavelengths);
 }
@@ -70,7 +70,7 @@ void RenderingMethod<kSampleSize>::operator()(System& system,
   No detailed.
   */
 template <uint kSampleSize> inline
-void RenderingMethod<kSampleSize>::clear()
+void RenderingMethod<kSampleSize>::clear() noexcept
 {
   clear_function_();
 }
@@ -80,7 +80,7 @@ void RenderingMethod<kSampleSize>::clear()
   No detailed.
   */
 template <uint kSampleSize> inline
-Float RenderingMethod<kSampleSize>::rayCastEpsilon() const
+Float RenderingMethod<kSampleSize>::rayCastEpsilon() const noexcept
 {
   return ray_cast_epsilon_;
 }
@@ -93,7 +93,7 @@ template <uint kSampleSize> inline
 IntersectionInfo RenderingMethod<kSampleSize>::castRay(
     const World& world,
     const Ray& ray,
-    const Float max_distance2) const
+    const Float max_distance2) const noexcept
 {
   const auto& bvh = world.bvh();
   return bvh.castRay(ray, max_distance2);
@@ -107,7 +107,7 @@ template <uint kSampleSize> inline
 RouletteResult RenderingMethod<kSampleSize>::playRussianRoulette(
     const uint path,
     const Spectra& weight,
-    Sampler& sampler) const
+    Sampler& sampler) const noexcept
 {
   return russian_roulette_(path, weight, sampler);
 }
@@ -118,7 +118,7 @@ RouletteResult RenderingMethod<kSampleSize>::playRussianRoulette(
   */
 template <uint kSampleSize> inline
 void RenderingMethod<kSampleSize>::setClearFunction(
-    std::function<void ()>&& clear_function)
+    std::function<void ()>&& clear_function) noexcept
 {
   clear_function_ = std::move(clear_function);
 }
@@ -128,7 +128,7 @@ void RenderingMethod<kSampleSize>::setClearFunction(
   No detailed.
   */
 template <uint kSampleSize> inline
-void RenderingMethod<kSampleSize>::initialize(const SceneSettings& settings)
+void RenderingMethod<kSampleSize>::initialize(const SceneSettings& settings) noexcept
 {
   const QString prefix{keyword::renderingMethod};
 
@@ -154,7 +154,7 @@ Ray RenderingMethod<kSampleSize>::sampleNextRay(
     const Spectra* ray_weight,
     Spectra* next_ray_weight,
     Sampler& sampler,
-    Float* inverse_direction_pdf) const
+    Float* inverse_direction_pdf) const noexcept
 {
   ZISC_ASSERT(ray_weight != nullptr, "Must not be NULL.");
   ZISC_ASSERT(next_ray_weight != nullptr, "Must not be NULL.");
@@ -197,7 +197,7 @@ template <uint kSampleSize> inline
 void RenderingMethod<kSampleSize>::updateSelectedWavelengthInfo(
     const ShaderPointer& bxdf,
     Spectra* weight,
-    bool* wavelength_is_selected) const
+    bool* wavelength_is_selected) const noexcept 
 {
   ZISC_ASSERT(wavelength_is_selected != nullptr, "Must not be NULL.");
   ZISC_ASSERT(weight != nullptr, "Must not be NULL");
@@ -218,7 +218,7 @@ void RenderingMethod<kSampleSize>::updateSelectedWavelengthInfo(
 template <uint kSampleSize> inline
 UniquePointer<RenderingMethod<kSampleSize>> makeRenderingMethod(
     System& system,
-    const SceneSettings& settings)
+    const SceneSettings& settings) noexcept
 {
   using zisc::toHash32;
 
@@ -256,4 +256,4 @@ UniquePointer<RenderingMethod<kSampleSize>> makeRenderingMethod(
 
 } // namespace nanairo
 
-#endif // _NANAIRO_RENDERING_METHOD_INL_HPP_
+#endif // NANAIRO_RENDERING_METHOD_INL_HPP

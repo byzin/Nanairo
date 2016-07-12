@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_FILM_INL_HPP_
-#define _NANAIRO_FILM_INL_HPP_
+#ifndef NANAIRO_FILM_INL_HPP
+#define NANAIRO_FILM_INL_HPP
 
 #include "film.hpp"
 // Zisc
@@ -27,7 +27,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-Float Film::aspectRatio() const
+Float Film::aspectRatio() const noexcept
 {
   using zisc::cast;
   return cast<Float>(widthResolution()) * inverse_height_;
@@ -38,11 +38,11 @@ Float Film::aspectRatio() const
   No detailed.
   */
 inline
-Point2 Film::coordinate(const uint x, const uint y, const Vector2& jittering) const 
+Point2 Film::coordinate(const uint x, const uint y, const Vector2& jittering) const noexcept 
 {
   using zisc::cast;
   const Float u = 0.5 - (cast<Float>(x) + jittering[0]) * inverse_width_;
-  const Float v = 0.5 - (cast<float>(y) + jittering[1]) * inverse_height_;
+  const Float v = 0.5 - (cast<Float>(y) + jittering[1]) * inverse_height_;
   ZISC_ASSERT((-0.5 <= u) && (u <= 0.5), 
               "The coordinate u must be [0, 1].");
   ZISC_ASSERT((-0.5 <= v) && (v <= 0.5), 
@@ -55,7 +55,7 @@ Point2 Film::coordinate(const uint x, const uint y, const Vector2& jittering) co
   No detailed.
   */
 inline
-uint Film::heightResolution() const
+uint Film::heightResolution() const noexcept
 {
   return spectra_buffer_->heightResolution();
 }
@@ -65,7 +65,7 @@ uint Film::heightResolution() const
   No detailed.
   */
 inline
-Float Film::inverseAspectRatio() const
+Float Film::inverseAspectRatio() const noexcept
 {
   using zisc::cast;
   return cast<Float>(heightResolution()) * inverse_width_;
@@ -76,7 +76,7 @@ Float Film::inverseAspectRatio() const
   No detailed.
   */
 inline
-SpectraImageInterface& Film::spectraBuffer()
+SpectraImageInterface& Film::spectraBuffer() noexcept
 {
   return *spectra_buffer_;
 }
@@ -86,7 +86,7 @@ SpectraImageInterface& Film::spectraBuffer()
   No detailed.
   */
 inline
-const SpectraImageInterface& Film::spectraBuffer() const
+const SpectraImageInterface& Film::spectraBuffer() const noexcept
 {
   return *spectra_buffer_;
 }
@@ -96,11 +96,11 @@ const SpectraImageInterface& Film::spectraBuffer() const
   No detailed.
   */
 inline
-uint Film::widthResolution() const
+uint Film::widthResolution() const noexcept
 {
   return spectra_buffer_->widthResolution();
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_FILM_INL_HPP_
+#endif // NANAIRO_FILM_INL_HPP

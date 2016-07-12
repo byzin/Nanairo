@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_ALGORITHM_INL_HPP_
-#define _ZISC_ALGORITHM_INL_HPP_
+#ifndef ZISC_ALGORITHM_INL_HPP
+#define ZISC_ALGORITHM_INL_HPP
 
 #include "algorithm.hpp"
 // Standard C++ library
@@ -32,11 +32,14 @@ namespace zisc_algorithm {
   \details
   No detailed.
   */
-template <typename RandomAccessIterator, typename OutputIterator> inline
-void toBinaryTree(RandomAccessIterator begin, 
-                  RandomAccessIterator end,
-                  const uint index,
-                  OutputIterator first)
+template <typename RandomAccessIterator, typename OutputIterator>
+inline
+void toBinaryTree(
+    RandomAccessIterator begin, 
+    RandomAccessIterator end,
+    const uint index,
+    OutputIterator first,
+    EnableIfRandomAccessIterator<RandomAccessIterator> = kEnabler) noexcept
 {
   const uint n = cast<uint>(std::distance(begin, end));
   if (n == 1) {
@@ -71,12 +74,14 @@ void toBinaryTree(RandomAccessIterator begin,
   No detailed.
   */
 template <typename RandomAccessIterator, typename Type>
-RandomAccessIterator searchBinaryTree(const RandomAccessIterator begin,
-                                      const RandomAccessIterator end,
-                                      const Type& value)
+RandomAccessIterator searchBinaryTree(
+    const RandomAccessIterator begin,
+    const RandomAccessIterator end,
+    const Type& value,
+    EnableIfRandomAccessIterator<RandomAccessIterator>) noexcept
 {
   static_assert(kIsRandomAccessIterator<RandomAccessIterator>,
-                "Iterator must be random access iterator.");
+                "Iterator isn't RandomAccessIterator.");
 
   const uint n = cast<uint>(std::distance(begin, end));
   uint index = 0;
@@ -96,20 +101,24 @@ RandomAccessIterator searchBinaryTree(const RandomAccessIterator begin,
   No detailed.
   */
 template <typename RandomAccessIterator> inline
-void toBinaryTree(RandomAccessIterator begin, RandomAccessIterator end)
+void toBinaryTree(
+    RandomAccessIterator begin, 
+    RandomAccessIterator end,
+    EnableIfRandomAccessIterator<RandomAccessIterator>) noexcept
 {
   static_assert(kIsRandomAccessIterator<RandomAccessIterator>,
-                "Iterator must be random access iterator.");
+                "Iterator isn't RandomAccessIterator.");
 
   using Type = typename std::iterator_traits<RandomAccessIterator>::value_type;
-  ZISC_ASSERT(std::is_sorted(begin, end), "The array must be sorted.");
-  ZISC_ASSERT(end == std::unique(begin, end), "The array must be unique.");
+  ZISC_ASSERT(std::is_sorted(begin, end), "The array isn't sorted.");
+  ZISC_ASSERT(end == std::unique(begin, end), "The array isn't unique array.");
 
   const auto size = std::distance(begin, end);
   if (size != 0) {
     // Create a temp array
     std::vector<Type> array;
-    array.reserve(size);
+    using ArraySizeType = typename decltype(array)::size_type;
+    array.reserve(static_cast<ArraySizeType>(size));
     for (auto iterator = begin; iterator != end; ++iterator)
       array.emplace_back(std::move(*iterator));
     // Transform an array to a binary tree
@@ -126,7 +135,7 @@ namespace zisc_algorithm {
   http://www.isthe.com/chongo/tech/comp/fnv/
   */
 template <typename ValueType, ValueType kPrime> inline
-constexpr ValueType toHash(const char* string, const ValueType hash)
+constexpr ValueType toHash(const char* string, const ValueType hash) noexcept
 {
   if (*string != '\0') {
     const ValueType updated_hash = (hash ^ cast<ValueType>(*string)) * kPrime;
@@ -143,7 +152,8 @@ constexpr ValueType toHash(const char* string, const ValueType hash)
   \details
   No detailed.
   */
-constexpr uint32 toHash32(const char* string)
+inline
+constexpr uint32 toHash32(const char* string) noexcept
 {
   constexpr uint32 prime = 16777619;
   constexpr uint32 offset = 2166136261;
@@ -154,7 +164,8 @@ constexpr uint32 toHash32(const char* string)
   \details
   No detailed.
   */
-constexpr uint64 toHash64(const char* string)
+inline
+constexpr uint64 toHash64(const char* string) noexcept
 {
   constexpr uint64 prime = 1099511628211;
   constexpr uint64 offset = 14695981039346656037ull;
@@ -163,4 +174,4 @@ constexpr uint64 toHash64(const char* string)
 
 } // namespace zisc
 
-#endif // _ZISC_ALGORITHM_INL_HPP_
+#endif // ZISC_ALGORITHM_INL_HPP

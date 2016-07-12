@@ -38,7 +38,7 @@ namespace nanairo {
   No detailed.
   */
 Uncharted2Filmic::Uncharted2Filmic(const System& system, 
-                                   const SceneSettings& settings) :
+                                   const SceneSettings& settings) noexcept :
     ToneMappingMethod(system, settings)
 {
   initialize(system, settings);
@@ -50,7 +50,7 @@ Uncharted2Filmic::Uncharted2Filmic(const System& system,
   */
 void Uncharted2Filmic::toneMap(System& system,
                                const HdrImage& hdr_image, 
-                               QImage& ldr_image)
+                               QImage& ldr_image) noexcept
 {
   using zisc::cast;
 
@@ -98,7 +98,7 @@ void Uncharted2Filmic::toneMap(System& system,
   No detailed.
   */
 void Uncharted2Filmic::initialize(const System& system, 
-                                  const SceneSettings& /* settings */)
+                                  const SceneSettings& /* settings */) noexcept
 {
   const int width = system.imageWidthResolution();
   const int height = system.imageHeightResolution();
@@ -110,7 +110,7 @@ void Uncharted2Filmic::initialize(const System& system,
   No detailed.
   */
 inline
-Float Uncharted2Filmic::uncharted2ToneMap(const Float x) const
+Float Uncharted2Filmic::uncharted2ToneMap(const Float x) const noexcept
 {
   constexpr Float A = 0.15;
   constexpr Float B = 0.50;

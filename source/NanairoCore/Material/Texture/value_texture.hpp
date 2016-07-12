@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_VALUE_TEXTURE_HPP_
-#define _NANAIRO_VALUE_TEXTURE_HPP_
+#ifndef NANAIRO_VALUE_TEXTURE_HPP
+#define NANAIRO_VALUE_TEXTURE_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -41,28 +41,28 @@ class ValueTexture : public Texture
   //! Create a value texture
   ValueTexture(const System& system,
                const SceneSettings& settings, 
-               const QString& prefix);
+               const QString& prefix) noexcept;
 
   //! Return the unique float value
-  Float uniqueValue() const;
+  Float uniqueValue() const noexcept;
 
   //! Evaluate a float value at the coordinate
-  Float floatValue(const Point2& coordinate) const override;
+  Float floatValue(const Point2& coordinate) const noexcept override;
 
   //! Return the value texture byte size
-  std::size_t textureSize() const override;
+  std::size_t textureSize() const noexcept override;
 
   //! Return the value texture type
-  TextureType type() const override;
+  TextureType type() const noexcept override;
  
   //! Evaluate the value by the wavelength at the texture coordinate
   Float wavelengthValue(const Point2& coordinate, 
-                        const uint16 wavelength) const override;
+                        const uint16 wavelength) const noexcept override;
  private:
   //! Initialize
   void initialize(const System& system,
                   const SceneSettings& settings, 
-                  const QString& prefix);
+                  const QString& prefix) noexcept;
 
 
   Float value_;
@@ -74,4 +74,4 @@ class ValueTexture : public Texture
 
 #include "value_texture-inl.hpp"
 
-#endif // _NANAIRO_VALUE_TEXTURE_HPP_
+#endif // NANAIRO_VALUE_TEXTURE_HPP

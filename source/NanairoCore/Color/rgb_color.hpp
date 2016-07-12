@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_RGB_COLOR_HPP_
-#define _NANAIRO_RGB_COLOR_HPP_
+#ifndef NANAIRO_RGB_COLOR_HPP
+#define NANAIRO_RGB_COLOR_HPP
 
 // Qt
 #include <QColor>
@@ -37,44 +37,44 @@ class RgbColor : public Color<3>
 {
  public:
   //! Create RGB
-  RgbColor();
+  RgbColor() noexcept;
 
   //! Create RGB
-  RgbColor(const Float red, const Float green, const Float blur);
+  RgbColor(const Float red, const Float green, const Float blur) noexcept;
 
   //! Create RGB
-  RgbColor(const QColor& color);
+  RgbColor(const QColor& color) noexcept;
 
   //! Create RGB
-  RgbColor(const zisc::ArithmeticArray<Float, 3>& color);
+  RgbColor(const zisc::ArithmeticArray<Float, 3>& color) noexcept;
 
 
   //! Apply gamma correction
-  void correctGamma(const Float gamma);
+  void correctGamma(const Float gamma) noexcept;
 
   //! Return the blue element reference.
-  Float& blue();
+  Float& blue() noexcept;
 
   //! Return the blue element reference.
-  const Float& blue() const;
+  const Float& blue() const noexcept;
 
   //! Return the green element reference.
-  Float& green();
+  Float& green() noexcept;
 
   //! Return the green element reference.
-  const Float& green() const;
+  const Float& green() const noexcept;
 
   //! Return the red element reference.
-  Float& red();
+  Float& red() noexcept;
 
   //! Return the red element reference.
-  const Float& red() const;
+  const Float& red() const noexcept;
 
   //! Convert RGB to Qt RGB format
-  QRgb toQRgb() const;
+  QRgb toQRgb() const noexcept;
 
   //! Convert RGB to XYZ.
-  XyzColor toXyz(const Matrix3x3& to_xyz_matrix) const;
+  XyzColor toXyz(const Matrix3x3& to_xyz_matrix) const noexcept;
 };
 
 //! \} Core
@@ -83,4 +83,4 @@ class RgbColor : public Color<3>
 
 #include "rgb_color-inl.hpp"
 
-#endif // _NANAIRO_RGB_COLOR_HPP_
+#endif // NANAIRO_RGB_COLOR_HPP

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_GGX_DIELECTRIC_BSDF_INL_HPP_
-#define _NANAIRO_GGX_DIELECTRIC_BSDF_INL_HPP_
+#ifndef NANAIRO_GGX_DIELECTRIC_BSDF_INL_HPP
+#define NANAIRO_GGX_DIELECTRIC_BSDF_INL_HPP
 
 #include "ggx_dielectric_bsdf.hpp"
 // Standard C++ library
@@ -32,7 +32,7 @@ namespace nanairo {
   */
 template <uint kSampleSize> inline
 GgxDielectricBsdf<kSampleSize>::GgxDielectricBsdf(const Float roughness,
-                                                  const Float n) :
+                                                  const Float n) noexcept :
     roughness_{roughness},
     n_{n}
 {
@@ -47,7 +47,7 @@ Float GgxDielectricBsdf<kSampleSize>::evaluatePdf(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& /* wavelengths */) const
+    const Wavelengths& /* wavelengths */) const noexcept
 {
   const Float cos_theta_no = zisc::dot(normal, *vout);
   const bool is_reflection = (0.0 < cos_theta_no);
@@ -66,7 +66,7 @@ auto GgxDielectricBsdf<kSampleSize>::evaluateRadiance(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& wavelengths) const -> Spectra
+    const Wavelengths& wavelengths) const noexcept -> Spectra
 {
   const Float cos_theta_no = zisc::dot(normal, *vout);
   const bool is_reflection = (0.0 < cos_theta_no);
@@ -90,7 +90,7 @@ auto GgxDielectricBsdf<kSampleSize>::evaluateRadianceAndPdf(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& wavelengths) const -> std::tuple<Spectra, Float>
+    const Wavelengths& wavelengths) const noexcept -> std::tuple<Spectra, Float>
 {
   const Float cos_theta_no = zisc::dot(normal, *vout);
   const bool is_reflection = (0.0 < cos_theta_no);
@@ -111,7 +111,7 @@ auto GgxDielectricBsdf<kSampleSize>::sample(
     const Vector3* vin,
     const Vector3& normal,
     const Wavelengths& wavelengths,
-    Sampler& sampler) const -> std::tuple<SampledDirection, Spectra>
+    Sampler& sampler) const noexcept -> std::tuple<SampledDirection, Spectra>
 {
   // Sample a microfacet normal
   Float cos_theta_ni = 0.0,
@@ -159,11 +159,11 @@ auto GgxDielectricBsdf<kSampleSize>::sample(
   No detailed.
   */
 template <uint kSampleSize> inline
-bool GgxDielectricBsdf<kSampleSize>::wavelengthIsSelected() const
+bool GgxDielectricBsdf<kSampleSize>::wavelengthIsSelected() const noexcept
 {
   return true;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_GGX_DIELECTRIC_BSDF_INL_HPP_
+#endif // NANAIRO_GGX_DIELECTRIC_BSDF_INL_HPP

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_TEST_HPP_
-#define _NANAIRO_TEST_HPP_
+#ifndef NANAIRO_TEST_HPP
+#define NANAIRO_TEST_HPP
 
 // Standard C++ library
 #include <memory>
@@ -25,4 +25,4 @@ std::unique_ptr<nanairo::System> makeTestSystem(const int image_width,
                                                 const bool is_rgb_rendering,
                                                 nanairo::SceneSettings& settings);
 
-#endif // _NANAIRO_TEST_HPP_
+#endif // NANAIRO_TEST_HPP

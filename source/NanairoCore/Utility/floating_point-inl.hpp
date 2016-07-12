@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_FLOATING_PONIT_INL_HPP_
-#define _NANAIRO_FLOATING_PONIT_INL_HPP_
+#ifndef NANAIRO_FLOATING_PONIT_INL_HPP
+#define NANAIRO_FLOATING_PONIT_INL_HPP
 
 #include "floating_point.hpp"
 // Nanairo
@@ -22,7 +22,7 @@ namespace nanairo {
   No detailed.
   */
 template <uint kSampleSize> inline
-bool isBetweenZeroAndOneFloat(const SampledSpectra<kSampleSize>& sample)
+bool isBetweenZeroAndOneFloat(const SampledSpectra<kSampleSize>& sample) noexcept
 {
   for (uint index = 0; index < sample.size(); ++index) {
     const Float intensity = sample.intensity(index);
@@ -37,7 +37,7 @@ bool isBetweenZeroAndOneFloat(const SampledSpectra<kSampleSize>& sample)
   No detailed.
   */
 template <uint kN> inline
-bool isBetweenZeroAndOneFloat(const Color<kN>& color)
+bool isBetweenZeroAndOneFloat(const Color<kN>& color) noexcept
 {
   for (uint index = 0; index < kN; ++index) {
     if (!isBetweenZeroAndOneFloat(color[index]))
@@ -51,7 +51,7 @@ bool isBetweenZeroAndOneFloat(const Color<kN>& color)
   No detailed.
   */
 template <uint kSampleSize> inline
-bool hasInfFloat(const SampledSpectra<kSampleSize>& sample)
+bool hasInfFloat(const SampledSpectra<kSampleSize>& sample) noexcept
 {
   for (uint index = 0; index < sample.size(); ++index) {
     const Float intensity = sample.intensity(index);
@@ -66,7 +66,7 @@ bool hasInfFloat(const SampledSpectra<kSampleSize>& sample)
   No detailed.
   */
 template <uint kSampleSize> inline
-bool hasNanFloat(const SampledSpectra<kSampleSize>& sample)
+bool hasNanFloat(const SampledSpectra<kSampleSize>& sample) noexcept
 {
   for (uint index = 0; index < sample.size(); ++index) {
     const Float intensity = sample.intensity(index);
@@ -81,7 +81,7 @@ bool hasNanFloat(const SampledSpectra<kSampleSize>& sample)
   No detailed.
   */
 template <uint kSampleSize> inline
-bool hasNegativeFloat(const SampledSpectra<kSampleSize>& sample)
+bool hasNegativeFloat(const SampledSpectra<kSampleSize>& sample) noexcept
 {
   for (uint index = 0; index < sample.size(); ++index) {
     const Float intensity = sample.intensity(index);
@@ -96,7 +96,7 @@ bool hasNegativeFloat(const SampledSpectra<kSampleSize>& sample)
   No detailed.
   */
 template <uint kSampleSize> inline
-bool hasZeroFloat(const SampledSpectra<kSampleSize>& sample)
+bool hasZeroFloat(const SampledSpectra<kSampleSize>& sample) noexcept
 {
   for (uint index = 0; index < sample.size(); ++index) {
     const Float intensity = sample.intensity(index);
@@ -108,4 +108,4 @@ bool hasZeroFloat(const SampledSpectra<kSampleSize>& sample)
 
 } // namespace nanairo
 
-#endif // _NANAIRO_FLOATING_PONIT_INL_HPP_
+#endif // NANAIRO_FLOATING_PONIT_INL_HPP

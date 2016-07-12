@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SCENE_HPP_
-#define _NANAIRO_SCENE_HPP_
+#ifndef NANAIRO_SCENE_HPP
+#define NANAIRO_SCENE_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -39,29 +39,29 @@ class Scene
   //! Initialize the scene
   Scene(System& system, 
         const SceneSettings& settings, 
-        const std::function<void (const QString&)>& message_sender);
+        const std::function<void (const QString&)>& message_sender) noexcept;
 
 
   //! Return the camera
-  CameraModel& camera();
+  CameraModel& camera() noexcept;
 
   //! Return the camera
-  const CameraModel& camera() const;
+  const CameraModel& camera() const noexcept;
 
   //! Return the film
-  Film& film();
+  Film& film() noexcept;
 
   //! Returh the film
-  const Film& film() const;
+  const Film& film() const noexcept;
 
   //! Return the world data
-  const World& world() const;
+  const World& world() const noexcept;
 
  private:
   //! Initialize the scene
   void initialize(System& system, 
                   const SceneSettings& settings,
-                  const std::function<void (const QString&)>& message_sender);
+                  const std::function<void (const QString&)>& message_sender) noexcept;
 
 
   UniquePointer<CameraModel> camera_;
@@ -73,4 +73,4 @@ class Scene
 
 #include "scene-inl.hpp"
 
-#endif // _NANAIRO_SCENE_HPP_
+#endif // NANAIRO_SCENE_HPP

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_OBJECT_INL_HPP_
-#define _NANAIRO_OBJECT_INL_HPP_
+#ifndef NANAIRO_OBJECT_INL_HPP
+#define NANAIRO_OBJECT_INL_HPP
 
 #include "object.hpp"
 // Nanairo
@@ -23,7 +23,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-const Geometry& Object::geometry() const
+const Geometry& Object::geometry() const noexcept
 {
   return *geometry_;
 }
@@ -33,7 +33,7 @@ const Geometry& Object::geometry() const
   No detailed.
   */
 inline
-const Material& Object::material() const
+const Material& Object::material() const noexcept
 {
   return material_;
 }
@@ -43,11 +43,11 @@ const Material& Object::material() const
   No detailed.
   */
 inline
-bool isSameObject(const Object* object1, const Object* object2)
+bool isSameObject(const Object* object1, const Object* object2) noexcept
 {
   return object1 == object2;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_OBJECT_INL_HPP_
+#endif // NANAIRO_OBJECT_INL_HPP

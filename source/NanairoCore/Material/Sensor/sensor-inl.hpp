@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SENSOR_INL_HPP_
-#define _NANAIRO_SENSOR_INL_HPP_
+#ifndef NANAIRO_SENSOR_INL_HPP
+#define NANAIRO_SENSOR_INL_HPP
 
 #include "sensor.hpp"
 // Standard C++ library
@@ -38,7 +38,7 @@ template <uint> class WavelengthSamples;
 template <uint kSampleSize> inline
 Sensor<kSampleSize>::Sensor(const CameraModel* camera,
                             const uint x,
-                            const uint y) :
+                            const uint y) noexcept :
     camera_{camera},
     x_{x},
     y_{y}
@@ -55,7 +55,7 @@ Float Sensor<kSampleSize>::evaluatePdf(
     const Vector3* /* vin */,
     const Vector3* vout,
     const Vector3& /* normal */,
-    const Wavelengths& /* wavelengths */) const
+    const Wavelengths& /* wavelengths */) const noexcept
 {
   ZISC_ASSERT(vout != nullptr, "The vout is NULL.");
   const Float pdf = camera().calcPdf(*vout);
@@ -71,7 +71,7 @@ auto Sensor<kSampleSize>::evaluateRadiance(
     const Vector3* /* vin */,
     const Vector3* vout,
     const Vector3& /* normal */,
-    const Wavelengths& wavelengths) const -> Spectra
+    const Wavelengths& wavelengths) const noexcept -> Spectra
 {
   ZISC_ASSERT(vout != nullptr, "The vout is NULL.");
   const Float f = camera().calcRadiance(*vout);
@@ -87,7 +87,7 @@ auto Sensor<kSampleSize>::evaluateRadianceAndPdf(
     const Vector3* /* vin */,
     const Vector3* vout,
     const Vector3& /* normal */,
-    const Wavelengths& wavelengths) const -> std::tuple<Spectra, Float>
+    const Wavelengths& wavelengths) const noexcept -> std::tuple<Spectra, Float>
 {
   ZISC_ASSERT(vout != nullptr, "The vout is NULL.");
   const auto result = camera().calcRadianceAndPdf(*vout);
@@ -105,7 +105,7 @@ auto Sensor<kSampleSize>::sample(
     const Vector3* /* vin */,
     const Vector3& /* normal */,
     const Wavelengths& wavelengths,
-    Sampler& /* sampler */) const -> std::tuple<SampledDirection, Spectra>
+    Sampler& /* sampler */) const noexcept -> std::tuple<SampledDirection, Spectra>
 {
   const auto vout = camera().sampleDirection(x_, y_);
   const auto weight = Spectra{wavelengths, 1.0};
@@ -117,7 +117,7 @@ auto Sensor<kSampleSize>::sample(
   No detailed.
   */
 template <uint kSampleSize>
-bool Sensor<kSampleSize>::wavelengthIsSelected() const
+bool Sensor<kSampleSize>::wavelengthIsSelected() const noexcept
 {
   return false;
 }
@@ -127,7 +127,7 @@ bool Sensor<kSampleSize>::wavelengthIsSelected() const
   No detailed.
   */
 template <uint kSampleSize> inline
-const CameraModel& Sensor<kSampleSize>::camera() const
+const CameraModel& Sensor<kSampleSize>::camera() const noexcept
 {
   return *camera_;
 }
@@ -138,7 +138,7 @@ const CameraModel& Sensor<kSampleSize>::camera() const
   */
 template <uint kSampleSize> inline
 void Sensor<kSampleSize>::initialize(const uint /* x */,
-                                     const uint /* y */)
+                                     const uint /* y */) noexcept
 {
 }
 

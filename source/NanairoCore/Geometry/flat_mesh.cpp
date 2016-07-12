@@ -37,7 +37,7 @@ namespace nanairo  {
   */
 FlatMesh::FlatMesh(const Point3& vertex0,
                    const Point3& vertex1,
-                   const Point3& vertex2) :
+                   const Point3& vertex2) noexcept :
     vertex_{vertex0}
 {
   initialize(vertex1, vertex2);
@@ -49,7 +49,7 @@ FlatMesh::FlatMesh(const Point3& vertex0,
 
   \return AABB
   */
-Aabb FlatMesh::boundingBox() const
+Aabb FlatMesh::boundingBox() const noexcept
 {
   auto min_point = vertex_.data();
   auto max_point = vertex_.data();
@@ -65,7 +65,7 @@ Aabb FlatMesh::boundingBox() const
   \details
   No detailed.
   */
-std::size_t FlatMesh::geometrySize() const
+std::size_t FlatMesh::geometrySize() const noexcept
 {
   return sizeof(FlatMesh);
 }
@@ -74,7 +74,7 @@ std::size_t FlatMesh::geometrySize() const
   \details
   No detailed.
   */
-Float FlatMesh::getTraversalCost() const
+Float FlatMesh::getTraversalCost() const noexcept
 {
   return 1.0;
 }
@@ -84,7 +84,7 @@ Float FlatMesh::getTraversalCost() const
   Please see the details of this algorithm below URL.
   http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-9-ray-triangle-intersection/m-ller-trumbore-algorithm/
   */
-bool FlatMesh::testIntersection(const Ray& ray, IntersectionInfo* intersection) const
+bool FlatMesh::testIntersection(const Ray& ray, IntersectionInfo* intersection) const noexcept
 {
   Float t;
   Float barycentric[3];
@@ -109,7 +109,7 @@ bool FlatMesh::testIntersection(const Ray& ray, IntersectionInfo* intersection) 
   \details
   No detailed.
   */
-std::tuple<SampledPoint, Vector3> FlatMesh::samplePoint(Sampler& sampler) const
+std::tuple<SampledPoint, Vector3> FlatMesh::samplePoint(Sampler& sampler) const noexcept
 {
   Float u = sampler.sample(0.0, 1.0);
   Float v = sampler.sample(0.0, 1.0);
@@ -126,7 +126,7 @@ std::tuple<SampledPoint, Vector3> FlatMesh::samplePoint(Sampler& sampler) const
   \details
   No detailed.
   */
-void FlatMesh::transform(const Matrix4x4& matrix)
+void FlatMesh::transform(const Matrix4x4& matrix) noexcept
 {
   affineTransform(matrix, &vertex_);
   affineTransform(matrix, &edge_[0]);
@@ -144,7 +144,7 @@ void FlatMesh::transform(const Matrix4x4& matrix)
   \details
   No detailed.
   */
-void FlatMesh::initialize(const Point3& vertex1, const Point3& vertex2)
+void FlatMesh::initialize(const Point3& vertex1, const Point3& vertex2) noexcept
 {
   edge_[0] = vertex1 - vertex_;
   edge_[1] = vertex2 - vertex_;
@@ -155,7 +155,7 @@ void FlatMesh::initialize(const Point3& vertex1, const Point3& vertex2)
   \details
   No detailed.
   */
-void FlatMesh::setNormal()
+void FlatMesh::setNormal() noexcept
 {
   normal_ = (zisc::cross(edge_[0], edge_[1])).normalized();
   ZISC_ASSERT(isUnitVector(normal_), "Normal must be unit vector.");

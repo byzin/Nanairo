@@ -37,7 +37,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-Filmic::Filmic(const System& system, const SceneSettings& settings) :
+Filmic::Filmic(const System& system, const SceneSettings& settings) noexcept :
     ToneMappingMethod(system, settings)
 {
   initialize(system, settings);
@@ -49,7 +49,7 @@ Filmic::Filmic(const System& system, const SceneSettings& settings) :
   */
 void Filmic::toneMap(System& system,
                      const HdrImage& hdr_image, 
-                     QImage& ldr_image)
+                     QImage& ldr_image) noexcept
 {
   using zisc::cast;
 
@@ -90,7 +90,7 @@ void Filmic::toneMap(System& system,
   \details
   No detailed.
   */
-void Filmic::initialize(const System& system, const SceneSettings& /* settings */)
+void Filmic::initialize(const System& system, const SceneSettings& /* settings */) noexcept
 {
   const int width = system.imageWidthResolution();
   const int height = system.imageHeightResolution();
@@ -101,7 +101,7 @@ void Filmic::initialize(const System& system, const SceneSettings& /* settings *
   \details
   No detailed.
   */
-Float Filmic::filmicToneMap(Float x) const
+Float Filmic::filmicToneMap(Float x) const noexcept
 {
   constexpr Float A = 6.2;
   constexpr Float B = 0.5;

@@ -25,7 +25,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-GuiEngine::GuiEngine() :
+GuiEngine::GuiEngine() noexcept :
     image_provider_{new RenderedImageProvider}
 {
   initialize();
@@ -35,7 +35,7 @@ GuiEngine::GuiEngine() :
   \details
   No detailed.
   */
-void GuiEngine::load(const QUrl& url)
+void GuiEngine::load(const QUrl& url) noexcept
 {
   engine_.load(url);
 }
@@ -44,7 +44,7 @@ void GuiEngine::load(const QUrl& url)
   \details
   No detailed.
   */
-void GuiEngine::initialize()
+void GuiEngine::initialize() noexcept
 {
   manager_.setRenderedImageProvider(image_provider_);
   manager_.setSceneSettings(&settings_);

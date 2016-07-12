@@ -34,7 +34,7 @@ namespace nanairo {
   */
 CheckerboardTexture::CheckerboardTexture(const System& system,
                                          const SceneSettings& settings,
-                                         const QString& prefix)
+                                         const QString& prefix) noexcept
 {
   initialize(system, settings, prefix);
 }
@@ -43,7 +43,7 @@ CheckerboardTexture::CheckerboardTexture(const System& system,
   \details
   No detailed.
   */
-Float CheckerboardTexture::floatValue(const Point2& coordinate) const
+Float CheckerboardTexture::floatValue(const Point2& coordinate) const noexcept
 {
   using zisc::cast;
 
@@ -57,7 +57,7 @@ Float CheckerboardTexture::floatValue(const Point2& coordinate) const
   \details
   No detailed.
   */
-std::size_t CheckerboardTexture::textureSize() const
+std::size_t CheckerboardTexture::textureSize() const noexcept
 {
   return sizeof(SpectralDistribution) * 2 + sizeof(Float) * 4;
 }
@@ -66,7 +66,7 @@ std::size_t CheckerboardTexture::textureSize() const
   \details
   No detailed.
   */
-TextureType CheckerboardTexture::type() const
+TextureType CheckerboardTexture::type() const noexcept
 {
   return TextureType::Checkerboard;
 }
@@ -76,7 +76,7 @@ TextureType CheckerboardTexture::type() const
   No detailed.
   */
 Float CheckerboardTexture::wavelengthValue(const Point2& coordinate, 
-                                           const uint16 wavelength) const
+                                           const uint16 wavelength) const noexcept
 {
   using zisc::cast;
 
@@ -92,7 +92,7 @@ Float CheckerboardTexture::wavelengthValue(const Point2& coordinate,
   */
 void CheckerboardTexture::initialize(const System& system,
                                      const SceneSettings& settings,
-                                     const QString& prefix)
+                                     const QString& prefix) noexcept
 {
   using zisc::cast;
 

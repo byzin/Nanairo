@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SMOOTH_CONDUCTOR_SURFACE_HPP_
-#define _NANAIRO_SMOOTH_CONDUCTOR_SURFACE_HPP_
+#ifndef NANAIRO_SMOOTH_CONDUCTOR_SURFACE_HPP
+#define NANAIRO_SMOOTH_CONDUCTOR_SURFACE_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -43,24 +43,24 @@ class SmoothConductorSurface : public SurfaceModel
 
   //! Create a smooth conductor surface
   SmoothConductorSurface(const SceneSettings& settings, 
-                         const QString& prefix);
+                         const QString& prefix) noexcept;
 
 
   //! Make a Fresnel BRDF
   template <uint kSampleSize>
   ShaderPointer<kSampleSize> makeSpecularBrdf(
       const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const;
+      MemoryPool& memory_pool) const noexcept;
 
   //! Return the surface model size
-  std::size_t surfaceSize() const override;
+  std::size_t surfaceSize() const noexcept override;
 
   //! Return the smooth conductor surface type
-  SurfaceType type() const override;
+  SurfaceType type() const noexcept override;
 
  private:
   //! Initialize
-  void initialize(const SceneSettings& settings, const QString& prefix);
+  void initialize(const SceneSettings& settings, const QString& prefix) noexcept;
 
 
 //  SpectralDistribution eta_, //!< The ratio of refractive index
@@ -74,4 +74,4 @@ class SmoothConductorSurface : public SurfaceModel
 
 #include "smooth_conductor_surface-inl.hpp"
 
-#endif // _NANAIRO_SMOOTH_CONDUCTOR_SURFACE_HPP_
+#endif // NANAIRO_SMOOTH_CONDUCTOR_SURFACE_HPP

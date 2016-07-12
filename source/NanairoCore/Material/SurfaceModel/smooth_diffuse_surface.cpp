@@ -30,7 +30,7 @@ class SpectralDistribution;
 SmoothDiffuseSurface::SmoothDiffuseSurface(
     const SceneSettings& settings,
     const QString& prefix,
-    const std::vector<const Texture*>& texture_list)
+    const std::vector<const Texture*>& texture_list) noexcept
 {
   initialize(settings, prefix, texture_list);
 }
@@ -39,7 +39,7 @@ SmoothDiffuseSurface::SmoothDiffuseSurface(
   \details
   No detailed.
   */
-std::size_t SmoothDiffuseSurface::surfaceSize() const
+std::size_t SmoothDiffuseSurface::surfaceSize() const noexcept
 {
   return 0;
 }
@@ -48,7 +48,7 @@ std::size_t SmoothDiffuseSurface::surfaceSize() const
   \details
   No detailed.
   */
-SurfaceType SmoothDiffuseSurface::type() const
+SurfaceType SmoothDiffuseSurface::type() const noexcept
 {
   return SurfaceType::SmoothDiffuse;
 }
@@ -60,7 +60,7 @@ SurfaceType SmoothDiffuseSurface::type() const
 void SmoothDiffuseSurface::initialize(
     const SceneSettings& settings,
     const QString& prefix,
-    const std::vector<const Texture*>& texture_list)
+    const std::vector<const Texture*>& texture_list) noexcept
 {
   const auto p = prefix + "/" + keyword::smoothDiffuseSurface;
   const auto key = p + "/" + keyword::reflectanceIndex;

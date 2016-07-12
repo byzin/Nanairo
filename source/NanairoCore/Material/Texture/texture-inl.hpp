@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_TEXTURE_INL_HPP_
-#define _NANAIRO_TEXTURE_INL_HPP_
+#ifndef NANAIRO_TEXTURE_INL_HPP
+#define NANAIRO_TEXTURE_INL_HPP
 
 #include "texture.hpp"
 // Zisc
@@ -30,7 +30,7 @@ namespace nanairo {
 template <uint kSampleSize> inline
 SampledSpectra<kSampleSize> Texture::spectraValue(
     const Point2& coordinate,
-    const WavelengthSamples<kSampleSize>& wavelengths) const
+    const WavelengthSamples<kSampleSize>& wavelengths) const noexcept
 {
   SampledSpectra<kSampleSize> spectra{wavelengths};
 
@@ -57,4 +57,4 @@ SampledSpectra<kSampleSize> Texture::spectraValue(
 
 } // namespace nanairo
 
-#endif // _NANAIRO_TEXTURE_INL_HPP_
+#endif // NANAIRO_TEXTURE_INL_HPP

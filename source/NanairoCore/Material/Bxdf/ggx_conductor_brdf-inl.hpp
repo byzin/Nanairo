@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_GGX_CONDUCTOR_BRDF_INL_HPP_
-#define _NANAIRO_GGX_CONDUCTOR_BRDF_INL_HPP_
+#ifndef NANAIRO_GGX_CONDUCTOR_BRDF_INL_HPP
+#define NANAIRO_GGX_CONDUCTOR_BRDF_INL_HPP
 
 #include "ggx_conductor_brdf.hpp"
 // Sstandard C++ library
@@ -33,7 +33,7 @@ namespace nanairo {
 template <uint kSampleSize> inline
 GgxConductorBrdf<kSampleSize>::GgxConductorBrdf(
     const Float roughness,
-    const Spectra& reflectance_0deg) :
+    const Spectra& reflectance_0deg) noexcept :
         reflectance_0deg_{reflectance_0deg},
         roughness_{roughness}
 {
@@ -48,7 +48,7 @@ Float GgxConductorBrdf<kSampleSize>::evaluatePdf(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& /* wavelengths */) const
+    const Wavelengths& /* wavelengths */) const noexcept
 {
   const Float pdf = evaluateGgxReflectionPdf(roughness_, *vin, *vout, normal);
   return pdf;
@@ -63,7 +63,7 @@ auto GgxConductorBrdf<kSampleSize>::evaluateRadiance(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& /* wavelengths */) const -> Spectra
+    const Wavelengths& /* wavelengths */) const noexcept -> Spectra
 {
   const auto& r0 = reflectance_0deg_;
   const auto f = evaluateGgxReflectance(roughness_, *vin, *vout, normal, r0);
@@ -79,7 +79,7 @@ auto GgxConductorBrdf<kSampleSize>::evaluateRadianceAndPdf(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& /* wavelengths */) const -> std::tuple<Spectra, Float>
+    const Wavelengths& /* wavelengths */) const noexcept -> std::tuple<Spectra, Float>
 {
   const auto& r0 = reflectance_0deg_;
   Float pdf = 0.0;
@@ -97,7 +97,7 @@ auto GgxConductorBrdf<kSampleSize>::sample(
     const Vector3* vin,
     const Vector3& normal,
     const Wavelengths& /* wavelengths */,
-    Sampler& sampler) const -> std::tuple<SampledDirection, Spectra>
+    Sampler& sampler) const noexcept -> std::tuple<SampledDirection, Spectra>
 {
   // Sample a microfacet normal
   Float cos_theta_ni = 0.0,
@@ -134,11 +134,11 @@ auto GgxConductorBrdf<kSampleSize>::sample(
   No detailed.
   */
 template <uint kSampleSize>
-bool GgxConductorBrdf<kSampleSize>::wavelengthIsSelected() const
+bool GgxConductorBrdf<kSampleSize>::wavelengthIsSelected() const noexcept
 {
   return false;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_GGX_CONDUCTOR_BRDF_INL_HPP_
+#endif // NANAIRO_GGX_CONDUCTOR_BRDF_INL_HPP

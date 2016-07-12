@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SAMPLED_SPECTRA_INL_HPP_
-#define _NANAIRO_SAMPLED_SPECTRA_INL_HPP_
+#ifndef NANAIRO_SAMPLED_SPECTRA_INL_HPP
+#define NANAIRO_SAMPLED_SPECTRA_INL_HPP
 
 #include "sampled_spectra.hpp"
 // Zisc
@@ -28,7 +28,7 @@ namespace nanairo {
   No detailed.
   */
 template <uint kSampleSize> inline
-SampledSpectra<kSampleSize>::SampledSpectra()
+SampledSpectra<kSampleSize>::SampledSpectra() noexcept
 {
 }
 
@@ -37,7 +37,7 @@ SampledSpectra<kSampleSize>::SampledSpectra()
   No detailed.
   */
 template <uint kSampleSize> inline
-SampledSpectra<kSampleSize>::SampledSpectra(const Wavelengths& wavelengths) :
+SampledSpectra<kSampleSize>::SampledSpectra(const Wavelengths& wavelengths) noexcept :
     wavelengths_{&wavelengths}
 {
 }
@@ -48,7 +48,7 @@ SampledSpectra<kSampleSize>::SampledSpectra(const Wavelengths& wavelengths) :
   */
 template <uint kSampleSize> inline
 SampledSpectra<kSampleSize>::SampledSpectra(const Wavelengths& wavelengths,
-                                            const Float intensity) :
+                                            const Float intensity) noexcept :
     wavelengths_{&wavelengths}
 {
   intensities_.fill(intensity);
@@ -60,7 +60,7 @@ SampledSpectra<kSampleSize>::SampledSpectra(const Wavelengths& wavelengths,
   */
 template <uint kSampleSize> inline
 SampledSpectra<kSampleSize>::SampledSpectra(const Wavelengths& wavelengths,
-                                            const Intensities& intensities) :
+                                            const Intensities& intensities) noexcept :
     intensities_{intensities},
     wavelengths_{&wavelengths}
 {
@@ -71,7 +71,7 @@ SampledSpectra<kSampleSize>::SampledSpectra(const Wavelengths& wavelengths,
   No detailed.
   */
 template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator+(const Float scalar) const 
+auto SampledSpectra<kSampleSize>::operator+(const Float scalar) const noexcept
     -> SampledSpectra
 {
   return *this + SampledSpectra{*wavelengths_, scalar};
@@ -82,7 +82,7 @@ auto SampledSpectra<kSampleSize>::operator+(const Float scalar) const
   No detailed.
   */
 template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator+(const SampledSpectra& samples) const
+auto SampledSpectra<kSampleSize>::operator+(const SampledSpectra& samples) const noexcept
     -> SampledSpectra
 {
   return SampledSpectra{*wavelengths_,  intensities_ + samples.intensities_};
@@ -93,7 +93,7 @@ auto SampledSpectra<kSampleSize>::operator+(const SampledSpectra& samples) const
   No detailed.
   */
 template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator-(const Float scalar) const
+auto SampledSpectra<kSampleSize>::operator-(const Float scalar) const noexcept
     -> SampledSpectra
 {
   return *this - SampledSpectra{*wavelengths_, scalar};
@@ -104,7 +104,7 @@ auto SampledSpectra<kSampleSize>::operator-(const Float scalar) const
   No detailed.
   */
 template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator-(const SampledSpectra& samples) const
+auto SampledSpectra<kSampleSize>::operator-(const SampledSpectra& samples) const noexcept
     -> SampledSpectra
 {
   return SampledSpectra{*wavelengths_, intensities_ - samples.intensities_};
@@ -115,7 +115,7 @@ auto SampledSpectra<kSampleSize>::operator-(const SampledSpectra& samples) const
   No detailed.
   */
 template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator*(const Float scalar) const
+auto SampledSpectra<kSampleSize>::operator*(const Float scalar) const noexcept
     -> SampledSpectra
 {
   return SampledSpectra{*wavelengths_, intensities_ * scalar};
@@ -126,7 +126,7 @@ auto SampledSpectra<kSampleSize>::operator*(const Float scalar) const
   No detailed.
   */
 template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator*(const SampledSpectra& samples) const
+auto SampledSpectra<kSampleSize>::operator*(const SampledSpectra& samples) const noexcept
     -> SampledSpectra
 {
   return SampledSpectra{*wavelengths_, intensities_ * samples.intensities_};
@@ -137,7 +137,7 @@ auto SampledSpectra<kSampleSize>::operator*(const SampledSpectra& samples) const
   No detailed.
   */
 template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator/(const SampledSpectra& samples) const
+auto SampledSpectra<kSampleSize>::operator/(const SampledSpectra& samples) const noexcept
     -> SampledSpectra
 {
   return SampledSpectra{*wavelengths_, intensities_ / samples.intensities_};
@@ -148,7 +148,7 @@ auto SampledSpectra<kSampleSize>::operator/(const SampledSpectra& samples) const
   No detailed.
   */
 template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator+=(const SampledSpectra& samples)
+auto SampledSpectra<kSampleSize>::operator+=(const SampledSpectra& samples) noexcept
     -> SampledSpectra&
 {
   intensities_ += samples.intensities_;
@@ -160,7 +160,7 @@ auto SampledSpectra<kSampleSize>::operator+=(const SampledSpectra& samples)
   No detailed.
   */
 template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator-=(const SampledSpectra& samples)
+auto SampledSpectra<kSampleSize>::operator-=(const SampledSpectra& samples) noexcept
     -> SampledSpectra&
 {
   intensities_ -= samples.intensities_;
@@ -172,7 +172,7 @@ auto SampledSpectra<kSampleSize>::operator-=(const SampledSpectra& samples)
   No detailed.
   */
 template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator*=(const SampledSpectra& samples)
+auto SampledSpectra<kSampleSize>::operator*=(const SampledSpectra& samples) noexcept
     -> SampledSpectra&
 {
   intensities_ *= samples.intensities_;
@@ -184,7 +184,7 @@ auto SampledSpectra<kSampleSize>::operator*=(const SampledSpectra& samples)
   No detailed.
   */
 template <uint kSampleSize> inline
-Float SampledSpectra<kSampleSize>::average() const
+Float SampledSpectra<kSampleSize>::average() const noexcept
 {
   using zisc::cast;
 
@@ -197,7 +197,7 @@ Float SampledSpectra<kSampleSize>::average() const
   No detailed.
   */
 template <uint kSampleSize> inline
-Float SampledSpectra<kSampleSize>::intensity(const uint index) const
+Float SampledSpectra<kSampleSize>::intensity(const uint index) const noexcept
 {
   return intensities_[index];
 }
@@ -207,7 +207,7 @@ Float SampledSpectra<kSampleSize>::intensity(const uint index) const
   No detailed.
   */
 template <uint kSampleSize> inline
-bool SampledSpectra<kSampleSize>::isZero() const
+bool SampledSpectra<kSampleSize>::isZero() const noexcept
 {
   return intensities_.isZero();
 }
@@ -217,7 +217,7 @@ bool SampledSpectra<kSampleSize>::isZero() const
   No detailed.
   */
 template <uint kSampleSize> inline
-Float SampledSpectra<kSampleSize>::max() const
+Float SampledSpectra<kSampleSize>::max() const noexcept
 {
   return intensities_.max();
 }
@@ -227,7 +227,7 @@ Float SampledSpectra<kSampleSize>::max() const
   No detailed.
   */
 template <uint kSampleSize> inline
-uint16 SampledSpectra<kSampleSize>::wavelength(const uint index) const
+uint16 SampledSpectra<kSampleSize>::wavelength(const uint index) const noexcept
 {
   return (*wavelengths_)[index];
 }
@@ -237,7 +237,7 @@ uint16 SampledSpectra<kSampleSize>::wavelength(const uint index) const
   No detailed.
   */
 template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::wavelengths() const -> const Wavelengths&
+auto SampledSpectra<kSampleSize>::wavelengths() const noexcept -> const Wavelengths&
 {
   return *wavelengths_;
 }
@@ -248,7 +248,7 @@ auto SampledSpectra<kSampleSize>::wavelengths() const -> const Wavelengths&
   */
 template <uint kSampleSize> inline
 void SampledSpectra<kSampleSize>::setIntensity(const uint index, 
-                                               const Float intensity)
+                                               const Float intensity) noexcept
 {
   intensities_.set(index, intensity);
 }
@@ -259,7 +259,7 @@ void SampledSpectra<kSampleSize>::setIntensity(const uint index,
   */
 template <uint kSampleSize> inline
 SampledSpectra<kSampleSize> operator*(const Float scalar, 
-                                      const SampledSpectra<kSampleSize>& samples)
+                                      const SampledSpectra<kSampleSize>& samples) noexcept
 {
   return samples * scalar;
 }
@@ -270,7 +270,7 @@ SampledSpectra<kSampleSize> operator*(const Float scalar,
   */
 template <uint kSampleSize> inline
 SampledSpectra<kSampleSize> makeSampledSpectra(
-    const SampledWavelengths<kSampleSize>& sampled_wavelengths)
+    const SampledWavelengths<kSampleSize>& sampled_wavelengths) noexcept
 {
   return SampledSpectra<kSampleSize>{sampled_wavelengths.wavelengths(),
                                      sampled_wavelengths.inverseProbabilities()};
@@ -295,7 +295,7 @@ SampledSpectra<kSampleSize> makeSampledSpectra(
   */
 template <uint kSampleSize> inline
 SampledSpectra<kSampleSize> sample(const SpectralDistribution& distribution,
-                                   const WavelengthSamples<kSampleSize>& wavelengths)
+                                   const WavelengthSamples<kSampleSize>& wavelengths) noexcept
 {
   IntensitySamples<kSampleSize> intensities;
   for (uint index = 0; index < kSampleSize; ++index)

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_XYZ_COLOR_MATCHING_FUNCTION_INL_HPP_
-#define _NANAIRO_XYZ_COLOR_MATCHING_FUNCTION_INL_HPP_
+#ifndef NANAIRO_XYZ_COLOR_MATCHING_FUNCTION_INL_HPP
+#define NANAIRO_XYZ_COLOR_MATCHING_FUNCTION_INL_HPP
 
 #include "xyz_color_matching_function.hpp"
 // Zisc
@@ -26,7 +26,7 @@ namespace nanairo {
   */
 inline
 XyzColor XyzColorMatchingFunction::toXyzInEmissiveCase(
-    const SpectralDistribution& spectra) const
+    const SpectralDistribution& spectra) const noexcept
 {
   auto x = x_bar_ * spectra;
   auto y = y_bar_ * spectra;
@@ -40,7 +40,7 @@ XyzColor XyzColorMatchingFunction::toXyzInEmissiveCase(
   */
 inline
 XyzColor XyzColorMatchingFunction::toXyzInReflectiveCase(
-    const SpectralDistribution& spectra) const
+    const SpectralDistribution& spectra) const noexcept
 {
   auto x = x_bar_ * spectra * standard_illuminant_;
   auto y = y_bar_ * spectra * standard_illuminant_;
@@ -53,7 +53,7 @@ XyzColor XyzColorMatchingFunction::toXyzInReflectiveCase(
   No detailed.
   */
 inline
-const SpectralDistribution& XyzColorMatchingFunction::xBar() const
+const SpectralDistribution& XyzColorMatchingFunction::xBar() const noexcept
 {
   return x_bar_;
 }
@@ -63,7 +63,7 @@ const SpectralDistribution& XyzColorMatchingFunction::xBar() const
   No detailed.
   */
 inline
-const SpectralDistribution& XyzColorMatchingFunction::yBar() const
+const SpectralDistribution& XyzColorMatchingFunction::yBar() const noexcept
 {
   return y_bar_;
 }
@@ -73,11 +73,11 @@ const SpectralDistribution& XyzColorMatchingFunction::yBar() const
   No detailed.
   */
 inline
-const SpectralDistribution& XyzColorMatchingFunction::zBar() const
+const SpectralDistribution& XyzColorMatchingFunction::zBar() const noexcept
 {
   return z_bar_;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_XYZ_COLOR_MATCHING_FUNCTION_INL_HPP_
+#endif // NANAIRO_XYZ_COLOR_MATCHING_FUNCTION_INL_HPP

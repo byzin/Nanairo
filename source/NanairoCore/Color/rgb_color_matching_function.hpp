@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_RGB_COLOR_MATCHING_FUNCTION_HPP_
-#define _NANAIRO_RGB_COLOR_MATCHING_FUNCTION_HPP_
+#ifndef NANAIRO_RGB_COLOR_MATCHING_FUNCTION_HPP
+#define NANAIRO_RGB_COLOR_MATCHING_FUNCTION_HPP
 
 // Zisc
 #include "zisc/arithmetic_array.hpp"
@@ -28,21 +28,21 @@ class RgbColorMatchingFunction
 {
  public:
   //! Create a rgb color matching function
-  RgbColorMatchingFunction();
+  RgbColorMatchingFunction() noexcept;
 
 
   //! Return the blue bar
-  const SpectralDistribution& blueBar() const;
+  const SpectralDistribution& blueBar() const noexcept;
 
   //! Return the green bar
-  const SpectralDistribution& greenBar() const;
+  const SpectralDistribution& greenBar() const noexcept;
 
   //! Return the red bar
-  const SpectralDistribution& redBar() const;
+  const SpectralDistribution& redBar() const noexcept;
 
  private:
   //! Initialize
-  void initialize();
+  void initialize() noexcept;
 
 
   SpectralDistribution red_bar_,
@@ -54,4 +54,4 @@ class RgbColorMatchingFunction
 
 } // namespace nanairo
 
-#endif // _NANAIRO_RGB_COLOR_MATCHING_FUNCTION_HPP_
+#endif // NANAIRO_RGB_COLOR_MATCHING_FUNCTION_HPP

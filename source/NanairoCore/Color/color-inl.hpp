@@ -3,8 +3,8 @@
   \author zin
   */
 
-#ifndef _NANAIRO_COLOR_INL_HPP_
-#define _NANAIRO_COLOR_INL_HPP_
+#ifndef NANAIRO_COLOR_INL_HPP
+#define NANAIRO_COLOR_INL_HPP
 
 #include "color.hpp"
 // Zisc
@@ -21,7 +21,7 @@ namespace nanairo {
   No detailed.
   */
 template <uint kN> inline
-Color<kN>::Color()
+Color<kN>::Color() noexcept
 {
 }
 
@@ -30,7 +30,7 @@ Color<kN>::Color()
   No detailed.
   */
 template <uint kN> template <typename ...Types> inline
-Color<kN>::Color(const Types ...elements) :
+Color<kN>::Color(const Types ...elements) noexcept :
     color_{elements...}
 {
 }
@@ -40,7 +40,7 @@ Color<kN>::Color(const Types ...elements) :
   No detailed.
   */
 template <uint kN> inline
-Color<kN>::Color(const zisc::ArithmeticArray<Float, kN>& color) :
+Color<kN>::Color(const zisc::ArithmeticArray<Float, kN>& color) noexcept :
     color_{color}
 {
 }
@@ -50,7 +50,7 @@ Color<kN>::Color(const zisc::ArithmeticArray<Float, kN>& color) :
   No detailed.
   */
 template <uint kN> inline
-Float& Color<kN>::operator[](const uint index)
+Float& Color<kN>::operator[](const uint index) noexcept
 {
   return color_[index];
 }
@@ -60,7 +60,7 @@ Float& Color<kN>::operator[](const uint index)
   No detailed.
   */
 template <uint kN> inline
-const Float& Color<kN>::operator[](const uint index) const
+const Float& Color<kN>::operator[](const uint index) const noexcept
 {
   return color_[index];
 }
@@ -70,7 +70,7 @@ const Float& Color<kN>::operator[](const uint index) const
   No detailed.
   */
 template <uint kN> inline
-void Color<kN>::clamp(const Float min, const Float max)
+void Color<kN>::clamp(const Float min, const Float max) noexcept
 {
   for (uint index = 0; index < kN; ++index)
     color_[index] = zisc::clamp(color_[index], min, max);
@@ -81,7 +81,7 @@ void Color<kN>::clamp(const Float min, const Float max)
   No detailed.
   */
 template <uint kN> inline
-const zisc::ArithmeticArray<Float, kN>& Color<kN>::data() const
+const zisc::ArithmeticArray<Float, kN>& Color<kN>::data() const noexcept
 {
   return color_;
 }
@@ -91,7 +91,7 @@ const zisc::ArithmeticArray<Float, kN>& Color<kN>::data() const
   No detailed.
   */
 template <uint kN> inline
-bool Color<kN>::isZero() const
+bool Color<kN>::isZero() const noexcept
 {
   return color_.isZero();
 }
@@ -101,7 +101,7 @@ bool Color<kN>::isZero() const
   No detailed.
   */
 template <uint kN> inline
-Float Color<kN>::max() const
+Float Color<kN>::max() const noexcept
 {
   return color_.max();
 }
@@ -111,7 +111,7 @@ Float Color<kN>::max() const
   No detailed.
   */
 template <uint kN> inline
-void Color<kN>::scale()
+void Color<kN>::scale() noexcept
 {
   const Float scale_factor = 1.0 / max();
   color_ = color_ * scale_factor;
@@ -122,7 +122,7 @@ void Color<kN>::scale()
   No detailed.
   */
 template <typename Type, zisc::EnableIfBaseOf<Color<3>, Type>> inline
-Type operator*(const Type& color, const Float scalar)
+Type operator*(const Type& color, const Float scalar) noexcept
 {
   return Type{color.data() * scalar};
 }
@@ -132,11 +132,11 @@ Type operator*(const Type& color, const Float scalar)
   No detailed.
   */
 template <typename Type, zisc::EnableIfBaseOf<Color<3>, Type>> inline
-Type operator*(const Float scalar, const Type& color)
+Type operator*(const Float scalar, const Type& color) noexcept
 {
   return color * scalar;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_COLOR_INL_HPP_
+#endif // NANAIRO_COLOR_INL_HPP

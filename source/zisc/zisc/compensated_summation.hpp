@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_COMPENSATED_SUMMATION_HPP_
-#define _ZISC_COMPENSATED_SUMMATION_HPP_
+#ifndef ZISC_COMPENSATED_SUMMATION_HPP
+#define ZISC_COMPENSATED_SUMMATION_HPP
 
 // Standard C++ library
 #include <type_traits>
@@ -25,28 +25,28 @@ namespace zisc {
 template <typename Float>
 class CompensatedSummation
 {
-  static_assert(kIsFloat<Float>, "Float must be floating point type.");
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
 
  public:
   //! Initialize with 0
-  CompensatedSummation();
+  CompensatedSummation() noexcept;
 
   //! Initialize with value
-  CompensatedSummation(const Float value);
+  CompensatedSummation(const Float value) noexcept;
 
 
   //! Return the value
-  Float get() const;
+  Float get() const noexcept;
 
   //! Set the value and clear compensation
-  void set(const Float value);
+  void set(const Float value) noexcept;
 
   //! Sum value
-  void add(const Float value);
+  void add(const Float value) noexcept;
 
   //! Sum value
   template <typename ...Types>
-  void add(const Float value, const Types... values);
+  void add(const Float value, const Types... values) noexcept;
 
  private:
   Float sum_,
@@ -57,4 +57,4 @@ class CompensatedSummation
 
 #include "compensated_summation-inl.hpp"
 
-#endif // _ZISC_COMPENSATED_SUMMATION_HPP_
+#endif // ZISC_COMPENSATED_SUMMATION_HPP

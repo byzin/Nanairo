@@ -1,5 +1,5 @@
 /*
-  \file matrix-inl.h
+  \file matrix-inl.hpp
   \author Sho Ikeda
 
   Copyright (c) 2015 Sho Ikeda
@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_MATRIX_INL_H_
-#define _ZISC_MATRIX_INL_H_
+#ifndef ZISC_MATRIX_INL_HPP
+#define ZISC_MATRIX_INL_HPP
 
 #include "matrix.hpp"
 // Standard C++ library
@@ -29,7 +29,7 @@ namespace zisc {
   No detailed.
   */
 template <typename Arithmetic, uint kRow, uint kColumn> inline
-Matrix<Arithmetic, kRow, kColumn>::Matrix()
+Matrix<Arithmetic, kRow, kColumn>::Matrix() noexcept
 {
 }
 
@@ -39,7 +39,7 @@ Matrix<Arithmetic, kRow, kColumn>::Matrix()
  */
 template <typename Arithmetic, uint kRow, uint kColumn>
 template <typename ...Types> inline
-Matrix<Arithmetic, kRow, kColumn>::Matrix(const Types ...elements) :
+Matrix<Arithmetic, kRow, kColumn>::Matrix(const Types ...elements) noexcept :
     elements_{elements...}
 {
 }
@@ -49,9 +49,10 @@ Matrix<Arithmetic, kRow, kColumn>::Matrix(const Types ...elements) :
   No detailed.
   */
 template <typename Arithmetic, uint kRow, uint kColumn> inline
-bool Matrix<Arithmetic, kRow, kColumn>::operator==(const Matrix& matrix) const
+bool Matrix<Arithmetic, kRow, kColumn>::operator==(const Matrix& matrix) const 
+    noexcept
 {
-  return elements_ == matrix.elements_;
+  return (elements_ == matrix.elements_);
 }
 
 /*!
@@ -60,8 +61,9 @@ bool Matrix<Arithmetic, kRow, kColumn>::operator==(const Matrix& matrix) const
   */
 template <typename Arithmetic, uint kRow, uint kColumn> inline
 bool Matrix<Arithmetic, kRow, kColumn>::operator!=(const Matrix& matrix) const
+    noexcept
 {
-  return elements_ != matrix.elements_;
+  return (elements_ != matrix.elements_);
 }
 
 /*!
@@ -70,7 +72,7 @@ bool Matrix<Arithmetic, kRow, kColumn>::operator!=(const Matrix& matrix) const
   */
 template <typename Arithmetic, uint kRow, uint kColumn> inline
 auto Matrix<Arithmetic, kRow, kColumn>::operator*(const Arithmetic scalar) const
-    -> Matrix
+    noexcept -> Matrix
 {
   Matrix matrix;
   matrix.elements_ = scalar * elements_;
@@ -82,10 +84,14 @@ auto Matrix<Arithmetic, kRow, kColumn>::operator*(const Arithmetic scalar) const
  No detailed.
  */
 template <typename Arithmetic, uint kRow, uint kColumn> inline
-Arithmetic& Matrix<Arithmetic, kRow, kColumn>::operator()(const uint row,
-                                                          const uint column)
+Arithmetic& Matrix<Arithmetic, kRow, kColumn>::operator()(
+    const uint row,
+    const uint column) noexcept
 {
-  return elements_[row * columnSize() + column];
+  ZISC_ASSERTION_STATEMENT(constexpr auto zero = cast<uint>(0));
+  ZISC_ASSERT(isInBounds(row, zero, rowSize()), "The row is out of range.");
+  ZISC_ASSERT(isInBounds(column, zero, columnSize()), "The column is out of range.");
+  return get(row, column);
 }
 
 /*!
@@ -93,10 +99,14 @@ Arithmetic& Matrix<Arithmetic, kRow, kColumn>::operator()(const uint row,
  No detailed.
  */
 template <typename Arithmetic, uint kRow, uint kColumn> inline
-const Arithmetic& Matrix<Arithmetic, kRow, kColumn>::operator()(const uint row,
-                                                                const uint column) const
+const Arithmetic& Matrix<Arithmetic, kRow, kColumn>::operator()(
+    const uint row,
+    const uint column) const noexcept
 {
-  return elements_[row * columnSize() + column];
+  ZISC_ASSERTION_STATEMENT(constexpr auto zero = cast<uint>(0));
+  ZISC_ASSERT(isInBounds(row, zero, rowSize()), "The row is out of range.");
+  ZISC_ASSERT(isInBounds(column, zero, columnSize()), "The column is out of range.");
+  return get(row, column);
 }
 
 /*!
@@ -104,11 +114,15 @@ const Arithmetic& Matrix<Arithmetic, kRow, kColumn>::operator()(const uint row,
   No detailed.
   */
 template <typename Arithmetic, uint kRow, uint kColumn> inline
-Arithmetic Matrix<Arithmetic, kRow, kColumn>::cofactor(const uint row,
-                                                       const uint column) const
+Arithmetic Matrix<Arithmetic, kRow, kColumn>::cofactor(
+    const uint row,
+    const uint column) const noexcept
 {
+  ZISC_ASSERTION_STATEMENT(constexpr auto zero = cast<uint>(0));
+  ZISC_ASSERT(isInBounds(row, zero, rowSize()), "The row is out of range.");
+  ZISC_ASSERT(isInBounds(column, zero, columnSize()), "The column is out of range.");
   const auto determinant = minorDeterminant(row, column);
-  return (((row + column) & 1) == 1) ? -determinant : determinant;
+  return (isOdd(row + column)) ? -determinant : determinant;
 }
 
 /*!
@@ -116,12 +130,12 @@ Arithmetic Matrix<Arithmetic, kRow, kColumn>::cofactor(const uint row,
   No detailed.
   */
 template <typename Arithmetic, uint kRow, uint kColumn> inline
-auto Matrix<Arithmetic, kRow, kColumn>::cofactorMatrix() const -> Matrix
+auto Matrix<Arithmetic, kRow, kColumn>::cofactorMatrix() const noexcept -> Matrix
 {
   Matrix cofactor_matrix;
   for (uint row = 0; row < rowSize(); ++row) {
     for (uint column = 0; column < columnSize(); ++column) {
-      cofactor_matrix.set(row, column, cofactor(column, row));
+      cofactor_matrix.set(row, column, cofactor(row, column));
     }
   }
   return cofactor_matrix;
@@ -132,7 +146,7 @@ auto Matrix<Arithmetic, kRow, kColumn>::cofactorMatrix() const -> Matrix
   No detailed.
   */
 template <typename Arithmetic, uint kRow, uint kColumn> inline
-constexpr uint Matrix<Arithmetic, kRow, kColumn>::columnSize()
+constexpr uint Matrix<Arithmetic, kRow, kColumn>::columnSize() noexcept
 {
   return kColumn;
 }
@@ -144,10 +158,10 @@ namespace zisc_matrix {
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-Arithmetic calculateDeterminant(const Matrix<Arithmetic, kN, kN>& matrix)
+Arithmetic calculateDeterminant(const Matrix<Arithmetic, kN, kN>& matrix) noexcept
 {
   Arithmetic determinant = cast<Arithmetic>(0);
-  for (uint column = 0; column < kN; ++column)
+  for (uint column = 0; column < matrix.columnSize(); ++column)
     determinant += matrix(0, column) * matrix.cofactor(0, column);
   return determinant;
 }
@@ -157,7 +171,7 @@ Arithmetic calculateDeterminant(const Matrix<Arithmetic, kN, kN>& matrix)
   No detailed.
   */
 template <typename Arithmetic> inline
-Arithmetic calculateDeterminant(const Matrix<Arithmetic, 2, 2>& matrix)
+Arithmetic calculateDeterminant(const Matrix<Arithmetic, 2, 2>& matrix) noexcept
 {
   return matrix(0, 0) * matrix(1, 1) - matrix(0, 1) * matrix(1, 0);
 }
@@ -167,7 +181,7 @@ Arithmetic calculateDeterminant(const Matrix<Arithmetic, 2, 2>& matrix)
   No detailed.
   */
 template <typename Arithmetic> inline
-Arithmetic calculateDeterminant(const Matrix<Arithmetic, 1, 1>& matrix)
+Arithmetic calculateDeterminant(const Matrix<Arithmetic, 1, 1>& matrix) noexcept
 {
   return matrix(0, 0);
 }
@@ -179,9 +193,9 @@ Arithmetic calculateDeterminant(const Matrix<Arithmetic, 1, 1>& matrix)
   No detailed.
   */
 template <typename Arithmetic, uint kRow, uint kColumn> inline
-Arithmetic Matrix<Arithmetic, kRow, kColumn>::determinant() const
+Arithmetic Matrix<Arithmetic, kRow, kColumn>::determinant() const noexcept
 {
-  static_assert(isSquareMatrix(), "## Matrix must be square matrix.");
+  static_assert(isSquareMatrix(), "Matrix isn't square matrix.");
   return zisc_matrix::calculateDeterminant(*this);
 }
 
@@ -190,9 +204,27 @@ Arithmetic Matrix<Arithmetic, kRow, kColumn>::determinant() const
  No detailed.
  */
 template <typename Arithmetic, uint kRow, uint kColumn> inline
-Arithmetic Matrix<Arithmetic, kRow, kColumn>::get(const uint row, 
-                                                  const uint column) const
+Arithmetic& Matrix<Arithmetic, kRow, kColumn>::get(const uint row, 
+                                                   const uint column) noexcept
 {
+  ZISC_ASSERTION_STATEMENT(constexpr auto zero = cast<uint>(0));
+  ZISC_ASSERT(isInBounds(row, zero, rowSize()), "The row is out of range.");
+  ZISC_ASSERT(isInBounds(column, zero, columnSize()), "The column is out of range.");
+  return elements_.get(row * kColumn + column);
+}
+
+/*!
+ \details
+ No detailed.
+ */
+template <typename Arithmetic, uint kRow, uint kColumn> inline
+const Arithmetic& Matrix<Arithmetic, kRow, kColumn>::get(
+    const uint row, 
+    const uint column) const noexcept
+{
+  ZISC_ASSERTION_STATEMENT(constexpr auto zero = cast<uint>(0));
+  ZISC_ASSERT(isInBounds(row, zero, rowSize()), "The row is out of range.");
+  ZISC_ASSERT(isInBounds(column, zero, columnSize()), "The column is out of range.");
   return elements_.get(row * kColumn + column);
 }
 
@@ -201,9 +233,23 @@ Arithmetic Matrix<Arithmetic, kRow, kColumn>::get(const uint row,
   No detailed.
   */
 template <typename Arithmetic, uint kRow, uint kColumn> inline
-auto Matrix<Arithmetic, kRow, kColumn>::inverseMatrix() const -> Matrix
+auto Matrix<Arithmetic, kRow, kColumn>::inverseMatrix() const noexcept -> Matrix
 {
-  return (cast<Arithmetic>(1) / determinant()) * cofactorMatrix();
+  // Check the determinant
+  const auto d = determinant();
+  ZISC_ASSERTION_STATEMENT(constexpr auto zero = cast<Arithmetic>(0));
+  ZISC_ASSERT(d != zero, "The determinant of the matrix is zero.");
+  // Get a scaler
+  constexpr auto one = cast<Arithmetic>(1);
+  const auto k = one / d;
+  // Get the inverse matrix
+  Matrix inverse_matrix;
+  for (uint row = 0; row < rowSize(); ++row) {
+    for (uint column = 0; column < columnSize(); ++column) {
+      inverse_matrix.set(row, column, k * cofactor(column, row));
+    }
+  }
+  return inverse_matrix;
 }
 
 /*!
@@ -211,7 +257,7 @@ auto Matrix<Arithmetic, kRow, kColumn>::inverseMatrix() const -> Matrix
   No detailed.
   */
 template <typename Arithmetic, uint kRow, uint kColumn> inline
-constexpr bool Matrix<Arithmetic, kRow, kColumn>::isSquareMatrix()
+constexpr bool Matrix<Arithmetic, kRow, kColumn>::isSquareMatrix() noexcept
 {
   return (kRow == kColumn);
 }
@@ -222,28 +268,27 @@ constexpr bool Matrix<Arithmetic, kRow, kColumn>::isSquareMatrix()
   */
 template <typename Arithmetic, uint kRow, uint kColumn>
 Arithmetic Matrix<Arithmetic, kRow, kColumn>::minorDeterminant(
-    const uint row, const uint column) const
+    const uint row, 
+    const uint column) const noexcept
 {
-  static_assert(isSquareMatrix(), "## Matrix must be square matrix.");
-  constexpr uint n = rowSize();
+  static_assert(isSquareMatrix(), "Matrix isn't square matrix.");
+  ZISC_ASSERTION_STATEMENT(constexpr auto zero = cast<uint>(0));
+  ZISC_ASSERT(isInBounds(row, zero, rowSize()), "The row is out of range.");
+  ZISC_ASSERT(isInBounds(column, zero, columnSize()), "The column is out of range.");
 
   // Make submatrix
-  Matrix<Arithmetic, n - 1, n - 1> submatrix;
-  uint r = 0,
-       c = 0;
-  for (uint i = 0; i < rowSize(); ++i) {
+  Matrix<Arithmetic, rowSize() - 1, columnSize() - 1> submatrix;
+  for (uint i = 0, r = 0; i < rowSize(); ++i) {
     if (i == row)
       continue;
-    for (uint j = 0; j < columnSize(); ++j) {
+    for (uint j = 0, c = 0; j < columnSize(); ++j) {
       if (j == column)
         continue;
       submatrix.set(r, c, get(i, j));
       ++c;
     }
     ++r;
-    c = 0;
   }
-
   // Calculate minor determinant
   return submatrix.determinant();
 }
@@ -253,7 +298,7 @@ Arithmetic Matrix<Arithmetic, kRow, kColumn>::minorDeterminant(
   No detailed.
   */
 template <typename Arithmetic, uint kRow, uint kColumn> inline
-constexpr uint Matrix<Arithmetic, kRow, kColumn>::rowSize()
+constexpr uint Matrix<Arithmetic, kRow, kColumn>::rowSize() noexcept
 {
   return kRow;
 }
@@ -265,7 +310,7 @@ constexpr uint Matrix<Arithmetic, kRow, kColumn>::rowSize()
 template <typename Arithmetic, uint kRow, uint kColumn> inline
 void Matrix<Arithmetic, kRow, kColumn>::set(const uint row,
                                             const uint column,
-                                            const Arithmetic value)
+                                            const Arithmetic value) noexcept
 {
   elements_.set(row * columnSize() + column, value);
 }
@@ -276,7 +321,7 @@ void Matrix<Arithmetic, kRow, kColumn>::set(const uint row,
   */
 template <typename Arithmetic, uint kRow, uint kColumn> inline
 Matrix<Arithmetic, kColumn, kRow> Matrix<Arithmetic, kRow, kColumn>::
-    transposedMatrix() const
+    transposedMatrix() const noexcept
 {
   Matrix<Arithmetic, kColumn, kRow> transposed_matrix;
   for (uint row = 0; row < rowSize(); ++row) {
@@ -293,13 +338,12 @@ Matrix<Arithmetic, kColumn, kRow> Matrix<Arithmetic, kRow, kColumn>::
  */
 template <typename Arithmetic, uint L, uint M, uint N>
 Matrix<Arithmetic, L, N> operator*(const Matrix<Arithmetic, L, M>& a,
-                                   const Matrix<Arithmetic, M, N>& b)
+                                   const Matrix<Arithmetic, M, N>& b) noexcept
 {
-  Matrix<Arithmetic, L, N> matrix{};
-  Arithmetic value;
+  Matrix<Arithmetic, L, N> matrix;
   for (uint l = 0; l < L; ++l) {
     for (uint n = 0; n < N; ++n) {
-      value = cast<Arithmetic>(0);
+      Arithmetic value = cast<Arithmetic>(0);
       for (uint m = 0; m < M; ++m)
         value += a(l, m) * b(m, n);
       matrix.set(l, n, value);
@@ -315,7 +359,7 @@ Matrix<Arithmetic, L, N> operator*(const Matrix<Arithmetic, L, M>& a,
 template <typename Arithmetic, uint kRow, uint kColumn> inline
 Matrix<Arithmetic, kRow, kColumn> operator*(
     const Arithmetic scalar,
-    const Matrix<Arithmetic, kRow, kColumn>& matrix)
+    const Matrix<Arithmetic, kRow, kColumn>& matrix) noexcept
 {
   return matrix * scalar;
 }
@@ -327,12 +371,11 @@ Matrix<Arithmetic, kRow, kColumn> operator*(
 template <typename Arithmetic, uint kN>
 ArithmeticArray<Arithmetic, kN> operator*(
     const Matrix<Arithmetic, kN, kN>& matrix,
-    const ArithmeticArray<Arithmetic, kN>& array)
+    const ArithmeticArray<Arithmetic, kN>& array) noexcept
 {
   ArithmeticArray<Arithmetic, kN> result;
-  Arithmetic value;
   for (uint row = 0; row < kN; ++row) {
-    value = cast<Arithmetic>(0);
+    Arithmetic value = cast<Arithmetic>(0);
     for (uint column = 0; column < kN; ++column)
       value += matrix(row, column) * array[column];
     result.set(row, value);
@@ -346,7 +389,7 @@ ArithmeticArray<Arithmetic, kN> operator*(
   */
 template <typename Arithmetic, uint kN> inline
 Point<Arithmetic, kN> operator*(const Matrix<Arithmetic, kN, kN>& matrix,
-                                const Point<Arithmetic, kN>& point)
+                                const Point<Arithmetic, kN>& point) noexcept
 {
   return Point<Arithmetic, kN>{matrix * point.data()};
 }
@@ -357,11 +400,11 @@ Point<Arithmetic, kN> operator*(const Matrix<Arithmetic, kN, kN>& matrix,
   */
 template <typename Arithmetic, uint kN> inline
 Vector<Arithmetic, kN> operator*(const Matrix<Arithmetic, kN, kN>& matrix,
-                                 const Vector<Arithmetic, kN>& vector)
+                                 const Vector<Arithmetic, kN>& vector) noexcept
 {
   return Vector<Arithmetic, kN>{matrix * vector.data()};
 }
 
 } // namespace zisc
 
-#endif // _ZISC_MATRIX_INL_H_
+#endif // ZISC_MATRIX_INL_HPP

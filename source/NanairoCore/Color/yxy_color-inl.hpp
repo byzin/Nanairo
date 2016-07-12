@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_YXY_COLOR_INL_HPP_
-#define _NANAIRO_YXY_COLOR_INL_HPP_
+#ifndef NANAIRO_YXY_COLOR_INL_HPP
+#define NANAIRO_YXY_COLOR_INL_HPP
 
 // Zisc
 #include "zisc/arithmetic_array.hpp"
@@ -23,7 +23,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-YxyColor::YxyColor() :
+YxyColor::YxyColor() noexcept :
     Color(0.0, 0.0, 0.0)
 {
 }
@@ -33,7 +33,7 @@ YxyColor::YxyColor() :
   No detailed.
   */
 inline
-YxyColor::YxyColor(const Float Y, const Float x, const Float y) :
+YxyColor::YxyColor(const Float Y, const Float x, const Float y) noexcept :
     Color(Y, x, y)
 {
 }
@@ -43,7 +43,7 @@ YxyColor::YxyColor(const Float Y, const Float x, const Float y) :
   No detailed.
   */
 inline
-Float& YxyColor::x()
+Float& YxyColor::x() noexcept
 {
   return color_[1];
 }
@@ -53,7 +53,7 @@ Float& YxyColor::x()
   No detailed.
   */
 inline
-const Float& YxyColor::x() const
+const Float& YxyColor::x() const noexcept
 {
   return color_[1];
 }
@@ -63,7 +63,7 @@ const Float& YxyColor::x() const
   No detailed.
   */
 inline
-Float& YxyColor::y()
+Float& YxyColor::y() noexcept
 {
   return color_[2];
 }
@@ -73,7 +73,7 @@ Float& YxyColor::y()
   No detailed.
   */
 inline
-const Float& YxyColor::y() const
+const Float& YxyColor::y() const noexcept
 {
   return color_[2];
 }
@@ -83,7 +83,7 @@ const Float& YxyColor::y() const
   No detailed.
   */
 inline
-Float& YxyColor::Y()
+Float& YxyColor::Y() noexcept
 {
   return color_[0];
 }
@@ -93,11 +93,11 @@ Float& YxyColor::Y()
   No detailed.
   */
 inline
-const Float& YxyColor::Y() const
+const Float& YxyColor::Y() const noexcept
 {
   return color_[0];
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_YXY_COLOR_INL_HPP_
+#endif // NANAIRO_YXY_COLOR_INL_HPP

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_OBJECT_HPP_
-#define _NANAIRO_OBJECT_HPP_
+#ifndef NANAIRO_OBJECT_HPP
+#define NANAIRO_OBJECT_HPP
 
 // Standard C++ library
 #include <vector>
@@ -30,17 +30,17 @@ class Object
 {
  public:
   //! Create object
-  Object(const Material& material, UniquePointer<Geometry>&& geometry);
+  Object(const Material& material, UniquePointer<Geometry>&& geometry) noexcept;
 
   //! Move object
-  Object(Object&& object);
+  Object(Object&& object) noexcept;
 
 
   //! Get geometry 
-  const Geometry& geometry() const;
+  const Geometry& geometry() const noexcept;
 
   //! Get material
-  const Material& material() const;
+  const Material& material() const noexcept;
 
  private:
   Material material_;
@@ -48,7 +48,7 @@ class Object
 };
 
 //! Check two objects are same
-bool isSameObject(const Object* object1, const Object* object2);
+bool isSameObject(const Object* object1, const Object* object2) noexcept;
 
 //! \} Core
 
@@ -56,4 +56,4 @@ bool isSameObject(const Object* object1, const Object* object2);
 
 #include "object-inl.hpp"
 
-#endif // _NANAIRO_OBJECT_HPP_
+#endif // NANAIRO_OBJECT_HPP

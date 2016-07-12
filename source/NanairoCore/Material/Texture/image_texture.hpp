@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_IMAGE_TEXTURE_HPP_
-#define _NANAIRO_IMAGE_TEXTURE_HPP_
+#ifndef NANAIRO_IMAGE_TEXTURE_HPP
+#define NANAIRO_IMAGE_TEXTURE_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -43,37 +43,37 @@ class ImageTexture : public Texture
   //! Create a image texture
   ImageTexture(const System& system,
                const SceneSettings& settings, 
-               const QString& prefix);
+               const QString& prefix) noexcept;
 
 
   //! Evaluate a float value at the coordinate
-  Float floatValue(const Point2& coordinate) const override;
+  Float floatValue(const Point2& coordinate) const noexcept override;
 
   //! Evaluate spectra at the coordinate
   template <uint kSampleSize>
   SampledSpectra<kSampleSize> imageSpectraValue(
       const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelength) const;
+      const WavelengthSamples<kSampleSize>& wavelength) const noexcept;
 
   //! Return the image texture byte size
-  std::size_t textureSize() const override;
+  std::size_t textureSize() const noexcept override;
 
   //! Return the image texture type
-  TextureType type() const override;
+  TextureType type() const noexcept override;
 
   //! Evaluate the value by the wavelength at the texture coordinate
   Float wavelengthValue(const Point2& coordinate, 
-                        const uint16 wavelength) const override;
+                        const uint16 wavelength) const noexcept override;
  private:
   //! Initialize
   void initialize(const System& system,
                   const SceneSettings& settings, 
-                  const QString& prefix);
+                  const QString& prefix) noexcept;
 
   //! Set color
   void setColor(const System& system,
                 const QImage& image, 
-                const Float gamma);
+                const Float gamma) noexcept;
 
 
   std::vector<SpectralDistribution> spectra_table_;
@@ -90,4 +90,4 @@ class ImageTexture : public Texture
 
 #include "image_texture-inl.hpp"
 
-#endif // _NANAIRO_IMAGE_TEXTURE_HPP_
+#endif // NANAIRO_IMAGE_TEXTURE_HPP

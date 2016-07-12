@@ -36,7 +36,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-Reinhard::Reinhard(const System& system, const SceneSettings& settings) :
+Reinhard::Reinhard(const System& system, const SceneSettings& settings) noexcept :
     ToneMappingMethod(system, settings)
 {
 }
@@ -47,7 +47,7 @@ Reinhard::Reinhard(const System& system, const SceneSettings& settings) :
   */
 void Reinhard::toneMap(System& system,
                        const HdrImage& hdr_image, 
-                       QImage& ldr_image)
+                       QImage& ldr_image) noexcept
 {
   using zisc::cast;
 

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_VECTOR_HPP_
-#define _NANAIRO_VECTOR_HPP_
+#ifndef NANAIRO_VECTOR_HPP
+#define NANAIRO_VECTOR_HPP
 
 // Zisc
 #include "zisc/vector.hpp"
@@ -26,4 +26,4 @@ using Vector3 = zisc::Vector<Float, 3>;
 
 } // namespace nanairo
 
-#endif // _NANAIRO_VECTOR_HPP_
+#endif // NANAIRO_VECTOR_HPP

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_TYPE_TRAITS_HPP_
-#define _ZISC_TYPE_TRAITS_HPP_
+#ifndef ZISC_TYPE_TRAITS_HPP
+#define ZISC_TYPE_TRAITS_HPP
 
 // Standard C++ library
 #include <string>
@@ -39,6 +39,9 @@ constexpr bool kIsUnsignedInteger = zisc_type_traits::IsUnsignedInteger<Type>::v
 //! Check if Type is signed integer type
 template <typename Type>
 constexpr bool kIsSignedInteger = zisc_type_traits::IsSignedInteger<Type>::value;
+
+template <typename Type>
+constexpr bool kIsIterator = zisc_type_traits::IsIterator<Type>::value;
 
 template <typename Type>
 constexpr bool kIsRandomAccessIterator = 
@@ -74,9 +77,12 @@ using EnableIfBaseOf =
     typename std::enable_if<std::is_base_of<B, D>::value, Type>::type;
 
 template <typename T, typename Type = void* const>
+using EnableIfIterator = typename std::enable_if<kIsIterator<T>, Type>::type;
+
+template <typename T, typename Type = void* const>
 using EnableIfRandomAccessIterator =
     typename std::enable_if<kIsRandomAccessIterator<T>, Type>::type;
 
 } // namespace zisc
 
-#endif // _ZISC_TYPE_TRAITS_HPP_
+#endif // ZISC_TYPE_TRAITS_HPP

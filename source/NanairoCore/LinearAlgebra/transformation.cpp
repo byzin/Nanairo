@@ -31,7 +31,7 @@ namespace nanairo {
   No detailed.
   */
 Matrix4x4 makeTransformationMatrix(const SceneSettings& settings, 
-                                   const QString& prefix)
+                                   const QString& prefix) noexcept
 {
   using zisc::toHash32;
 
@@ -66,7 +66,7 @@ Matrix4x4 makeTransformationMatrix(const SceneSettings& settings,
   \details
   No detailed.
   */
-Matrix4x4 makeTranslationMatrix(const SceneSettings& settings, const QString& prefix)
+Matrix4x4 makeTranslationMatrix(const SceneSettings& settings, const QString& prefix) noexcept
 {
   const Float x = settings.realValue(prefix + "/" + keyword::x);
   const Float y = settings.realValue(prefix + "/" + keyword::y);
@@ -78,7 +78,7 @@ Matrix4x4 makeTranslationMatrix(const SceneSettings& settings, const QString& pr
   \details
   No detailed.
   */
-Matrix4x4 makeScalingMatrix(const SceneSettings& settings, const QString& prefix)
+Matrix4x4 makeScalingMatrix(const SceneSettings& settings, const QString& prefix) noexcept
 {
   const Float x = settings.realValue(prefix + "/" + keyword::x);
   const Float y = settings.realValue(prefix + "/" + keyword::y);
@@ -90,7 +90,7 @@ Matrix4x4 makeScalingMatrix(const SceneSettings& settings, const QString& prefix
   \details
   No detailed.
   */
-Matrix4x4 makeRotationMatrix(const SceneSettings& settings, const QString& prefix)
+Matrix4x4 makeRotationMatrix(const SceneSettings& settings, const QString& prefix) noexcept
 {
   using zisc::toHash32;
 
@@ -123,7 +123,7 @@ Matrix4x4 makeRotationMatrix(const SceneSettings& settings, const QString& prefi
   \details
   No detailed.
   */
-void affineTransform(const Matrix4x4& matrix, Point3* point)
+void affineTransform(const Matrix4x4& matrix, Point3* point) noexcept
 {
   *point = takePoint3(matrix * makePoint4(*point, 1.0));
 }
@@ -133,7 +133,7 @@ void affineTransform(const Matrix4x4& matrix, Point3* point)
   Please see the details of this algoriths below URL.
   http://www.lighthouse3d.com/tutorials/glsl-tutorial/the-normal-matrix/
   */
-void affineTransform(const Matrix4x4& matrix, Vector3* vector)
+void affineTransform(const Matrix4x4& matrix, Vector3* vector) noexcept
 {
   const Matrix3x3 normal_matrix{matrix(0, 0), matrix(0, 1), matrix(0, 2),
                                 matrix(1, 0), matrix(1, 1), matrix(1, 2),

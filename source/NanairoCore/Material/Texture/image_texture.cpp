@@ -41,7 +41,7 @@ namespace nanairo {
   */
 ImageTexture::ImageTexture(const System& system,
                            const SceneSettings& settings, 
-                           const QString& prefix)
+                           const QString& prefix) noexcept
 {
   initialize(system, settings, prefix);
 }
@@ -50,7 +50,7 @@ ImageTexture::ImageTexture(const System& system,
   \details
   No detailed.
   */
-Float ImageTexture::floatValue(const Point2& coordinate) const
+Float ImageTexture::floatValue(const Point2& coordinate) const noexcept
 {
   using zisc::cast;
 
@@ -64,7 +64,7 @@ Float ImageTexture::floatValue(const Point2& coordinate) const
   \details
   No detailed.
   */
-std::size_t ImageTexture::textureSize() const
+std::size_t ImageTexture::textureSize() const noexcept
 {
   return sizeof(SpectralDistribution) * spectra_table_.size() +
          sizeof(Float) * float_table_.size() +
@@ -77,7 +77,7 @@ std::size_t ImageTexture::textureSize() const
   \details
   No detailed.
   */
-TextureType ImageTexture::type() const
+TextureType ImageTexture::type() const noexcept
 {
   return TextureType::Image;
 }
@@ -87,7 +87,7 @@ TextureType ImageTexture::type() const
   No detailed.
   */
 Float ImageTexture::wavelengthValue(const Point2& coordinate, 
-                                    const uint16 wavelength) const
+                                    const uint16 wavelength) const noexcept
 {
   using zisc::cast;
 
@@ -103,7 +103,7 @@ Float ImageTexture::wavelengthValue(const Point2& coordinate,
   */
 void ImageTexture::initialize(const System& system,
                               const SceneSettings& settings, 
-                              const QString& prefix)
+                              const QString& prefix) noexcept
 {
   using zisc::cast;
 
@@ -128,7 +128,7 @@ void ImageTexture::initialize(const System& system,
   */
 void ImageTexture::setColor(const System& system,
                             const QImage& image, 
-                            const Float gamma)
+                            const Float gamma) noexcept
 {
   using zisc::cast;
 
@@ -150,9 +150,8 @@ void ImageTexture::setColor(const System& system,
 
   auto get_color_index = [&color_table, &table_end](const QRgb color)
   {
-    auto position = 
-        zisc::searchBinaryTree(color_table.begin(), table_end, color);
-    return std::distance(color_table.begin(), position);
+    auto position = zisc::searchBinaryTree(color_table.begin(), table_end, color);
+    return cast<uint>(std::distance(color_table.begin(), position));
   };
 
   color_index_.resize(size);
@@ -163,7 +162,7 @@ void ImageTexture::setColor(const System& system,
     }
   }
 
-  size = std::distance(color_table.begin(), table_end);
+  size = cast<uint>(std::distance(color_table.begin(), table_end));
   float_table_.resize(size);
   spectra_table_.resize(size);
   const auto to_xyz_matrix = getRgbToXyzMatrix(system.colorSpace());

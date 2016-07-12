@@ -6,94 +6,142 @@
 # http://opensource.org/licenses/mit-license.php
 #
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.4)
 
 
-# Inner functions and macros
+# Check compiler features
+function(checkCompilerHasCxx14Features target)
+  set(compiler_feature_list
+    cxx_aggregate_default_initializers
+    cxx_alias_templates
+    cxx_alignas
+    cxx_alignof
+    cxx_attributes
+    cxx_attribute_deprecated
+    cxx_auto_type
+    cxx_binary_literals
+    cxx_constexpr
+    cxx_contextual_conversions
+    cxx_decltype_incomplete_return_types
+    cxx_decltype
+    cxx_decltype_auto
+    cxx_default_function_template_args
+    cxx_defaulted_functions
+    cxx_defaulted_move_initializers
+    cxx_delegating_constructors
+    cxx_deleted_functions
+    cxx_digit_separators
+    cxx_enum_forward_declarations
+    cxx_explicit_conversions
+    cxx_extended_friend_declarations
+    cxx_extern_templates
+    cxx_final
+    cxx_func_identifier
+    cxx_generalized_initializers
+    cxx_generic_lambdas
+    cxx_inheriting_constructors
+    cxx_inline_namespaces
+    cxx_lambdas
+    cxx_lambda_init_captures
+    cxx_local_type_template_args
+    cxx_long_long_type
+    cxx_noexcept
+    cxx_nonstatic_member_init
+    cxx_nullptr
+    cxx_override
+    cxx_range_for
+    cxx_raw_string_literals
+    cxx_reference_qualified_functions
+    cxx_relaxed_constexpr
+    cxx_return_type_deduction
+    cxx_right_angle_brackets
+    cxx_rvalue_references
+    cxx_sizeof_member
+    cxx_static_assert
+    cxx_strong_enums
+    cxx_thread_local
+    cxx_trailing_return_types
+    cxx_unicode_literals
+    cxx_uniform_initialization
+    cxx_unrestricted_unions
+    cxx_user_literals
+    cxx_variable_templates
+    cxx_variadic_macros
+    cxx_variadic_templates
+    cxx_template_template_parameters)
+  foreach(feature IN LISTS compiler_feature_list)
+    target_compile_features(${target} PRIVATE ${feature})
+  endforeach()
+endfunction(checkCompilerHasCxx14Features)
 
-# GCC configuration
-macro(setGccCompilerOptionsForCxx11)
-  # Version check
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8.0)
-    message(FATAL_ERROR "Use GCC version 4.8 or later.")
+
+#
+function(setCompilerOption)
+  set(option_description "Clang uses libc++ instead of libstdc++.")
+  setBooleanOption(Z_CLANG_USES_LIBCXX OFF ${option_description})
+endfunction(setCompilerOption)
+
+
+# Get compile options
+function(getCompilerOption cxx_compile_flags cxx_linker_flags cxx_definitions)
+  set(compile_flags "")
+  set(linker_flags "")
+  set(definitions "")
+  # libc++
+  if(Z_IS_CLANG AND ${Z_CLANG_USES_LIBCXX})
+    list(APPEND compile_flags -stdlib=libc++)
+    list(APPEND linker_flags -stdlib=libc++)
   endif()
-  # Add Compile options
-  add_compile_options(-std=c++11)
-endmacro(setGccCompilerOptionsForCxx11)
-
-
-# Clang configuration
-macro(setClangCompilerOptionsForCxx11)
-  # Version check
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.2.0)
-    message(FATAL_ERROR "Use Clang version 3.2 or later.")
+  # Debug info
+  if(${NANAIRO_DEBUG})
+    list(APPEND definitions NANAIRO_DEBUG ZISC_ASSERTION)
   endif()
-  # Add Compile options
-  add_compile_options(-std=c++11)
-  if(z_mac)
-    add_compile_options(-stdlib=libc++)
-  endif()
-endmacro(setClangCompilerOptionsForCxx11)
+
+  # Output variables
+  set(${cxx_compile_flags} ${compile_flags} PARENT_SCOPE)
+  set(${cxx_linker_flags} ${linker_flags} PARENT_SCOPE)
+endfunction(getCompilerOption)
 
 
-# GCC configuration
-macro(setGccCompilerOptionsForCxx14)
-  # Version check
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.1.0)
-    message(FATAL_ERROR "Use GCC version 5.1 or later.")
-  endif()
-  # Add Compile options
-  add_compile_options(-std=c++14)
-endmacro(setGccCompilerOptionsForCxx14)
+#
+function(getCxxWarningOption compiler_warning_flags)
+  set(compiler_version ${CMAKE_CXX_COMPILER_VERSION})
+  set(environment "${CMAKE_SYSTEM_NAME} ${CMAKE_CXX_COMPILER_ID} ${compiler_version}")
 
-
-# Clang configuration
-macro(setClangCompilerOptionsForCxx14)
-  # Version check
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.5.0)
-    message(FATAL_ERROR "Use Clang version 3.5 or later.")
-  endif()
-  # Add Compile options
-  add_compile_options(-std=c++14)
-  if(z_mac)
-    add_compile_options(-stdlib=libc++)
-  endif()
-endmacro(setClangCompilerOptionsForCxx14)
-
-
-# Functions and macros
-
-# Initialize C++ compiler options
-macro(setCompilerOptionsForCxx11)
-  if(z_gcc)
-    setGccCompilerOptionsForCxx11()
-  elseif(z_clang)
-    setClangCompilerOptionsForCxx11()
-  # TODO: Add new compiler initialization
+  # Clang
+  if(Z_IS_CLANG)
+    set(warning_flags -Werror
+                      -Weverything
+                      -Wno-c++98-compat
+                      -Wno-c++98-compat-pedantic)
+  # GCC
+  elseif(Z_IS_GCC)
+    set(warning_flags -pedantic
+                      -Wall
+                      -Wextra
+                      -Wcast-align
+                      -Wcast-qual
+                      -Wctor-dtor-privacy
+                      -Wdisabled-optimization
+                      -Wformat=2
+                      -Winit-self
+                      -Wlogical-op
+                      -Wmissing-declarations
+                      -Wmissing-include-dirs
+                      -Wnoexcept -Wold-style-cast
+                      -Woverloaded-virtual
+                      -Wredundant-decls
+                      -Wshadow
+                      -Wsign-conversion
+                      -Wsign-promo
+                      -Wstrict-null-sentinel
+                      -Wstrict-overflow=5
+                      -Wswitch-default
+                      -Wundef
+                      -Werror
+                      -Wno-unused)
   else()
-    message(FATAL_ERROR "\"${CMAKE_CXX_COMPILER_ID}\" doesn't support C++11")
+    message(WARNING "${environment}: Warning option is not set.")
   endif()
-endmacro(setCompilerOptionsForCxx11)
-
-
-# Initialize C++ compiler options
-macro(setCompilerOptionsForCxx14)
-  if(z_gcc)
-    setGccCompilerOptionsForCxx14()
-  elseif(z_clang)
-    setClangCompilerOptionsForCxx14()
-  # TODO: Add new compiler initialization
-  else()
-    message(FATAL_ERROR "\"${CMAKE_CXX_COMPILER_ID}\" doesn't support C++14")
-  endif()
-endmacro(setCompilerOptionsForCxx14)
-
-
-# Set C++ warning flags
-macro(setCompilerWarningOptionsForCxx)
-  if(z_gcc OR z_clang)
-    add_compile_options(-Wall -Wextra)
-  else()
-    message(WARNING "\"${CMAKE_CXX_COMPILER_ID}\" doesn't support worning option.")
-  endif()
-endmacro(setCompilerWarningOptionsForCxx)
+  set(${compiler_warning_flags} ${warning_flags} PARENT_SCOPE)
+endfunction(getCxxWarningOption)

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SPECULAR_BSDF_INL_HPP_
-#define _NANAIRO_SPECULAR_BSDF_INL_HPP_
+#ifndef NANAIRO_SPECULAR_BSDF_INL_HPP
+#define NANAIRO_SPECULAR_BSDF_INL_HPP
 
 #include "specular_bsdf.hpp"
 // Standard C++ library
@@ -35,7 +35,7 @@ class Sampler;
   No detailed.
   */
 template <uint kSampleSize> inline
-SpecularBsdf<kSampleSize>::SpecularBsdf(const Float n) :
+SpecularBsdf<kSampleSize>::SpecularBsdf(const Float n) noexcept :
   n_{n}
 {
 }
@@ -49,7 +49,7 @@ auto SpecularBsdf<kSampleSize>::sample(
     const Vector3* vin,
     const Vector3& normal,
     const Wavelengths& wavelengths,
-    Sampler& sampler) const -> std::tuple<SampledDirection, Spectra>
+    Sampler& sampler) const noexcept -> std::tuple<SampledDirection, Spectra>
 {
   // Evaluate the fresnel term
   const Float cos_theta_ni = -zisc::dot(normal, *vin);
@@ -81,11 +81,11 @@ auto SpecularBsdf<kSampleSize>::sample(
   No detailed.
   */
 template <uint kSampleSize>
-bool SpecularBsdf<kSampleSize>::wavelengthIsSelected() const
+bool SpecularBsdf<kSampleSize>::wavelengthIsSelected() const noexcept
 {
   return true;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_SPECULAR_BSDF_INL_HPP_
+#endif // NANAIRO_SPECULAR_BSDF_INL_HPP

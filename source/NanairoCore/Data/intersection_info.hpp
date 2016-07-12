@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_INTERSECTION_INFO_HPP_
-#define _NANAIRO_INTERSECTION_INFO_HPP_
+#ifndef NANAIRO_INTERSECTION_INFO_HPP
+#define NANAIRO_INTERSECTION_INFO_HPP
 
 // Nanairo
 #include "NanairoCore/LinearAlgebra/point.hpp"
@@ -31,47 +31,47 @@ class IntersectionInfo
 {
  public:
   //! Create a empty data
-  IntersectionInfo();
+  IntersectionInfo() noexcept;
 
   //! Create a intersection data
   IntersectionInfo(const Point3& point,
                    const Vector3& normal,
                    const Object* object, 
-                   const bool is_reverse_face);
+                   const bool is_reverse_face) noexcept;
 
 
   //! Check if there is a intersected object
-  bool isIntersected() const;
+  bool isIntersected() const noexcept;
 
   //! Check if the intersection point is reverse face
-  bool isReverseFace() const;
+  bool isReverseFace() const noexcept;
 
   //! Return the oriented normal direction
-  const Vector3& normal() const;
+  const Vector3& normal() const noexcept;
 
   //! Return the intersected object
-  const Object* object() const;
+  const Object* object() const noexcept;
 
   //! Return the intersection point
-  const Point3& point() const;
+  const Point3& point() const noexcept;
 
   //! Set reverse face
-  void setReverseFace(const bool is_reverse_face);
+  void setReverseFace(const bool is_reverse_face) noexcept;
   
   //! Set normal direction
-  void setNormal(const Vector3& normal);
+  void setNormal(const Vector3& normal) noexcept;
 
   //! Set intersected object
-  void setObject(const Object* object);
+  void setObject(const Object* object) noexcept;
 
   //! Set intersection point
-  void setPoint(const Point3& point);
+  void setPoint(const Point3& point) noexcept;
 
   //! Set texture coordinate
-  void setTextureCoordinate(const Point2& texture_coordinate);
+  void setTextureCoordinate(const Point2& texture_coordinate) noexcept;
 
   //! Return the texture coordinate
-  const Point2& textureCoordinate() const;
+  const Point2& textureCoordinate() const noexcept;
 
  private:
   Point3 point_;
@@ -87,4 +87,4 @@ class IntersectionInfo
 
 #include "intersection_info-inl.hpp"
 
-#endif // _NANAIRO_INTERSECTION_INFO_HPP_
+#endif // NANAIRO_INTERSECTION_INFO_HPP

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_CONFIG_HPP_
-#define _ZISC_CONFIG_HPP_
+#ifndef ZISC_CONFIG_HPP
+#define ZISC_CONFIG_HPP
 
 // Standard C++ library
 #include <cstdint>
@@ -33,4 +33,4 @@ using uint64 = std::uint64_t;
 
 } // namespace zisc
 
-#endif // _ZISC_CONFIG_HPP_
+#endif // ZISC_CONFIG_HPP

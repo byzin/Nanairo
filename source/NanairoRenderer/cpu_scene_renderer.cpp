@@ -34,7 +34,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-CpuSceneRenderer::CpuSceneRenderer()
+CpuSceneRenderer::CpuSceneRenderer() noexcept
 {
 }
 
@@ -42,7 +42,7 @@ CpuSceneRenderer::CpuSceneRenderer()
   \details
   No detailed.
   */
-void CpuSceneRenderer::convertSpectraToHdr(const quint64 cycle)
+void CpuSceneRenderer::convertSpectraToHdr(const quint64 cycle) noexcept
 {
   auto& film = scene_->film();
   auto& spectra_image = film.spectraBuffer();
@@ -53,7 +53,7 @@ void CpuSceneRenderer::convertSpectraToHdr(const quint64 cycle)
   \details
   No detailed.
   */
-void CpuSceneRenderer::handleCameraEvent()
+void CpuSceneRenderer::handleCameraEvent() noexcept
 {
   const auto& camera_event = cameraEvent();
   auto& camera = scene_->camera();
@@ -79,7 +79,7 @@ void CpuSceneRenderer::handleCameraEvent()
   \details
   No detailed.
   */
-void CpuSceneRenderer::initializeRenderer(const SceneSettings& settings)
+void CpuSceneRenderer::initializeRenderer(const SceneSettings& settings) noexcept
 {
   std::function<void (const QString&)> output_message{[this](const QString& message)
   {
@@ -121,7 +121,7 @@ void CpuSceneRenderer::initializeRenderer(const SceneSettings& settings)
   \details
   No detailed.
   */
-void CpuSceneRenderer::render(const quint64 /* cycle */)
+void CpuSceneRenderer::render(const quint64 /* cycle */) noexcept
 {
   auto& sampler = system_->globalSampler();
   if (system_->isRgbRenderingMode()) {
@@ -138,7 +138,7 @@ void CpuSceneRenderer::render(const quint64 /* cycle */)
   \details
   No detailed.
   */
-void CpuSceneRenderer::toneMap()
+void CpuSceneRenderer::toneMap() noexcept
 {
   auto& ldr_image = renderedImage();
   tone_mapping_method_->toneMap(*system_, *hdr_image_, ldr_image);

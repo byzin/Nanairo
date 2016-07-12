@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_WAVELENGTH_SAMPLE_INL_HPP_
-#define _NANAIRO_WAVELENGTH_SAMPLE_INL_HPP_
+#ifndef NANAIRO_WAVELENGTH_SAMPLE_INL_HPP
+#define NANAIRO_WAVELENGTH_SAMPLE_INL_HPP
 
 #include "wavelength_samples.hpp"
 // Zisc
@@ -23,7 +23,7 @@ namespace nanairo {
   No detailed.
   */
 template <uint kSampleSize> inline
-WavelengthSamples<kSampleSize>::WavelengthSamples() :
+WavelengthSamples<kSampleSize>::WavelengthSamples() noexcept :
     primary_index_{0}
 {
 }
@@ -33,7 +33,7 @@ WavelengthSamples<kSampleSize>::WavelengthSamples() :
   No detailed.
   */
 template <uint kSampleSize> inline
-uint16& WavelengthSamples<kSampleSize>::operator[](const uint index)
+uint16& WavelengthSamples<kSampleSize>::operator[](const uint index) noexcept
 {
   return wavelengths_[index];
 }
@@ -43,7 +43,7 @@ uint16& WavelengthSamples<kSampleSize>::operator[](const uint index)
   No detailed.
   */
 template <uint kSampleSize> inline
-uint16 WavelengthSamples<kSampleSize>::operator[](const uint index) const
+uint16 WavelengthSamples<kSampleSize>::operator[](const uint index) const noexcept
 {
   return wavelengths_[index];
 }
@@ -53,7 +53,7 @@ uint16 WavelengthSamples<kSampleSize>::operator[](const uint index) const
   No detailed.
   */
 template <uint kSampleSize> inline
-constexpr Float WavelengthSamples<kSampleSize>::primaryInverseProbability()
+constexpr Float WavelengthSamples<kSampleSize>::primaryInverseProbability() noexcept
 {
   return zisc::cast<Float>(size());
 }
@@ -63,7 +63,7 @@ constexpr Float WavelengthSamples<kSampleSize>::primaryInverseProbability()
   No detailed.
   */
 template <uint kSampleSize> inline
-uint WavelengthSamples<kSampleSize>::primaryWavelengthIndex() const
+uint WavelengthSamples<kSampleSize>::primaryWavelengthIndex() const noexcept
 {
   return zisc::cast<uint>(primary_index_);
 }
@@ -73,7 +73,7 @@ uint WavelengthSamples<kSampleSize>::primaryWavelengthIndex() const
   No detailed.
   */
 template <uint kSampleSize> inline
-void WavelengthSamples<kSampleSize>::setPrimaryWavelength(const uint index)
+void WavelengthSamples<kSampleSize>::setPrimaryWavelength(const uint index) noexcept
 {
   primary_index_ = zisc::cast<uint16>(index);
 }
@@ -83,11 +83,11 @@ void WavelengthSamples<kSampleSize>::setPrimaryWavelength(const uint index)
   No detailed.
   */
 template <uint kSampleSize> inline
-constexpr uint WavelengthSamples<kSampleSize>::size()
+constexpr uint WavelengthSamples<kSampleSize>::size() noexcept
 {
   return kSampleSize;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_WAVELENGTH_SAMPLE_INL_HPP_
+#endif // NANAIRO_WAVELENGTH_SAMPLE_INL_HPP

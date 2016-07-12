@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_BINARY_RADIX_TREE_BVH_HPP_
-#define _NANAIRO_BINARY_RADIX_TREE_BVH_HPP_
+#ifndef NANAIRO_BINARY_RADIX_TREE_BVH_HPP
+#define NANAIRO_BINARY_RADIX_TREE_BVH_HPP
 
 // Standard C++ library
 #include <vector>
@@ -41,19 +41,19 @@ class BinaryRadixTreeBvh : public Bvh
 {
  public:
   //! Create a binary radix BVH
-  BinaryRadixTreeBvh(const SceneSettings& settings, const QString& prefix);
+  BinaryRadixTreeBvh(const SceneSettings& settings, const QString& prefix) noexcept;
 
 
   //! Build a binary radix tree BVH
   static void constructBinaryRadixTreeBvh(System& system,
                                           const std::vector<Object>& object_list,
-                                          std::vector<BvhNode>& tree);
+                                          std::vector<BvhNode>& tree) noexcept;
 
  private:
   //! Build a binary radix tree BVH
   void constructBvh(System& system,
                     const std::vector<Object>& object_list,
-                    std::vector<BvhNode>& tree) const override;
+                    std::vector<BvhNode>& tree) const noexcept override;
 
   //! Split leaf node list in the morton code
   template <bool multithreading>
@@ -63,11 +63,11 @@ class BinaryRadixTreeBvh : public Bvh
                                 std::vector<BvhNode>& tree,
                                 MortonCodeIterator first,
                                 MortonCodeIterator begin,
-                                MortonCodeIterator end);
+                                MortonCodeIterator end) noexcept;
 };
 
 //! \} Core
 
 } // namespace nanairo
 
-#endif // _NANAIRO_BINARY_RADIX_TREE_BVH_HPP_
+#endif // NANAIRO_BINARY_RADIX_TREE_BVH_HPP

@@ -6,16 +6,15 @@
 # http://opensource.org/licenses/mit-license.php
 # 
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.4)
 
 set(__nanairo_gui_root__ ${CMAKE_CURRENT_LIST_DIR})
 
 
-# Inner functions and macros
-
 # Make a javascript file whitch contains Nanairo keywords
-function(makeNanairoGuiKeywordFile dest_dir)
-  configure_file(${__nanairo_gui_root__}/keyword.js.in ${dest_dir}/keyword.js)
+function(makeNanairoGuiKeywordFile keyword_dir)
+  configure_file(${__nanairo_gui_root__}/keyword.js.in
+                 ${keyword_dir}/keyword.js)
 
   set(keyword_list ${ARGN})
   list(LENGTH keyword_list list_size)
@@ -25,14 +24,14 @@ function(makeNanairoGuiKeywordFile dest_dir)
     math(EXPR keyword_index "${variable_index} + 1")
     list(GET keyword_list ${variable_index} variable)
     list(GET keyword_list ${keyword_index} keyword)
-    file(APPEND ${dest_dir}/keyword.js "var ${variable} = \"${keyword}\"\n")
+    file(APPEND ${keyword_dir}/keyword.js "var ${variable} = \"${keyword}\"\n")
   endforeach()
 endfunction(makeNanairoGuiKeywordFile)
 
 
 # Make Nanairo UI resource file
-function(makeNanairoGuiResource)
-  set(resource_directory ${PROJECT_BINARY_DIR}/resource)
+function(makeNanairoGuiResource gui_resource_file)
+  set(resource_directory ${PROJECT_BINARY_DIR}/build_resources)
   set(resource_file ${resource_directory}/nanairo_gui.qrc)
 
   file(MAKE_DIRECTORY ${resource_directory})
@@ -56,22 +55,25 @@ function(makeNanairoGuiResource)
   file(APPEND ${resource_file} "  </qresource>\n")
   file(APPEND ${resource_file} "</RCC>\n")
 
-  set(nanairo_gui_resource_path ${resource_file} PARENT_SCOPE)
+  set(${gui_resource_file} ${resource_file} PARENT_SCOPE)
 endfunction(makeNanairoGuiResource)
 
 
 # Make Nanairo GUI config file
-macro(makeGuiConfigFile)
+function(makeGuiConfigFile config_file_path)
   configure_file(${__nanairo_gui_root__}/nanairo_gui_config.hpp.in
-                 ${nanairo_config_dir}/NanairoGui/nanairo_gui_config.hpp)
-  source_group(NanairoGui FILES ${nanairo_config_dir}/NanairoGui/nanairo_gui_config.hpp)
-endmacro(makeGuiConfigFile)
+                 ${config_file_path})
+  source_group(NanairoGui FILES ${config_file_path})
+endfunction(makeGuiConfigFile)
 
 
 # Add nanairo ui source files
-macro(addNanairoGuiFiles dir_name)
-  addNanairoSourceFiles(NanairoGui ${__nanairo_gui_root__} "${dir_name}")
-endmacro(addNanairoGuiFiles)
+macro(getNanairoGuiFiles dir_name nanairo_source_files)
+  getNanairoSourceFiles(NanairoGui 
+                        ${__nanairo_gui_root__} 
+                        "${dir_name}"
+                        ${nanairo_source_files})
+endmacro(getNanairoGuiFiles)
 
 
 # Functions and macros
@@ -79,20 +81,16 @@ endmacro(addNanairoGuiFiles)
 # Build NanairoGui
 # defined variable
 #   nanairo_gui_library: 
-function(buildNanairoGui)
+function(getNanairoGui gui_source_files gui_definitions)
   # Set source files
-  clearNanairoSourceFiles()
-  addNanairoGuiFiles("")
-  addNanairoGuiFiles("Utility")
-
-  makeNanairoGuiResource()
-  makeGuiConfigFile()
-
-  add_library(NanairoGui STATIC ${nanairo_source_files})
-  target_link_libraries(NanairoGui ${qt5_libraries} 
-                                   ${nanairo_core_library}
-                                   ${nanairo_renderer_library})
-  set_target_properties(NanairoGui PROPERTIES AUTOMOC ON)
-
-  set(nanairo_gui_library NanairoGui PARENT_SCOPE)
-endfunction(buildNanairoGui)
+  getNanairoGuiFiles("" nanairo_files)
+  getNanairoGuiFiles("Utility" utility_files)
+  set(source_files ${nanairo_files} ${utility_files})
+  # Resource
+  makeNanairoGuiResource(gui_resource_file)
+  # Config file
+  set(config_dir ${PROJECT_BINARY_DIR}/include/NanairoGui)
+  makeGuiConfigFile(${config_dir}/nanairo_gui_config.hpp)
+  # Output variables
+  set(${gui_source_files} ${source_files} ${gui_resource_file} PARENT_SCOPE)
+endfunction(getNanairoGui)

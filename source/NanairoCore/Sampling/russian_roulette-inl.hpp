@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_RUSSIAN_ROULETTE_INL_HPP_
-#define _NANAIRO_RUSSIAN_ROULETTE_INL_HPP_
+#ifndef NANAIRO_RUSSIAN_ROULETTE_INL_HPP
+#define NANAIRO_RUSSIAN_ROULETTE_INL_HPP
 
 #include "russian_roulette.hpp"
 // Standard C++ library
@@ -33,7 +33,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-RouletteResult::RouletteResult() :
+RouletteResult::RouletteResult() noexcept :
     probability_{1.0},
     result_{true}
 {
@@ -44,7 +44,7 @@ RouletteResult::RouletteResult() :
   No detailed.
   */
 inline
-RouletteResult::RouletteResult(const bool result, const Float probability) :
+RouletteResult::RouletteResult(const bool result, const Float probability) noexcept :
     probability_{probability},
     result_{result}
 {
@@ -55,7 +55,7 @@ RouletteResult::RouletteResult(const bool result, const Float probability) :
   No detailed.
   */
 inline
-Float RouletteResult::probability() const
+Float RouletteResult::probability() const noexcept
 {
   return probability_;
 }
@@ -65,7 +65,7 @@ Float RouletteResult::probability() const
   No detailed.
   */
 inline
-bool RouletteResult::result() const
+bool RouletteResult::result() const noexcept
 {
   return result_;
 }
@@ -75,7 +75,7 @@ bool RouletteResult::result() const
   No detailed.
   */
 inline
-void RouletteResult::setProbability(const Float probability)
+void RouletteResult::setProbability(const Float probability) noexcept
 {
   probability_ = probability;
 }
@@ -85,7 +85,7 @@ void RouletteResult::setProbability(const Float probability)
   No detailed.
   */
 inline
-void RouletteResult::setResult(const bool result)
+void RouletteResult::setResult(const bool result) noexcept
 {
   result_ = result;
 }
@@ -98,7 +98,7 @@ template <uint kSampleSize> inline
 RouletteResult playRussianRouletteWithAverage(
     const uint /* path */,
     const SampledSpectra<kSampleSize>& weight,
-    Sampler& sampler)
+    Sampler& sampler) noexcept
 {
   const Float average = weight.average();
   const Float probability = zisc::min(1.0, average);
@@ -114,7 +114,7 @@ template <uint kSampleSize> inline
 RouletteResult playRussianRouletteWithMax(
     const uint /* path */,
     const SampledSpectra<kSampleSize>& weight,
-    Sampler& sampler) 
+    Sampler& sampler) noexcept
 {
   const Float max = weight.max();
   const Float probability = zisc::min(1.0, max);
@@ -131,7 +131,7 @@ RouletteResult playRussianRouletteWithPath(
     const uint max_path,
     const uint path,
     const SampledSpectra<kSampleSize>& /* weight */,
-    Sampler& /* sampler */)
+    Sampler& /* sampler */) noexcept
 {
   return RouletteResult{path < max_path, 1.0};
 }
@@ -143,7 +143,7 @@ RouletteResult playRussianRouletteWithPath(
 template <uint kSampleSize> inline
 RussianRouletteFunction<kSampleSize> makeRussianRoulette(
     const SceneSettings& settings,
-    const QString& prefix)
+    const QString& prefix) noexcept
 {
   using zisc::cast;
   using zisc::toHash32;
@@ -181,4 +181,4 @@ RussianRouletteFunction<kSampleSize> makeRussianRoulette(
 
 } // namespace nanairo
 
-#endif // _NANAIRO_RUSSIAN_ROULETTE_INL_HPP_
+#endif // NANAIRO_RUSSIAN_ROULETTE_INL_HPP

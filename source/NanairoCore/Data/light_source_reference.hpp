@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_LIGHT_SOURCE_REFERENCE_HPP_
-#define _NANAIRO_LIGHT_SOURCE_REFERENCE_HPP_
+#ifndef NANAIRO_LIGHT_SOURCE_REFERENCE_HPP
+#define NANAIRO_LIGHT_SOURCE_REFERENCE_HPP
 
 // Standard C++ library
 #include <vector>
@@ -31,21 +31,21 @@ class LightSourceReference
 {
  public:
   //! Create a light source reference
-  LightSourceReference(const Float total_flux, const Object* light_source);
+  LightSourceReference(const Float total_flux, const Object* light_source) noexcept;
 
 
   //! Return the inverse weight of this light source
-  Float inverseWeight() const;
+  Float inverseWeight() const noexcept;
 
   //! Return the light source object
-  const Object* object() const;
+  const Object* object() const noexcept;
 
   //! Return the weight of this light sonrce in the scene
-  Float weight() const;
+  Float weight() const noexcept;
 
  private:
   //! Initialize
-  void initialize(const Float total_flux);
+  void initialize(const Float total_flux) noexcept;
 
 
   Float weight_,
@@ -59,4 +59,4 @@ class LightSourceReference
 
 #include "light_source_reference-inl.hpp"
 
-#endif // _NANAIRO_LIGHT_SOURCE_REFERENCE_HPP_
+#endif // NANAIRO_LIGHT_SOURCE_REFERENCE_HPP

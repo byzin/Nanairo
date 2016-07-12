@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_UNIT_HPP_
-#define _ZISC_UNIT_HPP_
+#ifndef ZISC_UNIT_HPP
+#define ZISC_UNIT_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -17,17 +17,17 @@ namespace zisc {
 
 //! Convert degree to radian
 template <typename Float>
-constexpr Float toRadian(const Float angle);
+constexpr Float toRadian(const Float angle) noexcept;
 
 //! Convert radian to degree
 template <typename Float>
-constexpr Float toAngle(const Float radian);
+constexpr Float toAngle(const Float radian) noexcept;
 
 //! Return the Mega byte size
-constexpr double toMegaByte(const std::size_t byte);
+constexpr double toMegaByte(const std::size_t byte) noexcept;
 
 } // namespace zisc
 
 #include "unit-inl.hpp"
 
-#endif // _ZISC_UNIT_HPP_
+#endif // ZISC_UNIT_HPP

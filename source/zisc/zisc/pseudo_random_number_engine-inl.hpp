@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_PSEUDO_RANDOM_NUMBER_ENGINE_INL_HPP_
-#define _ZISC_PSEUDO_RANDOM_NUMBER_ENGINE_INL_HPP_
+#ifndef ZISC_PSEUDO_RANDOM_NUMBER_ENGINE_INL_HPP
+#define ZISC_PSEUDO_RANDOM_NUMBER_ENGINE_INL_HPP
 
 #include "pseudo_random_number_engine.hpp"
 // Standard C++ library
@@ -24,7 +24,7 @@ namespace zisc {
   No detailed.
   */
 template <typename GeneratorClass, typename Seed, typename Result> inline
-auto PseudoRandomNumberEngine<GeneratorClass, Seed, Result>::operator()()
+auto PseudoRandomNumberEngine<GeneratorClass, Seed, Result>::operator()() noexcept
     -> ResultType
 {
   return generate();
@@ -37,7 +37,8 @@ auto PseudoRandomNumberEngine<GeneratorClass, Seed, Result>::operator()()
 template <typename GeneratorClass, typename Seed, typename Result>
 template <typename Arithmetic> inline
 Arithmetic PseudoRandomNumberEngine<GeneratorClass, Seed, Result>::operator()(
-    const Arithmetic lower, const Arithmetic upper)
+    const Arithmetic lower, 
+    const Arithmetic upper) noexcept
 {
   return generate(lower, upper);
 }
@@ -47,7 +48,7 @@ Arithmetic PseudoRandomNumberEngine<GeneratorClass, Seed, Result>::operator()(
   No detailed.
   */
 template <typename GeneratorClass, typename Seed, typename Result> inline
-auto PseudoRandomNumberEngine<GeneratorClass, Seed, Result>::generate()
+auto PseudoRandomNumberEngine<GeneratorClass, Seed, Result>::generate() noexcept
     -> ResultType
 {
   return cast<GeneratorClass*>(this)->generate();
@@ -60,10 +61,11 @@ auto PseudoRandomNumberEngine<GeneratorClass, Seed, Result>::generate()
 template <typename GeneratorClass, typename Seed, typename Result>
 template <typename Arithmetic> inline
 Arithmetic PseudoRandomNumberEngine<GeneratorClass, Seed, Result>::generate(
-    const Arithmetic lower, const Arithmetic upper)
+    const Arithmetic lower, 
+    const Arithmetic upper) noexcept
 {
   static_assert(std::is_arithmetic<Arithmetic>::value,
-                "## Arguments must be arithmetic type.");
+                "Arithmetic isn't arithmetic type.");
   return cast<GeneratorClass*>(this)->generate(lower, upper);
 }
 
@@ -73,7 +75,7 @@ Arithmetic PseudoRandomNumberEngine<GeneratorClass, Seed, Result>::generate(
   */
 template <typename GeneratorClass, typename Seed, typename Result> inline
 void PseudoRandomNumberEngine<GeneratorClass, Seed, Result>::setSeed(
-    const SeedType seed)
+    const SeedType seed) noexcept
 {
   cast<GeneratorClass*>(this)->setSeed(seed);
 }
@@ -84,6 +86,7 @@ void PseudoRandomNumberEngine<GeneratorClass, Seed, Result>::setSeed(
   */
 template <typename GeneratorClass, typename Seed, typename Result> inline
 PseudoRandomNumberEngine<GeneratorClass, Seed, Result>::PseudoRandomNumberEngine()
+    noexcept
 {
 }
 
@@ -93,10 +96,10 @@ PseudoRandomNumberEngine<GeneratorClass, Seed, Result>::PseudoRandomNumberEngine
   */
 template <typename GeneratorClass, typename Seed, typename Result> inline
 PseudoRandomNumberEngine<GeneratorClass, Seed, Result>::PseudoRandomNumberEngine(
-    const PseudoRandomNumberEngine&)
+    const PseudoRandomNumberEngine&) noexcept
 {
 }
 
 } // namespace zisc
 
-#endif // _ZISC_PSEUDO_RANDOM_NUMBER_ENGINE_INL_HPP_
+#endif // ZISC_PSEUDO_RANDOM_NUMBER_ENGINE_INL_HPP

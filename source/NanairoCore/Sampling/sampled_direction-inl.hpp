@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SAMPLED_DIRECTION_INL_HPP_
-#define _NANAIRO_SAMPLED_DIRECTION_INL_HPP_
+#ifndef NANAIRO_SAMPLED_DIRECTION_INL_HPP
+#define NANAIRO_SAMPLED_DIRECTION_INL_HPP
 
 #include "sampled_direction.hpp"
 // Zisc
@@ -29,7 +29,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-SampledDirection::SampledDirection() :
+SampledDirection::SampledDirection() noexcept :
     inverse_pdf_{0.0}
 {
 }
@@ -40,7 +40,7 @@ SampledDirection::SampledDirection() :
   */
 inline
 SampledDirection::SampledDirection(const Vector3& direction, 
-                                   const Float inverse_pdf) :
+                                   const Float inverse_pdf) noexcept :
     direction_{direction},
     inverse_pdf_{inverse_pdf}
 {
@@ -51,7 +51,7 @@ SampledDirection::SampledDirection(const Vector3& direction,
   No detailed.
   */
 inline
-Vector3& SampledDirection::direction()
+Vector3& SampledDirection::direction() noexcept
 {
   return direction_;
 }
@@ -61,7 +61,7 @@ Vector3& SampledDirection::direction()
   No detailed.
   */
 inline
-const Vector3& SampledDirection::direction() const
+const Vector3& SampledDirection::direction() const noexcept
 {
   return direction_;
 }
@@ -71,7 +71,7 @@ const Vector3& SampledDirection::direction() const
   No detailed.
   */
 inline
-Float SampledDirection::inversePdf() const
+Float SampledDirection::inversePdf() const noexcept
 {
   return inverse_pdf_;
 }
@@ -81,7 +81,7 @@ Float SampledDirection::inversePdf() const
   No detailed.
   */
 inline
-Float SampledDirection::pdf() const
+Float SampledDirection::pdf() const noexcept
 {
   return 1.0 / inverse_pdf_;
 }
@@ -91,7 +91,7 @@ Float SampledDirection::pdf() const
   No detailed.
   */
 inline
-void SampledDirection::setDirection(const Vector3& direction)
+void SampledDirection::setDirection(const Vector3& direction) noexcept
 {
   direction_ = direction;
 }
@@ -101,7 +101,7 @@ void SampledDirection::setDirection(const Vector3& direction)
   No detailed.
   */
 inline
-void SampledDirection::setInversePdf(const Float inverse_pdf)
+void SampledDirection::setInversePdf(const Float inverse_pdf) noexcept
 {
   inverse_pdf_ = inverse_pdf;
 }
@@ -111,7 +111,7 @@ void SampledDirection::setInversePdf(const Float inverse_pdf)
   No detailed.
   */
 inline
-void SampledDirection::setPdf(const Float pdf)
+void SampledDirection::setPdf(const Float pdf) noexcept
 {
   inverse_pdf_ = 1.0 / pdf;
 }
@@ -121,7 +121,7 @@ void SampledDirection::setPdf(const Float pdf)
   No detailed.
   */
 template <uint kCosineWeight> inline
-SampledDirection sampleDirectionOnHemisphere(Sampler& sampler)
+SampledDirection sampleDirectionOnHemisphere(Sampler& sampler) noexcept
 {
   using zisc::cast;
 
@@ -129,7 +129,7 @@ SampledDirection sampleDirectionOnHemisphere(Sampler& sampler)
   const Float u1 = sampler.sample(0.0, 1.0);
   const Float u2 = sampler.sample(0.0, 1.0);
 
-  const Float phi = 2.0 * zisc::kPi * (u1 - 0.5);
+  const Float phi = 2.0 * zisc::kPi<Float> * (u1 - 0.5);
   constexpr Float exponent = 1.0 / cast<Float>(kCosineWeight + 1);
   const Float cos_theta = zisc::pow(1.0 - u2, exponent);
   const Float sin_theta = zisc::sqrt(1.0 - cos_theta * cos_theta);
@@ -139,7 +139,7 @@ SampledDirection sampleDirectionOnHemisphere(Sampler& sampler)
                           cos_theta};
   ZISC_ASSERT(isUnitVector(direction), "The direction must be unit vector.");
 
-  constexpr Float t = (2.0 * zisc::kPi) / cast<Float>(kCosineWeight + 1);
+  constexpr Float t = (2.0 * zisc::kPi<Float>) / cast<Float>(kCosineWeight + 1);
   const Float inverse_pdf = t / zisc::power<kCosineWeight>(cos_theta);
 
   return SampledDirection{direction, inverse_pdf};
@@ -151,7 +151,7 @@ SampledDirection sampleDirectionOnHemisphere(Sampler& sampler)
   */
 template <uint kCosineWeight> inline
 SampledDirection sampleDirectionOnHemisphere(const Vector3& normal, 
-                                             Sampler& sampler)
+                                             Sampler& sampler) noexcept
 {
   auto sampled_direction = 
       sampleDirectionOnHemisphere<kCosineWeight>(sampler);
@@ -163,4 +163,4 @@ SampledDirection sampleDirectionOnHemisphere(const Vector3& normal,
 
 } // namespace nanairo
 
-#endif // _NANAIRO_SAMPLED_DIRECTION_INL_HPP_
+#endif // NANAIRO_SAMPLED_DIRECTION_INL_HPP

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SMOOTH_DIELECTRIC_SURFACE_INL_HPP_
-#define _NANAIRO_SMOOTH_DIELECTRIC_SURFACE_INL_HPP_
+#ifndef NANAIRO_SMOOTH_DIELECTRIC_SURFACE_INL_HPP
+#define NANAIRO_SMOOTH_DIELECTRIC_SURFACE_INL_HPP
 
 #include "smooth_dielectric_surface.hpp"
 // Standard C++ library
@@ -35,7 +35,7 @@ template <uint kSampleSize> inline
 auto SmoothDielectricSurface::makeSpecularBsdf(
     const bool is_reverse_face,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) const -> ShaderPointer<kSampleSize>
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
   const auto wavelength = 
       wavelengths[wavelengths.primaryWavelengthIndex()];
@@ -57,7 +57,7 @@ SurfaceModel::ShaderPointer<kSampleSize> makeSpecularBsdf(
     const SurfaceModel* surface,
     const bool is_reverse_face,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool)
+    MemoryPool& memory_pool) noexcept
 {
   using zisc::cast;
 
@@ -67,4 +67,4 @@ SurfaceModel::ShaderPointer<kSampleSize> makeSpecularBsdf(
 
 } // namespace nanairo
 
-#endif // _NANAIRO_SMOOTH_DIELECTRIC_SURFACE_INL_HPP_
+#endif // NANAIRO_SMOOTH_DIELECTRIC_SURFACE_INL_HPP

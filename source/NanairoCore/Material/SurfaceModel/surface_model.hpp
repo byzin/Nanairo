@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SURFACE_MODEL_HPP_
-#define _NANAIRO_SURFACE_MODEL_HPP_
+#ifndef NANAIRO_SURFACE_MODEL_HPP
+#define NANAIRO_SURFACE_MODEL_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -59,7 +59,7 @@ class SurfaceModel
 
 
   //! Finalize the surface model
-  virtual ~SurfaceModel() {}
+  virtual ~SurfaceModel() noexcept;
 
 
   //! Make BxDF
@@ -68,13 +68,13 @@ class SurfaceModel
       const Point2& texture_coordinate,
       const bool is_reverse_face,
       const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const;
+      MemoryPool& memory_pool) const noexcept;
 
   //! Return the surface model size
-  virtual std::size_t surfaceSize() const = 0;
+  virtual std::size_t surfaceSize() const noexcept = 0;
 
   //! Return the surface type
-  virtual SurfaceType type() const = 0;
+  virtual SurfaceType type() const noexcept = 0;
 };
 
 //! Make a lambert BRDF
@@ -83,7 +83,7 @@ SurfaceModel::ShaderPointer<kSampleSize> makeLambertBrdf(
     const SurfaceModel* surface,
     const Point2& texture_coordinate,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool);
+    MemoryPool& memory_pool) noexcept;
 
 //! Make a lambert BRDF
 template <uint kSampleSize>
@@ -91,14 +91,14 @@ SurfaceModel::ShaderPointer<kSampleSize> makeSpecularBsdf(
     const SurfaceModel* surface,
     const bool is_reverse_face,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool);
+    MemoryPool& memory_pool) noexcept;
 
 //! Make a lambert BRDF
 template <uint kSampleSize>
 SurfaceModel::ShaderPointer<kSampleSize> makeSpecularBrdf(
     const SurfaceModel* surface,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool);
+    MemoryPool& memory_pool) noexcept;
 
 //! Make a lambert BRDF
 template <uint kSampleSize>
@@ -107,7 +107,7 @@ SurfaceModel::ShaderPointer<kSampleSize> makeGgxDielectricBsdf(
     const Point2& texture_coordinate,
     const bool is_reverse_face,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool);
+    MemoryPool& memory_pool) noexcept;
 
 //! Make a lambert BRDF
 template <uint kSampleSize>
@@ -115,13 +115,13 @@ SurfaceModel::ShaderPointer<kSampleSize> makeGgxConductorBrdf(
     const SurfaceModel* surface,
     const Point2& texture_coordinate,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool);
+    MemoryPool& memory_pool) noexcept;
 
 //! Make a surface scattering model
 UniquePointer<SurfaceModel> makeSurface(
     const SceneSettings& settings,
     const QString& prefix,
-    const std::vector<const Texture*>& weight_list);
+    const std::vector<const Texture*>& weight_list) noexcept;
 
 //! \} Core 
 
@@ -129,4 +129,4 @@ UniquePointer<SurfaceModel> makeSurface(
 
 #include "surface_model-inl.hpp"
 
-#endif // _NANAIRO_SURFACE_MODEL_HPP_
+#endif // NANAIRO_SURFACE_MODEL_HPP

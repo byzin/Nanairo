@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_GEOMETRY_INL_HPP_
-#define _NANAIRO_GEOMETRY_INL_HPP_
+#ifndef NANAIRO_GEOMETRY_INL_HPP
+#define NANAIRO_GEOMETRY_INL_HPP
 
 #include "geometry.hpp"
 // Nanairo
@@ -21,11 +21,11 @@ namespace nanairo {
   No detailed.
   */
 inline
-Float Geometry::surfaceArea() const
+Float Geometry::surfaceArea() const noexcept
 {
   return surface_area_;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_GEOMETRY_INL_HPP_
+#endif // NANAIRO_GEOMETRY_INL_HPP

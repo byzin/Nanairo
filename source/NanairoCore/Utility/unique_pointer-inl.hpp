@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_UNIQUE_POINTER_INL_HPP_
-#define _NANAIRO_UNIQUE_POINTER_INL_HPP_
+#ifndef NANAIRO_UNIQUE_POINTER_INL_HPP
+#define NANAIRO_UNIQUE_POINTER_INL_HPP
 
 #include "unique_pointer.hpp"
 
@@ -19,7 +19,7 @@ namespace nanairo {
   No detailed.
   */
 template <typename Type> inline
-UniquePointer<Type>::UniquePointer() :
+UniquePointer<Type>::UniquePointer() noexcept :
     pointer_{nullptr}
 {
 }
@@ -29,7 +29,7 @@ UniquePointer<Type>::UniquePointer() :
   No detailed.
   */
 template <typename Type> inline
-UniquePointer<Type>::UniquePointer(Type* pointer) :
+UniquePointer<Type>::UniquePointer(Type* pointer) noexcept :
     pointer_{pointer}
 {
 }
@@ -39,7 +39,7 @@ UniquePointer<Type>::UniquePointer(Type* pointer) :
   No detailed.
   */
 template <typename Type> inline
-UniquePointer<Type>::UniquePointer(UniquePointer&& pointer) :
+UniquePointer<Type>::UniquePointer(UniquePointer&& pointer) noexcept :
     pointer_{pointer.pointer_}
 {
   pointer.pointer_ = nullptr;
@@ -50,7 +50,7 @@ UniquePointer<Type>::UniquePointer(UniquePointer&& pointer) :
   No detailed.
   */
 template <typename Type> inline
-UniquePointer<Type>::~UniquePointer()
+UniquePointer<Type>::~UniquePointer() noexcept 
 {
   reset();
 }
@@ -60,7 +60,7 @@ UniquePointer<Type>::~UniquePointer()
   No detailed.
   */
 template <typename Type> inline
-Type& UniquePointer<Type>::operator*()
+Type& UniquePointer<Type>::operator*() noexcept
 {
   return *pointer_;
 }
@@ -70,7 +70,7 @@ Type& UniquePointer<Type>::operator*()
   No detailed.
   */
 template <typename Type> inline
-const Type& UniquePointer<Type>::operator*() const
+const Type& UniquePointer<Type>::operator*() const noexcept
 {
   return *pointer_;
 }
@@ -80,7 +80,7 @@ const Type& UniquePointer<Type>::operator*() const
   No detailed.
   */
 template <typename Type> inline
-Type* UniquePointer<Type>::operator->()
+Type* UniquePointer<Type>::operator->() noexcept
 {
   return pointer_;
 }
@@ -90,7 +90,7 @@ Type* UniquePointer<Type>::operator->()
   No detailed.
   */
 template <typename Type> inline
-const Type* UniquePointer<Type>::operator->() const
+const Type* UniquePointer<Type>::operator->() const noexcept
 {
   return pointer_;
 }
@@ -100,7 +100,7 @@ const Type* UniquePointer<Type>::operator->() const
   No detailed.
   */
 template <typename Type> inline
-auto UniquePointer<Type>::operator=(Type* pointer) -> UniquePointer&
+auto UniquePointer<Type>::operator=(Type* pointer) noexcept -> UniquePointer&
 {
   reset(pointer);
   return *this;
@@ -111,7 +111,8 @@ auto UniquePointer<Type>::operator=(Type* pointer) -> UniquePointer&
   No detailed.
   */
 template <typename Type> inline
-auto UniquePointer<Type>::operator=(UniquePointer&& pointer) -> UniquePointer&
+auto UniquePointer<Type>::operator=(UniquePointer&& pointer) noexcept
+    -> UniquePointer&
 {
   reset(nullptr);
   swap(pointer);
@@ -123,7 +124,7 @@ auto UniquePointer<Type>::operator=(UniquePointer&& pointer) -> UniquePointer&
   No detailed.
   */
 template <typename Type> inline
-Type* UniquePointer<Type>::get()
+Type* UniquePointer<Type>::get() noexcept
 {
   return pointer_;
 }
@@ -133,7 +134,7 @@ Type* UniquePointer<Type>::get()
   No detailed.
   */
 template <typename Type> inline
-const Type* UniquePointer<Type>::get() const
+const Type* UniquePointer<Type>::get() const noexcept
 {
   return pointer_;
 }
@@ -143,7 +144,7 @@ const Type* UniquePointer<Type>::get() const
   No detailed.
   */
 template <typename Type> inline
-bool UniquePointer<Type>::isNull() const
+bool UniquePointer<Type>::isNull() const noexcept
 {
   return pointer_ == nullptr;
 }
@@ -153,7 +154,7 @@ bool UniquePointer<Type>::isNull() const
   No detailed.
   */
 template <typename Type> inline
-void UniquePointer<Type>::reset(Type* pointer)
+void UniquePointer<Type>::reset(Type* pointer) noexcept
 {
   if (!isNull())
     delete pointer_;
@@ -165,7 +166,7 @@ void UniquePointer<Type>::reset(Type* pointer)
   No detailed.
   */
 template <typename Type> inline
-void UniquePointer<Type>::swap(UniquePointer& pointer)
+void UniquePointer<Type>::swap(UniquePointer& pointer) noexcept
 {
   auto* tmp = get();
   pointer_ = pointer.get();
@@ -177,11 +178,11 @@ void UniquePointer<Type>::swap(UniquePointer& pointer)
   No detailed.
   */
 template <typename Type> inline
-bool operator<(const UniquePointer<Type>& a, const UniquePointer<Type>& b)
+bool operator<(const UniquePointer<Type>& a, const UniquePointer<Type>& b) noexcept
 {
   return a.get() < b.get();
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_UNIQUE_POINTER_INL_HPP_
+#endif // NANAIRO_UNIQUE_POINTER_INL_HPP

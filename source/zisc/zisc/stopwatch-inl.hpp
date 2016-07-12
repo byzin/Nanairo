@@ -14,8 +14,8 @@
 // Zisc
 #include "utility.hpp"
 
-#ifndef _ZISC_STOPWATCH_INL_HPP_
-#define _ZISC_STOPWATCH_INL_HPP_
+#ifndef ZISC_STOPWATCH_INL_HPP
+#define ZISC_STOPWATCH_INL_HPP
 
 namespace zisc {
 
@@ -24,7 +24,7 @@ namespace zisc {
   No detailed.
   */
 inline
-Stopwatch::Stopwatch() :
+Stopwatch::Stopwatch() noexcept :
     elapsed_time_{Clock::duration::zero()},
     state_{State::Idle}
 {
@@ -35,7 +35,7 @@ Stopwatch::Stopwatch() :
   No detailed.
   */
 inline
-auto Stopwatch::elapsedTime() const -> Clock::duration
+auto Stopwatch::elapsedTime() const noexcept -> Clock::duration
 {
   auto time = elapsed_time_;
   if (state_ == State::Run) {
@@ -50,7 +50,7 @@ auto Stopwatch::elapsedTime() const -> Clock::duration
   No detailed.
   */
 inline
-bool Stopwatch::isIdleState() const
+bool Stopwatch::isIdleState() const noexcept
 {
   return state_ == State::Idle;
 }
@@ -60,7 +60,7 @@ bool Stopwatch::isIdleState() const
   No detailed.
   */
 inline
-bool Stopwatch::isPauseState() const
+bool Stopwatch::isPauseState() const noexcept
 {
   return state_ == State::Pause;
 }
@@ -70,7 +70,7 @@ bool Stopwatch::isPauseState() const
   No detailed.
   */
 inline
-bool Stopwatch::isRunState() const
+bool Stopwatch::isRunState() const noexcept
 {
   return state_ == State::Run;
 }
@@ -80,7 +80,7 @@ bool Stopwatch::isRunState() const
   No detailed.
   */
 inline
-auto Stopwatch::pause() -> Clock::duration
+auto Stopwatch::pause() noexcept -> Clock::duration
 {
   if (state_ != State::Run)
     return Clock::duration::zero();
@@ -97,7 +97,7 @@ auto Stopwatch::pause() -> Clock::duration
   No detailed.
   */
 inline
-void Stopwatch::start()
+void Stopwatch::start() noexcept
 {
   start_time_ = Clock::now();
   state_ = State::Run;
@@ -108,7 +108,7 @@ void Stopwatch::start()
   No detailed.
   */
 inline
-void Stopwatch::stop()
+void Stopwatch::stop() noexcept
 {
   elapsed_time_ = Clock::duration::zero();
   state_ = State::Idle;
@@ -116,4 +116,4 @@ void Stopwatch::stop()
 
 } // namespace zisc
 
-#endif // _ZISC_STOPWATCH_INL_HPP_
+#endif // ZISC_STOPWATCH_INL_HPP

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SMOOTH_CONDUCTOR_SURFACE_INL_HPP_
-#define _NANAIRO_SMOOTH_CONDUCTOR_SURFACE_INL_HPP_
+#ifndef NANAIRO_SMOOTH_CONDUCTOR_SURFACE_INL_HPP
+#define NANAIRO_SMOOTH_CONDUCTOR_SURFACE_INL_HPP
 
 #include "smooth_conductor_surface.hpp"
 // Zisc
@@ -33,7 +33,7 @@ namespace nanairo {
 template <uint kSampleSize> inline
 auto SmoothConductorSurface::makeSpecularBrdf(
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) const -> ShaderPointer<kSampleSize>
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
   const auto reflectance_0deg = sample(reflectance_0deg_, wavelengths);
 
@@ -50,7 +50,7 @@ template <uint kSampleSize> inline
 SurfaceModel::ShaderPointer<kSampleSize> makeSpecularBrdf(
     const SurfaceModel* surface,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool)
+    MemoryPool& memory_pool) noexcept
 {
   using zisc::cast;
 
@@ -60,4 +60,4 @@ SurfaceModel::ShaderPointer<kSampleSize> makeSpecularBrdf(
 
 } // namespace nanairo
 
-#endif // _NANAIRO_SMOOTH_CONDUCTOR_SURFACE_INL_HPP_
+#endif // NANAIRO_SMOOTH_CONDUCTOR_SURFACE_INL_HPP

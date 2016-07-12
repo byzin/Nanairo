@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_VALUE_INL_HPP_
-#define _NANAIRO_VALUE_INL_HPP_
+#ifndef NANAIRO_VALUE_INL_HPP
+#define NANAIRO_VALUE_INL_HPP
 
 #include "value.hpp"
 // Zisc
@@ -23,7 +23,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-constexpr uint getIndex(const uint16 wavelength)
+constexpr uint getIndex(const uint16 wavelength) noexcept
 {
   using zisc::cast;
   return cast<uint>(wavelength - kShortestWavelength) / kWavelengthResolution;
@@ -34,7 +34,7 @@ constexpr uint getIndex(const uint16 wavelength)
   No detailed.
   */
 inline
-constexpr uint16 getWavelength(const uint index)
+constexpr uint16 getWavelength(const uint index) noexcept
 {
   using zisc::cast;
   return kShortestWavelength + cast<uint16>(index * kWavelengthResolution);
@@ -42,4 +42,4 @@ constexpr uint16 getWavelength(const uint index)
 
 } // namespace nanairo
 
-#endif // _NANAIRO_VALUE_INL_HPP_
+#endif // NANAIRO_VALUE_INL_HPP

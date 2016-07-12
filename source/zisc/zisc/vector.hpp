@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_VECTOR_HPP_
-#define _ZISC_VECTOR_HPP_
+#ifndef ZISC_VECTOR_HPP
+#define ZISC_VECTOR_HPP
 
 // Zisc
 #include "arithmetic_array.hpp"
@@ -30,79 +30,85 @@ class Vector : public Dimension<Arithmetic, kN>
 
 
   //! Initialize with 0
-  Vector();
+  Vector() noexcept;
 
   //! Initialize with values
   template <typename ...Types>
-  Vector(const Types ...values);
+  Vector(const Types ...values) noexcept;
 
   //! Initialize with array
-  Vector(const ArrayType& array);
+  Vector(const ArrayType& array) noexcept;
 
 
-  Vector& operator+=(const Vector& vector);
+  //!
+  Vector& operator+=(const Vector& vector) noexcept;
 
-  Vector& operator-=(const Vector& vector);
+  //!
+  Vector& operator-=(const Vector& vector) noexcept;
 
-  Vector& operator*=(const Arithmetic scalar);
+  //!
+  Vector& operator*=(const Arithmetic scalar) noexcept;
 
 
   //! Return the inverse norm
-  Arithmetic inverseNorm() const;
+  Arithmetic inverseNorm() const noexcept;
 
   //! Return the norm
-  Arithmetic norm() const;
+  Arithmetic norm() const noexcept;
 
   //! Return a normalized vector
-  Vector normalized() const;
+  Vector normalized() const noexcept;
 
   //! Return the square norm
-  Arithmetic squareNorm() const;
+  Arithmetic squareNorm() const noexcept;
 };
 
 //! Get a vector which direction is reversed.
 template <typename Arithmetic, uint kN>
-Vector<Arithmetic, kN> operator-(const Vector<Arithmetic, kN>& vector);
+Vector<Arithmetic, kN> operator-(const Vector<Arithmetic, kN>& vector) noexcept;
 
 //! Add two vectors
 template <typename Arithmetic, uint kN>
 Vector<Arithmetic, kN> operator+(const Vector<Arithmetic, kN>& a,
-                                 const Vector<Arithmetic, kN>& b);
+                                 const Vector<Arithmetic, kN>& b) noexcept;
 
 //! Subtract two vectors
 template <typename Arithmetic, uint kN>
 Vector<Arithmetic, kN> operator-(const Vector<Arithmetic, kN>& a,
-                                 const Vector<Arithmetic, kN>& b);
+                                 const Vector<Arithmetic, kN>& b) noexcept;
 
 //! Multiply elements of vector by a scalar
 template <typename Arithmetic, uint kN>
 Vector<Arithmetic, kN> operator*(const Vector<Arithmetic, kN>& vector,
-                                 const Arithmetic scalar);
+                                 const Arithmetic scalar) noexcept;
 
 //! Multiply elements of vector by a scalar
 template <typename Arithmetic, uint kN>
 Vector<Arithmetic, kN> operator*(const Arithmetic scalar,
-                                 const Vector<Arithmetic, kN>& vector);
+                                 const Vector<Arithmetic, kN>& vector) noexcept;
 
 //! Compare two vectors for equality.
 template <typename Arithmetic, uint kN>
-bool operator==(const Vector<Arithmetic, kN>& a, const Vector<Arithmetic, kN>& b);
+bool operator==(const Vector<Arithmetic, kN>& a,
+                const Vector<Arithmetic, kN>& b) noexcept;
 
 //! Compare two vectors for not equality.
 template <typename Arithmetic, uint kN>
-bool operator!=(const Vector<Arithmetic, kN>& a, const Vector<Arithmetic, kN>& b);
+bool operator!=(const Vector<Arithmetic, kN>& a, 
+                const Vector<Arithmetic, kN>& b) noexcept;
 
 //! Calculate dot product
 template <typename Arithmetic, uint kN>
-Arithmetic dot(const Vector<Arithmetic, kN>& a, const Vector<Arithmetic, kN>& b);
+Arithmetic dot(const Vector<Arithmetic, kN>& a, 
+               const Vector<Arithmetic, kN>& b) noexcept;
 
 //! Calculate cross product
 template <typename Arithmetic>
 Vector<Arithmetic, 3> cross(const Vector<Arithmetic, 3>& a,
-                            const Vector<Arithmetic, 3>& b);
+                            const Vector<Arithmetic, 3>& b) noexcept;
 
 } // namespace zisc
 
 #include "vector-inl.hpp"
 
-#endif // _ZISC_VECTOR_HPP_
+#endif // ZISC_VECTOR_HPP

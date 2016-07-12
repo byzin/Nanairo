@@ -34,7 +34,7 @@ namespace nanairo {
 RoughDielectricSurface::RoughDielectricSurface(
     const SceneSettings& settings,
     const QString& prefix,
-    const std::vector<const Texture*>& texture_list)
+    const std::vector<const Texture*>& texture_list) noexcept
 {
   initialize(settings, prefix, texture_list);
 }
@@ -43,7 +43,7 @@ RoughDielectricSurface::RoughDielectricSurface(
   \details
   No detailed.
   */
-std::size_t RoughDielectricSurface::surfaceSize() const
+std::size_t RoughDielectricSurface::surfaceSize() const noexcept
 {
   return sizeof(eta_);
 }
@@ -52,7 +52,7 @@ std::size_t RoughDielectricSurface::surfaceSize() const
   \details
   No detailed.
   */
-SurfaceType RoughDielectricSurface::type() const
+SurfaceType RoughDielectricSurface::type() const noexcept
 {
   return SurfaceType::RoughDielectric;
 }
@@ -64,7 +64,7 @@ SurfaceType RoughDielectricSurface::type() const
 void RoughDielectricSurface::initialize(
     const SceneSettings& settings,
     const QString& prefix,
-    const std::vector<const Texture*>& texture_list)
+    const std::vector<const Texture*>& texture_list) noexcept
 {
   const auto p = prefix + "/" + keyword::roughDielectricSurface;
 

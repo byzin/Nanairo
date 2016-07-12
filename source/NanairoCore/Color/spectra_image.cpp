@@ -37,7 +37,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-SpectraImage::SpectraImage(const uint width, const uint height) :
+SpectraImage::SpectraImage(const uint width, const uint height) noexcept :
     SpectraImageInterface(width, height)
 {
   initialize();
@@ -47,7 +47,7 @@ SpectraImage::SpectraImage(const uint width, const uint height) :
   \details
   No detailed.
   */
-std::size_t SpectraImage::bufferMemorySize() const
+std::size_t SpectraImage::bufferMemorySize() const noexcept
 {
   constexpr std::size_t pixel_memory_size = sizeof(SpectralDistribution);
   const std::size_t pixels = widthResolution() * heightResolution();
@@ -59,7 +59,7 @@ std::size_t SpectraImage::bufferMemorySize() const
   \details
   No detailed.
   */
-void SpectraImage::clear()
+void SpectraImage::clear() noexcept
 {
   for (auto& pixel : buffer_)
     pixel.fill(0.0);
@@ -71,7 +71,7 @@ void SpectraImage::clear()
   \details
   No detailed.
   */
-void SpectraImage::save(const quint64 cycle, const QString& file_path) const
+void SpectraImage::save(const quint64 cycle, const QString& file_path) const noexcept
 {
   using zisc::cast;
 
@@ -87,8 +87,8 @@ void SpectraImage::save(const quint64 cycle, const QString& file_path) const
 
   // Calculate image byte size
   constexpr uint header_byte_size = 4 * 2 + 2 * 3 + 1;
-  const uint byte_size = header_byte_size + 
-                                buffer_.size() * kSpectraSize * sizeof(float);
+  const uint byte_size = 
+      cast<uint>(header_byte_size + buffer_.size() * kSpectraSize * sizeof(float));
 
   // Create spectra row data
   QByteArray spectra_row_data;
@@ -102,9 +102,9 @@ void SpectraImage::save(const quint64 cycle, const QString& file_path) const
   write(&spectra_row_data, n);
   write(&spectra_row_data, float_type);
   const Float k = 1.0 / cast<Float>(cycle);
-  for (const auto spectra : buffer_) {
+  for (const auto& spectra : buffer_) {
     for (uint i = 0; i < spectra.size(); ++i) {
-      const float data = k * spectra[i];
+      const float data = cast<float>(k * spectra[i]);
       write(&spectra_row_data, data);
     }
   }
@@ -124,7 +124,7 @@ void SpectraImage::save(const quint64 cycle, const QString& file_path) const
   */
 void SpectraImage::toHdrImage(System& system,
                               const quint64 cycle, 
-                              HdrImage* hdr_image) const
+                              HdrImage* hdr_image) const noexcept
 {
   using zisc::cast;
 
@@ -149,7 +149,7 @@ void SpectraImage::toHdrImage(System& system,
   \details
   No detailed.
   */
-SpectraImageType SpectraImage::type() const
+SpectraImageType SpectraImage::type() const noexcept
 {
   return SpectraImageType::Spectra;
 }
@@ -158,7 +158,7 @@ SpectraImageType SpectraImage::type() const
   \details
   No detailed.
   */
-void SpectraImage::initialize()
+void SpectraImage::initialize() noexcept
 {
   const uint buffer_size = widthResolution() * heightResolution();
   buffer_.resize(buffer_size);

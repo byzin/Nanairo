@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_HDR_IMAGE_INL_HPP_
-#define _NANAIRO_HDR_IMAGE_INL_HPP_
+#ifndef NANAIRO_HDR_IMAGE_INL_HPP
+#define NANAIRO_HDR_IMAGE_INL_HPP
 
 #include "hdr_image.hpp"
 // Standard C++ library
@@ -24,7 +24,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-XyzColor& HdrImage::operator[](const uint index)
+XyzColor& HdrImage::operator[](const uint index) noexcept
 {
   return buffer_[index];
 }
@@ -34,7 +34,7 @@ XyzColor& HdrImage::operator[](const uint index)
   No detailed.
   */
 inline
-const XyzColor& HdrImage::operator[](const uint index) const
+const XyzColor& HdrImage::operator[](const uint index) const noexcept
 {
   return buffer_[index];
 }
@@ -44,7 +44,7 @@ const XyzColor& HdrImage::operator[](const uint index) const
   No detailed.
   */
 inline
-const XyzColor& HdrImage::get(const uint x, const uint y) const
+const XyzColor& HdrImage::get(const uint x, const uint y) const noexcept
 {
   const uint index = x + y * width_;
   return buffer_[index];
@@ -55,7 +55,7 @@ const XyzColor& HdrImage::get(const uint x, const uint y) const
   No detailed.
   */
 inline
-uint HdrImage::heightResolution() const
+uint HdrImage::heightResolution() const noexcept
 {
   return height_;
 }
@@ -65,7 +65,7 @@ uint HdrImage::heightResolution() const
   No detailed.
   */
 inline
-void HdrImage::set(const uint x, const uint y, const XyzColor& color)
+void HdrImage::set(const uint x, const uint y, const XyzColor& color) noexcept
 {
   const uint index = x + y * width_;
   buffer_[index] = color;
@@ -76,11 +76,11 @@ void HdrImage::set(const uint x, const uint y, const XyzColor& color)
   No detailed.
   */
 inline
-uint HdrImage::widthResolution() const
+uint HdrImage::widthResolution() const noexcept
 {
   return width_;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_HDR_IMAGE_INL_HPP_
+#endif // NANAIRO_HDR_IMAGE_INL_HPP

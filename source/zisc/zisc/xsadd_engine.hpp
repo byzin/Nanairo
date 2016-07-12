@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_XSADD_ENGINE_HPP_
-#define _ZISC_XSADD_ENGINE_HPP_
+#ifndef ZISC_XSADD_ENGINE_HPP
+#define ZISC_XSADD_ENGINE_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -34,52 +34,55 @@ class XsaddEngine : public PseudoRandomNumberEngine<XsaddEngine, uint32, uint32>
 
 
   //! Initialize generator using defualt random seed
-  XsaddEngine();
+  XsaddEngine() noexcept;
 
   //! Initialize generator
-  XsaddEngine(const uint32 seed);
+  XsaddEngine(const uint32 seed) noexcept;
 
 
   //! Generate a random number
-  uint32 generate();
+  uint32 generate() noexcept;
 
   //! Generate a bounded random number x satisfying lower <= x < upper 
   template <typename Float>
-  Float generate(const Float lower, const Float upper,
-                 EnableIfFloat<Float> = kEnabler);
+  Float generate(const Float lower, 
+                 const Float upper,
+                 EnableIfFloat<Float> = kEnabler) noexcept;
 
   //! Generate double precision floating point number x (0.0 <= x < 1.0)
-  double generateFloat();
+  double generateFloat() noexcept;
 
   //! Return the largest possible value in the output range
-  static constexpr uint32 max();
+  static constexpr uint32 max() noexcept;
 
   //! Return the sammlest possible value in the output range
-  static constexpr uint32 min();
+  static constexpr uint32 min() noexcept;
 
   //! Set random seed
-  void setSeed(const uint32 seed);
+  void setSeed(const uint32 seed) noexcept;
 
   //! Set random seed
-  void setSeed(const std::vector<uint32>& seed_array);
+  void setSeed(const std::vector<uint32>& seed_array) noexcept;
 
  private:
   //! Return the bounded random number
   template <typename Float>
-  Float bound(const double random, const Float lower, const Float upper,
-              EnableIfFloat<Float> = kEnabler);
+  Float bound(const double random, 
+              const Float lower, 
+              const Float upper,
+              EnableIfFloat<Float> = kEnabler) noexcept;
 
   //! Initialize
-  uint32 initializeValue1(const uint32 x) const;
+  uint32 initializeValue1(const uint32 x) const noexcept;
 
   //! Initialize
-  uint32 initializeValue2(const uint32 x) const;
+  uint32 initializeValue2(const uint32 x) const noexcept;
 
   //! Change internal state
-  void nextState();
+  void nextState() noexcept;
 
   //! Certificate period
-  void periodCertification();
+  void periodCertification() noexcept;
 
 
   static constexpr uint loop_ = 8;
@@ -92,4 +95,4 @@ class XsaddEngine : public PseudoRandomNumberEngine<XsaddEngine, uint32, uint32>
 
 #include "xsadd_engine-inl.hpp"
 
-#endif // _ZISC_XSADD_ENGINE_HPP_
+#endif // ZISC_XSADD_ENGINE_HPP

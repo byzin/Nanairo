@@ -42,7 +42,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-GuiRendererManager::GuiRendererManager() :
+GuiRendererManager::GuiRendererManager() noexcept :
     rendering_thread_{1},
     image_provider_{nullptr}
 {
@@ -52,7 +52,7 @@ GuiRendererManager::GuiRendererManager() :
   \details
   No detailed.
   */
-void GuiRendererManager::addCameraMatrix(const QMatrix4x4& matrix)
+void GuiRendererManager::addCameraMatrix(const QMatrix4x4& matrix) noexcept
 {
   outputCameraMatrix(matrix);
 }
@@ -61,7 +61,7 @@ void GuiRendererManager::addCameraMatrix(const QMatrix4x4& matrix)
   \details
   No detailed.
   */
-void GuiRendererManager::finishRendering()
+void GuiRendererManager::finishRendering() noexcept
 {
   emit updated("0", "00000000", "00 h 00 m 00.000 s");
   emit finished();
@@ -71,7 +71,7 @@ void GuiRendererManager::finishRendering()
   \details
   No detailed.
   */
-QString GuiRendererManager::currentWorkingDir() const
+QString GuiRendererManager::currentWorkingDir() const noexcept
 {
   return QDir{}.absolutePath();
 }
@@ -80,7 +80,7 @@ QString GuiRendererManager::currentWorkingDir() const
   \details
   No detailed.
   */
-int GuiRendererManager::defaultRandomSeed() const
+int GuiRendererManager::defaultRandomSeed() const noexcept
 {
   using zisc::abs;
   using zisc::cast;
@@ -92,7 +92,7 @@ int GuiRendererManager::defaultRandomSeed() const
   \details
   No detailed.
   */
-QString GuiRendererManager::getFileName(const QUrl& file_path) const
+QString GuiRendererManager::getFileName(const QUrl& file_path) const noexcept
 {
   return file_path.fileName();
 }
@@ -101,7 +101,7 @@ QString GuiRendererManager::getFileName(const QUrl& file_path) const
   \details
   No detailed.
   */
-void GuiRendererManager::render(const QString& output_dir)
+void GuiRendererManager::render(const QString& output_dir) noexcept
 {
   QSharedPointer<SceneRendererBase> renderer{new CpuSceneRenderer};
   setRenderer(renderer.data());
@@ -122,7 +122,7 @@ void GuiRendererManager::render(const QString& output_dir)
   \details
   No detailed.
   */
-int GuiRendererManager::idealThreadCount() const
+int GuiRendererManager::idealThreadCount() const noexcept
 {
   return QThread::idealThreadCount();
 }
@@ -131,7 +131,7 @@ int GuiRendererManager::idealThreadCount() const
   \details
   No detailed.
   */
-void GuiRendererManager::makeDir(const QString& dir) const
+void GuiRendererManager::makeDir(const QString& dir) const noexcept
 {
   const QDir current_dir{};
   current_dir.mkdir(dir);
@@ -141,7 +141,7 @@ void GuiRendererManager::makeDir(const QString& dir) const
   \details
   No detailed.
   */
-void GuiRendererManager::preview()
+void GuiRendererManager::preview() noexcept
 {
   QSharedPointer<SceneRendererBase> renderer{new CpuSceneRenderer};
   setRenderer(renderer.data());
@@ -162,7 +162,7 @@ void GuiRendererManager::preview()
   \details
   No detailed.
   */
-int GuiRendererManager::random() const
+int GuiRendererManager::random() const noexcept
 {
   return qrand();
 }
@@ -172,7 +172,7 @@ int GuiRendererManager::random() const
   No detailed.
   */
 void GuiRendererManager::setRenderedImageProvider(
-    RenderedImageProvider* image_provider)
+    RenderedImageProvider* image_provider) noexcept
 {
   image_provider_ = image_provider;
   image_provider_->setImage(nullptr);
@@ -182,7 +182,7 @@ void GuiRendererManager::setRenderedImageProvider(
   \details
   No detailed.
   */
-void GuiRendererManager::setRenderer(const SceneRendererBase* renderer)
+void GuiRendererManager::setRenderer(const SceneRendererBase* renderer) noexcept
 {
   connect(renderer, SIGNAL(updated(quint64, qint64)),
           this, SLOT(setRenderingInfo(quint64, qint64)));
@@ -204,7 +204,7 @@ void GuiRendererManager::setRenderer(const SceneRendererBase* renderer)
   \details
   No detailed.
   */
-void GuiRendererManager::setRenderingInfo(const quint64 cycle, const qint64 time)
+void GuiRendererManager::setRenderingInfo(const quint64 cycle, const qint64 time) noexcept
 {
   using zisc::cast;
   constexpr quint64 k = cast<quint64>(zisc::Stopwatch::Clock::period::den);
@@ -220,7 +220,7 @@ void GuiRendererManager::setRenderingInfo(const quint64 cycle, const qint64 time
   \details
   No detailed.
   */
-void GuiRendererManager::setSceneSettings(const SceneSettings* settings)
+void GuiRendererManager::setSceneSettings(const SceneSettings* settings) noexcept
 {
   settings_ = settings;
 }

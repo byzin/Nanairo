@@ -35,7 +35,7 @@
 
 * Pinhole camera
 
-**Colour**
+**Color**
 
 * Spectra (point sampling) [[thesis](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.68.1533)]
 
@@ -54,22 +54,15 @@
 
 ### Compiler ###
 
-**OS X or Linux**
-
-* GCC (version 5.1 or lator) [[the GNU Compiler Collection](https://gcc.gnu.org/)]
-* Clang (version 3.5 or lator) [[The LLVM Compiler Infrastructure](http://llvm.org/)]
-
-**Windows**
-
-* MinGW GCC (version 5.1 or lator) [[MSYS2](https://msys2.github.io/)]
+* C++14 support compiler
 
 ### Build tools ###
 
-* CMake (version 3.0 or lator) [[CMake](http://www.cmake.org/)]
+* CMake (version 3.4 or lator) [[CMake](http://www.cmake.org/)]
 
 ### Dependency Library ###
 
-* Qt (version 5.4.0 or lator)
+* Qt (version 5.7.0 or lator)
     - OS X or Linux: [[Qt Project](http://qt-project.org/)]
     - Windows: [[MSYS2](https://msys2.github.io/)]
 
@@ -81,9 +74,8 @@ Please see [wiki](https://github.com/byzin/Nanairo/wiki/Home "Nanairo wiki").
 ### Test environments ###
 Currently, I tested in the following environments  
 
-* Windows 8.1 + MinGW GCC 5.3 + Qt 5.5
-* OS X Mavericks + Clang 3.7 + Qt 5.5
-* Ubuntu 14.04 + GCC 5.2 + Qt 5.5
+* OS X Mavericks + Clang 3.8 + Qt 5.7
+* Ubuntu 14.04 + GCC 5.3 + Qt 5.7
 
 ### Setup ###
 You need to add the Qt qmake path to **$PATH**.  

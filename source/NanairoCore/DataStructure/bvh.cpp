@@ -42,10 +42,8 @@
 namespace nanairo {
 
 /*!
-  \details
-  No detailed.
   */
-Bvh::Bvh(const SceneSettings& /* settings */, const QString& /* prefix */)
+Bvh::~Bvh() noexcept
 {
 }
 
@@ -53,7 +51,15 @@ Bvh::Bvh(const SceneSettings& /* settings */, const QString& /* prefix */)
   \details
   No detailed.
   */
-IntersectionInfo Bvh::castRay(const Ray& ray, const Float max_distance2) const
+Bvh::Bvh(const SceneSettings& /* settings */, const QString& /* prefix */) noexcept
+{
+}
+
+/*!
+  \details
+  No detailed.
+  */
+IntersectionInfo Bvh::castRay(const Ray& ray, const Float max_distance2) const noexcept 
 {
   IntersectionInfo intersection;
   Float shortest_distance2 = max_distance2;
@@ -83,7 +89,7 @@ IntersectionInfo Bvh::castRay(const Ray& ray, const Float max_distance2) const
   \details
   No detailed.
   */
-void Bvh::construct(System& system, std::vector<Object>&& object_list)
+void Bvh::construct(System& system, std::vector<Object>&& object_list) noexcept
 {
   ZISC_ASSERT(object_list.size() <= BvhNode::maxNumOfObjects(),
               "The size of objects is over.");
@@ -110,7 +116,7 @@ void Bvh::construct(System& system, std::vector<Object>&& object_list)
   \details
   No detailed.
   */
-std::size_t Bvh::getBvhSize() const
+std::size_t Bvh::getBvhSize() const noexcept
 {
   return tree_.size() * sizeof(tree_[0]) +
          object_list_.size() * sizeof(object_list_[0]);
@@ -123,7 +129,7 @@ std::size_t Bvh::getBvhSize() const
 void Bvh::setTreeInfo(const std::vector<BvhNode>& tree,
                       std::vector<Object>& object_list,
                       const uint32 failure_next_index,
-                      const uint32 index)
+                      const uint32 index) noexcept
 {
   using zisc::cast;
 
@@ -131,7 +137,7 @@ void Bvh::setTreeInfo(const std::vector<BvhNode>& tree,
   const auto& old_node = tree[index];
   auto& node = tree_[index];
   node.setBoundingBox(old_node.boundingBox());
-  node.setObjectIndex(object_list_.size());
+  node.setObjectIndex(cast<uint32>(object_list_.size()));
   node.setNumOfObjects(old_node.numOfObjects());
   node.setFailureNextIndex(failure_next_index);
   // Set objects
@@ -154,7 +160,7 @@ void Bvh::setTreeInfo(const std::vector<BvhNode>& tree,
   \details
   No detailed.
   */
-void Bvh::sortTreeNode(std::vector<BvhNode>& tree) const
+void Bvh::sortTreeNode(std::vector<BvhNode>& tree) const noexcept
 {
   std::vector<BvhNode> new_tree;
   new_tree.resize(tree.size());
@@ -176,7 +182,7 @@ void Bvh::sortTreeNode(std::vector<BvhNode>& tree) const
 void Bvh::sortTreeNode(const std::vector<BvhNode>& old_tree,
                        std::vector<BvhNode>& tree,
                        const uint32 old_index,
-                       uint32& index) const
+                       uint32& index) const noexcept
 {
   const uint32 i = index;
   const auto& old_node = old_tree[old_index];
@@ -200,7 +206,7 @@ void Bvh::sortTreeNode(const std::vector<BvhNode>& old_tree,
   \details
   No detailed.
   */
-void Bvh::setUniqueObject(std::vector<Object>& object_list)
+void Bvh::setUniqueObject(std::vector<Object>& object_list) noexcept
 {
   // Object list
   object_list_.emplace_back(std::move(object_list[0]));
@@ -218,7 +224,7 @@ void Bvh::setUniqueObject(std::vector<Object>& object_list)
   \details
   No detailed.
   */
-UniquePointer<Bvh> makeBvh(const SceneSettings& settings)
+UniquePointer<Bvh> makeBvh(const SceneSettings& settings) noexcept
 {
   using zisc::toHash32;
 

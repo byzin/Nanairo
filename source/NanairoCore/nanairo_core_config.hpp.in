@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_NANAIRO_CORE_CONFIG_HPP_
-#define _NANAIRO_NANAIRO_CORE_CONFIG_HPP_
+#ifndef NANAIRO_NANAIRO_CORE_CONFIG_HPP
+#define NANAIRO_NANAIRO_CORE_CONFIG_HPP
 
 // Standard C++ library
 #include <cstdint>
@@ -86,4 +86,4 @@ constexpr uint kMisHeuristicBeta = @NANAIRO_MIS_HEURISTIC_BETA@;
 
 } // namespace nanairo
 
-#endif // _NANAIRO_NANAIRO_CORE_CONFIG_HPP_
+#endif // NANAIRO_NANAIRO_CORE_CONFIG_HPP

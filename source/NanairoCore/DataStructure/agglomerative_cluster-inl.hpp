@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_AGGLOMERATIVE_CLUSTER_INL_HPP_
-#define _NANAIRO_AGGLOMERATIVE_CLUSTER_INL_HPP_
+#ifndef NANAIRO_AGGLOMERATIVE_CLUSTER_INL_HPP
+#define NANAIRO_AGGLOMERATIVE_CLUSTER_INL_HPP
 
 #include "agglomerative_cluster.hpp"
 // Standard C++ library
@@ -33,7 +33,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-AgglomerativeCluster::AgglomerativeCluster(const BvhNode* leaf_node)
+AgglomerativeCluster::AgglomerativeCluster(const BvhNode* leaf_node) noexcept
 {
   initializeLeafCluster(leaf_node);
 }
@@ -45,7 +45,7 @@ AgglomerativeCluster::AgglomerativeCluster(const BvhNode* leaf_node)
 inline
 AgglomerativeCluster::AgglomerativeCluster(
     std::unique_ptr<AgglomerativeCluster>&& left_child_cluster,
-    std::unique_ptr<AgglomerativeCluster>&& right_child_cluster)
+    std::unique_ptr<AgglomerativeCluster>&& right_child_cluster) noexcept
 {
   initializeInnerCluster(std::move(left_child_cluster), 
                          std::move(right_child_cluster));
@@ -56,7 +56,7 @@ AgglomerativeCluster::AgglomerativeCluster(
   No detailed.
   */
 inline
-AgglomerativeCluster::~AgglomerativeCluster()
+AgglomerativeCluster::~AgglomerativeCluster() noexcept
 {
   if (isLeaf()) {
     auto& leaf = data_.leaf_;
@@ -74,7 +74,7 @@ AgglomerativeCluster::~AgglomerativeCluster()
   No detailed.
   */
 inline
-const Aabb& AgglomerativeCluster::boundingBox() const
+const Aabb& AgglomerativeCluster::boundingBox() const noexcept 
 {
   return bounding_box_;
 }
@@ -84,7 +84,7 @@ const Aabb& AgglomerativeCluster::boundingBox() const
   No detailed.
   */
 inline
-Float AgglomerativeCluster::cost() const
+Float AgglomerativeCluster::cost() const noexcept
 {
   using zisc::cast;
   return cast<Float>(cost_);
@@ -95,7 +95,7 @@ Float AgglomerativeCluster::cost() const
   No detailed.
   */
 inline
-bool AgglomerativeCluster::isLeaf() const
+bool AgglomerativeCluster::isLeaf() const noexcept
 {
   return (data_.leaf_.dummy_ == nullptr);
 }
@@ -105,7 +105,7 @@ bool AgglomerativeCluster::isLeaf() const
   No detailed.
   */
 inline
-const AgglomerativeCluster& AgglomerativeCluster::leftChildCluster() const
+const AgglomerativeCluster& AgglomerativeCluster::leftChildCluster() const noexcept
 {
   ZISC_ASSERT(!isLeaf(), "This cluster is leaf.");
   return *(data_.inner_.left_child_cluster_);
@@ -116,7 +116,7 @@ const AgglomerativeCluster& AgglomerativeCluster::leftChildCluster() const
   No detailed.
   */
 inline
-uint AgglomerativeCluster::numOfPrimitives() const
+uint AgglomerativeCluster::numOfPrimitives() const noexcept
 {
   using zisc::cast;
   return cast<uint>(num_of_objects_);
@@ -127,7 +127,7 @@ uint AgglomerativeCluster::numOfPrimitives() const
   No detailed.
   */
 inline
-auto AgglomerativeCluster::objectList() const -> 
+auto AgglomerativeCluster::objectList() const noexcept -> 
     std::array<ObjectPointer, kMaxNumOfObjectsPerNode>
 {
   ZISC_ASSERT(numOfPrimitives() <= kMaxNumOfObjectsPerNode, "Primitives overflow.");
@@ -154,7 +154,7 @@ auto AgglomerativeCluster::objectList() const ->
   No detailed.
   */
 inline
-const AgglomerativeCluster& AgglomerativeCluster::rightChildCluster() const
+const AgglomerativeCluster& AgglomerativeCluster::rightChildCluster() const noexcept
 {
   ZISC_ASSERT(!isLeaf(), "This cluster is leaf.");
   return *(data_.inner_.right_child_cluster_);
@@ -165,7 +165,7 @@ const AgglomerativeCluster& AgglomerativeCluster::rightChildCluster() const
   No detailed.
   */
 inline
-void AgglomerativeCluster::initializeLeafCluster(const BvhNode* leaf_node)
+void AgglomerativeCluster::initializeLeafCluster(const BvhNode* leaf_node) noexcept
 {
   using zisc::cast;
 
@@ -198,7 +198,7 @@ void AgglomerativeCluster::initializeLeafCluster(const BvhNode* leaf_node)
 inline
 void AgglomerativeCluster::initializeInnerCluster(
     std::unique_ptr<AgglomerativeCluster>&& left_child_cluster,
-    std::unique_ptr<AgglomerativeCluster>&& right_child_cluster)
+    std::unique_ptr<AgglomerativeCluster>&& right_child_cluster) noexcept
 {
   using zisc::cast;
 
@@ -260,7 +260,7 @@ void AgglomerativeCluster::initializeInnerCluster(
   No detailed.
   */
 inline
-void AgglomerativeCluster::setAsLeaf()
+void AgglomerativeCluster::setAsLeaf() noexcept
 {
   data_.leaf_.dummy_ = nullptr;
 }
@@ -270,11 +270,12 @@ void AgglomerativeCluster::setAsLeaf()
   No detailed.
   */
 inline
-Float getClusterDistance(const AgglomerativeCluster& a, const AgglomerativeCluster& b)
+Float getClusterDistance(const AgglomerativeCluster& a, 
+                         const AgglomerativeCluster& b) noexcept
 {
   return combine(a.boundingBox(), b.boundingBox()).surfaceArea();
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_AGGLOMERATIVE_CLUSTER_INL_HPP_
+#endif // NANAIRO_AGGLOMERATIVE_CLUSTER_INL_HPP

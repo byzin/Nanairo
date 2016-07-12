@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_UNICOLOR_TEXTURE_INL_HPP_
-#define _NANAIRO_UNICOLOR_TEXTURE_INL_HPP_
+#ifndef NANAIRO_UNICOLOR_TEXTURE_INL_HPP
+#define NANAIRO_UNICOLOR_TEXTURE_INL_HPP
 
 #include "unicolor_texture.hpp"
 // Zisc
@@ -31,7 +31,7 @@ template <uint> class WavelengthSamples;
 template <uint kSampleSize> inline
 SampledSpectra<kSampleSize> UnicolorTexture::unicolorSpectraValue(
     const Point2& /* coordinate */,
-    const WavelengthSamples<kSampleSize>& wavelengths) const
+    const WavelengthSamples<kSampleSize>& wavelengths) const noexcept
 {
   return sample(spectra_value_, wavelengths);
 }
@@ -44,7 +44,7 @@ template <uint kSampleSize> inline
 SampledSpectra<kSampleSize> getUnicolorSpectraValue(
     const Texture* texture,
     const Point2& coordinate,
-    const WavelengthSamples<kSampleSize>& wavelengths)
+    const WavelengthSamples<kSampleSize>& wavelengths) noexcept
 {
   using zisc::cast;
 
@@ -54,4 +54,4 @@ SampledSpectra<kSampleSize> getUnicolorSpectraValue(
 
 } // namespace nanairo
 
-#endif // _NANAIRO_UNICOLOR_TEXTURE_INL_HPP_
+#endif // NANAIRO_UNICOLOR_TEXTURE_INL_HPP

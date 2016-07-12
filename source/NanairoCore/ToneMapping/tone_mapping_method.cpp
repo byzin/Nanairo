@@ -39,7 +39,7 @@ namespace nanairo {
   No detailed.
   */
 ToneMappingMethod::ToneMappingMethod(const System& system,
-                                     const SceneSettings& settings)
+                                     const SceneSettings& settings) noexcept
 {
   initialize(system, settings);
 }
@@ -48,7 +48,7 @@ ToneMappingMethod::ToneMappingMethod(const System& system,
   \details
   No detailed.
   */
-ToneMappingMethod::~ToneMappingMethod()
+ToneMappingMethod::~ToneMappingMethod() noexcept
 {
 }
 
@@ -57,7 +57,7 @@ ToneMappingMethod::~ToneMappingMethod()
   No detailed.
   */
 YxyColor ToneMappingMethod::getWhitePoint(
-    const std::vector<YxyColor>& pixel_luminance) const
+    const std::vector<YxyColor>& pixel_luminance) const noexcept
 {
   const YxyColor* white_point = &pixel_luminance[0];
   for (uint index = 1; index < pixel_luminance.size(); ++index) {
@@ -74,8 +74,7 @@ YxyColor ToneMappingMethod::getWhitePoint(
   */
 void ToneMappingMethod::setPixelLuminance(System& system,
                                           const HdrImage& hdr_image,
-                                          std::vector<YxyColor>& pixel_luminance)
-    const
+                                          std::vector<YxyColor>& pixel_luminance) const noexcept
 {
   using zisc::cast;
 
@@ -103,7 +102,7 @@ void ToneMappingMethod::setPixelLuminance(System& system,
   No detailed.
   */
 void ToneMappingMethod::initialize(const System& system,
-                                   const SceneSettings& /* settings */)
+                                   const SceneSettings& /* settings */) noexcept
 {
   inverse_gamma_ = 1.0 / system.gamma();
   const auto color_space = system.colorSpace();
@@ -116,7 +115,7 @@ void ToneMappingMethod::initialize(const System& system,
   No detailed.
   */
 UniquePointer<ToneMappingMethod> makeToneMappingMethod(const System& system,
-                                                       const SceneSettings& settings)
+                                                       const SceneSettings& settings) noexcept
 {
   using zisc::toHash32;
 

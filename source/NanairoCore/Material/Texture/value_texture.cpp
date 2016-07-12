@@ -30,7 +30,7 @@ namespace nanairo {
   */
 ValueTexture::ValueTexture(const System& system,
                            const SceneSettings& settings,
-                           const QString& prefix)
+                           const QString& prefix) noexcept
 {
   initialize(system, settings, prefix);
 }
@@ -39,7 +39,7 @@ ValueTexture::ValueTexture(const System& system,
   \details
   No detailed.
   */
-Float ValueTexture::floatValue(const Point2& /* coordinate */) const
+Float ValueTexture::floatValue(const Point2& /* coordinate */) const noexcept
 {
   return value_;
 }
@@ -48,7 +48,7 @@ Float ValueTexture::floatValue(const Point2& /* coordinate */) const
   \details
   No detailed.
   */
-std::size_t ValueTexture::textureSize() const
+std::size_t ValueTexture::textureSize() const noexcept
 {
   return sizeof(value_);
 }
@@ -57,7 +57,7 @@ std::size_t ValueTexture::textureSize() const
   \details
   No detailed.
   */
-TextureType ValueTexture::type() const
+TextureType ValueTexture::type() const noexcept
 {
   return TextureType::Value;
 }
@@ -68,7 +68,7 @@ TextureType ValueTexture::type() const
   No detailed.
   */
 Float ValueTexture::wavelengthValue(const Point2& /* coordinate */, 
-                                    const uint16 /* wavelength */) const
+                                    const uint16 /* wavelength */) const noexcept
 {
   return value_;
 }
@@ -79,7 +79,7 @@ Float ValueTexture::wavelengthValue(const Point2& /* coordinate */,
   */
 void ValueTexture::initialize(const System& /* system */,
                               const SceneSettings& settings,
-                              const QString& prefix)
+                              const QString& prefix) noexcept
 {
   auto p = prefix + "/" + keyword::valueTexture;
   value_ = settings.realValue(p + "/" + keyword::value);

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_CHECKERBOARD_TEXTURE_HPP_
-#define _NANAIRO_CHECKERBOARD_TEXTURE_HPP_
+#ifndef NANAIRO_CHECKERBOARD_TEXTURE_HPP
+#define NANAIRO_CHECKERBOARD_TEXTURE_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -41,32 +41,32 @@ class CheckerboardTexture : public Texture
   //! Create a checkerboard texture
   CheckerboardTexture(const System& system,
                       const SceneSettings& settings, 
-                      const QString& prefix);
+                      const QString& prefix) noexcept;
 
 
   //! Evaluate a float value at the coordinate
-  Float floatValue(const Point2& coordinate) const override;
+  Float floatValue(const Point2& coordinate) const noexcept override;
 
   //! Evaluate spectra at the coordinate
   template <uint kSampleSize>
   SampledSpectra<kSampleSize> checkerboardSpectraValue(
       const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths) const;
+      const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
 
   //! Return the checkerboard texture byte size
-  std::size_t textureSize() const override;
+  std::size_t textureSize() const noexcept override;
 
   //! Return the checkerboard texture type
-  TextureType type() const override;
+  TextureType type() const noexcept override;
 
   //! Evaluate the value by the wavelength at the texture coordinate
   Float wavelengthValue(const Point2& coordinate, 
-                        const uint16 wavelength) const override;
+                        const uint16 wavelength) const noexcept override;
  private:
   //! Initialize
   void initialize(const System& system,
                   const SceneSettings& settings, 
-                  const QString& prefix);
+                  const QString& prefix) noexcept;
 
 
   SpectralDistribution spectra_value_[2];
@@ -81,4 +81,4 @@ class CheckerboardTexture : public Texture
 
 #include "checkerboard_texture-inl.hpp"
 
-#endif // _NANAIRO_CHECKERBOARD_TEXTURE_HPP_
+#endif // NANAIRO_CHECKERBOARD_TEXTURE_HPP

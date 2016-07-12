@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_TRANSFORMATION_INL_HPP_
-#define _NANAIRO_TRANSFORMATION_INL_HPP_
+#ifndef NANAIRO_TRANSFORMATION_INL_HPP
+#define NANAIRO_TRANSFORMATION_INL_HPP
 
 #include "transformation.hpp"
 // Standard C++ library
@@ -29,7 +29,7 @@ namespace nanairo {
   using "Building an Orthonormal Basis from a 3D Unit Vector Without Normalization".
   */
 inline
-Matrix3x3 makeChangeOfBasisMatrixFromLocal(const Vector3& normal)
+Matrix3x3 makeChangeOfBasisMatrixFromLocal(const Vector3& normal) noexcept
 {
   const auto& n = normal;
 
@@ -59,7 +59,7 @@ Matrix3x3 makeChangeOfBasisMatrixFromLocal(const Vector3& normal)
   using "Building an Orthonormal Basis from a 3D Unit Vector Without Normalization".
   */
 inline
-Matrix3x3 makeChangeOfBasisMatrixToLocal(const Vector3& normal)
+Matrix3x3 makeChangeOfBasisMatrixToLocal(const Vector3& normal) noexcept
 {
   const auto& n = normal;
 
@@ -88,7 +88,7 @@ Matrix3x3 makeChangeOfBasisMatrixToLocal(const Vector3& normal)
   No detailed.
   */
 inline
-Matrix4x4 makeIdentityMatrix()
+Matrix4x4 makeIdentityMatrix() noexcept
 {
   return Matrix4x4{1.0, 0.0, 0.0, 0.0,
                    0.0, 1.0, 0.0, 0.0,
@@ -101,7 +101,7 @@ Matrix4x4 makeIdentityMatrix()
   No detailed.
   */
 inline
-Matrix4x4 makeTranslationMatrix(const Float x, const Float y, const Float z)
+Matrix4x4 makeTranslationMatrix(const Float x, const Float y, const Float z) noexcept
 {
   return Matrix4x4{1.0, 0.0, 0.0,   x,
                    0.0, 1.0, 0.0,   y,
@@ -114,7 +114,7 @@ Matrix4x4 makeTranslationMatrix(const Float x, const Float y, const Float z)
   No detailed.
   */
 inline
-Matrix4x4 makeScalingMatrix(const Float x, const Float y, const Float z)
+Matrix4x4 makeScalingMatrix(const Float x, const Float y, const Float z) noexcept
 {
   return Matrix4x4{  x, 0.0, 0.0, 0.0,
                    0.0,   y, 0.0, 0.0,
@@ -148,7 +148,7 @@ Matrix4x4 makeScalingMatrix(const Float x, const Float y, const Float z)
   No detailed.
   */
 inline
-Matrix4x4 makeXAxisRotationMatrix(const Float theta)
+Matrix4x4 makeXAxisRotationMatrix(const Float theta) noexcept
 {
   return Matrix4x4{1.0, 0.0            ,  0.0            , 0.0,
                    0.0, std::cos(theta), -std::sin(theta), 0.0,
@@ -161,7 +161,7 @@ Matrix4x4 makeXAxisRotationMatrix(const Float theta)
   No detailed.
   */
 inline
-Matrix4x4 makeYAxisRotationMatrix(const Float theta)
+Matrix4x4 makeYAxisRotationMatrix(const Float theta) noexcept
 {
   return Matrix4x4{ std::cos(theta), 0.0, std::sin(theta), 0.0,
                     0.0            , 1.0, 0.0            , 0.0,
@@ -174,7 +174,7 @@ Matrix4x4 makeYAxisRotationMatrix(const Float theta)
   No detailed.
   */
 inline
-Matrix4x4 makeZAxisRotationMatrix(const Float theta)
+Matrix4x4 makeZAxisRotationMatrix(const Float theta) noexcept
 {
   return Matrix4x4{std::cos(theta), -std::sin(theta), 0.0, 0.0,
                    std::sin(theta),  std::cos(theta), 0.0, 0.0,
@@ -184,4 +184,4 @@ Matrix4x4 makeZAxisRotationMatrix(const Float theta)
 
 } // namespace nanairo
 
-#endif // _NANAIRO_TRANSFORMATION_INL_HPP_
+#endif // NANAIRO_TRANSFORMATION_INL_HPP

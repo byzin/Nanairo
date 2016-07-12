@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_UNIT_INL_HPP_
-#define _ZISC_UNIT_INL_HPP_
+#ifndef ZISC_UNIT_INL_HPP
+#define ZISC_UNIT_INL_HPP
 
 #include "unit.hpp"
 // Standard C++ library
@@ -28,10 +28,12 @@ namespace zisc {
   \return radian
   */
 template <typename Float> inline
-constexpr Float toRadian(const Float angle)
+constexpr Float toRadian(const Float angle) noexcept
 {
-  static_assert(std::is_floating_point<Float>::value, "## Float must be float type.");
-  return cast<Float>(kPi / 180.0) * angle;
+  static_assert(std::is_floating_point<Float>::value,
+                "Float isn't floating point type.");
+  constexpr auto k = cast<Float>(kPi<long double> / 180.0l);
+  return k * angle;
 }
 
 /*!
@@ -42,21 +44,23 @@ constexpr Float toRadian(const Float angle)
   \return degree
   */
 template <typename Float> inline
-constexpr Float toAngle(const Float radian)
+constexpr Float toAngle(const Float radian) noexcept
 {
-  static_assert(std::is_floating_point<Float>::value, "## Float must be float type.");
-  return cast<Float>(180.0 / kPi) * radian;
+  static_assert(std::is_floating_point<Float>::value,
+                "Float isn't floating point type.");
+  constexpr auto k = cast<Float>(180.0l / kPi<long double>);
+  return k * radian;
 }
 
 /*!
   \details
   No detailed.
   */
-constexpr double toMegaByte(const std::size_t byte)
+constexpr double toMegaByte(const std::size_t byte) noexcept
 {
-  return cast<double>(byte) * (1.0 / (1024.0 * 1024.0));
+  return cast<double>(byte) * (1.0 / zisc::power<2>(1024.0));
 }
 
 } // namespace zisc
 
-#endif // _ZISC_UNIT_INL_HPP_
+#endif // ZISC_UNIT_INL_HPP

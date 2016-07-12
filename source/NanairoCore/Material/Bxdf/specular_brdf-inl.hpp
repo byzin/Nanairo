@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SPECULAR_BRDF_INL_HPP_
-#define _NANAIRO_SPECULAR_BRDF_INL_HPP_
+#ifndef NANAIRO_SPECULAR_BRDF_INL_HPP
+#define NANAIRO_SPECULAR_BRDF_INL_HPP
 
 #include "specular_brdf.hpp"
 // Standard C++ library
@@ -31,7 +31,7 @@ namespace nanairo {
   No detailed.
   */
 template <uint kSampleSize> inline
-SpecularBrdf<kSampleSize>::SpecularBrdf(const Spectra& reflectance_0deg) :
+SpecularBrdf<kSampleSize>::SpecularBrdf(const Spectra& reflectance_0deg) noexcept :
     reflectance_0deg_{reflectance_0deg}
 {
 }
@@ -45,7 +45,7 @@ auto SpecularBrdf<kSampleSize>::sample(
     const Vector3* vin,
     const Vector3& normal,
     const Wavelengths& /* wavelengths */,
-    Sampler& /* sampler */) const -> std::tuple<SampledDirection, Spectra>
+    Sampler& /* sampler */) const noexcept -> std::tuple<SampledDirection, Spectra>
 {
   const Float cos_theta_ni = -zisc::dot(normal, *vin);
   ZISC_ASSERT((0.0 <= cos_theta_ni) && (cos_theta_ni <= 1.0),
@@ -62,11 +62,11 @@ auto SpecularBrdf<kSampleSize>::sample(
   No detailed.
   */
 template <uint kSampleSize>
-bool SpecularBrdf<kSampleSize>::wavelengthIsSelected() const
+bool SpecularBrdf<kSampleSize>::wavelengthIsSelected() const noexcept
 {
   return false;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_SPECULAR_BRDF_INL_HPP_
+#endif // NANAIRO_SPECULAR_BRDF_INL_HPP

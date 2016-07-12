@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_RENDERER_UTILITY_INL_HPP_
-#define _NANAIRO_RENDERER_UTILITY_INL_HPP_
+#ifndef NANAIRO_RENDERER_UTILITY_INL_HPP
+#define NANAIRO_RENDERER_UTILITY_INL_HPP
 
 // Standard C++ library
 #include <chrono>
@@ -25,7 +25,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-QString getTimeString(const zisc::Stopwatch::Clock::duration time)
+QString getTimeString(const zisc::Stopwatch::Clock::duration time) noexcept
 {
   using zisc::cast;
   using std::chrono::duration_cast;
@@ -52,4 +52,4 @@ QString getTimeString(const zisc::Stopwatch::Clock::duration time)
 
 } // namespace nanairo
 
-#endif // _NANAIRO_RENDERER_UTILITY_INL_HPP_
+#endif // NANAIRO_RENDERER_UTILITY_INL_HPP

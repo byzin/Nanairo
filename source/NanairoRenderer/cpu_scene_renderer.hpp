@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_CPU_SCENE_RENDERER_HPP_
-#define _NANAIRO_CPU_SCENE_RENDERER_HPP_
+#ifndef NANAIRO_CPU_SCENE_RENDERER_HPP
+#define NANAIRO_CPU_SCENE_RENDERER_HPP
 
 // NanairoRenderer
 #include "scene_renderer_base.hpp"
@@ -40,23 +40,23 @@ class CpuSceneRenderer : public SceneRendererBase
 {
  public:
   //! Initialize
-  CpuSceneRenderer();
+  CpuSceneRenderer() noexcept;
 
  private:
   //! Convert the spectra buffer to HDR XYZ buffer
-  void convertSpectraToHdr(const quint64 cycle) override;
+  void convertSpectraToHdr(const quint64 cycle) noexcept override;
 
   //! Handle the camera event
-  void handleCameraEvent() override;
+  void handleCameraEvent() noexcept override;
 
   //! Initialize the cpu renderer
-  void initializeRenderer(const SceneSettings& settings) override;
+  void initializeRenderer(const SceneSettings& settings) noexcept override;
 
   //! Render image
-  void render(const quint64 cycle) override;
+  void render(const quint64 cycle) noexcept override;
 
   //! Tonemap
-  void toneMap() override;
+  void toneMap() noexcept override;
 
 
   WavelengthSampler<3> rgb_sampler_;
@@ -73,4 +73,4 @@ class CpuSceneRenderer : public SceneRendererBase
 
 } // namespace nanairo
 
-#endif // _NANAIRO_CPU_SCENE_RENDERER_HPP_
+#endif // NANAIRO_CPU_SCENE_RENDERER_HPP

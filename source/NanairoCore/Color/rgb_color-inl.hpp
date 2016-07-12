@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_RGB_COLOR_INL_HPP_
-#define _NANAIRO_RGB_COLOR_INL_HPP_
+#ifndef NANAIRO_RGB_COLOR_INL_HPP
+#define NANAIRO_RGB_COLOR_INL_HPP
 
 #include "rgb_color.hpp"
 // Qt
@@ -27,7 +27,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-RgbColor::RgbColor()
+RgbColor::RgbColor() noexcept
 {
 }
 
@@ -36,7 +36,7 @@ RgbColor::RgbColor()
   No detailed.
   */
 inline
-RgbColor::RgbColor(const Float red, const Float green, const Float blue) :
+RgbColor::RgbColor(const Float red, const Float green, const Float blue) noexcept :
     Color(red, green, blue)
 {
 }
@@ -46,7 +46,7 @@ RgbColor::RgbColor(const Float red, const Float green, const Float blue) :
   No detailed.
   */
 inline
-RgbColor::RgbColor(const QColor& color) :
+RgbColor::RgbColor(const QColor& color) noexcept :
     Color(zisc::cast<Float>(color.red()) * (1.0 / 255.0),
           zisc::cast<Float>(color.green()) * (1.0 / 255.0),
           zisc::cast<Float>(color.blue()) * (1.0 / 255.0))
@@ -58,7 +58,7 @@ RgbColor::RgbColor(const QColor& color) :
   No detailed.
   */
 inline
-RgbColor::RgbColor(const zisc::ArithmeticArray<Float, 3>& color) :
+RgbColor::RgbColor(const zisc::ArithmeticArray<Float, 3>& color) noexcept :
     Color(color)
 {
 }
@@ -68,7 +68,7 @@ RgbColor::RgbColor(const zisc::ArithmeticArray<Float, 3>& color) :
   No detailed.
   */
 inline
-void RgbColor::correctGamma(const Float gamma)
+void RgbColor::correctGamma(const Float gamma) noexcept
 {
   color_.setElements(zisc::pow(red(), gamma),
                      zisc::pow(green(), gamma),
@@ -80,7 +80,7 @@ void RgbColor::correctGamma(const Float gamma)
   No detailed.
   */
 inline
-Float& RgbColor::blue()
+Float& RgbColor::blue() noexcept
 {
   return color_[2];
 }
@@ -90,7 +90,7 @@ Float& RgbColor::blue()
   No detailed.
   */
 inline
-const Float& RgbColor::blue() const
+const Float& RgbColor::blue() const noexcept
 {
   return color_[2];
 }
@@ -100,7 +100,7 @@ const Float& RgbColor::blue() const
   No detailed.
   */
 inline
-Float& RgbColor::green()
+Float& RgbColor::green() noexcept
 {
   return color_[1];
 }
@@ -110,7 +110,7 @@ Float& RgbColor::green()
   No detailed.
   */
 inline
-const Float& RgbColor::green() const
+const Float& RgbColor::green() const noexcept
 {
   return color_[1];
 }
@@ -120,7 +120,7 @@ const Float& RgbColor::green() const
   No detailed.
   */
 inline
-Float& RgbColor::red()
+Float& RgbColor::red() noexcept
 {
   return color_[0];
 }
@@ -130,7 +130,7 @@ Float& RgbColor::red()
   No detailed.
   */
 inline
-const Float& RgbColor::red() const
+const Float& RgbColor::red() const noexcept
 {
   return color_[0];
 }
@@ -140,7 +140,7 @@ const Float& RgbColor::red() const
   No detailed.
   */
 inline
-QRgb RgbColor::toQRgb() const
+QRgb RgbColor::toQRgb() const noexcept
 {
   using zisc::cast;
 
@@ -150,4 +150,4 @@ QRgb RgbColor::toQRgb() const
 
 } // namespace nanairo
 
-#endif // _NANAIRO_RGB_COLOR_INL_HPP_
+#endif // NANAIRO_RGB_COLOR_INL_HPP

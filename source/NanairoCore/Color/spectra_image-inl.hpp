@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SPECTRA_IMAGE_INL_HPP_
-#define _NANAIRO_SPECTRA_IMAGE_INL_HPP_
+#ifndef NANAIRO_SPECTRA_IMAGE_INL_HPP
+#define NANAIRO_SPECTRA_IMAGE_INL_HPP
 
 #include "spectra_image.hpp"
 // Zisc
@@ -28,7 +28,7 @@ template <uint kSampleSize> inline
 void SpectraImage::addSpectraContribution(
     const uint x,
     const uint y,
-    const SampledSpectra<kSampleSize>& contribution)
+    const SampledSpectra<kSampleSize>& contribution) noexcept
 {
   volatile Float c = 0.0;
   volatile Float tmp1 = 0.0;
@@ -58,7 +58,7 @@ void addSpectraContribution(
     SpectraImageInterface* image,
     const uint x,
     const uint y,
-    const SampledSpectra<kSampleSize>& contribution)
+    const SampledSpectra<kSampleSize>& contribution) noexcept
 {
   using zisc::cast; 
 
@@ -68,4 +68,4 @@ void addSpectraContribution(
 
 } // namespace nanairo
 
-#endif // _NANAIRO_SPECTRA_IMAGE_INL_HPP_
+#endif // NANAIRO_SPECTRA_IMAGE_INL_HPP

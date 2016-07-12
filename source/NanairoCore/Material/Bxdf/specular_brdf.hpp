@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SPECULAR_BRDF_HPP_
-#define _NANAIRO_SPECULAR_BRDF_HPP_
+#ifndef NANAIRO_SPECULAR_BRDF_HPP
+#define NANAIRO_SPECULAR_BRDF_HPP
 
 // Standard C++ library
 #include <tuple>
@@ -40,7 +40,7 @@ class SpecularBrdf : public SpecularShaderModel<kSampleSize>
 
 
   //! Create a specular BRDF
-  SpecularBrdf(const Spectra& reflectance_0deg);
+  SpecularBrdf(const Spectra& reflectance_0deg) noexcept;
 
 
   //! Evalute the weight of solid angle sampling
@@ -48,10 +48,10 @@ class SpecularBrdf : public SpecularShaderModel<kSampleSize>
       const Vector3* vin,
       const Vector3& normal,
       const Wavelengths& wavelengths,
-      Sampler& sampler) const override;
+      Sampler& sampler) const noexcept override;
 
   //! Check if wavelength selection occured
-  bool wavelengthIsSelected() const override;
+  bool wavelengthIsSelected() const noexcept override;
 
  private:
   const Spectra reflectance_0deg_;
@@ -63,4 +63,4 @@ class SpecularBrdf : public SpecularShaderModel<kSampleSize>
 
 #include "specular_brdf-inl.hpp"
 
-#endif // _NANAIRO_SPECULAR_BRDF_HPP_
+#endif // NANAIRO_SPECULAR_BRDF_HPP

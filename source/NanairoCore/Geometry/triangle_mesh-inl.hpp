@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_TRIANGLE_MESH_INL_HPP_
-#define _NANAIRO_TRIANGLE_MESH_INL_HPP_
+#ifndef NANAIRO_TRIANGLE_MESH_INL_HPP
+#define NANAIRO_TRIANGLE_MESH_INL_HPP
 
 #include "triangle_mesh.hpp"
 // Nanairo
@@ -24,7 +24,7 @@ namespace nanairo {
 inline
 void TriangleMesh::setTextureCoordinate(const Point2& texture_coordinate0,
                                         const Point2& texture_coordinate1,
-                                        const Point2& texture_coordinate2)
+                                        const Point2& texture_coordinate2) noexcept
 {
   texture_coordinate_[0] = texture_coordinate0;
   texture_coordinate_[1] = texture_coordinate1;
@@ -36,7 +36,7 @@ void TriangleMesh::setTextureCoordinate(const Point2& texture_coordinate0,
   No detailed.
   */
 inline
-Point2 TriangleMesh::textureCoordinate(const Float* barycentric) const
+Point2 TriangleMesh::textureCoordinate(const Float* barycentric) const noexcept
 {
   Point2 texture_coordinate;
   for (uint index = 0; index < 2; ++index) {
@@ -49,4 +49,4 @@ Point2 TriangleMesh::textureCoordinate(const Float* barycentric) const
 
 } // namespace nanairo
 
-#endif // _NANAIRO_TRIANGLE_MESH_INL_HPP_
+#endif // NANAIRO_TRIANGLE_MESH_INL_HPP

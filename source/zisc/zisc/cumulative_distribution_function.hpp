@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_CUMULATIVE_DISTRIBUTION_FUNCTION_HPP_
-#define _ZISC_CUMULATIVE_DISTRIBUTION_FUNCTION_HPP_
+#ifndef ZISC_CUMULATIVE_DISTRIBUTION_FUNCTION_HPP
+#define ZISC_CUMULATIVE_DISTRIBUTION_FUNCTION_HPP
 
 // Standard C++ library
 #include <vector>
@@ -24,31 +24,33 @@ namespace zisc {
 template <typename XType, typename PdfType>
 class CumulativeDistributionFunction
 {
-  static_assert(kIsFloat<PdfType>, "PdfType must be float.");
+  static_assert(kIsFloat<PdfType>, "PdfType isn't floating point type.");
+
  public:
   //! Create a CDF and move x and pdf data to CDF
   template <typename XIterator, typename PdfIterator>
   CumulativeDistributionFunction(XIterator x_begin,
                                  XIterator x_end,
                                  PdfIterator pdf_begin,
-                                 PdfIterator pdf_end);
+                                 PdfIterator pdf_end) noexcept;
 
   //! Move data
-  CumulativeDistributionFunction(CumulativeDistributionFunction&& other);
+  CumulativeDistributionFunction(CumulativeDistributionFunction&& other) noexcept;
 
 
   //! Move data
-  CumulativeDistributionFunction& operator=(CumulativeDistributionFunction&& other);
+  CumulativeDistributionFunction& operator=(
+      CumulativeDistributionFunction&& other) noexcept;
 
 
   //! Return the x value associated with the y value
-  const XType& inverseFunction(const PdfType& y) const;
+  const XType& inverseFunction(const PdfType& y) const noexcept;
 
   //! Return the x list
-  const std::vector<XType>& xList() const;
+  const std::vector<XType>& xList() const noexcept;
 
   //! Return the y list
-  const std::vector<PdfType>& yList() const;
+  const std::vector<PdfType>& yList() const noexcept;
 
  private:
   //! Create a CDF and move x and pdf data to CDF
@@ -56,7 +58,7 @@ class CumulativeDistributionFunction
   bool initialize(XIterator x_begin,
                   XIterator x_end,
                   PdfIterator pdf_begin,
-                  PdfIterator pdf_end);
+                  PdfIterator pdf_end) noexcept;
 
 
   std::vector<XType> x_list_;
@@ -67,4 +69,4 @@ class CumulativeDistributionFunction
 
 #include "cumulative_distribution_function-inl.hpp"
 
-#endif // _ZISC_CUMULATIVE_DISTRIBUTION_FUNCTION_HPP_
+#endif // ZISC_CUMULATIVE_DISTRIBUTION_FUNCTION_HPP

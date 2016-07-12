@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_CUI_RENDERER_MANAGER_HPP_
-#define _NANAIRO_CUI_RENDERER_MANAGER_HPP_
+#ifndef NANAIRO_CUI_RENDERER_MANAGER_HPP
+#define NANAIRO_CUI_RENDERER_MANAGER_HPP
 
 // Qt
 #include <QString>
@@ -26,21 +26,21 @@ class CuiRendererManager
 {
  public:
   //! Initialize the renderer manager
-  CuiRendererManager(const QString& scene_file_path);
+  CuiRendererManager(const QString& scene_file_path) noexcept;
 
   
   //! Render the image
-  void render();
+  void render() noexcept;
 
  private:
   //! Get the current time string
-  QString getCurrentTime() const;
+  QString getCurrentTime() const noexcept;
 
   //! Initialize the renderer manager
-  void initialize();
+  void initialize() noexcept;
 
   //!
-  void setRenderer(const SceneRendererBase* renderer);
+  void setRenderer(const SceneRendererBase* renderer) noexcept;
 
 
   QString scene_file_path_;
@@ -48,4 +48,4 @@ class CuiRendererManager
 
 } // namespace nanairo
 
-#endif // _NANAIRO_CUI_RENDERER_MANAGER_HPP_
+#endif // NANAIRO_CUI_RENDERER_MANAGER_HPP

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SPECTRA_IMAGE_INTERFACE_INL_HPP_
-#define _NANAIRO_SPECTRA_IMAGE_INTERFACE_INL_HPP_
+#ifndef NANAIRO_SPECTRA_IMAGE_INTERFACE_INL_HPP
+#define NANAIRO_SPECTRA_IMAGE_INTERFACE_INL_HPP
 
 #include "spectra_image_interface.hpp"
 // Standard C++ library
@@ -31,7 +31,7 @@ template <uint> class SampledSpectra;
   No detailed.
   */
 inline
-SpectraImageInterface::SpectraImageInterface(const uint width, const uint height) :
+SpectraImageInterface::SpectraImageInterface(const uint width, const uint height) noexcept :
     width_{width},
     height_{height}
 {
@@ -45,7 +45,7 @@ template <uint kSampleSize> inline
 void SpectraImageInterface::addContribution(
     const uint x,
     const uint y,
-    const SampledSpectra<kSampleSize>& contribution)
+    const SampledSpectra<kSampleSize>& contribution) noexcept
 {
   using zisc::cast;
 
@@ -69,7 +69,7 @@ void SpectraImageInterface::addContribution(
   No detailed.
   */
 inline
-uint SpectraImageInterface::heightResolution() const
+uint SpectraImageInterface::heightResolution() const noexcept
 {
   return height_;
 }
@@ -79,11 +79,11 @@ uint SpectraImageInterface::heightResolution() const
   No detailed.
   */
 inline
-uint SpectraImageInterface::widthResolution() const
+uint SpectraImageInterface::widthResolution() const noexcept
 {
   return width_;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_SPECTRA_IMAGE_INTERFACE_INL_HPP_
+#endif // NANAIRO_SPECTRA_IMAGE_INTERFACE_INL_HPP

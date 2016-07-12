@@ -7,17 +7,15 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_FRACTION_INL_HPP_
-#define _ZISC_FRACTION_INL_HPP_
+#ifndef ZISC_FRACTION_INL_HPP
+#define ZISC_FRACTION_INL_HPP
 
 #include "fraction.hpp"
-// 標準C++ライブラリ
-#include <string>
-// Ziscライブラリ
+// Zisc
 #include "error.hpp"
-#include "math.hpp"
-#include "string.hpp"
+#include "type_traits.hpp"
 #include "utility.hpp"
+#include "zisc/zisc_config.hpp"
 
 namespace zisc {
 
@@ -28,7 +26,7 @@ namespace zisc {
   No detailed.
   */
 template <typename SignedInteger> inline
-constexpr Fraction<SignedInteger>::Fraction() :
+constexpr Fraction<SignedInteger>::Fraction() noexcept :
     numerator_{cast<SignedInteger>(0)},
     denominator_{cast<SignedInteger>(1)}
 {
@@ -37,76 +35,68 @@ constexpr Fraction<SignedInteger>::Fraction() :
 /*!
   \details
   No detailed.
-
-  \param[in] numerator 分子の値
   */
 template <typename SignedInteger> inline
-constexpr Fraction<SignedInteger>::Fraction(const SignedInteger numerator) :
-        numerator_{numerator},
-        denominator_{cast<SignedInteger>(1)}
+constexpr Fraction<SignedInteger>::Fraction(const SignedInteger n) noexcept
+    : numerator_{n},
+      denominator_{cast<SignedInteger>(1)}
 {
 }
 
 /*!
   \details
   No detailed.
-
-  \param[in] numerator 分子の値
-  \param[in] denominator 分母の値
   */
 template <typename SignedInteger> inline
-constexpr Fraction<SignedInteger>::Fraction(const SignedInteger numerator, 
-                                            const SignedInteger denominator) :
-      numerator_{(isNegative(denominator) ? -numerator : numerator) /
-                     gcd(abs(numerator), abs(denominator))},
-      denominator_{abs(denominator) / gcd(abs(numerator), abs(denominator))}
+constexpr Fraction<SignedInteger>::Fraction(const SignedInteger n, 
+                                            const SignedInteger d) noexcept
+    : numerator_{(isNegative(d) ? -n : n) / gcd(abs(n), abs(d))},
+      denominator_{abs(d) / gcd(abs(n), abs(d))}
 {
 }
 
+/*!
+  */
 template <typename SignedInteger> inline
-Fraction<SignedInteger>& Fraction<SignedInteger>::operator+=(const Fraction& fraction)
+Fraction<SignedInteger>& Fraction<SignedInteger>::operator+=(
+    const Fraction& other) noexcept
 {
-  return *this = (*this + fraction);
+  return *this = (*this + other);
 }
 
+/*!
+  */
 template <typename SignedInteger> inline
-Fraction<SignedInteger>& Fraction<SignedInteger>::operator-=(const Fraction& fraction)
+Fraction<SignedInteger>& Fraction<SignedInteger>::operator-=(
+    const Fraction& other) noexcept
 {
-  return *this = (*this - fraction);
+  return *this = (*this - other);
 }
 
+/*!
+  */
 template <typename SignedInteger> inline
-Fraction<SignedInteger>& Fraction<SignedInteger>::operator*=(const Fraction& fraction)
+Fraction<SignedInteger>& Fraction<SignedInteger>::operator*=(
+    const Fraction& other) noexcept
 {
-  return *this = (*this * fraction);
+  return *this = (*this * other);
 }
 
+/*!
+  */
 template <typename SignedInteger> inline
-Fraction<SignedInteger>& Fraction<SignedInteger>::operator/=(const Fraction& fraction)
+Fraction<SignedInteger>& Fraction<SignedInteger>::operator/=(
+    const Fraction& other) noexcept
 {
-  return *this = (*this / fraction);
+  return *this = (*this / other);
 }
 
 /*!
  \details
  No detailed.
-
- \return 変換した浮動小数点
- */
-template <typename SignedInteger> template <typename FloatingPoint> inline
-constexpr FloatingPoint Fraction<SignedInteger>::toFloat() const
-{
-  return cast<FloatingPoint>(numerator_) / cast<FloatingPoint>(denominator_);
-}
-
-/*!
- \details
- No detailed.
-
- \return 分母の絶対値
  */
 template <typename SignedInteger> inline
-constexpr SignedInteger Fraction<SignedInteger>::getDenominator() const
+constexpr SignedInteger Fraction<SignedInteger>::denominator() const noexcept
 {
   return denominator_;
 }
@@ -114,140 +104,176 @@ constexpr SignedInteger Fraction<SignedInteger>::getDenominator() const
 /*!
  \details
  No detailed.
-
- \return 分子の絶対値
  */
 template <typename SignedInteger> inline
-constexpr SignedInteger Fraction<SignedInteger>::getNumerator() const
+constexpr SignedInteger Fraction<SignedInteger>::numerator() const noexcept
 {
   return numerator_;
 }
 
+/*!
+  */
 template <typename SignedInteger> inline
-constexpr Fraction<SignedInteger> operator+(const Fraction<SignedInteger>& a,
-                                            const Fraction<SignedInteger>& b)
+constexpr auto Fraction<SignedInteger>::invert() const noexcept -> Fraction
 {
-  return Fraction<SignedInteger>{a.getNumerator() * b.getDenominator() +
-                                 a.getDenominator() * b.getNumerator(),
-                                 a.getDenominator() * b.getDenominator()};
+  return Fraction{denominator(), numerator()};
 }
 
+/*
+  */
 template <typename SignedInteger> inline
-constexpr Fraction<SignedInteger> operator-(const Fraction<SignedInteger>& a,
-                                            const Fraction<SignedInteger>& b)
+constexpr auto Fraction<SignedInteger>::multiply(
+    const Fraction& other) const noexcept -> Fraction
 {
-  return Fraction<SignedInteger>{a.getNumerator() * b.getDenominator() -
-                                 a.getDenominator() * b.getNumerator(),
-                                 a.getDenominator() * b.getDenominator()};
-}
-
-template <typename SignedInteger> inline
-constexpr Fraction<SignedInteger> operator*(const Fraction<SignedInteger>& a,
-                                            const Fraction<SignedInteger>& b)
-{
-  return Fraction<SignedInteger>{a.getNumerator() * b.getNumerator(),
-                                 a.getDenominator() * b.getDenominator()};
-}
-
-template <typename SignedInteger> inline
-constexpr Fraction<SignedInteger> operator/(const Fraction<SignedInteger>& a,
-                                            const Fraction<SignedInteger>& b)
-{
-  return Fraction<SignedInteger>{a.getNumerator() * b.getDenominator(),
-                                 a.getDenominator() * b.getNumerator()};
+  const auto kn = gcd(abs(numerator()), other.denominator());
+  const auto km = gcd(denominator(), abs(other.numerator()));
+  return Fraction{(numerator() / kn) * (other.numerator() / km),
+                  (denominator() / km) * (other.denominator() / kn)};
 }
 
 /*!
  \details
  No detailed.
+ */
+template <typename SignedInteger> template <typename Float> inline
+constexpr Float Fraction<SignedInteger>::toFloat() const noexcept
+{
+  static_assert(kIsFloat<Float>, "Float isn't floating point.");
+  return cast<Float>(numerator()) / cast<Float>(denominator());
+}
 
- \param[in] a 有理数
- \param[in] b 有理数
- \return a と b が等しい場合はtrue、そうでない場合はfalse
+/*!
+  */
+template <typename SignedInteger> inline
+constexpr SignedInteger Fraction<SignedInteger>::abs(const SignedInteger n) noexcept
+{
+  return isNegative(n) ? -n : n;
+}
+
+/*!
+  */
+template <typename SignedInteger> inline
+constexpr SignedInteger Fraction<SignedInteger>::gcd(SignedInteger m, 
+                                                     SignedInteger n) noexcept
+{
+  while (n != 0) {
+    const auto tmp = n;
+    n = (m < n) ? m : m % n;
+    m = tmp;
+  }
+  return m;
+}
+
+/*!
+  */
+template <typename SignedInteger> inline
+constexpr Fraction<SignedInteger> operator+(
+    const Fraction<SignedInteger>& lhs,
+    const Fraction<SignedInteger>& rhs) noexcept
+{
+  const auto numerator = lhs.numerator() * rhs.denominator() +
+                         lhs.denominator() * rhs.numerator();
+  const auto denominator = lhs.denominator() * rhs.denominator();
+  return Fraction<SignedInteger>{numerator, denominator};
+}
+
+/*!
+  */
+template <typename SignedInteger> inline
+constexpr Fraction<SignedInteger> operator-(
+    const Fraction<SignedInteger>& lhs,
+    const Fraction<SignedInteger>& rhs) noexcept
+{
+  const auto numerator = lhs.numerator() * rhs.denominator() -
+                         lhs.denominator() * rhs.numerator();
+  const auto denominator = lhs.denominator() * rhs.denominator();
+  return Fraction<SignedInteger>{numerator, denominator};
+}
+
+/*
+  */
+template <typename SignedInteger> inline
+constexpr Fraction<SignedInteger> operator*(
+    const Fraction<SignedInteger>& lhs,
+    const Fraction<SignedInteger>& rhs) noexcept
+{
+  return lhs.multiply(rhs);
+}
+
+/*!
+  */
+template <typename SignedInteger> inline
+constexpr Fraction<SignedInteger> operator/(
+    const Fraction<SignedInteger>& lhs,
+    const Fraction<SignedInteger>& rhs) noexcept
+{
+  return lhs * rhs.invert();
+}
+
+/*!
  */
 template <typename SignedInteger> inline
-constexpr bool operator==(const Fraction<SignedInteger>& a,
-                          const Fraction<SignedInteger>& b)
+constexpr bool operator==(const Fraction<SignedInteger>& lhs,
+                          const Fraction<SignedInteger>& rhs) noexcept
 {
-  return (a.getNumerator() == b.getNumerator()) &&
-         (a.getDenominator() == b.getDenominator());
+  return (lhs.numerator() == rhs.numerator()) &&
+         (lhs.denominator() == rhs.denominator());
+}
+
+/*!
+ */
+template <typename SignedInteger> inline
+constexpr bool operator!=(const Fraction<SignedInteger>& lhs,
+                          const Fraction<SignedInteger>& rhs) noexcept
+{
+  return !(lhs == rhs);
 }
 
 /*!
  \details
  No detailed.
-
- \param[in] a 有理数
- \param[in] b 有理数
- \return a と b が等しくない場合はtrue、そうでない場合はfalse
  */
 template <typename SignedInteger> inline
-constexpr bool operator!=(const Fraction<SignedInteger>& a,
-                          const Fraction<SignedInteger>& b)
+constexpr bool operator<(const Fraction<SignedInteger>& lhs,
+                         const Fraction<SignedInteger>& rhs) noexcept
 {
-  return !(a == b);
+  return (lhs.numerator() * rhs.denominator()) < 
+         (lhs.denominator() * rhs.numerator());
 }
 
 /*!
  \details
  No detailed.
-
- \param[in] a 有理数
- \param[in] b 有理数
- \return a が b よりも小さい場合はtrue、そうでない場合はfalse
  */
 template <typename SignedInteger> inline
-constexpr bool operator<(const Fraction<SignedInteger>& a,
-                         const Fraction<SignedInteger>& b)
+constexpr bool operator<=(const Fraction<SignedInteger>& lhs,
+                          const Fraction<SignedInteger>& rhs) noexcept
 {
-  return a.getNumerator()*b.getDenominator() < a.getDenominator()*b.getNumerator();
+  return (lhs == rhs) || (lhs < rhs);
 }
 
 /*!
  \details
  No detailed.
-
- \param[in] a 有理数
- \param[in] b 有理数
- \return a が b 以下の場合はtrue、そうでない場合はfalse
  */
 template <typename SignedInteger> inline
-constexpr bool operator<=(const Fraction<SignedInteger>& a,
-                          const Fraction<SignedInteger>& b)
+constexpr bool operator>(const Fraction<SignedInteger>& lhs,
+                         const Fraction<SignedInteger>& rhs) noexcept
 {
-  return (a == b) || (a < b);
+  return rhs < lhs;
 }
 
 /*!
  \details
  No detailed.
-
- \param[in] a 有理数
- \param[in] b 有理数
- \return a が b よりも大きい場合はtrue、そうでない場合はfalse
  */
 template <typename SignedInteger> inline
-constexpr bool operator>(const Fraction<SignedInteger>& a,
-                         const Fraction<SignedInteger>& b)
+constexpr bool operator>=(const Fraction<SignedInteger>& lhs,
+                          const Fraction<SignedInteger>& rhs) noexcept
 {
-  return b < a;
-}
-
-/*!
- \details
- No detailed.
-
- \param[in] a 有理数
- \param[in] b 有理数
- \return a が b 以上の場合はtrue、そうでない場合はfalse
- */
-template <typename SignedInteger> inline
-constexpr bool operator>=(const Fraction<SignedInteger>& a,
-                          const Fraction<SignedInteger>& b)
-{
-  return b <= a;
+  return rhs <= lhs;
 }
 
 } // namespace zisc
 
-#endif // _ZISC_FRACTION_INL_HPP_
+#endif // ZISC_FRACTION_INL_HPP

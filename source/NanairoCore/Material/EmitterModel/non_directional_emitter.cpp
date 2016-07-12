@@ -26,7 +26,7 @@ namespace nanairo {
   */
 NonDirectionalEmitter::NonDirectionalEmitter(const System& system,
                                              const SceneSettings& settings,
-                                             const QString& prefix) :
+                                             const QString& prefix) noexcept :
     EmitterModel(system, settings, prefix)
 {
   initialize(system, settings, prefix);
@@ -36,7 +36,7 @@ NonDirectionalEmitter::NonDirectionalEmitter(const System& system,
   \details
   No detailed.
   */
-EmitterType NonDirectionalEmitter::type() const
+EmitterType NonDirectionalEmitter::type() const noexcept
 {
   return EmitterType::NonDirectional;
 }
@@ -47,7 +47,7 @@ EmitterType NonDirectionalEmitter::type() const
   */
 void NonDirectionalEmitter::initialize(const System& system,
                                        const SceneSettings& settings,
-                                       const QString& prefix)
+                                       const QString& prefix) noexcept
 {
   auto p = prefix + "/" + keyword::nonDirectionalEmitter;
   auto key = p + "/" + keyword::radiantExitance;

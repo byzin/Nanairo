@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_RENDERER_UTILITY_HPP_
-#define _NANAIRO_RENDERER_UTILITY_HPP_
+#ifndef NANAIRO_RENDERER_UTILITY_HPP
+#define NANAIRO_RENDERER_UTILITY_HPP
 
 // Qt
 #include <QString>
@@ -21,7 +21,7 @@ namespace nanairo {
 //! \{
 
 //! Get time string
-QString getTimeString(const zisc::Stopwatch::Clock::duration time);
+QString getTimeString(const zisc::Stopwatch::Clock::duration time) noexcept;
 
 //! \} Renderer
 
@@ -29,4 +29,4 @@ QString getTimeString(const zisc::Stopwatch::Clock::duration time);
 
 #include "renderer_utility-inl.hpp"
 
-#endif // _NANAIRO_RENDERER_UTILITY_HPP_
+#endif // NANAIRO_RENDERER_UTILITY_HPP

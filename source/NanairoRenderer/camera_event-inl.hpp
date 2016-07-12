@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_CAMERA_EVENT_INL_HPP_
-#define _NANAIRO_CAMERA_EVENT_INL_HPP_
+#ifndef NANAIRO_CAMERA_EVENT_INL_HPP
+#define NANAIRO_CAMERA_EVENT_INL_HPP
 
 #include "camera_event.hpp"
 // Qt
@@ -27,7 +27,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-CameraEvent::CameraEvent()
+CameraEvent::CameraEvent() noexcept
 {
 }
 
@@ -39,7 +39,7 @@ inline
 void CameraEvent::addEvent(const int buttons, 
                            const int x, 
                            const int y, 
-                           const int /* wheel */)
+                           const int /* wheel */) noexcept
 {
   using zisc::cast;
   constexpr Float tk = 0.005;
@@ -69,7 +69,7 @@ void CameraEvent::addEvent(const int buttons,
   No detailed.
   */
 inline
-void CameraEvent::clear()
+void CameraEvent::clear() noexcept
 {
   translation_[0] = 0.0;
   translation_[1] = 0.0;
@@ -84,7 +84,7 @@ void CameraEvent::clear()
   No detailed.
   */
 inline
-const Vector2& CameraEvent::distance() const
+const Vector2& CameraEvent::distance() const noexcept
 {
   return distance_;
 }
@@ -94,7 +94,7 @@ const Vector2& CameraEvent::distance() const
   No detailed.
   */
 inline
-bool CameraEvent::isEventOccured() const
+bool CameraEvent::isEventOccured() const noexcept
 {
   return isTranslationEventOccured() ||
          isDistanceEventOccured() ||
@@ -106,7 +106,7 @@ bool CameraEvent::isEventOccured() const
   No detailed.
   */
 inline
-bool CameraEvent::isDistanceEventOccured() const
+bool CameraEvent::isDistanceEventOccured() const noexcept
 {
   return !((distance_[0] == 0.0) && (distance_[1] == 0.0));
 }
@@ -116,7 +116,7 @@ bool CameraEvent::isDistanceEventOccured() const
   No detailed.
   */
 inline
-bool CameraEvent::isRotationEventOccured() const
+bool CameraEvent::isRotationEventOccured() const noexcept
 {
   return !((rotation_[0] == 0.0) && (rotation_[1] == 0.0));
 }
@@ -126,7 +126,7 @@ bool CameraEvent::isRotationEventOccured() const
   No detailed.
   */
 inline
-bool CameraEvent::isTranslationEventOccured() const
+bool CameraEvent::isTranslationEventOccured() const noexcept
 {
   return !((translation_[0] == 0.0) && (translation_[1] == 0.0));
 }
@@ -136,7 +136,7 @@ bool CameraEvent::isTranslationEventOccured() const
   No detailed.
   */
 inline
-const Vector2& CameraEvent::rotation() const
+const Vector2& CameraEvent::rotation() const noexcept
 {
   return rotation_;
 }
@@ -146,7 +146,7 @@ const Vector2& CameraEvent::rotation() const
   No detailed.
   */
 inline
-const Vector2& CameraEvent::translation() const
+const Vector2& CameraEvent::translation() const noexcept
 {
   return translation_;
 }

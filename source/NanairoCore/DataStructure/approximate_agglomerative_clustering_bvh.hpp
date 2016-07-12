@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_APPROXIMATE_AGGLOMERATIVE_CLUSTERING_BVH_HPP_
-#define _NANAIRO_APPROXIMATE_AGGLOMERATIVE_CLUSTERING_BVH_HPP_
+#ifndef NANAIRO_APPROXIMATE_AGGLOMERATIVE_CLUSTERING_BVH_HPP
+#define NANAIRO_APPROXIMATE_AGGLOMERATIVE_CLUSTERING_BVH_HPP
 
 // Standard C++ library
 #include <array>
@@ -45,7 +45,7 @@ class ApproximateAgglomerativeClusteringBvh : public Bvh
  public:
   //! Create a approximate agglomerative clustering BVH
   ApproximateAgglomerativeClusteringBvh(const SceneSettings& settings, 
-                                        const QString& prefix);
+                                        const QString& prefix) noexcept;
 
 
  private:
@@ -58,49 +58,49 @@ class ApproximateAgglomerativeClusteringBvh : public Bvh
                                         const uint64 bit,
                                         MortonCodeIterator begin,
                                         MortonCodeIterator end,
-                                        std::vector<Float>& distance_matrix) const;
+                                        std::vector<Float>& distance_matrix) const noexcept;
 
   //! Combine clusters
   void combineClusters(const uint n,
                        std::vector<ClusterPointer>& cluster_list,
-                       std::vector<Float>& distance_matrix) const;
+                       std::vector<Float>& distance_matrix) const noexcept;
 
   //! Build AAC BVH
   void constructBvh(System& system,
                     const std::vector<Object>& object_list,
-                    std::vector<BvhNode>& tree) const override;
+                    std::vector<BvhNode>& tree) const noexcept override;
 
   //! Return the delta
-  uint delta() const;
+  uint delta() const noexcept;
 
   //! Evaluate the reduction function
-  uint f(const uint n) const;
+  uint f(const uint n) const noexcept;
 
   //! Return the pre-calculated f(delta)
-  uint fDelta() const;
+  uint fDelta() const noexcept;
 
   //! Find best match
   std::tuple<uint, uint> findBestMatch(
       const uint n,
-      const std::vector<Float>& distance_matrix) const;
+      const std::vector<Float>& distance_matrix) const noexcept;
 
   //! Initialize
-  void initialize(const SceneSettings& settings, const QString& prefix);
+  void initialize(const SceneSettings& settings, const QString& prefix) noexcept;
 
   //! Initialize the distance matrix
   void initializeDistanceMatrix(const std::vector<ClusterPointer>& cluster_list,
-                                std::vector<Float>& distance_matrix) const;
+                                std::vector<Float>& distance_matrix) const noexcept;
 
   //! Set node
   uint32 setNode(const AgglomerativeCluster& cluster, 
                  std::vector<BvhNode>& tree,
-                 uint& number) const;
+                 uint& number) const noexcept;
 
   //! Update the distance matrix
   void updateDistanceMatrix(const std::vector<ClusterPointer>& cluster_list,
                             const uint row,
                             const uint column,
-                            std::vector<Float>& distance_matrix) const;
+                            std::vector<Float>& distance_matrix) const noexcept;
 
 
   static constexpr Float kAlpha = 0.5;
@@ -118,4 +118,4 @@ class ApproximateAgglomerativeClusteringBvh : public Bvh
 
 } // namespace nanairo
 
-#endif // _NANAIRO_APPROXIMATE_AGGLOMERATIVE_CLUSTERING_BVH_HPP_
+#endif // NANAIRO_APPROXIMATE_AGGLOMERATIVE_CLUSTERING_BVH_HPP

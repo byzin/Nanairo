@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_CUMULATIVE_DISTRIBUTION_FUNCTION_INL_HPP_
-#define _ZISC_CUMULATIVE_DISTRIBUTION_FUNCTION_INL_HPP_
+#ifndef ZISC_CUMULATIVE_DISTRIBUTION_FUNCTION_INL_HPP
+#define ZISC_CUMULATIVE_DISTRIBUTION_FUNCTION_INL_HPP
 
 #include "cumulative_distribution_function.hpp"
 // Standard C++ library
@@ -36,7 +36,7 @@ CumulativeDistributionFunction<XType, PdfType>::CumulativeDistributionFunction(
     XIterator x_begin,
     XIterator x_end,
     PdfIterator pdf_begin,
-    PdfIterator pdf_end)
+    PdfIterator pdf_end) noexcept
 {
   initialize(x_begin, x_end, pdf_begin, pdf_end);
 }
@@ -47,7 +47,7 @@ CumulativeDistributionFunction<XType, PdfType>::CumulativeDistributionFunction(
   */
 template <typename XType, typename PdfType> inline
 CumulativeDistributionFunction<XType, PdfType>::CumulativeDistributionFunction(
-    CumulativeDistributionFunction&& other) :
+    CumulativeDistributionFunction&& other) noexcept :
   x_list_{std::move(other.x_list_)},
   y_list_{std::move(other.y_list_)}
 {
@@ -59,8 +59,7 @@ CumulativeDistributionFunction<XType, PdfType>::CumulativeDistributionFunction(
   */
 template <typename XType, typename PdfType> inline
 auto CumulativeDistributionFunction<XType, PdfType>::operator=(
-    CumulativeDistributionFunction&& other)
-        -> CumulativeDistributionFunction&
+    CumulativeDistributionFunction&& other) noexcept -> CumulativeDistributionFunction&
 {
   x_list_ = std::move(other.x_list_);
   y_list_ = std::move(other.y_list_);
@@ -72,9 +71,9 @@ auto CumulativeDistributionFunction<XType, PdfType>::operator=(
   */
 template <typename XType, typename PdfType> inline
 const XType& CumulativeDistributionFunction<XType, PdfType>::inverseFunction(
-    const PdfType& y) const
+    const PdfType& y) const noexcept
 {
-  ZISC_ASSERT((0.0 <= y) && (y <= 1.0), "y must be [0, 1].");
+  ZISC_ASSERT((0.0 <= y) && (y <= 1.0), "y is out of range: [0, 1].");
   const auto position = searchBinaryTree(y_list_.begin(), y_list_.end(), y);
   const auto index = std::distance(y_list_.begin(), position);
   return x_list_[index];
@@ -85,7 +84,7 @@ const XType& CumulativeDistributionFunction<XType, PdfType>::inverseFunction(
   No detailed.
   */
 template <typename XType, typename PdfType> inline
-auto CumulativeDistributionFunction<XType, PdfType>::xList() const
+auto CumulativeDistributionFunction<XType, PdfType>::xList() const noexcept
     -> const std::vector<XType>& 
 {
   return x_list_;
@@ -96,7 +95,7 @@ auto CumulativeDistributionFunction<XType, PdfType>::xList() const
   No detailed.
   */
 template <typename XType, typename PdfType> inline
-auto CumulativeDistributionFunction<XType, PdfType>::yList() const
+auto CumulativeDistributionFunction<XType, PdfType>::yList() const noexcept
     -> const std::vector<PdfType>& 
 {
   return y_list_;
@@ -112,20 +111,17 @@ bool CumulativeDistributionFunction<XType, PdfType>::initialize(
     XIterator x_begin,
     XIterator x_end,
     PdfIterator pdf_begin,
-    PdfIterator pdf_end)
+    PdfIterator pdf_end) noexcept
 {
   // Type check
-  using XType_ = typename std::iterator_traits<XIterator>::value_type;
   using PdfType_ = typename std::iterator_traits<PdfIterator>::value_type;
-  static_assert(std::is_same<XType, XType_>::value, 
-                "XIterator must be XType iterator.");
-  static_assert(kIsFloat<PdfType_>, 
-                "PdfIterator must be float iterator.");
+  static_assert(kIsFloat<PdfType_>, "PdfIterator isn't floating point iterator.");
 
   // Size check
+
   const auto size = std::distance(x_begin, x_end);
   const auto pdf_size = std::distance(pdf_begin, pdf_end);
-  ZISC_ASSERT(size == pdf_size, "x and pdf array size must be same.");
+  ZISC_ASSERT(size == pdf_size, "The x array size isn't match pdf array size.");
 
   // Make a binary tree
   using CdfType = std::tuple<XType*, PdfType>;
@@ -140,8 +136,8 @@ bool CumulativeDistributionFunction<XType, PdfType>::initialize(
     ++x_iterator;
     ++pdf_iterator;
   }
-  ZISC_ASSERT(((1.0 - 0.0000001) < sum.get()) && (sum.get() < (1.0 + 0.0000001)),
-              "Sum of pdf must be 1.0.");
+  ZISC_ASSERTION_STATEMENT(constexpr PdfType e = 0.0000001);
+  ZISC_ASSERT(isInBounds(sum.get(), 1.0 - e, 1.0 + e), "The sum of pdf isn't 1.");
   toBinaryTree(cdf_list.begin(), cdf_list.end());
 
   // 
@@ -157,4 +153,4 @@ bool CumulativeDistributionFunction<XType, PdfType>::initialize(
 
 } // namespace zisc
 
-#endif // _ZISC_CUMULATIVE_DISTRIBUTION_FUNCTION_INL_HPP_
+#endif // ZISC_CUMULATIVE_DISTRIBUTION_FUNCTION_INL_HPP

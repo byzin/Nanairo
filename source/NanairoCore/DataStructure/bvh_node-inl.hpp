@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_BVH_NODE_INL_HPP_
-#define _NANAIRO_BVH_NODE_INL_HPP_
+#ifndef NANAIRO_BVH_NODE_INL_HPP
+#define NANAIRO_BVH_NODE_INL_HPP
 
 #include "bvh_node.hpp"
 // Standard C++ library
@@ -31,7 +31,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-void BvhNode::addObject(const Object* object)
+void BvhNode::addObject(const Object* object) noexcept
 {
   ZISC_ASSERT(object_list_.back() != nullptr, 
               "The number of objects exceed the limit.");
@@ -50,7 +50,7 @@ void BvhNode::addObject(const Object* object)
   No detailed.
   */
 inline
-void BvhNode::addObjectWithoutBoundingBox(const Object* object)
+void BvhNode::addObjectWithoutBoundingBox(const Object* object) noexcept 
 {
   ZISC_ASSERT(object_list_.back() == nullptr, 
               "The number of objects exceed the limit.");
@@ -64,7 +64,7 @@ void BvhNode::addObjectWithoutBoundingBox(const Object* object)
   No detailed.
   */
 inline
-const Aabb& BvhNode::boundingBox() const
+const Aabb& BvhNode::boundingBox() const noexcept
 {
   return bounding_box_;
 }
@@ -74,7 +74,7 @@ const Aabb& BvhNode::boundingBox() const
   No detailed.
   */
 inline
-bool BvhNode::isLeafNode() const
+bool BvhNode::isLeafNode() const noexcept
 {
   return object_list_[0] != nullptr;
 }
@@ -84,7 +84,7 @@ bool BvhNode::isLeafNode() const
   No detailed.
   */
 inline
-uint32 BvhNode::leftChildIndex() const 
+uint32 BvhNode::leftChildIndex() const noexcept
 {
   return left_child_index_;
 }
@@ -94,7 +94,7 @@ uint32 BvhNode::leftChildIndex() const
   No detailed.
   */
 inline
-uint BvhNode::numOfObjects() const
+uint BvhNode::numOfObjects() const noexcept
 {
   uint index = 0;
   for (auto object : object_list_) {
@@ -109,7 +109,7 @@ uint BvhNode::numOfObjects() const
  No detailed.
  */
 inline
-auto BvhNode::objectList() const 
+auto BvhNode::objectList() const noexcept
     -> const std::array<const Object*, kMaxNumOfObjectsPerNode>& 
 {
   return object_list_;
@@ -120,7 +120,7 @@ auto BvhNode::objectList() const
   No detailed.
   */
 inline
-uint32 BvhNode::parentIndex() const
+uint32 BvhNode::parentIndex() const noexcept
 {
   return parent_index_;
 }
@@ -130,7 +130,7 @@ uint32 BvhNode::parentIndex() const
   No detailed.
   */
 inline
-uint32 BvhNode::rightChildIndex() const
+uint32 BvhNode::rightChildIndex() const noexcept
 {
   return right_child_index_;
 }
@@ -140,7 +140,7 @@ uint32 BvhNode::rightChildIndex() const
   No detailed.
   */
 inline
-Float BvhNode::sahCost() const
+Float BvhNode::sahCost() const noexcept
 {
   return zisc::cast<Float>(cost_);
 }
@@ -150,7 +150,7 @@ Float BvhNode::sahCost() const
   No detailed.
   */
 inline
-void BvhNode::setBoundingBox(const Aabb& bounding_box)
+void BvhNode::setBoundingBox(const Aabb& bounding_box) noexcept
 {
   bounding_box_ = bounding_box;
 }
@@ -160,7 +160,7 @@ void BvhNode::setBoundingBox(const Aabb& bounding_box)
   No detailed.
   */
 inline
-void BvhNode::setLeftChildIndex(const uint32 left_child_index)
+void BvhNode::setLeftChildIndex(const uint32 left_child_index) noexcept
 {
   left_child_index_ = left_child_index;
 }
@@ -170,7 +170,7 @@ void BvhNode::setLeftChildIndex(const uint32 left_child_index)
   No detailed.
   */
 inline
-void BvhNode::setParentIndex(const uint32 parent_index)
+void BvhNode::setParentIndex(const uint32 parent_index) noexcept
 {
   parent_index_ = parent_index;
 }
@@ -180,7 +180,7 @@ void BvhNode::setParentIndex(const uint32 parent_index)
   No detailed.
   */
 inline
-void BvhNode::setRightChildIndex(const uint32 right_child_index)
+void BvhNode::setRightChildIndex(const uint32 right_child_index) noexcept
 {
   right_child_index_ = right_child_index;
 }
@@ -190,11 +190,11 @@ void BvhNode::setRightChildIndex(const uint32 right_child_index)
   No detailed.
   */
 inline
-void BvhNode::setSahCost(const Float cost)
+void BvhNode::setSahCost(const Float cost) noexcept
 {
   cost_ = zisc::cast<float>(cost);
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_BVH_NODE_INL_HPP_
+#endif // NANAIRO_BVH_NODE_INL_HPP

@@ -20,7 +20,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-HdrImage::HdrImage(const uint width, const uint height) :
+HdrImage::HdrImage(const uint width, const uint height) noexcept :
     width_{width},
     height_{height}
 {
@@ -31,7 +31,7 @@ HdrImage::HdrImage(const uint width, const uint height) :
   \details
   No detailed.
   */
-uint HdrImage::bufferMemorySize() const
+uint HdrImage::bufferMemorySize() const noexcept
 {
   return width_ * height_ * sizeof(XyzColor);
 }
@@ -40,7 +40,7 @@ uint HdrImage::bufferMemorySize() const
   \details
   No detailed.
   */
-void HdrImage::initialize()
+void HdrImage::initialize() noexcept
 {
   const uint buffer_size = width_ * height_;
   buffer_.resize(buffer_size);

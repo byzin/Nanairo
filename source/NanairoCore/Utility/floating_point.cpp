@@ -24,7 +24,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-bool isBetweenZeroAndOneFloat(const Float value)
+bool isBetweenZeroAndOneFloat(const Float value) noexcept
 {
   return 0.0 <= value && value <= 1.0;
 }
@@ -33,7 +33,7 @@ bool isBetweenZeroAndOneFloat(const Float value)
   \details
   No detailed.
   */
-bool isBetweenZeroAndOneFloat(const SpectralDistribution& distribution)
+bool isBetweenZeroAndOneFloat(const SpectralDistribution& distribution) noexcept
 {
   for (uint index = 0; index < distribution.size(); ++index) {
     if (!isBetweenZeroAndOneFloat(distribution[index]))
@@ -46,7 +46,7 @@ bool isBetweenZeroAndOneFloat(const SpectralDistribution& distribution)
   \details
   No detailed.
   */
-bool isInfFloat(const Float value)
+bool isInfFloat(const Float value) noexcept
 {
   return std::isinf(value);
 }
@@ -55,7 +55,7 @@ bool isInfFloat(const Float value)
   \details
   No detailed.
   */
-bool hasInfFloat(const SpectralDistribution& distribution)
+bool hasInfFloat(const SpectralDistribution& distribution) noexcept
 {
   for (uint index = 0; index < distribution.size(); ++index) {
     const Float intensity = distribution[index];
@@ -69,7 +69,7 @@ bool hasInfFloat(const SpectralDistribution& distribution)
   \details
   No detailed.
   */
-bool isNanFloat(const Float value)
+bool isNanFloat(const Float value) noexcept
 {
   return std::isnan(value);
 }
@@ -78,7 +78,7 @@ bool isNanFloat(const Float value)
   \details
   No detailed.
   */
-bool hasNanFloat(const SpectralDistribution& distribution)
+bool hasNanFloat(const SpectralDistribution& distribution) noexcept
 {
   for (uint index = 0; index < distribution.size(); ++index) {
     const Float intensity = distribution[index];
@@ -92,7 +92,7 @@ bool hasNanFloat(const SpectralDistribution& distribution)
   \details
   No detailed.
   */
-bool isNegativeFloat(const Float value)
+bool isNegativeFloat(const Float value) noexcept
 {
   return value < 0.0;
 }
@@ -101,7 +101,7 @@ bool isNegativeFloat(const Float value)
   \details
   No detailed.
   */
-bool hasNegativeFloat(const SpectralDistribution& distribution)
+bool hasNegativeFloat(const SpectralDistribution& distribution) noexcept
 {
   for (uint index = 0; index < distribution.size(); ++index) {
     const Float intensity = distribution[index];
@@ -115,7 +115,7 @@ bool hasNegativeFloat(const SpectralDistribution& distribution)
   \details
   No detailed.
   */
-bool isZeroFloat(const Float value)
+bool isZeroFloat(const Float value) noexcept
 {
   return value == 0.0;
 }
@@ -124,7 +124,7 @@ bool isZeroFloat(const Float value)
   \details
   No detailed.
   */
-bool hasZeroFloat(const SpectralDistribution& distribution)
+bool hasZeroFloat(const SpectralDistribution& distribution) noexcept
 {
   for (uint index = 0; index < distribution.size(); ++index) {
     const Float intensity = distribution[index];
@@ -138,20 +138,7 @@ bool hasZeroFloat(const SpectralDistribution& distribution)
   \details
   No detailed.
   */
-bool isZeroFloat(const Vector3& vector)
-{
-  for (uint axis = 0; axis < 3; ++axis) {
-    if (isZeroFloat(vector[axis]))
-      return true;
-  }
-  return false;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-bool isUnitVector(const Vector3& vector)
+bool isUnitVector(const Vector3& vector) noexcept
 {
   constexpr Float error = 1.0e-6;
   const Float norm = vector.norm();
@@ -162,7 +149,7 @@ bool isUnitVector(const Vector3& vector)
   \details
   No detailed.
   */
-bool isZeroVector(const Vector3& vector)
+bool isZeroVector(const Vector3& vector) noexcept
 {
   return (vector.squareNorm() == 0.0);
 }

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_FILE_INL_HPP_
-#define _NANAIRO_FILE_INL_HPP_
+#ifndef NANAIRO_FILE_INL_HPP
+#define NANAIRO_FILE_INL_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -24,7 +24,7 @@ namespace nanairo {
   No detailed.
   */
 template <typename Type> inline
-std::size_t write(QByteArray* array, const Type& value)
+std::size_t write(QByteArray* array, const Type& value) noexcept
 {
   using zisc::cast;
 
@@ -37,4 +37,4 @@ std::size_t write(QByteArray* array, const Type& value)
 
 } // namespace nanairo
 
-#endif // _NANAIRO_FILE_INL_HPP_
+#endif // NANAIRO_FILE_INL_HPP

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_RENDERING_METHOD_HPP_
-#define _NANAIRO_RENDERING_METHOD_HPP_
+#ifndef NANAIRO_RENDERING_METHOD_HPP
+#define NANAIRO_RENDERING_METHOD_HPP
 
 // Standard C++ library
 #include <functional>
@@ -50,43 +50,43 @@ class RenderingMethod
 
 
   //! Initialize the rendering method
-  RenderingMethod(const SceneSettings& settings);
+  RenderingMethod(const SceneSettings& settings) noexcept;
 
   //! Finalize the rendering method
-  virtual ~RenderingMethod() {}
+  virtual ~RenderingMethod() noexcept {}
 
 
   //! Render the scene
   void operator()(System& system, 
                   Scene& scene, 
-                  const Wavelengths& sampled_wavelengths);
+                  const Wavelengths& sampled_wavelengths) noexcept;
 
 
   //! Initialize the method
-  void clear();
+  void clear() noexcept;
 
   //! Return the ray cast epsilon
-  Float rayCastEpsilon() const;
+  Float rayCastEpsilon() const noexcept;
 
   //! Render the scene
   virtual void render(System& system, 
                       Scene& scene,
-                      const Wavelengths& sampled_wavelengths) = 0;
+                      const Wavelengths& sampled_wavelengths) noexcept = 0;
 
  protected:
   //! Find and return the closest intersection of the ray
   IntersectionInfo castRay(
       const World& world,
       const Ray& ray,
-      const Float max_distance2 = std::numeric_limits<Float>::max()) const;
+      const Float max_distance2 = std::numeric_limits<Float>::max()) const noexcept;
 
   //! Play russian roulette
   RouletteResult playRussianRoulette(const uint path,
                                      const Spectra& weight,
-                                     Sampler& sampler) const;
+                                     Sampler& sampler) const noexcept;
 
   //! Set clear function
-  void setClearFunction(std::function<void ()>&& clear_function);
+  void setClearFunction(std::function<void ()>&& clear_function) noexcept;
 
   //! Sample next ray
   Ray sampleNextRay(const uint length,
@@ -96,17 +96,17 @@ class RenderingMethod
                     const Spectra* ray_weight,
                     Spectra* next_ray_weight,
                     Sampler& sampler,
-                    Float* inverse_direction_pdf = nullptr) const;
+                    Float* inverse_direction_pdf = nullptr) const noexcept;
 
   //! Update the wavelength selection info and the weight of the selected wavelength
   void updateSelectedWavelengthInfo(const ShaderPointer& bxdf,
                                     Spectra* weight,
-                                    bool* wavelength_is_selected) const;
+                                    bool* wavelength_is_selected) const noexcept;
         
 
  private:
   //! Initialize the rendering method
-  void initialize(const SceneSettings& settings);
+  void initialize(const SceneSettings& settings) noexcept;
 
 
   std::function<void ()> clear_function_;
@@ -118,7 +118,7 @@ class RenderingMethod
 template <uint kSampleSize>
 UniquePointer<RenderingMethod<kSampleSize>> makeRenderingMethod(
     System& system,
-    const SceneSettings& settings);
+    const SceneSettings& settings) noexcept;
 
 //! \} Core 
 
@@ -126,4 +126,4 @@ UniquePointer<RenderingMethod<kSampleSize>> makeRenderingMethod(
 
 #include "rendering_method-inl.hpp"
 
-#endif // _NANAIRO_RENDERING_METHOD_HPP_
+#endif // NANAIRO_RENDERING_METHOD_HPP

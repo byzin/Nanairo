@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_REINHARD_HPP_
-#define _NANAIRO_REINHARD_HPP_
+#ifndef NANAIRO_REINHARD_HPP
+#define NANAIRO_REINHARD_HPP
 
 // Nanairo
 #include "tone_mapping_method.hpp"
@@ -35,17 +35,17 @@ class Reinhard : public ToneMappingMethod
 {
  public:
   //! Initialize reinhard method
-  Reinhard(const System& system, const SceneSettings& settings);
+  Reinhard(const System& system, const SceneSettings& settings) noexcept;
 
 
   //! Apply tone mapping
   void toneMap(System& system,
                const HdrImage& hdr_image, 
-               QImage& ldr_image) override;
+               QImage& ldr_image) noexcept override;
 };
 
 //! \} Core 
 
 } // namespace nanairo
 
-#endif // _NANAIRO_REINHARD_HPP_
+#endif // NANAIRO_REINHARD_HPP

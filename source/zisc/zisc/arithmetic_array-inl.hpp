@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_ARITHMETIC_ARRAY_INL_HPP_
-#define _ZISC_ARITHMETIC_ARRAY_INL_HPP_
+#ifndef ZISC_ARITHMETIC_ARRAY_INL_HPP
+#define ZISC_ARITHMETIC_ARRAY_INL_HPP
 
 #include "arithmetic_array.hpp"
 // Zisc
@@ -25,7 +25,7 @@ namespace zisc {
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-ArithmeticArray<Arithmetic, kN>::ArithmeticArray()
+ArithmeticArray<Arithmetic, kN>::ArithmeticArray() noexcept
 {
   fill(cast<Arithmetic>(0));
 }
@@ -35,10 +35,11 @@ ArithmeticArray<Arithmetic, kN>::ArithmeticArray()
   No detailed.
   */
 template <typename Arithmetic, uint kN> template <typename ...Types> inline
-ArithmeticArray<Arithmetic, kN>::ArithmeticArray(const Types ...values)
+ArithmeticArray<Arithmetic, kN>::ArithmeticArray(const Types ...values) noexcept :
+    elements_{{cast<Arithmetic>(values)...}}
 {
-  fill(cast<Arithmetic>(0));
-  setElements(values...);
+  constexpr auto num_of_arguments = sizeof...(Types);
+  static_assert(num_of_arguments == size(), "The num of arguments isn't match kN.");
 }
 
 /*!
@@ -46,10 +47,180 @@ ArithmeticArray<Arithmetic, kN>::ArithmeticArray(const Types ...values)
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-ArithmeticArray<Arithmetic, kN>::ArithmeticArray(const ArithmeticArray& array)
+ArithmeticArray<Arithmetic, kN>::ArithmeticArray(const Array& other) noexcept :
+    elements_{other}
+{
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Arithmetic, uint kN> inline
+ArithmeticArray<Arithmetic, kN>::ArithmeticArray(
+    const ArithmeticArray& other) noexcept :
+        elements_{other.elements_}
+{
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Arithmetic, uint kN> inline
+auto ArithmeticArray<Arithmetic, kN>::begin() noexcept -> iterator
+{
+  return elements_.begin();
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Arithmetic, uint kN> inline
+auto ArithmeticArray<Arithmetic, kN>::begin() const noexcept -> const_iterator
+{
+  return elements_.begin();
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Arithmetic, uint kN> inline
+auto ArithmeticArray<Arithmetic, kN>::cbegin() const noexcept -> const_iterator
+{
+  return elements_.cbegin();
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Arithmetic, uint kN> inline
+auto ArithmeticArray<Arithmetic, kN>::end() noexcept -> iterator
+{
+  return elements_.end();
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Arithmetic, uint kN> inline
+auto ArithmeticArray<Arithmetic, kN>::end() const noexcept -> const_iterator
+{
+  return elements_.end();
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Arithmetic, uint kN> inline
+auto ArithmeticArray<Arithmetic, kN>::cend() const noexcept -> const_iterator
+{
+  return elements_.cend();
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Arithmetic, uint kN> inline
+auto ArithmeticArray<Arithmetic, kN>::operator+(
+    const ArithmeticArray& other) const noexcept -> ArithmeticArray
+{
+  Array array;
+  for (uint index = 0; index < size(); ++index)
+    array[index] = elements_[index] + other.elements_[index];
+  return ArithmeticArray{array};
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Arithmetic, uint kN> inline
+auto ArithmeticArray<Arithmetic, kN>::operator-(
+    const ArithmeticArray& other) const noexcept -> ArithmeticArray
+{
+  Array array;
+  for (uint index = 0; index < size(); ++index)
+    array[index] = elements_[index] - other.elements_[index];
+  return ArithmeticArray{array};
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Arithmetic, uint kN> inline
+auto ArithmeticArray<Arithmetic, kN>::operator*(
+    const Arithmetic scalar) const noexcept -> ArithmeticArray
+{
+  Array array;
+  for (uint index = 0; index < size(); ++index)
+    array[index] = elements_[index] * scalar;
+  return ArithmeticArray{array};
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Arithmetic, uint kN> inline
+auto ArithmeticArray<Arithmetic, kN>::operator*(
+    const ArithmeticArray& other) const noexcept -> ArithmeticArray
+{
+  Array array;
+  for (uint index = 0; index < size(); ++index)
+    array[index] = elements_[index] * other.elements_[index];
+  return ArithmeticArray{array};
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Arithmetic, uint kN> inline
+auto ArithmeticArray<Arithmetic, kN>::operator/(
+    const Arithmetic scalar) const noexcept -> ArithmeticArray
+{
+  ZISC_ASSERT(scalar != cast<Arithmetic>(0), "The scalar is zero.");
+  Array array;
+  for (uint index = 0; index < size(); ++index)
+    array[index] = elements_[index] / scalar;
+  return ArithmeticArray{array};
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Arithmetic, uint kN> inline
+auto ArithmeticArray<Arithmetic, kN>::operator/(
+    const ArithmeticArray& other) const noexcept -> ArithmeticArray
+{
+  Array array;
+  for (uint index = 0; index < size(); ++index) {
+    ZISC_ASSERT(other.elements_[index] != cast<Arithmetic>(0), "The scalar is zero.");
+    array[index] = elements_[index] / other.elements_[index];
+  }
+  return ArithmeticArray{array};
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Arithmetic, uint kN> inline
+auto ArithmeticArray<Arithmetic, kN>::operator=(
+    const ArithmeticArray& other) noexcept -> ArithmeticArray&
 {
   for (uint index = 0; index < size(); ++index)
-    elements_[index] = array.elements_[index];
+    elements_[index] = other.elements_[index];
+  return *this;
 }
 
 /*!
@@ -57,152 +228,8 @@ ArithmeticArray<Arithmetic, kN>::ArithmeticArray(const ArithmeticArray& array)
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::begin() -> iterator
-{
-  return &elements_[0];
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::begin() const -> const_iterator
-{
-  return &elements_[0];
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::cbegin() const -> const_iterator
-{
-  return &elements_[0];
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::end() -> iterator
-{
-  return &elements_[size()];
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::end() const -> const_iterator
-{
-  return &elements_[size()];
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::cend() const -> const_iterator
-{
-  return &elements_[size()];
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::operator+(const ArithmeticArray& other) const 
-    -> ArithmeticArray
-{
-  ArithmeticArray array{this};
-  for (uint index = 0; index < size(); ++index)
-    array.elements_[index] = elements_[index] + other.elements_[index];
-  return array;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::operator-(const ArithmeticArray& other) const 
-    -> ArithmeticArray
-{
-  ArithmeticArray array{this};
-  for (uint index = 0; index < size(); ++index)
-    array.elements_[index] = elements_[index] - other.elements_[index];
-  return array;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::operator*(const Arithmetic scalar) const 
-    -> ArithmeticArray
-{
-  ArithmeticArray array{this};
-  for (uint index = 0; index < size(); ++index)
-    array.elements_[index] = elements_[index] * scalar;
-  return array;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::operator*(const ArithmeticArray& other) const 
-    -> ArithmeticArray
-{
-  ArithmeticArray array{this};
-  for (uint index = 0; index < size(); ++index)
-    array.elements_[index] = elements_[index] * other.elements_[index];
-  return array;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::operator/(const Arithmetic scalar) const 
-    -> ArithmeticArray
-{
-  ArithmeticArray array{this};
-  for (uint index = 0; index < size(); ++index)
-    array.elements_[index] = elements_[index] / scalar;
-  return array;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::operator/(const ArithmeticArray& other) const 
-    -> ArithmeticArray
-{
-  ArithmeticArray array{this};
-  for (uint index = 0; index < size(); ++index)
-    array.elements_[index] = elements_[index] / other.elements_[index];
-  return array;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::operator+=(const ArithmeticArray& other)
-    -> ArithmeticArray&
+auto ArithmeticArray<Arithmetic, kN>::operator+=(
+    const ArithmeticArray& other) noexcept -> ArithmeticArray&
 {
   for (uint index = 0; index < size(); ++index)
     elements_[index] += other.elements_[index];
@@ -214,8 +241,8 @@ auto ArithmeticArray<Arithmetic, kN>::operator+=(const ArithmeticArray& other)
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::operator-=(const ArithmeticArray& other)
-    -> ArithmeticArray&
+auto ArithmeticArray<Arithmetic, kN>::operator-=(
+    const ArithmeticArray& other) noexcept -> ArithmeticArray&
 {
   for (uint index = 0; index < size(); ++index)
     elements_[index] -= other.elements_[index];
@@ -227,8 +254,8 @@ auto ArithmeticArray<Arithmetic, kN>::operator-=(const ArithmeticArray& other)
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::operator*=(const Arithmetic scalar)
-    -> ArithmeticArray&
+auto ArithmeticArray<Arithmetic, kN>::operator*=(
+    const Arithmetic scalar) noexcept -> ArithmeticArray&
 {
   for (uint index = 0; index < size(); ++index)
     elements_[index] *= scalar;
@@ -240,8 +267,8 @@ auto ArithmeticArray<Arithmetic, kN>::operator*=(const Arithmetic scalar)
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::operator*=(const ArithmeticArray& other)
-    -> ArithmeticArray&
+auto ArithmeticArray<Arithmetic, kN>::operator*=(
+    const ArithmeticArray& other) noexcept -> ArithmeticArray&
 {
   for (uint index = 0; index < size(); ++index)
     elements_[index] *= other.elements_[index];
@@ -253,9 +280,10 @@ auto ArithmeticArray<Arithmetic, kN>::operator*=(const ArithmeticArray& other)
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::operator/=(const Arithmetic scalar)
-    -> ArithmeticArray&
+auto ArithmeticArray<Arithmetic, kN>::operator/=(
+    const Arithmetic scalar) noexcept -> ArithmeticArray&
 {
+  ZISC_ASSERT(scalar != cast<Arithmetic>(0), "The scalar is zero.");
   for (uint index = 0; index < size(); ++index)
     elements_[index] /= scalar;
   return *this;
@@ -266,11 +294,13 @@ auto ArithmeticArray<Arithmetic, kN>::operator/=(const Arithmetic scalar)
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::operator/=(const ArithmeticArray& other)
-    -> ArithmeticArray&
+auto ArithmeticArray<Arithmetic, kN>::operator/=(
+    const ArithmeticArray& other) noexcept -> ArithmeticArray&
 {
-  for (uint index = 0; index < size(); ++index)
+  for (uint index = 0; index < size(); ++index) {
+    ZISC_ASSERT(other.elements_[index] != cast<Arithmetic>(0), "The scalar is zero.");
     elements_[index] /= other.elements_[index];
+  }
   return *this;
 }
 
@@ -279,9 +309,10 @@ auto ArithmeticArray<Arithmetic, kN>::operator/=(const ArithmeticArray& other)
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-Arithmetic& ArithmeticArray<Arithmetic, kN>::operator[](const uint index)
+Arithmetic& ArithmeticArray<Arithmetic, kN>::operator[](
+    const uint index) noexcept
 {
-  return elements_[index];
+  return get(index);
 }
 
 /*!
@@ -289,9 +320,10 @@ Arithmetic& ArithmeticArray<Arithmetic, kN>::operator[](const uint index)
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-const Arithmetic& ArithmeticArray<Arithmetic, kN>::operator[](const uint index) const
+const Arithmetic& ArithmeticArray<Arithmetic, kN>::operator[](
+    const uint index) const noexcept
 {
-  return elements_[index];
+  return get(index);
 }
 
 /*!
@@ -299,11 +331,11 @@ const Arithmetic& ArithmeticArray<Arithmetic, kN>::operator[](const uint index) 
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-void ArithmeticArray<Arithmetic, kN>::clamp(const Arithmetic min,
-                                            const Arithmetic max)
+void ArithmeticArray<Arithmetic, kN>::clamp(const Arithmetic min_value,
+                                            const Arithmetic max_value) noexcept
 {
   for (auto& element : elements_)
-    element = zisc::clamp(element, min, max);
+    element = zisc::clamp(element, min_value, max_value);
 }
 
 /*!
@@ -311,48 +343,15 @@ void ArithmeticArray<Arithmetic, kN>::clamp(const Arithmetic min,
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::divideScalar(const Arithmetic scalar) const 
-    -> ArithmeticArray
+auto ArithmeticArray<Arithmetic, kN>::divideScalar(
+    const Arithmetic scalar) const noexcept -> ArithmeticArray
 {
-  ArithmeticArray array{this};
-  for (uint index = 0; index < size(); ++index)
-    array.elements_[index] = scalar / elements_[index];
-  return array;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <typename Arithmetic, uint kN>
-void ArithmeticArray<Arithmetic, kN>::fill(const Arithmetic value)
-{
-  for (auto& element : elements_)
-    element = value;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <typename Arithmetic, uint kN> inline
-Arithmetic ArithmeticArray<Arithmetic, kN>::get(const uint index) const
-{
-  return elements_[index];
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <typename Arithmetic, uint kN> inline
-bool ArithmeticArray<Arithmetic, kN>::isZero() const
-{
-  for (const auto value : elements_) {
-    if (value != cast<Arithmetic>(0))
-      return false;
+  Array array;
+  for (uint index = 0; index < size(); ++index) {
+    ZISC_ASSERT(elements_[index] != cast<Arithmetic>(0), "The scalar is zero.");
+    array[index] = scalar / elements_[index];
   }
-  return true;
+  return ArithmeticArray{array};
 }
 
 /*!
@@ -360,7 +359,57 @@ bool ArithmeticArray<Arithmetic, kN>::isZero() const
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-Arithmetic ArithmeticArray<Arithmetic, kN>::max() const
+void ArithmeticArray<Arithmetic, kN>::fill(const Arithmetic value) noexcept
+{
+  elements_.fill(value);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Arithmetic, uint kN> inline
+Arithmetic& ArithmeticArray<Arithmetic, kN>::get(const uint index) noexcept
+{
+  ZISC_ASSERT(index < size(), "The index is out of range.");
+  return elements_[index];
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Arithmetic, uint kN> inline
+const Arithmetic& ArithmeticArray<Arithmetic, kN>::get(const uint index) const noexcept
+{
+  ZISC_ASSERT(index < size(), "The index is out of range.");
+  return elements_[index];
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Arithmetic, uint kN> inline
+bool ArithmeticArray<Arithmetic, kN>::isZeroArray() const noexcept
+{
+  bool flag = true;
+  for (uint index = 1; index < size(); ++index) {
+    constexpr auto zero = cast<Arithmetic>(0);
+    if (elements_[index] != zero) {
+      flag = false;
+      break;
+    }
+  }
+  return flag;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Arithmetic, uint kN> inline
+Arithmetic ArithmeticArray<Arithmetic, kN>::max() const noexcept
 {
   Arithmetic max = elements_[0];
   for (uint index = 1; index < size(); ++index)
@@ -373,7 +422,7 @@ Arithmetic ArithmeticArray<Arithmetic, kN>::max() const
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-Arithmetic ArithmeticArray<Arithmetic, kN>::min() const
+Arithmetic ArithmeticArray<Arithmetic, kN>::min() const noexcept
 {
   Arithmetic min = elements_[0];
   for (uint index = 1; index < size(); ++index)
@@ -386,13 +435,13 @@ Arithmetic ArithmeticArray<Arithmetic, kN>::min() const
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::maxElements(const ArithmeticArray& other) const 
-    -> ArithmeticArray
+auto ArithmeticArray<Arithmetic, kN>::maxElements(
+    const ArithmeticArray& other) const noexcept -> ArithmeticArray
 {
-  ArithmeticArray array{this};
+  Array array;
   for (uint index = 0; index < size(); ++index)
-    array.elements_[index] = zisc::max(other.elements_[index], elements_[index]);
-  return array;
+    array[index] = zisc::max(other.elements_[index], elements_[index]);
+  return ArithmeticArray{array};
 }
 
 /*!
@@ -400,13 +449,13 @@ auto ArithmeticArray<Arithmetic, kN>::maxElements(const ArithmeticArray& other) 
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-auto ArithmeticArray<Arithmetic, kN>::minElements(const ArithmeticArray& other) const 
-    -> ArithmeticArray
+auto ArithmeticArray<Arithmetic, kN>::minElements(
+    const ArithmeticArray& other) const noexcept -> ArithmeticArray
 {
-  ArithmeticArray array{this};
+  Array array;
   for (uint index = 0; index < size(); ++index)
-    array.elements_[index] = zisc::min(other.elements_[index], elements_[index]);
-  return array;
+    array[index] = zisc::min(other.elements_[index], elements_[index]);
+  return ArithmeticArray{array};
 }
 
 /*!
@@ -414,7 +463,7 @@ auto ArithmeticArray<Arithmetic, kN>::minElements(const ArithmeticArray& other) 
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-constexpr uint ArithmeticArray<Arithmetic, kN>::size()
+constexpr uint ArithmeticArray<Arithmetic, kN>::size() noexcept
 {
   return kN;
 }
@@ -424,8 +473,10 @@ constexpr uint ArithmeticArray<Arithmetic, kN>::size()
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-void ArithmeticArray<Arithmetic, kN>::set(const uint index, const Arithmetic value)
+void ArithmeticArray<Arithmetic, kN>::set(const uint index, 
+                                          const Arithmetic value) noexcept
 {
+  ZISC_ASSERT(index < size(), "The index is out of range.");
   elements_[index] = value;
 }
 
@@ -434,9 +485,10 @@ void ArithmeticArray<Arithmetic, kN>::set(const uint index, const Arithmetic val
   No detailed.
   */
 template <typename Arithmetic, uint kN> template <typename ...Types> inline
-void ArithmeticArray<Arithmetic, kN>::setElements(const Types ...values)
+void ArithmeticArray<Arithmetic, kN>::setElements(const Types ...values) noexcept
 {
-  static_assert(sizeof...(Types) <= size(), "The number of parameters is wrong.");
+  constexpr auto num_of_arguments = sizeof...(Types);
+  static_assert(num_of_arguments == size(), "The num of arguments isn't match kN.");
   setElements<0>(cast<Arithmetic>(values)...);
 }
 
@@ -445,8 +497,9 @@ void ArithmeticArray<Arithmetic, kN>::setElements(const Types ...values)
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-ArithmeticArray<Arithmetic, kN>::ArithmeticArray(const ArithmeticArray* /* array */)
+Arithmetic ArithmeticArray<Arithmetic, kN>::sum() const noexcept
 {
+  return sumArray(elements_);
 }
 
 /*!
@@ -456,7 +509,7 @@ ArithmeticArray<Arithmetic, kN>::ArithmeticArray(const ArithmeticArray* /* array
 template <typename Arithmetic, uint kN> 
 template <uint index, typename ...Types> inline
 void ArithmeticArray<Arithmetic, kN>::setElements(const Arithmetic value, 
-                                                  const Types ...values)
+                                                  const Types ...values) noexcept
 {
   setElements<index>(value);
   setElements<index + 1>(values...);
@@ -467,56 +520,50 @@ void ArithmeticArray<Arithmetic, kN>::setElements(const Arithmetic value,
   No detailed.
   */
 template <typename Arithmetic, uint kN> template <uint index> inline
-void ArithmeticArray<Arithmetic, kN>::setElements(const Arithmetic value)
+void ArithmeticArray<Arithmetic, kN>::setElements(const Arithmetic value) noexcept
 {
   elements_[index] = value;
 }
 
-namespace zisc_arithmetic_array {
-
-template <typename Arithmetic, uint kN> inline
-Arithmetic sumArray(const Arithmetic* elements, EnableIfInteger<Arithmetic> = kEnabler)
+template <typename Arithmetic, uint kN> template <typename Type> inline
+Type ArithmeticArray<Arithmetic, kN>::sumArray(
+    const std::array<Type, kN>& elements,
+    EnableIfInteger<Type>) noexcept
 {
-  Arithmetic sum = elements[0];
+  Type sum = elements[0];
   for (uint index = 1; index < kN; ++index)
     sum += elements[index];
   return sum;
 }
 
-template <typename Arithmetic, uint kN> inline
-Arithmetic sumArray(const Arithmetic* elements, EnableIfFloat<Arithmetic> = kEnabler)
+template <typename Arithmetic, uint kN> template <typename Type> inline
+Type ArithmeticArray<Arithmetic, kN>::sumArray(
+    const std::array<Type, kN>& elements,
+    EnableIfFloat<Type>) noexcept
 {
-  CompensatedSummation<Arithmetic> sum{elements[0]};
+  CompensatedSummation<Type> sum{elements[0]};
   for (uint index = 1; index < kN; ++index)
     sum.add(elements[index]);
   return sum.get();
 }
 
-} // namespace zisc_arithmetic_array
-
-/*!
-  \details
-  No detailed.
-  */
-template <typename Arithmetic, uint kN>
-Arithmetic ArithmeticArray<Arithmetic, kN>::sum() const
-{
-  return zisc_arithmetic_array::sumArray<Arithmetic, kN>(elements_);
-}
-
 /*!
   \details
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-bool operator==(const ArithmeticArray<Arithmetic, kN>& a, 
-                const ArithmeticArray<Arithmetic, kN>& b)
+bool operator==(
+    const ArithmeticArray<Arithmetic, kN>& a, 
+    const ArithmeticArray<Arithmetic, kN>& b) noexcept
 {
+  bool flag = true;
   for (uint index = 0; index < kN; ++index) {
-    if (a[index] != b[index])
-      return false;
+    if (a[index] != b[index]) {
+      flag = false;
+      break;
+    }
   }
-  return true;
+  return flag;
 }
 
 /*!
@@ -524,8 +571,9 @@ bool operator==(const ArithmeticArray<Arithmetic, kN>& a,
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-bool operator!=(const ArithmeticArray<Arithmetic, kN>& a, 
-                const ArithmeticArray<Arithmetic, kN>& b)
+bool operator!=(
+    const ArithmeticArray<Arithmetic, kN>& a, 
+    const ArithmeticArray<Arithmetic, kN>& b) noexcept
 {
   return !(a == b);
 }
@@ -537,7 +585,7 @@ bool operator!=(const ArithmeticArray<Arithmetic, kN>& a,
 template <typename Arithmetic, uint kN> inline
 ArithmeticArray<Arithmetic, kN> operator*(
     const Arithmetic scalar,
-    const ArithmeticArray<Arithmetic, kN>& array)
+    const ArithmeticArray<Arithmetic, kN>& array) noexcept
 {
   return array * scalar;
 }
@@ -549,7 +597,7 @@ ArithmeticArray<Arithmetic, kN> operator*(
 template <typename Arithmetic, uint kN> inline
 ArithmeticArray<Arithmetic, kN> operator/(
     const Arithmetic scalar,
-    const ArithmeticArray<Arithmetic, kN>& array)
+    const ArithmeticArray<Arithmetic, kN>& array) noexcept
 {
   return array.divideScalar(scalar);
 }
@@ -559,8 +607,9 @@ ArithmeticArray<Arithmetic, kN> operator/(
   No detailed.
   */
 template <typename Arithmetic> inline
-ArithmeticArray<Arithmetic, 3>  cross(const ArithmeticArray<Arithmetic, 3>& a, 
-                                      const ArithmeticArray<Arithmetic, 3>& b)
+ArithmeticArray<Arithmetic, 3>  cross(
+    const ArithmeticArray<Arithmetic, 3>& a, 
+    const ArithmeticArray<Arithmetic, 3>& b) noexcept
 {
   return ArithmeticArray<Arithmetic, 3>{a[1] * b[2] - a[2] * b[1],
                                         a[2] * b[0] - a[0] * b[2],
@@ -572,8 +621,9 @@ ArithmeticArray<Arithmetic, 3>  cross(const ArithmeticArray<Arithmetic, 3>& a,
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-Arithmetic dot(const ArithmeticArray<Arithmetic, kN>& a, 
-               const ArithmeticArray<Arithmetic, kN>& b)
+Arithmetic dot(
+    const ArithmeticArray<Arithmetic, kN>& a, 
+    const ArithmeticArray<Arithmetic, kN>& b) noexcept
 {
   Arithmetic dot = a[0] * b[0];
   for (uint index = 1; index < kN; ++index)
@@ -588,7 +638,7 @@ Arithmetic dot(const ArithmeticArray<Arithmetic, kN>& a,
 template <typename Arithmetic, uint kN> inline
 ArithmeticArray<Arithmetic, kN> maxElements(
     const ArithmeticArray<Arithmetic, kN>& a,
-    const ArithmeticArray<Arithmetic, kN>& b)
+    const ArithmeticArray<Arithmetic, kN>& b) noexcept
 {
   return a.maxElements(b);
 }
@@ -600,7 +650,7 @@ ArithmeticArray<Arithmetic, kN> maxElements(
 template <typename Arithmetic, uint kN> inline
 ArithmeticArray<Arithmetic, kN> minElements(
     const ArithmeticArray<Arithmetic, kN>& a,
-    const ArithmeticArray<Arithmetic, kN>& b)
+    const ArithmeticArray<Arithmetic, kN>& b) noexcept
 {
   return a.minElements(b);
 }
@@ -610,18 +660,28 @@ ArithmeticArray<Arithmetic, kN> minElements(
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-void minMaxElements(ArithmeticArray<Arithmetic, kN>& a,
-                    ArithmeticArray<Arithmetic, kN>& b)
+void minMaxElements(
+    ArithmeticArray<Arithmetic, kN>& a,
+    ArithmeticArray<Arithmetic, kN>& b) noexcept
 {
   for (uint i = 0; i < kN; ++i) {
-    if (b[i] < a[i]) {
-      const Arithmetic t = a[i];
-      a[i] = b[i];
-      b[i] = t;
-    }
+    if (b[i] < a[i])
+      swapElement(a, b, i);
   }
+}
+
+template <typename Arithmetic, uint kN> inline
+void swapElement(
+    const ArithmeticArray<Arithmetic, kN>& a, 
+    const ArithmeticArray<Arithmetic, kN>& b, 
+    const uint index) noexcept
+{
+  ZISC_ASSERT(index < kN, "The index is out of range.");
+  const Arithmetic tmp = b[index];
+  b[index] = a[index];
+  a[index] = tmp;
 }
 
 } // namespace zisc
 
-#endif // _ZISC_ARITHMETIC_ARRAY_INL_HPP_
+#endif // ZISC_ARITHMETIC_ARRAY_INL_HPP

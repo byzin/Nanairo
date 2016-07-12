@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SAMPLED_WAVELENGTHS_INL_HPP_
-#define _NANAIRO_SAMPLED_WAVELENGTHS_INL_HPP_
+#ifndef NANAIRO_SAMPLED_WAVELENGTHS_INL_HPP
+#define NANAIRO_SAMPLED_WAVELENGTHS_INL_HPP
 
 #include "sampled_wavelengths.hpp"
 // Standard C++ library
@@ -40,7 +40,7 @@ class World;
   No detailed.
   */
 template <uint kSampleSize> inline
-SampledWavelengths<kSampleSize>::SampledWavelengths()
+SampledWavelengths<kSampleSize>::SampledWavelengths() noexcept
 {
 }
 
@@ -49,7 +49,7 @@ SampledWavelengths<kSampleSize>::SampledWavelengths()
   No detailed.
   */
 template <uint kSampleSize> inline
-auto SampledWavelengths<kSampleSize>::inverseProbabilities() const
+auto SampledWavelengths<kSampleSize>::inverseProbabilities() const noexcept
     -> const Intensities&
 {
   return inverse_probabilities_;
@@ -60,7 +60,7 @@ auto SampledWavelengths<kSampleSize>::inverseProbabilities() const
   No detailed.
   */
 template <uint kSampleSize> template <uint kMax> inline
-void SampledWavelengths<kSampleSize>::selectPrimaryWavelength(Sampler& sampler)
+void SampledWavelengths<kSampleSize>::selectPrimaryWavelength(Sampler& sampler) noexcept
 {
   constexpr uint min = 0;
   const uint selected_index = sampler.sample(min, kMax);
@@ -74,7 +74,7 @@ void SampledWavelengths<kSampleSize>::selectPrimaryWavelength(Sampler& sampler)
 template <uint kSampleSize> inline
 void SampledWavelengths<kSampleSize>::set(const uint index, 
                                           const uint16 wavelength,
-                                          const Float inverse_probability)
+                                          const Float inverse_probability) noexcept
 {
   wavelengths_[index] = wavelength;
   inverse_probabilities_[index] = inverse_probability;
@@ -85,7 +85,7 @@ void SampledWavelengths<kSampleSize>::set(const uint index,
   No detailed.
   */
 template <uint kSampleSize> inline
-auto SampledWavelengths<kSampleSize>::wavelengths() const -> const Wavelengths&
+auto SampledWavelengths<kSampleSize>::wavelengths() const noexcept -> const Wavelengths&
 {
   return wavelengths_;
 }
@@ -141,7 +141,7 @@ auto SampledWavelengths<kSampleSize>::wavelengths() const -> const Wavelengths&
   No detailed.
   */
 template <uint kSampleSize> inline
-WavelengthSampler<kSampleSize> makeRgbSampler()
+WavelengthSampler<kSampleSize> makeRgbSampler() noexcept
 {
   WavelengthSampler<kSampleSize> wavelength_sampler{[](Sampler& sampler)
   {
@@ -156,7 +156,7 @@ WavelengthSampler<kSampleSize> makeRgbSampler()
   */
 template <uint kSampleSize> inline
 WavelengthSampler<kSampleSize> makeWavelengthSampler(const SceneSettings& settings, 
-                                                     const World& /* world */)
+                                                     const World& /* world */) noexcept
 {
   using zisc::toHash32;
 
@@ -188,7 +188,7 @@ WavelengthSampler<kSampleSize> makeWavelengthSampler(const SceneSettings& settin
   No detailed.
   */
 template <uint kSampleSize> inline
-SampledWavelengths<kSampleSize> sampleRgbWavelengths(Sampler& sampler)
+SampledWavelengths<kSampleSize> sampleRgbWavelengths(Sampler& sampler) noexcept
 {
   SampledWavelengths<kSampleSize> sampled_wavelengths;
   sampled_wavelengths.set(0, kBlueWavelength, 1.0);
@@ -204,7 +204,7 @@ SampledWavelengths<kSampleSize> sampleRgbWavelengths(Sampler& sampler)
   No detailed.
   */
 template <uint kSampleSize> inline
-SampledWavelengths<kSampleSize> sampleStratifiedWavelengths(Sampler& sampler)
+SampledWavelengths<kSampleSize> sampleStratifiedWavelengths(Sampler& sampler) noexcept
 {
   using zisc::cast;
 
@@ -227,7 +227,7 @@ SampledWavelengths<kSampleSize> sampleStratifiedWavelengths(Sampler& sampler)
   No detailed.
   */
 template <uint kSampleSize> inline
-SampledWavelengths<kSampleSize> sampleWavelengthsRandomly(Sampler& sampler)
+SampledWavelengths<kSampleSize> sampleWavelengthsRandomly(Sampler& sampler) noexcept
 {
   using zisc::cast;
 
@@ -255,7 +255,7 @@ SampledWavelengths<kSampleSize> sampleWavelengthsRandomly(Sampler& sampler)
   No detailed.
   */
 template <uint kSampleSize> inline
-SampledWavelengths<kSampleSize> sampleWavelengthsRegularly(Sampler& sampler)
+SampledWavelengths<kSampleSize> sampleWavelengthsRegularly(Sampler& sampler) noexcept
 {
   using zisc::cast;
 
@@ -275,4 +275,4 @@ SampledWavelengths<kSampleSize> sampleWavelengthsRegularly(Sampler& sampler)
 
 } // namespace nanairo
 
-#endif // _NANAIRO_SAMPLED_WAVELENGTHS_INL_HPP_
+#endif // NANAIRO_SAMPLED_WAVELENGTHS_INL_HPP

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_AABB_HPP_
-#define _NANAIRO_AABB_HPP_
+#ifndef NANAIRO_AABB_HPP
+#define NANAIRO_AABB_HPP
 
 // Standard C++ library
 #include <tuple>
@@ -34,42 +34,42 @@ class Aabb
 {
  public:
   //! Create AABB
-  Aabb();
+  Aabb() noexcept;
 
   //! Create AABB
-  Aabb(const Point3& min, const Point3& max);
+  Aabb(const Point3& min, const Point3& max) noexcept;
 
 
   //! Return the centroid point of AABB
-  Point3 centroid() const;
+  Point3 centroid() const noexcept;
 
   //! Test ray-AABB intersection
-  std::tuple<bool, Float> testIntersection(const Ray& ray) const;
+  std::tuple<bool, Float> testIntersection(const Ray& ray) const noexcept;
 
   //! Return the longest axis number
-  uint longestAxis() const;
+  uint longestAxis() const noexcept;
 
   //! Return the maximym point of AABB
-  const Point3& maxPoint() const;
+  const Point3& maxPoint() const noexcept;
 
   //! Return the minimum point of AABB
-  const Point3& minPoint() const;
+  const Point3& minPoint() const noexcept;
 
   //! Set the maximum point of AABB
-  void setMaxPoint(const Point3& point);
+  void setMaxPoint(const Point3& point) noexcept;
 
   //! Set the minimum point of AABB
-  void setMinPoint(const Point3& point);
+  void setMinPoint(const Point3& point) noexcept;
 
   //! Return the surface area
-  Float surfaceArea() const;
+  Float surfaceArea() const noexcept;
 
  private:
   Point3 point_[2]; // Minimum and maximum point
 };
 
 //! Combine bounding boxs
-Aabb combineBoundingBox(const Aabb& a, const Aabb& b);
+Aabb combineBoundingBox(const Aabb& a, const Aabb& b) noexcept;
 
 //! \} Core
 
@@ -77,4 +77,4 @@ Aabb combineBoundingBox(const Aabb& a, const Aabb& b);
 
 #include "aabb-inl.hpp"
 
-#endif // _NANAIRO_AABB_HPP_
+#endif // NANAIRO_AABB_HPP

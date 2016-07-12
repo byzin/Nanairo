@@ -17,7 +17,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-Aabb::Aabb()
+Aabb::Aabb() noexcept
 {
 }
 
@@ -25,7 +25,7 @@ Aabb::Aabb()
   \details
   No detailed.
   */
-Aabb::Aabb(const Point3& min, const Point3& max) :
+Aabb::Aabb(const Point3& min, const Point3& max) noexcept :
     point_{min, max}
 {
 }
@@ -34,7 +34,7 @@ Aabb::Aabb(const Point3& min, const Point3& max) :
   \details
   No detailed.
   */
-void Aabb::setMaxPoint(const Point3& point)
+void Aabb::setMaxPoint(const Point3& point) noexcept
 {
   point_[1] = point;
 }
@@ -43,7 +43,7 @@ void Aabb::setMaxPoint(const Point3& point)
  \details
  No detailed.
  */
-void Aabb::setMinPoint(const Point3& point)
+void Aabb::setMinPoint(const Point3& point) noexcept
 {
   point_[0] = point;
 }

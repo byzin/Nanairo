@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_VALUE_TEXTURE_INL_HPP_
-#define _NANAIRO_VALUE_TEXTURE_INL_HPP_
+#ifndef NANAIRO_VALUE_TEXTURE_INL_HPP
+#define NANAIRO_VALUE_TEXTURE_INL_HPP
 
 #include "value_texture.hpp"
 // Zisc
@@ -28,7 +28,7 @@ template <uint> class WavelengthSamples;
   No detailed.
   */
 inline
-Float ValueTexture::uniqueValue() const
+Float ValueTexture::uniqueValue() const noexcept
 {
   return value_;
 }
@@ -41,7 +41,7 @@ template <uint kSampleSize> inline
 SampledSpectra<kSampleSize> getSpectraValue(
     const Texture* texture,
     const Point2& /* coordinate */,
-    const WavelengthSamples<kSampleSize>& wavelengths)
+    const WavelengthSamples<kSampleSize>& wavelengths) noexcept
 {
   using zisc::cast;
 
@@ -51,4 +51,4 @@ SampledSpectra<kSampleSize> getSpectraValue(
 
 } // namespace nanairo
 
-#endif // _NANAIRO_VALUE_TEXTURE_INL_HPP_
+#endif // NANAIRO_VALUE_TEXTURE_INL_HPP

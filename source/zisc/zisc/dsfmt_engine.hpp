@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_DSFMT_ENGINE_HPP_
-#define _ZISC_DSFMT_ENGINE_HPP_
+#ifndef ZISC_DSFMT_ENGINE_HPP
+#define ZISC_DSFMT_ENGINE_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -41,42 +41,45 @@ class DsfmtEngine : public PseudoRandomNumberEngine<
 
 
   //! Initialize generator using default random seed
-  DsfmtEngine();
+  DsfmtEngine() noexcept;
 
   //! Initialize generator
-  DsfmtEngine(const std::uint32_t seed);
+  DsfmtEngine(const std::uint32_t seed) noexcept;
 
 
   //! Generate a random number
-  double generate();
+  double generate() noexcept;
   
   //! Generator a bounded random number x satisfying lower <= x < upper
   template <typename Arithmetic>
-  Arithmetic generate(const Arithmetic lower, const Arithmetic upper);
+  Arithmetic generate(const Arithmetic lower, const Arithmetic upper) noexcept;
 
   //! Return the largest possible value in the output range
-  static constexpr double max();
+  static constexpr double max() noexcept;
 
   //! Return the smallest possible value in the output range
-  static constexpr double min();
+  static constexpr double min() noexcept;
 
   //! Set random seed
-  void setSeed(const std::uint32_t seed);
+  void setSeed(const std::uint32_t seed) noexcept;
 
  private:
   //! Return the bounded number
   template <typename Float>
   Float bound(const double random, const Float lower, const Float upper,
-              EnableIfFloat<Float> = kEnabler);
+              EnableIfFloat<Float> = kEnabler) noexcept;
 
-  void certificatePeriod();
+  //!
+  void certificatePeriod() noexcept;
 
-  void generateRandomAll();
+  //!
+  void generateRandomAll() noexcept;
 
-  void generateRandom(const std::size_t destination, const std::size_t position);
+  //!
+  void generateRandom(const std::size_t destination, const std::size_t position) noexcept;
 
   //! Initialize random engine
-  void initialize();
+  void initialize() noexcept;
 
 
   union W128
@@ -144,4 +147,4 @@ using Dsfmt216091 = DsfmtEngine<
 
 #include "dsfmt_engine-inl.hpp"
 
-#endif // _ZISC_DSFMT_ENGINE_HPP_
+#endif // ZISC_DSFMT_ENGINE_HPP

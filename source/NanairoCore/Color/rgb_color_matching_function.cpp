@@ -20,7 +20,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-RgbColorMatchingFunction::RgbColorMatchingFunction()
+RgbColorMatchingFunction::RgbColorMatchingFunction() noexcept
 {
   initialize();
 }
@@ -29,7 +29,7 @@ RgbColorMatchingFunction::RgbColorMatchingFunction()
   \details
   No detailed.
   */
-const SpectralDistribution& RgbColorMatchingFunction::blueBar() const
+const SpectralDistribution& RgbColorMatchingFunction::blueBar() const noexcept
 {
   return blue_bar_;
 }
@@ -38,7 +38,7 @@ const SpectralDistribution& RgbColorMatchingFunction::blueBar() const
   \details
   No detailed.
   */
-const SpectralDistribution& RgbColorMatchingFunction::greenBar() const
+const SpectralDistribution& RgbColorMatchingFunction::greenBar() const noexcept
 {
   return green_bar_;
 }
@@ -47,7 +47,7 @@ const SpectralDistribution& RgbColorMatchingFunction::greenBar() const
   \details
   No detailed.
   */
-const SpectralDistribution& RgbColorMatchingFunction::redBar() const
+const SpectralDistribution& RgbColorMatchingFunction::redBar() const noexcept
 {
   return red_bar_;
 }
@@ -56,7 +56,7 @@ const SpectralDistribution& RgbColorMatchingFunction::redBar() const
   \details
   No detailed.
   */
-void RgbColorMatchingFunction::initialize()
+void RgbColorMatchingFunction::initialize() noexcept
 {
   red_bar_ = makeSpectra(":/spectrum/cie_1931_red.csv");
   green_bar_ = makeSpectra(":/spectrum/cie_1931_green.csv");

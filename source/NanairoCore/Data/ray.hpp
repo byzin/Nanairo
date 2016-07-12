@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_RAY_HPP_
-#define _NANAIRO_RAY_HPP_
+#ifndef NANAIRO_RAY_HPP
+#define NANAIRO_RAY_HPP
 
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -28,39 +28,39 @@ class Ray
 {
  public:
   //! Create a dead ray
-  Ray();
+  Ray() noexcept;
 
   //! Create ray
-  Ray(const Point3& origin, const Vector3& direction);
+  Ray(const Point3& origin, const Vector3& direction) noexcept;
 
 
   //! Return the direction
-  const Vector3& direction() const;
+  const Vector3& direction() const noexcept;
 
   //! Return the inverse direction vector
-  const Vector3& inverseDirection() const;
+  const Vector3& inverseDirection() const noexcept;
 
   //! Check if the ray is alive
-  bool isAlive() const;
+  bool isAlive() const noexcept;
 
   //! Return the origin
-  const Point3& origin() const;
+  const Point3& origin() const noexcept;
 
   //! Set ray alival
-  void setAlive(const bool is_alive);
+  void setAlive(const bool is_alive) noexcept;
 
   //! Set ray direction
-  void setDirection(const Vector3& direction);
+  void setDirection(const Vector3& direction) noexcept;
 
   //! Set ray origin
-  void setOrigin(const Point3& origin);
+  void setOrigin(const Point3& origin) noexcept;
 
   //! Return the direction sign
-  const uint8* sign() const;
+  const uint8* sign() const noexcept;
 
  private:
   //! Set inverse direction.
-  void setInverseDirection();
+  void setInverseDirection() noexcept;
 
   Point3 origin_;
   Vector3 direction_,
@@ -75,4 +75,4 @@ class Ray
 
 #include "ray-inl.hpp"
 
-#endif // _NANAIRO_RAY_HPP_
+#endif // NANAIRO_RAY_HPP

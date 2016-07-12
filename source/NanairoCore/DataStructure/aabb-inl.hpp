@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_AABB_INL_HPP_
-#define _NANAIRO_AABB_INL_HPP_
+#ifndef NANAIRO_AABB_INL_HPP
+#define NANAIRO_AABB_INL_HPP
 
 #include "aabb.hpp"
 // Standard C++ library
@@ -27,7 +27,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-Point3 Aabb::centroid() const
+Point3 Aabb::centroid() const noexcept
 {
   return point_[0] + (point_[1] - point_[0]) * 0.5;
 }
@@ -38,7 +38,7 @@ Point3 Aabb::centroid() const
   http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-box-intersection/
   */
 inline
-std::tuple<bool, Float> Aabb::testIntersection(const Ray& ray) const
+std::tuple<bool, Float> Aabb::testIntersection(const Ray& ray) const noexcept
 {
   const auto s = ray.sign();
   const Point3 min_p{point_[s[0]][0], point_[s[1]][1], point_[s[2]][2]};
@@ -55,7 +55,7 @@ std::tuple<bool, Float> Aabb::testIntersection(const Ray& ray) const
   No detailed.
   */
 inline
-uint Aabb::longestAxis() const
+uint Aabb::longestAxis() const noexcept
 {
   constexpr uint x = 0;
   constexpr uint y = 1;
@@ -75,7 +75,7 @@ uint Aabb::longestAxis() const
  No detailed.
  */
 inline
-const Point3& Aabb::maxPoint() const
+const Point3& Aabb::maxPoint() const noexcept
 {
   return point_[1];
 } 
@@ -85,7 +85,7 @@ const Point3& Aabb::maxPoint() const
  No detailed.
  */
 inline
-const Point3& Aabb::minPoint() const
+const Point3& Aabb::minPoint() const noexcept
 {
   return point_[0];
 }
@@ -95,7 +95,7 @@ const Point3& Aabb::minPoint() const
   No detailed.
   */
 inline
-Float Aabb::surfaceArea() const
+Float Aabb::surfaceArea() const noexcept
 {
   const auto range = maxPoint() - minPoint();
   return 2.0 * (range[0] * range[1] + range[2] * range[1] + range[0] * range[2]);
@@ -106,7 +106,7 @@ Float Aabb::surfaceArea() const
   No detailed.
   */
 inline
-Aabb combine(const Aabb& a, const Aabb& b)
+Aabb combine(const Aabb& a, const Aabb& b) noexcept
 {
   const auto min_point = zisc::minElements(a.minPoint().data(), b.minPoint().data());
   const auto max_point = zisc::maxElements(a.maxPoint().data(), b.maxPoint().data());
@@ -115,4 +115,4 @@ Aabb combine(const Aabb& a, const Aabb& b)
 
 } // namespace nanairo
 
-#endif // _NANAIRO_AABB_INL_HPP_
+#endif // NANAIRO_AABB_INL_HPP

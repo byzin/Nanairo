@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_MICROFACET_HPP_
-#define _NANAIRO_MICROFACET_HPP_
+#ifndef NANAIRO_MICROFACET_HPP
+#define NANAIRO_MICROFACET_HPP
 
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -24,14 +24,14 @@ class SampledDirection;
 SampledDirection getMicrofacetReflectionDirection(
     const Vector3& vin,
     const SampledDirection& microfacet_normal,
-    const Float cos_theta_mi);
+    const Float cos_theta_mi) noexcept;
 
 //! Get microfacet reflection half-vector
 Vector3 getMicrofacetReflectionHalfVector(const Vector3& vin, 
-                                          const Vector3& vout);
+                                          const Vector3& vout) noexcept;
 
 //! Get microfacet reflection inverse jacobian
-Float getMicrofacetReflectionInverseJacobian(const Float cos_theta_mi);
+Float getMicrofacetReflectionInverseJacobian(const Float cos_theta_mi) noexcept;
 
 //! Calculate microfacet refraction direction
 SampledDirection getMicrofacetRefractionDirection(
@@ -39,20 +39,20 @@ SampledDirection getMicrofacetRefractionDirection(
     const SampledDirection& microfacet_normal,
     const Float cos_theta_mi,
     const Float n,
-    const Float g);
+    const Float g) noexcept;
 
 //! Get microfacet reflection half-vector
 Vector3 getMicrofacetRefractionHalfVector(const Vector3& vin, 
                                           const Vector3& vout,
-                                          const Float n);
+                                          const Float n) noexcept;
 
 //! Get microfacet reflection inverse jacobian
 Float getMicrofacetRefractionInverseJacobian(const Float cos_theta_mi,
                                              const Float cos_theta_mo,
-                                             const Float n);
+                                             const Float n) noexcept;
 
 } // namespace nanairo
 
 #include "microfacet-inl.hpp"
 
-#endif // _NANAIRO_MICROFACET_HPP_
+#endif // NANAIRO_MICROFACET_HPP

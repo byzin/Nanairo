@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_TONEMAPPING_METHOD_INL_HPP_
-#define _NANAIRO_TONEMAPPING_METHOD_INL_HPP_
+#ifndef NANAIRO_TONEMAPPING_METHOD_INL_HPP
+#define NANAIRO_TONEMAPPING_METHOD_INL_HPP
 
 #include "tone_mapping_method.hpp"
 // Qt
@@ -27,7 +27,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-QRgb* ToneMappingMethod::getPixelArray(QImage& ldr_image)
+QRgb* ToneMappingMethod::getPixelArray(QImage& ldr_image) noexcept
 {
   const unsigned char* bits = ldr_image.constBits();
   return zisc::treatAs<QRgb*>(const_cast<unsigned char*>(bits));
@@ -38,7 +38,7 @@ QRgb* ToneMappingMethod::getPixelArray(QImage& ldr_image)
   No detailed.
   */
 inline
-Float ToneMappingMethod::inverseGamma() const
+Float ToneMappingMethod::inverseGamma() const noexcept
 {
   return inverse_gamma_;
 }
@@ -48,7 +48,7 @@ Float ToneMappingMethod::inverseGamma() const
   No detailed.
   */
 inline
-const Matrix3x3& ToneMappingMethod::toRgbMatrix() const
+const Matrix3x3& ToneMappingMethod::toRgbMatrix() const noexcept
 {
   return to_rgb_matrix_;
 }
@@ -58,11 +58,11 @@ const Matrix3x3& ToneMappingMethod::toRgbMatrix() const
   No detailed.
   */
 inline
-const Matrix3x3& ToneMappingMethod::toXyzMatrix() const
+const Matrix3x3& ToneMappingMethod::toXyzMatrix() const noexcept
 {
   return to_xyz_matrix_;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_TONEMAPPING_METHOD_INL_HPP_
+#endif // NANAIRO_TONEMAPPING_METHOD_INL_HPP

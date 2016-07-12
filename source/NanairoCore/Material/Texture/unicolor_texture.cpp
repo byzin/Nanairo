@@ -31,7 +31,7 @@ namespace nanairo {
   */
 UnicolorTexture::UnicolorTexture(const System& system,
                                  const SceneSettings& settings,
-                                 const QString& prefix)
+                                 const QString& prefix) noexcept
 {
   initialize(system, settings, prefix);
 }
@@ -40,7 +40,7 @@ UnicolorTexture::UnicolorTexture(const System& system,
   \details
   No detailed.
   */
-Float UnicolorTexture::floatValue(const Point2& /* coordinate */) const
+Float UnicolorTexture::floatValue(const Point2& /* coordinate */) const noexcept
 {
   return float_value_;
 }
@@ -49,7 +49,7 @@ Float UnicolorTexture::floatValue(const Point2& /* coordinate */) const
   \details
   No detailed.
   */
-std::size_t UnicolorTexture::textureSize() const
+std::size_t UnicolorTexture::textureSize() const noexcept
 {
   return sizeof(spectra_value_) + sizeof(float_value_);
 }
@@ -58,7 +58,7 @@ std::size_t UnicolorTexture::textureSize() const
   \details
   No detailed.
   */
-TextureType UnicolorTexture::type() const
+TextureType UnicolorTexture::type() const noexcept
 {
   return TextureType::Unicolor;
 }
@@ -68,7 +68,7 @@ TextureType UnicolorTexture::type() const
   No detailed.
   */
 Float UnicolorTexture::wavelengthValue(const Point2& /* coordinate */, 
-                                       const uint16 wavelength) const
+                                       const uint16 wavelength) const noexcept
 {
   return spectra_value_.getByWavelength(wavelength);
 }
@@ -79,7 +79,7 @@ Float UnicolorTexture::wavelengthValue(const Point2& /* coordinate */,
   */
 void UnicolorTexture::initialize(const System& system,
                                  const SceneSettings& settings,
-                                 const QString& prefix)
+                                 const QString& prefix) noexcept
 {
   auto p = prefix + "/" + keyword::unicolorTexture;
   const auto key = p + "/" + keyword::textureColor;

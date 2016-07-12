@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_WORLD_INL_HPP_
-#define _NANAIRO_WORLD_INL_HPP_
+#ifndef NANAIRO_WORLD_INL_HPP
+#define NANAIRO_WORLD_INL_HPP
 
 #include "world.hpp"
 // Standard C++ library
@@ -28,7 +28,7 @@ namespace nanairo {
   \return BVH
   */
 inline
-const Bvh& World::bvh() const
+const Bvh& World::bvh() const noexcept
 {
   return *bvh_;
 }
@@ -38,7 +38,7 @@ const Bvh& World::bvh() const
   No detailed.
   */
 inline
-const std::vector<LightSourceReference>& World::lightSourceList() const
+const std::vector<LightSourceReference>& World::lightSourceList() const noexcept
 {
   return light_source_list_;
 }
@@ -48,7 +48,7 @@ const std::vector<LightSourceReference>& World::lightSourceList() const
   No detailed.
   */
 inline
-const LightSourceSampler& World::lightSourceSampler() const
+const LightSourceSampler& World::lightSourceSampler() const noexcept
 {
   return *light_source_sampler_;
 }
@@ -68,11 +68,11 @@ const LightSourceSampler& World::lightSourceSampler() const
   No detailed.
   */
 inline
-const LightSourceReference& World::sampleLightSource(Sampler& sampler) const
+const LightSourceReference& World::sampleLightSource(Sampler& sampler) const noexcept
 {
   return light_source_sampler_->sample(sampler);
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_WORLD_INL_HPP_
+#endif // NANAIRO_WORLD_INL_HPP

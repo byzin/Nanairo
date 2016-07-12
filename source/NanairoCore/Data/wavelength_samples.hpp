@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_WAVELENGTH_SAMPLE_HPP_
-#define _NANAIRO_WAVELENGTH_SAMPLE_HPP_
+#ifndef NANAIRO_WAVELENGTH_SAMPLE_HPP
+#define NANAIRO_WAVELENGTH_SAMPLE_HPP
 
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -27,27 +27,27 @@ class WavelengthSamples
 {
  public:
   //! Create wavelengths
-  WavelengthSamples();
+  WavelengthSamples() noexcept;
 
 
   //! Return the wavelength by the index
-  uint16& operator[](const uint index);
+  uint16& operator[](const uint index) noexcept;
 
   //! Return the wavelength by the index
-  uint16 operator[](const uint index) const;
+  uint16 operator[](const uint index) const noexcept;
 
 
   //! Return the inverse probability of selection of primary wavelength
-  static constexpr Float primaryInverseProbability();
+  static constexpr Float primaryInverseProbability() noexcept;
 
   //! Return the primary wavelength index
-  uint primaryWavelengthIndex() const;
+  uint primaryWavelengthIndex() const noexcept;
 
   //! Set primary wavelength
-  void setPrimaryWavelength(const uint index);
+  void setPrimaryWavelength(const uint index) noexcept;
 
   //! Return the size
-  static constexpr uint size();
+  static constexpr uint size() noexcept;
 
  private:
   uint16 primary_index_; //!< The index of primary wavelength
@@ -60,4 +60,4 @@ class WavelengthSamples
 
 #include "wavelength_samples-inl.hpp"
 
-#endif // _NANAIRO_WAVELENGTH_SAMPLE_HPP_
+#endif // NANAIRO_WAVELENGTH_SAMPLE_HPP

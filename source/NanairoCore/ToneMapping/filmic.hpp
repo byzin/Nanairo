@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_FILMIC_HPP_
-#define _NANAIRO_FILMIC_HPP_
+#ifndef NANAIRO_FILMIC_HPP
+#define NANAIRO_FILMIC_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -39,20 +39,20 @@ class Filmic : public ToneMappingMethod
 {
  public:
   //! Initialize reinhard method
-  Filmic(const System& system, const SceneSettings& settings);
+  Filmic(const System& system, const SceneSettings& settings) noexcept;
 
 
   //! Apply tone mapping
   void toneMap(System& system,
                const HdrImage& hdr_image, 
-               QImage& ldr_image) override;
+               QImage& ldr_image) noexcept override;
 
  private:
   //! Initialize
-  void initialize(const System& system, const SceneSettings& settings);
+  void initialize(const System& system, const SceneSettings& settings) noexcept;
 
   //! Apply the filmic tonemap
-  Float filmicToneMap(Float x) const;
+  Float filmicToneMap(Float x) const noexcept;
 
 
   std::vector<YxyColor> pixel_luminance_;
@@ -62,4 +62,4 @@ class Filmic : public ToneMappingMethod
 
 } // namespace nanairo
 
-#endif // _NANAIRO_FILMIC_HPP_
+#endif // NANAIRO_FILMIC_HPP

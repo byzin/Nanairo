@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_WORLD_HPP_
-#define _NANAIRO_WORLD_HPP_
+#ifndef NANAIRO_WORLD_HPP
+#define NANAIRO_WORLD_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -47,73 +47,73 @@ class World
   //! Initialize the world
   World(System& system, 
         const SceneSettings& settings,
-        const std::function<void (const QString&)>& message_sender);
+        const std::function<void (const QString&)>& message_sender) noexcept;
 
   //! Finalize the world
-  ~World();
+  ~World() noexcept;
 
 
   //! Return the bvh
-  const Bvh& bvh() const;
+  const Bvh& bvh() const noexcept;
 
   //! Make emitter model list
-  std::vector<const EmitterModel*> emitterList() const;
+  std::vector<const EmitterModel*> emitterList() const noexcept;
 
   //! Return the light source list
-  const std::vector<LightSourceReference>& lightSourceList() const;
+  const std::vector<LightSourceReference>& lightSourceList() const noexcept;
 
   //! Return the world light source sampler
-  const LightSourceSampler& lightSourceSampler() const;
+  const LightSourceSampler& lightSourceSampler() const noexcept;
 
   //! Make surface list
 //  std::vector<const SurfaceModel*> surfaceList() const;
 
   //! Make texture list
-  std::vector<const Texture*> textureList() const;
+  std::vector<const Texture*> textureList() const noexcept;
 
   //! Return the world object list
 //  const std::vector<Object>& objectList() const;
 
   //! Select a light source randomly
-  const LightSourceReference& sampleLightSource(Sampler& sampler) const;
+  const LightSourceReference& sampleLightSource(Sampler& sampler) const noexcept;
 
  private:
   //! Return the material size
-  std::size_t getMaterialSize() const;
+  std::size_t getMaterialSize() const noexcept;
 
   //! Return the object size
-  std::size_t getObjectSize(const std::vector<Object>& object_list) const;
+  std::size_t getObjectSize(const std::vector<Object>& object_list) const noexcept;
 
   //! Initialize world
   void initialize(System& system, 
                   const SceneSettings& settings, 
-                  const std::function<void (const QString&)>& message_sender);
+                  const std::function<void (const QString&)>& message_sender) noexcept;
 
   //! Initialize emitter list
-  void initializeEmitter(System& system, const SceneSettings& settings);
+  void initializeEmitter(System& system, const SceneSettings& settings) noexcept;
 
   //! Initialize Objects
   std::vector<Object> initializeObject(System& system, 
-                                       const SceneSettings& settings);
+                                       const SceneSettings& settings) noexcept;
 
   //! Initialize the world information of light sources
-  void initializeWorldLightSource();
+  void initializeWorldLightSource() noexcept;
 
   //! Initialize surface scattering list
-  void initializeSurface(System& system, const SceneSettings& settings);
+  void initializeSurface(System& system, const SceneSettings& settings) noexcept;
 
   //! Initialize texture list
-  void initializeTexture(System& system, const SceneSettings& settings);
+  void initializeTexture(System& system, const SceneSettings& settings) noexcept;
 
   //! Make objects
   std::list<std::future<std::vector<Object>>> makeObjects(
       System& system,
-      const SceneSettings& settings) const;
+      const SceneSettings& settings) const noexcept;
 
   //! Make a single object
   std::vector<Object> makeSingleObject(const SceneSettings& settings,
                                        const QString& prefix,
-                                       const Matrix4x4& transformation) const;
+                                       const Matrix4x4& transformation) const noexcept;
 
   std::list<std::future<std::vector<Object>>> makeGroupObject(
       System& system,
@@ -121,7 +121,7 @@ class World
       const QString& prefix,
       const Matrix4x4& transformation,
       const uint count,
-      uint& index) const;
+      uint& index) const noexcept;
 
 
   UniquePointer<Bvh> bvh_;
@@ -136,4 +136,4 @@ class World
 
 #include "world-inl.hpp"
 
-#endif // _NANAIRO_WORLD_HPP_
+#endif // NANAIRO_WORLD_HPP

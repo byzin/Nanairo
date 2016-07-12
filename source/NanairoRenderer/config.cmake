@@ -6,7 +6,7 @@
 # http://opensource.org/licenses/mit-license.php
 # 
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.4)
 
 
 set(__nanairo_renderer_root__ ${CMAKE_CURRENT_LIST_DIR})
@@ -15,36 +15,34 @@ set(__nanairo_renderer_root__ ${CMAKE_CURRENT_LIST_DIR})
 # Inner functions and macros
 
 # Add nanairo renderer source files
-macro(addNanairoRendererFiles dir_name)
-  addNanairoSourceFiles(NanairoRenderer ${__nanairo_renderer_root__} "${dir_name}")
-endmacro(addNanairoRendererFiles)
+macro(getNanairoRendererFiles dir_name nanairo_source_files)
+  getNanairoSourceFiles(NanairoRenderer
+                        ${__nanairo_renderer_root__}
+                        "${dir_name}"
+                        ${nanairo_source_files})
+endmacro(getNanairoRendererFiles)
 
 
 # Make Nanairo Renderer config file
-function(makeRendererConfigFile)
-  set(renderer_config_path ${PROJECT_BINARY_DIR}/include/NanairoRenderer)
+function(makeRendererConfigFile config_file_path)
   configure_file(${__nanairo_renderer_root__}/nanairo_renderer_config.hpp.in
-                 ${renderer_config_path}/nanairo_renderer_config.hpp)
-  source_group(NanairoRenderer FILES ${renderer_config_path}/nanairo_renderer_config.hpp)
+                 ${config_file_path})
+  source_group(NanairoRenderer FILES ${config_file_path})
 endfunction(makeRendererConfigFile)
 
-# Functions and macros
 
 # Build NanairoRenderer
 # Defined variables
 #   nanairo_renderer_library
-function(buildNanairoRenderer)
-  # Set source files
-  clearNanairoSourceFiles()
-  addNanairoRendererFiles("")
-
-  makeRendererConfigFile()
-
-  # Build nanairo renderer
-  add_library(NanairoRenderer STATIC ${nanairo_source_files})
-  target_link_libraries(NanairoRenderer ${qt5_libraries} ${nanairo_core_library})
-  set_target_properties(NanairoRenderer PROPERTIES AUTOMOC ON)
+function(getNanairoRenderer renderer_source_files renderer_definitions)
+  # Source files
+  getNanairoRendererFiles("" nanairo_files)
+  set(source_files ${nanairo_files})
+  # Config file
+  set(renderer_config_path ${PROJECT_BINARY_DIR}/include/NanairoRenderer)
+  makeRendererConfigFile(${renderer_config_path}/nanairo_renderer_config.hpp)
 
 
-  set(nanairo_renderer_library NanairoRenderer PARENT_SCOPE)
-endfunction(buildNanairoRenderer)
+  # Output variables
+  set(${renderer_source_files} ${source_files} PARENT_SCOPE)
+endfunction(getNanairoRenderer)

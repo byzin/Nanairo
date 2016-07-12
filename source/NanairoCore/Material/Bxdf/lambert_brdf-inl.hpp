@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_LAMBERT_BRDF_INL_HPP_
-#define _NANAIRO_LAMBERT_BRDF_INL_HPP_
+#ifndef NANAIRO_LAMBERT_BRDF_INL_HPP
+#define NANAIRO_LAMBERT_BRDF_INL_HPP
 
 #include "lambert_brdf.hpp"
 // Standard C++ library
@@ -35,7 +35,7 @@ template <uint> class WavelengthSamples;
   No detailed.
   */
 template <uint kSampleSize> inline
-LambertBrdf<kSampleSize>::LambertBrdf(const Spectra& reflectance) :
+LambertBrdf<kSampleSize>::LambertBrdf(const Spectra& reflectance) noexcept :
     reflectance_{reflectance}
 {
 }
@@ -49,9 +49,9 @@ Float LambertBrdf<kSampleSize>::evaluatePdf(
     const Vector3* /* vin */,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& /* wavelemgths */) const
+    const Wavelengths& /* wavelemgths */) const noexcept
 {
-  constexpr Float k = 1.0 / zisc::kPi;
+  constexpr Float k = 1.0 / zisc::kPi<Float>;
   const Float cos_theta = zisc::dot(normal, *vout);
   return k * cos_theta;
 }
@@ -65,9 +65,9 @@ auto LambertBrdf<kSampleSize>::evaluateRadiance(
     const Vector3* /* vin */,
     const Vector3* /* vout */,
     const Vector3& /* normal */,
-    const Wavelengths& /* wavelemgths */) const -> Spectra
+    const Wavelengths& /* wavelemgths */) const noexcept -> Spectra
 {
-  constexpr Float k = 1.0 / zisc::kPi;
+  constexpr Float k = 1.0 / zisc::kPi<Float>;
   return k * reflectance_;
 }
 
@@ -80,9 +80,9 @@ auto LambertBrdf<kSampleSize>::evaluateRadianceAndPdf(
     const Vector3* /* vin */,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& /* wavelemgths */) const -> std::tuple<Spectra, Float>
+    const Wavelengths& /* wavelemgths */) const noexcept -> std::tuple<Spectra, Float>
 {
-  constexpr Float k = 1.0 / zisc::kPi;
+  constexpr Float k = 1.0 / zisc::kPi<Float>;
   const Float cos_theta_no = zisc::dot(normal, *vout);
   ZISC_ASSERT(isBetweenZeroAndOneFloat(cos_theta_no),
               "The cos theta_{n, o} must be [0, 1].");
@@ -98,7 +98,7 @@ auto LambertBrdf<kSampleSize>::sample(
     const Vector3* /* vin */,
     const Vector3& normal,
     const Wavelengths& /* wavelemgths */,
-    Sampler& sampler) const -> std::tuple<SampledDirection, Spectra>
+    Sampler& sampler) const noexcept -> std::tuple<SampledDirection, Spectra>
 {
   const auto vout = sampleDirectionOnHemisphere<1>(normal, sampler);
   return std::make_tuple(std::move(vout), reflectance_);
@@ -109,11 +109,11 @@ auto LambertBrdf<kSampleSize>::sample(
   No detailed.
   */
 template <uint kSampleSize>
-bool LambertBrdf<kSampleSize>::wavelengthIsSelected() const
+bool LambertBrdf<kSampleSize>::wavelengthIsSelected() const noexcept
 {
   return false;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_LAMBERT_BRDF_INL_HPP_
+#endif // NANAIRO_LAMBERT_BRDF_INL_HPP

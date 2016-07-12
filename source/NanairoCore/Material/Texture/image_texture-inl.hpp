@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_IMAGE_TEXTURE_INL_HPP_
-#define _NANAIRO_IMAGE_TEXTURE_INL_HPP_
+#ifndef NANAIRO_IMAGE_TEXTURE_INL_HPP
+#define NANAIRO_IMAGE_TEXTURE_INL_HPP
 
 #include "image_texture.hpp"
 // Standard C++ library
@@ -33,7 +33,7 @@ template <uint> class WavelengthSamples;
 template <uint kSampleSize> inline
 SampledSpectra<kSampleSize> ImageTexture::imageSpectraValue(
     const Point2& coordinate,
-    const WavelengthSamples<kSampleSize>& wavelengths) const
+    const WavelengthSamples<kSampleSize>& wavelengths) const noexcept
 {
   using zisc::cast;
 
@@ -51,7 +51,7 @@ template <uint kSampleSize> inline
 SampledSpectra<kSampleSize> getImageSpectraValue(
     const Texture* texture,
     const Point2& coordinate,
-    const WavelengthSamples<kSampleSize>& wavelengths)
+    const WavelengthSamples<kSampleSize>& wavelengths) noexcept
 {
   using zisc::cast;
 
@@ -61,4 +61,4 @@ SampledSpectra<kSampleSize> getImageSpectraValue(
 
 } // namespace nanairo
 
-#endif // _NANAIRO_IMAGE_TEXTURE_INL_HPP_
+#endif // NANAIRO_IMAGE_TEXTURE_INL_HPP

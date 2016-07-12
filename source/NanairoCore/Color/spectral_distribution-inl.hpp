@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SPECTRAL_DISTRIBUTION_INL_HPP_
-#define _NANAIRO_SPECTRAL_DISTRIBUTION_INL_HPP_
+#ifndef NANAIRO_SPECTRAL_DISTRIBUTION_INL_HPP
+#define NANAIRO_SPECTRAL_DISTRIBUTION_INL_HPP
 
 #include "spectral_distribution.hpp"
 // Zisc
@@ -24,7 +24,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-SpectralDistribution::SpectralDistribution()
+SpectralDistribution::SpectralDistribution() noexcept
 {
 }
 
@@ -34,7 +34,7 @@ SpectralDistribution::SpectralDistribution()
   */
 inline
 SpectralDistribution::SpectralDistribution(
-    const zisc::ArithmeticArray<Float, kSpectraSize>& distribution)
+    const zisc::ArithmeticArray<Float, kSpectraSize>& distribution) noexcept
         : distribution_{distribution}
 {
 }
@@ -45,7 +45,7 @@ SpectralDistribution::SpectralDistribution(
   */
 inline
 SpectralDistribution SpectralDistribution::operator+(
-    const SpectralDistribution& other) const
+    const SpectralDistribution& other) const noexcept
 {
   return SpectralDistribution{distribution_ + other.distribution_};
 }
@@ -56,7 +56,7 @@ SpectralDistribution SpectralDistribution::operator+(
   */
 inline
 SpectralDistribution SpectralDistribution::operator-(
-    const SpectralDistribution& other) const
+    const SpectralDistribution& other) const noexcept
 {
   return SpectralDistribution{distribution_ - other.distribution_};
 }
@@ -66,7 +66,7 @@ SpectralDistribution SpectralDistribution::operator-(
   No detailed.
   */
 inline
-SpectralDistribution SpectralDistribution::operator*(const Float scalar) const
+SpectralDistribution SpectralDistribution::operator*(const Float scalar) const noexcept
 {
   return SpectralDistribution{distribution_ * scalar};
 }
@@ -77,7 +77,7 @@ SpectralDistribution SpectralDistribution::operator*(const Float scalar) const
   */
 inline
 SpectralDistribution SpectralDistribution::operator*(
-    const SpectralDistribution& other) const
+    const SpectralDistribution& other) const noexcept
 {
   return SpectralDistribution{distribution_ * other.distribution_};
 }
@@ -87,7 +87,7 @@ SpectralDistribution SpectralDistribution::operator*(
   No detailed.
   */
 inline
-SpectralDistribution SpectralDistribution::operator/(const Float scalar) const
+SpectralDistribution SpectralDistribution::operator/(const Float scalar) const noexcept
 {
   const Float inverse = 1.0 / scalar;
   return SpectralDistribution{distribution_ * inverse};
@@ -99,7 +99,7 @@ SpectralDistribution SpectralDistribution::operator/(const Float scalar) const
   */
 inline
 SpectralDistribution SpectralDistribution::operator/(
-    const SpectralDistribution& other) const
+    const SpectralDistribution& other) const noexcept
 {
   return SpectralDistribution{distribution_ / other.distribution_};
 }
@@ -110,7 +110,7 @@ SpectralDistribution SpectralDistribution::operator/(
   */
 inline
 SpectralDistribution& SpectralDistribution::operator+=(
-    const SpectralDistribution& other)
+    const SpectralDistribution& other) noexcept
 {
   distribution_ += other.distribution_;
   return *this;
@@ -122,7 +122,7 @@ SpectralDistribution& SpectralDistribution::operator+=(
   */
 inline
 SpectralDistribution& SpectralDistribution::operator-=(
-    const SpectralDistribution& other)
+    const SpectralDistribution& other) noexcept
 {
   distribution_ -= other.distribution_;
   return *this;
@@ -133,7 +133,7 @@ SpectralDistribution& SpectralDistribution::operator-=(
   No detailed.
   */
 inline
-SpectralDistribution& SpectralDistribution::operator*=(const Float scalar)
+SpectralDistribution& SpectralDistribution::operator*=(const Float scalar) noexcept
 {
   distribution_ *= scalar;
   return *this;
@@ -145,7 +145,7 @@ SpectralDistribution& SpectralDistribution::operator*=(const Float scalar)
   */
 inline
 SpectralDistribution& SpectralDistribution::operator*=(
-    const SpectralDistribution& other)
+    const SpectralDistribution& other) noexcept
 {
   distribution_ *= other.distribution_;
   return *this;
@@ -156,7 +156,7 @@ SpectralDistribution& SpectralDistribution::operator*=(
   No detailed.
   */
 inline
-SpectralDistribution& SpectralDistribution::operator/=(const Float scalar)
+SpectralDistribution& SpectralDistribution::operator/=(const Float scalar) noexcept
 {
   distribution_ /= scalar;
   return *this;
@@ -168,7 +168,7 @@ SpectralDistribution& SpectralDistribution::operator/=(const Float scalar)
   */
 inline
 SpectralDistribution& SpectralDistribution::operator/=(
-    const SpectralDistribution& other)
+    const SpectralDistribution& other) noexcept
 {
   distribution_ /= other.distribution_;
   return *this;
@@ -179,7 +179,7 @@ SpectralDistribution& SpectralDistribution::operator/=(
   No detailed.
   */
 inline
-Float& SpectralDistribution::operator[](const uint index)
+Float& SpectralDistribution::operator[](const uint index) noexcept
 {
   return distribution_[index];
 }
@@ -189,7 +189,7 @@ Float& SpectralDistribution::operator[](const uint index)
   No detailed.
   */
 inline
-const Float& SpectralDistribution::operator[](const uint index) const
+const Float& SpectralDistribution::operator[](const uint index) const noexcept
 {
   return distribution_[index];
 }
@@ -199,7 +199,7 @@ const Float& SpectralDistribution::operator[](const uint index) const
   No detailed.
   */
 inline
-void SpectralDistribution::fill(const Float value)
+void SpectralDistribution::fill(const Float value) noexcept
 {
   distribution_.fill(value);
 }
@@ -209,7 +209,7 @@ void SpectralDistribution::fill(const Float value)
   No detailed.
   */
 inline
-Float SpectralDistribution::get(const uint index) const
+Float SpectralDistribution::get(const uint index) const noexcept
 {
   return distribution_[index];
 }
@@ -219,7 +219,7 @@ Float SpectralDistribution::get(const uint index) const
   No detailed.
   */
 inline
-Float SpectralDistribution::getByWavelength(const uint16 wavelength) const
+Float SpectralDistribution::getByWavelength(const uint16 wavelength) const noexcept
 {
   return get(getIndex(wavelength));
 }
@@ -229,9 +229,9 @@ Float SpectralDistribution::getByWavelength(const uint16 wavelength) const
   No detailed.
   */
 inline
-bool SpectralDistribution::isZero() const
+bool SpectralDistribution::isZero() const noexcept
 {
-  return distribution_.isZero();
+  return distribution_.isZeroArray();
 }
 
 /*!
@@ -239,7 +239,7 @@ bool SpectralDistribution::isZero() const
   No detailed.
   */
 inline
-Float SpectralDistribution::max() const
+Float SpectralDistribution::max() const noexcept
 {
   return distribution_.max();
 }
@@ -249,7 +249,7 @@ Float SpectralDistribution::max() const
   No detailed.
   */
 inline
-Float SpectralDistribution::min() const
+Float SpectralDistribution::min() const noexcept
 {
   return distribution_.min();
 }
@@ -259,7 +259,7 @@ Float SpectralDistribution::min() const
   No detailed.
   */
 inline
-SpectralDistribution SpectralDistribution::normalized() const
+SpectralDistribution SpectralDistribution::normalized() const noexcept
 {
   const Float k = 1.0 / sum();
   return *this * k;
@@ -270,7 +270,7 @@ SpectralDistribution SpectralDistribution::normalized() const
   No detailed.
   */
 inline
-auto SpectralDistribution::distribution() const 
+auto SpectralDistribution::distribution() const noexcept
     -> const zisc::ArithmeticArray<Float, kSpectraSize>&
 {
   return distribution_;
@@ -281,7 +281,7 @@ auto SpectralDistribution::distribution() const
   No detailed.
   */
 inline
-void SpectralDistribution::set(const uint index, const Float intensity)
+void SpectralDistribution::set(const uint index, const Float intensity) noexcept
 {
   distribution_[index] = intensity;
 }
@@ -292,7 +292,7 @@ void SpectralDistribution::set(const uint index, const Float intensity)
   */
 inline
 void SpectralDistribution::setByWavelength(const uint16 wavelength,
-                                           const Float intensity)
+                                           const Float intensity) noexcept
 {
   return set(getIndex(wavelength), intensity);
 }
@@ -302,7 +302,7 @@ void SpectralDistribution::setByWavelength(const uint16 wavelength,
   No detailed.
   */
 inline
-constexpr uint SpectralDistribution::size()
+constexpr uint SpectralDistribution::size() noexcept
 {
   return kSpectraSize;
 }
@@ -312,11 +312,11 @@ constexpr uint SpectralDistribution::size()
   No detailed.
   */
 inline
-Float SpectralDistribution::sum() const
+Float SpectralDistribution::sum() const noexcept
 {
   return distribution_.sum();
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_SPECTRAL_DISTRIBUTION_INL_HPP_
+#endif // NANAIRO_SPECTRAL_DISTRIBUTION_INL_HPP

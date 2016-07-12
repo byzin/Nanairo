@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_GUI_RENDERER_MANAGER_INL_HPP_
-#define _NANAIRO_GUI_RENDERER_MANAGER_INL_HPP_
+#ifndef NANAIRO_GUI_RENDERER_MANAGER_INL_HPP
+#define NANAIRO_GUI_RENDERER_MANAGER_INL_HPP
 
 #include "gui_renderer_manager.hpp"
 // Qt
@@ -22,11 +22,11 @@ namespace nanairo {
   No detailed.
   */
 inline
-void GuiRendererManager::setMessage(const QString& message) const
+void GuiRendererManager::setMessage(const QString& message) const noexcept
 {
   emit outputMessage(message);
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_GUI_RENDERER_MANAGER_INL_HPP_
+#endif // NANAIRO_GUI_RENDERER_MANAGER_INL_HPP

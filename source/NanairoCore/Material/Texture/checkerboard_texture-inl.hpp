@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_CHECKERBOARD_TEXTURE_INL_HPP_
-#define _NANAIRO_CHECKERBOARD_TEXTURE_INL_HPP_
+#ifndef NANAIRO_CHECKERBOARD_TEXTURE_INL_HPP
+#define NANAIRO_CHECKERBOARD_TEXTURE_INL_HPP
 
 #include "checkerboard_texture.hpp"
 // Zisc
@@ -32,7 +32,7 @@ template <uint> class WavelengthSamples;
 template <uint kSampleSize> inline
 SampledSpectra<kSampleSize> CheckerboardTexture::checkerboardSpectraValue(
     const Point2& coordinate,
-    const WavelengthSamples<kSampleSize>& wavelengths) const
+    const WavelengthSamples<kSampleSize>& wavelengths) const noexcept
 {
   using zisc::cast;
 
@@ -50,7 +50,7 @@ template <uint kSampleSize> inline
 SampledSpectra<kSampleSize> getCheckerboardSpectraValue(
     const Texture* texture,
     const Point2& coordinate,
-    const WavelengthSamples<kSampleSize>& wavelengths)
+    const WavelengthSamples<kSampleSize>& wavelengths) noexcept
 {
   using zisc::cast;
 
@@ -60,4 +60,4 @@ SampledSpectra<kSampleSize> getCheckerboardSpectraValue(
 
 } // namespace nanairo
 
-#endif // _NANAIRO_CHECKERBOARD_TEXTURE_INL_HPP_
+#endif // NANAIRO_CHECKERBOARD_TEXTURE_INL_HPP

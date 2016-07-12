@@ -36,7 +36,7 @@ namespace nanairo {
  \details
  No detailed.
  */
-Plane::Plane() :
+Plane::Plane() noexcept :
     top_left_{-0.5, 0.0, -0.5},
     normal_{0.0, 1.0, 0.0},
     axis1_{1.0, 0.0, 0.0},
@@ -51,7 +51,7 @@ Plane::Plane() :
  \details
  No detailed.
  */
-Aabb Plane::boundingBox() const
+Aabb Plane::boundingBox() const noexcept
 {
   auto min_point = top_left_.data();
   auto max_point = top_left_.data();
@@ -69,7 +69,7 @@ Aabb Plane::boundingBox() const
   \details
   No detailed.
   */
-std::size_t Plane::geometrySize() const
+std::size_t Plane::geometrySize() const noexcept
 {
   return sizeof(Plane);
 }
@@ -78,7 +78,7 @@ std::size_t Plane::geometrySize() const
   \details
   No detailed.
   */
-Float Plane::getTraversalCost() const
+Float Plane::getTraversalCost() const noexcept
 {
   return 0.4;
 }
@@ -88,7 +88,7 @@ Float Plane::getTraversalCost() const
   Please see the details of this algorithm below RUL.
  http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-plane-and-ray-disk-intersection/
  */
-bool Plane::testIntersection(const Ray& ray, IntersectionInfo* intersection) const
+bool Plane::testIntersection(const Ray& ray, IntersectionInfo* intersection) const noexcept
 {
   // Rayが平面と交差するまでの時間tを求めます
   const Float cos_theta = zisc::dot(normal_, ray.direction());
@@ -123,7 +123,7 @@ bool Plane::testIntersection(const Ray& ray, IntersectionInfo* intersection) con
   \details
   No detailed.
   */
-std::tuple<SampledPoint, Vector3> Plane::samplePoint(Sampler& sampler) const
+std::tuple<SampledPoint, Vector3> Plane::samplePoint(Sampler& sampler) const noexcept
 {
   const auto point = top_left_ + axis1_ * sampler.sample(0.0, 1.0) +
                                  axis2_ * sampler.sample(0.0, 1.0);
@@ -134,7 +134,7 @@ std::tuple<SampledPoint, Vector3> Plane::samplePoint(Sampler& sampler) const
  \details
  No detailed.
  */
-void Plane::transform(const Matrix4x4& matrix)
+void Plane::transform(const Matrix4x4& matrix) noexcept
 {
   affineTransform(matrix, &top_left_);
   affineTransform(matrix, &axis1_);
@@ -157,7 +157,7 @@ void Plane::transform(const Matrix4x4& matrix)
   \details
   No detailed.
   */
-void Plane::initialize()
+void Plane::initialize() noexcept
 {
   setSurfaceArea(axis1_.norm() * axis2_.norm());
 }

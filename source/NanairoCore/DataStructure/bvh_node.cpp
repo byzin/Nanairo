@@ -31,7 +31,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-BvhNode::BvhNode() :
+BvhNode::BvhNode() noexcept :
     parent_index_{nonObjectIndex()},
     left_child_index_{nonObjectIndex()},
     right_child_index_{nonObjectIndex()},
@@ -44,7 +44,7 @@ BvhNode::BvhNode() :
   \details
   No detailed.
   */
-BvhNode::BvhNode(const Object* object) :
+BvhNode::BvhNode(const Object* object) noexcept :
     bounding_box_{object->geometry().boundingBox()},
     parent_index_{BvhNode::nonObjectIndex()},
     left_child_index_{BvhNode::nonObjectIndex()},
@@ -62,7 +62,7 @@ BvhNode::BvhNode(const Object* object) :
   "Morton encoding/decoding through bit interleaving: Implementations"
   http://www.forceflow.be/2013/10/07/morton-encodingdecoding-through-bit-interleaving-implementations/
   */
-uint64 calc63bitMortonCode(const Float x, const Float y, const Float z)
+uint64 calc63bitMortonCode(const Float x, const Float y, const Float z) noexcept
 {
   using zisc::cast;
   const auto expand_bit = [](Float value)
@@ -85,7 +85,7 @@ uint64 calc63bitMortonCode(const Float x, const Float y, const Float z)
   No detailed.
   */
 Aabb combineBoundingBoxs(std::vector<BvhNode>::const_iterator begin, 
-                         std::vector<BvhNode>::const_iterator end)
+                         std::vector<BvhNode>::const_iterator end) noexcept
 {
   auto i = begin;
   auto min_point = i->boundingBox().minPoint().data();
@@ -103,7 +103,7 @@ Aabb combineBoundingBoxs(std::vector<BvhNode>::const_iterator begin,
   \details
   No detailed.
   */
-Aabb combineBoundingBoxs(NodeIterator begin, NodeIterator end)
+Aabb combineBoundingBoxs(NodeIterator begin, NodeIterator end) noexcept
 {
   auto i = begin;
   auto min_point = (*i)->boundingBox().minPoint().data();
@@ -123,7 +123,7 @@ Aabb combineBoundingBoxs(NodeIterator begin, NodeIterator end)
   */
 MortonCodeIterator findSplitPosition(const uint64 bit,
                                      MortonCodeIterator begin,
-                                     MortonCodeIterator end)
+                                     MortonCodeIterator end) noexcept
 {
   const uint64 significant_bit = (zisc::cast<uint64>(1) << (bit - 1));
   const auto is_less = [significant_bit](const MortonCode& a, const uint64& b)
@@ -138,9 +138,11 @@ MortonCodeIterator findSplitPosition(const uint64 bit,
   \details
   No detailed.
   */
-std::vector<MortonCode> makeMortonCodeList(std::vector<BvhNode>& leaf_node_list)
+std::vector<MortonCode> makeMortonCodeList(std::vector<BvhNode>& leaf_node_list) noexcept
 {
-  const uint num_of_objects = leaf_node_list.size();
+  using zisc::cast;
+
+  const uint num_of_objects = cast<uint>(leaf_node_list.size());
 
   // Calc the range of scene
   const auto scene_box = combineBoundingBoxs(leaf_node_list.cbegin(),

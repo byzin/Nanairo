@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SMOOTH_DIELECTRIC_SURFACE_HPP_
-#define _NANAIRO_SMOOTH_DIELECTRIC_SURFACE_HPP_
+#ifndef NANAIRO_SMOOTH_DIELECTRIC_SURFACE_HPP
+#define NANAIRO_SMOOTH_DIELECTRIC_SURFACE_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -44,7 +44,7 @@ class SmoothDielectricSurface : public SurfaceModel
 
   //! Create a smooth dielectric surface
   SmoothDielectricSurface(const SceneSettings& settings, 
-                          const QString& prefix);
+                          const QString& prefix) noexcept;
 
 
   //! Make a Fresnel BRDF
@@ -52,17 +52,17 @@ class SmoothDielectricSurface : public SurfaceModel
   ShaderPointer<kSampleSize> makeSpecularBsdf(
       const bool is_reverse_face,
       const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const;
+      MemoryPool& memory_pool) const noexcept;
 
   //! Return the surface model size
-  std::size_t surfaceSize() const override;
+  std::size_t surfaceSize() const noexcept override;
 
   //! Return the diffuse surface type
-  SurfaceType type() const override;
+  SurfaceType type() const noexcept override;
 
  private:
   //! Initialize
-  void initialize(const SceneSettings& settings, const QString& prefix);
+  void initialize(const SceneSettings& settings, const QString& prefix) noexcept;
 
 
   SpectralDistribution eta_; //!< Interior exterior ratio of refractive index
@@ -74,5 +74,4 @@ class SmoothDielectricSurface : public SurfaceModel
 
 #include "smooth_dielectric_surface-inl.hpp"
 
-#endif // _NANAIRO_SMOOTH_DIELECTRIC_SURFACE_HPP_
-  
+#endif // NANAIRO_SMOOTH_DIELECTRIC_SURFACE_HPP

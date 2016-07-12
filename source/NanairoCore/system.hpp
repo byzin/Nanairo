@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SYSTEM_HPP_
-#define _NANAIRO_SYSTEM_HPP_
+#ifndef NANAIRO_SYSTEM_HPP
+#define NANAIRO_SYSTEM_HPP
 
 // Standard C++ library
 #include <vector>
@@ -38,56 +38,56 @@ class System
 {
  public:
   //! Initialize the renderer system
-  System(const SceneSettings& settings);
+  System(const SceneSettings& settings) noexcept;
 
   //! Finalize the renderer system
-  ~System();
+  ~System() noexcept;
 
 
   // System
   //! Return the global memory pool
-  MemoryPool& globalMemoryPool();
+  MemoryPool& globalMemoryPool() noexcept;
 
   //! Return the global sampler
-  Sampler& globalSampler();
+  Sampler& globalSampler() noexcept;
 
   //! Return the image height resolution
-  uint imageHeightResolution() const;
+  uint imageHeightResolution() const noexcept;
 
   //! Return the image width resolution
-  uint imageWidthResolution() const;
+  uint imageWidthResolution() const noexcept;
 
   //! Return the thread pool
-  zisc::ThreadPool& threadPool();
+  zisc::ThreadPool& threadPool() noexcept;
 
   //! Return the thread pool
-  const zisc::ThreadPool& threadPool() const;
+  const zisc::ThreadPool& threadPool() const noexcept;
 
   //! Return the thread's memory pool
-  MemoryPool& threadMemoryPool(const uint thread_number);
+  MemoryPool& threadMemoryPool(const uint thread_number) noexcept;
 
   //! Return the thread's sampler
-  Sampler& threadSampler(const uint thread_number);
+  Sampler& threadSampler(const uint thread_number) noexcept;
 
   // Color system
   //! Return the color space
-  uint32 colorSpace() const;
+  uint32 colorSpace() const noexcept;
 
   //! Return the gamma
-  Float gamma() const;
+  Float gamma() const noexcept;
 
   //! Check if the renderer is RGB rendering mode
-  bool isRgbRenderingMode() const;
+  bool isRgbRenderingMode() const noexcept;
 
   //! Return the RGB color matching function
-  const RgbColorMatchingFunction& rgbColorMatchingFunction() const;
+  const RgbColorMatchingFunction& rgbColorMatchingFunction() const noexcept;
 
   //! Return the XYZ color matching function
-  const XyzColorMatchingFunction& xyzColorMatchingFunction() const;
+  const XyzColorMatchingFunction& xyzColorMatchingFunction() const noexcept;
 
  private:
   //! Initialize the renderer system
-  void initialize(const SceneSettings& settings);
+  void initialize(const SceneSettings& settings) noexcept;
 
 
   std::vector<Sampler> sampler_list_;
@@ -108,4 +108,4 @@ class System
 
 #include "system-inl.hpp"
 
-#endif // _NANAIRO_SYSTEM_HPP_
+#endif // NANAIRO_SYSTEM_HPP

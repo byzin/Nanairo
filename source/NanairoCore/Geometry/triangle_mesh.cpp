@@ -41,13 +41,29 @@
 
 namespace nanairo  {
 
+// Forward declaration
+TriangleMesh* makeWavefrontMesh(
+    const MeshType mesh_type,
+    const std::vector<const Point3*>& vertex_list,
+    const std::vector<const Point2*>& texture_coordinate_list,
+    const std::vector<const Vector3*>& normal_list,
+    const bool has_texture_coordinate,
+    const bool has_vertex_normal,
+    const bool smoothing,
+    std::istringstream& buffer) noexcept;
+
+std::vector<UniquePointer<Geometry>> makeMeshesFromWavefront(
+    const QString& object_file_path,
+    const MeshType mesh_type) noexcept;
+
+
 //! Make a smoothed mesh
 TriangleMesh* makeSmoothedMesh(const Point3& v0,
                                const Point3& v1, 
                                const Point3& v2,
                                const Vector3& n0, 
                                const Vector3& n1, 
-                               const Vector3& n2);
+                               const Vector3& n2) noexcept;
 
 /*!
   \details
@@ -57,7 +73,7 @@ bool calculateBarycentricCoordinate(const Ray& ray,
                                     const Point3& vertex,
                                     const Vector3* edge,
                                     Float* barycentric,
-                                    Float* t)
+                                    Float* t) noexcept
 {
   const auto direction = ray.origin() - vertex;
   const auto q = zisc::cross(direction, edge[0]);
@@ -97,8 +113,7 @@ TriangleMesh* makeWavefrontMesh(
     const bool has_texture_coordinate,
     const bool has_vertex_normal,
     const bool smoothing,
-    std::istringstream& buffer)
-
+    std::istringstream& buffer) noexcept
 {
   char delimiter;
   uint vertex_index[3];
@@ -154,7 +169,7 @@ TriangleMesh* makeSmoothedMesh(const Point3& v0,
                                const Point3& v2,
                                const Vector3& n0, 
                                const Vector3& n1, 
-                               const Vector3& n2)
+                               const Vector3& n2) noexcept
 {
   TriangleMesh* mesh = nullptr;
 
@@ -176,7 +191,7 @@ TriangleMesh* makeSmoothedMesh(const Point3& v0,
   */
 std::vector<UniquePointer<Geometry>> makeMeshesFromWavefront(
     const QString& object_file_path,
-    const MeshType mesh_type)
+    const MeshType mesh_type) noexcept
 {
   using zisc::toHash32;
 
@@ -280,7 +295,7 @@ std::vector<UniquePointer<Geometry>> makeMeshesFromWavefront(
   No detailed.
   */
 std::vector<UniquePointer<Geometry>> makeMeshes(const SceneSettings& settings,
-                                                const QString& prefix)
+                                                const QString& prefix) noexcept
 {
   auto key = prefix + "/" + keyword::objectFilePath;
   const auto object_file_path = settings.stringValue(key);

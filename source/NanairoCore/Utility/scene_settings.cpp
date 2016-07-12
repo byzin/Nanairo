@@ -23,6 +23,17 @@
 #ifdef NANAIRO_DEBUG
 #include <QDebug>
 #define NANAIRO_CHECK_KEY(key) checkKey(key)
+
+/*!
+  \details
+  No detailed.
+  */
+void SceneSettings::checkKey(const QString& key) const noexcept
+{
+  if (!settings_->contains(key))
+    qDebug() << "key \"" << key << "\" has no setting.";
+}
+
 #else // NANAIRO_DEBUG
 #define NANAIRO_CHECK_KEY(key)
 #endif // NANAIRO_DEBUG
@@ -200,19 +211,5 @@ void SceneSettings::setUrlValue(const QString& key, const QUrl& value)
   const auto path = current_dir.relativeFilePath(value.toLocalFile());
   settings_->setValue(key, QVariant{path});
 }
-
-#ifdef NANAIRO_DEBUG
-
-/*!
-  \details
-  No detailed.
-  */
-void SceneSettings::checkKey(const QString& key) const
-{
-  if (!settings_->contains(key))
-    qDebug() << "key \"" << key << "\" has no setting.";
-}
-
-#endif // NANAIRO_DEBUG
 
 } // namespace nanairo

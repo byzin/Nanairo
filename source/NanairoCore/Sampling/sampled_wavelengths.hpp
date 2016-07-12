@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SAMPLED_WAVELENGTHS_HPP_
-#define _NANAIRO_SAMPLED_WAVELENGTHS_HPP_
+#ifndef NANAIRO_SAMPLED_WAVELENGTHS_HPP
+#define NANAIRO_SAMPLED_WAVELENGTHS_HPP
 
 // Standard C++ library
 #include <cstdint>
@@ -42,23 +42,23 @@ class SampledWavelengths
 
 
   //! Create a sampled wavelengths
-  SampledWavelengths();
+  SampledWavelengths() noexcept;
 
 
   //! Return the inverse probability array
-  const Intensities& inverseProbabilities() const;
+  const Intensities& inverseProbabilities() const noexcept;
 
   //! Select primary wavelength randomly
   template <uint kMax>
-  void selectPrimaryWavelength(Sampler& sampler);
+  void selectPrimaryWavelength(Sampler& sampler) noexcept;
 
   //! Set wavelength
   void set(const uint index, 
            const uint16 wavelength, 
-           const Float inverse_probability);
+           const Float inverse_probability) noexcept;
 
   //! Return the wavelength array
-  const Wavelengths& wavelengths() const;
+  const Wavelengths& wavelengths() const noexcept;
 
  private:
   Intensities inverse_probabilities_;
@@ -66,7 +66,7 @@ class SampledWavelengths
 
  public:
   //! Return the size
-  static constexpr uint size() 
+  static constexpr uint size() noexcept
   {
     return kSampleSize;
   }
@@ -76,42 +76,42 @@ template <uint kSampleSize>
 using WavelengthSampler = std::function<SampledWavelengths<kSampleSize> (Sampler&)>;
 
 //! Combine all light pdf
-SpectralDistribution calculateLightPdf(const World& world);
+SpectralDistribution calculateLightPdf(const World& world) noexcept;
 
 //! Make light based wavelngth importance sampler
 template <uint kSampleSize>
-WavelengthSampler<kSampleSize> makeLightsBasedImportanceSampler(const World& world);
+WavelengthSampler<kSampleSize> makeLightsBasedImportanceSampler(const World& world) noexcept;
 
 //! Make wavelngth importance sampler
 template <uint kSampleSize>
 WavelengthSampler<kSampleSize> makeImportanceSampler(
     const SpectralDistribution& inverse_pdf,
-    const CumulativeSpectralDistribution& cdf);
+    const CumulativeSpectralDistribution& cdf) noexcept;
 
 //! Make a RGB sampler
 template <uint kSampleSize>
-WavelengthSampler<kSampleSize> makeRgbSampler();
+WavelengthSampler<kSampleSize> makeRgbSampler() noexcept;
 
 //! Make a wavelengths sampler
 template <uint kSampleSize>
 WavelengthSampler<kSampleSize> makeWavelengthSampler(const SceneSettings& settings,
-                                                     const World& world);
+                                                     const World& world) noexcept;
 
 //! Sample RGB wavelengths
 template <uint kSampleSize>
-SampledWavelengths<kSampleSize> sampleRgbWavelengths(Sampler& sampler);
+SampledWavelengths<kSampleSize> sampleRgbWavelengths(Sampler& sampler) noexcept;
 
 //! Sample wavelengths using stratified sampling method
 template <uint kSampleSize>
-SampledWavelengths<kSampleSize> sampleStratifiedWavelengths(Sampler& sampler);
+SampledWavelengths<kSampleSize> sampleStratifiedWavelengths(Sampler& sampler) noexcept;
 
 //! Sample wavelengths randomly
 template <uint kSampleSize>
-SampledWavelengths<kSampleSize> sampleWavelengthsRandomly(Sampler& sampler);
+SampledWavelengths<kSampleSize> sampleWavelengthsRandomly(Sampler& sampler) noexcept;
 
 //! Sample wavelengths regularly
 template <uint kSampleSize>
-SampledWavelengths<kSampleSize> sampleWavelengthsRegularly(Sampler& sampler);
+SampledWavelengths<kSampleSize> sampleWavelengthsRegularly(Sampler& sampler) noexcept;
 
 //! \} Core 
 
@@ -119,4 +119,4 @@ SampledWavelengths<kSampleSize> sampleWavelengthsRegularly(Sampler& sampler);
 
 #include "sampled_wavelengths-inl.hpp"
 
-#endif // _NANAIRO_SAMPLED_WAVELENGTHS_HPP_
+#endif // NANAIRO_SAMPLED_WAVELENGTHS_HPP

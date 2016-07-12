@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_POINT_HPP_
-#define _ZISC_POINT_HPP_
+#ifndef ZISC_POINT_HPP
+#define ZISC_POINT_HPP
 
 // Zisc
 #include "arithmetic_array.hpp"
@@ -31,34 +31,34 @@ class Point : public Dimension<Arithmetic, kN>
 
 
   //! Initialize with 0
-  Point();
+  Point() noexcept;
 
   //! Initialize with values
   template <typename ...Types>
-  Point(const Types ...values);
+  Point(const Types ...values) noexcept;
 
   //! Initialize with array
-  Point(const ArrayType& array);
+  Point(const ArrayType& array) noexcept;
 };
 
 template <typename Arithmetic, uint kN>
 Vector<Arithmetic, kN> operator-(const Point<Arithmetic, kN>& a,
-                                 const Point<Arithmetic, kN>& b);
+                                 const Point<Arithmetic, kN>& b) noexcept;
 
 template <typename Arithmetic, uint kN>
 Point<Arithmetic, kN> operator+(const Point<Arithmetic, kN>& point,
-                                const Vector<Arithmetic, kN>& vector);
+                                const Vector<Arithmetic, kN>& vector) noexcept;
 
 template <typename Arithmetic, uint kN>
 Point<Arithmetic, kN> operator+(const Vector<Arithmetic, kN>& vector,
-                                const Point<Arithmetic, kN>& point);
+                                const Point<Arithmetic, kN>& point) noexcept;
 
 template <typename Arithmetic, uint kN>
 Point<Arithmetic, kN> operator-(const Point<Arithmetic, kN>& point,
-                                const Vector<Arithmetic, kN>& vector);
+                                const Vector<Arithmetic, kN>& vector) noexcept;
 
 } // namespace zisc
 
 #include "point-inl.hpp"
 
-#endif // _ZISC_POINT_HPP_
+#endif // ZISC_POINT_HPP

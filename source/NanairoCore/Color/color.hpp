@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_COLOR_HPP_
-#define _NANAIRO_COLOR_HPP_
+#ifndef NANAIRO_COLOR_HPP
+#define NANAIRO_COLOR_HPP
 
 // Zisc
 #include "zisc/arithmetic_array.hpp"
@@ -30,37 +30,37 @@ class Color
 {
  public:
   //! Creaet a color
-  Color();
+  Color() noexcept;
 
   //! Create a color
   template <typename ...Types>
-  Color(const Types ...elements);
+  Color(const Types ...elements) noexcept;
 
   //! Create a color
-  Color(const zisc::ArithmeticArray<Float, kN>& color);
+  Color(const zisc::ArithmeticArray<Float, kN>& color) noexcept;
 
 
   //! Return the element of the color by the index
-  Float& operator[](const uint index);
+  Float& operator[](const uint index) noexcept;
 
   //! Return the element of the color by the index
-  const Float& operator[](const uint index) const;
+  const Float& operator[](const uint index) const noexcept;
 
 
   //! Clamp the elements of the color to a range [0, 1]
-  void clamp(const Float min, const Float max);
+  void clamp(const Float min, const Float max) noexcept;
 
   //! Return the raw array
-  const zisc::ArithmeticArray<Float, kN>& data() const;
+  const zisc::ArithmeticArray<Float, kN>& data() const noexcept;
 
   //! Check whether all elements is zero
-  bool isZero() const;
+  bool isZero() const noexcept;
 
   //! Return the max value
-  Float max() const;
+  Float max() const noexcept;
 
   //! All elements are scaled by using the inverse max value
-  void scale();
+  void scale() noexcept;
 
  protected:
   zisc::ArithmeticArray<Float, kN> color_;
@@ -68,11 +68,11 @@ class Color
 
 //! Multiplay color and scalar
 template <typename Type, zisc::EnableIfBaseOf<Color<3>, Type> = zisc::kEnabler>
-Type operator*(const Type& color, const Float scalar);
+Type operator*(const Type& color, const Float scalar) noexcept;
 
 //! Multiplay color and scalar
 template <typename Type, zisc::EnableIfBaseOf<Color<3>, Type> = zisc::kEnabler>
-Type operator*(const Float scalar, const Type& color);
+Type operator*(const Float scalar, const Type& color) noexcept;
 
 //! \} Core
 
@@ -80,4 +80,4 @@ Type operator*(const Float scalar, const Type& color);
 
 #include "color-inl.hpp"
 
-#endif // _NANAIRO_COLOR_HPP_
+#endif // NANAIRO_COLOR_HPP

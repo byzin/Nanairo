@@ -135,6 +135,9 @@
 !/source/zisc/zisc/*.hpp
 !/source/zisc/zisc/*.hpp.in
 !/source/zisc/zisc/*.cpp
+!/source/zisc/zisc/packrat_parser/
+!/source/zisc/zisc/packrat_parser/*.hpp
+!/source/zisc/zisc/packrat_parser/*.cpp
 ## Test
 !/test/
 !/test/gtest/

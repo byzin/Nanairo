@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_POINT_INL_HPP_
-#define _NANAIRO_POINT_INL_HPP_
+#ifndef NANAIRO_POINT_INL_HPP
+#define NANAIRO_POINT_INL_HPP
 
 #include "point.hpp"
 // Zisc
@@ -21,7 +21,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-Point4 makePoint4(const Point3& point, const Float value)
+Point4 makePoint4(const Point3& point, const Float value) noexcept
 {
   return Point4{point[0], point[1], point[2], value};
 }
@@ -31,11 +31,11 @@ Point4 makePoint4(const Point3& point, const Float value)
   No detailed.
   */
 inline
-Point3 takePoint3(const Point4& point)
+Point3 takePoint3(const Point4& point) noexcept
 {
   return Point3{point[0], point[1], point[2]};
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_POINT_INL_HPP_
+#endif // NANAIRO_POINT_INL_HPP

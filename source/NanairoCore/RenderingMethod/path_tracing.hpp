@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_PATH_TRACING_HPP_
-#define _NANAIRO_PATH_TRACING_HPP_
+#ifndef NANAIRO_PATH_TRACING_HPP
+#define NANAIRO_PATH_TRACING_HPP
 
 // Standard C++ library
 #include <functional>
@@ -49,13 +49,13 @@ class PathTracing : public RenderingMethod<kSampleSize>
   
 
   //! Initialize path tracing method
-  PathTracing(const SceneSettings& settings);
+  PathTracing(const SceneSettings& settings) noexcept;
 
 
   //! Render scene using path tracing method
   void render(System& system, 
               Scene& scene, 
-              const Wavelengths& sampled_wavelengths) override;
+              const Wavelengths& sampled_wavelengths) noexcept override;
 
  private:
   //! Evaluate the explicit connection
@@ -66,7 +66,7 @@ class PathTracing : public RenderingMethod<kSampleSize>
                                   const Spectra& ray_weight,
                                   Sampler& sampler,
                                   MemoryPool& memory_pool,
-                                  Spectra* contribution) const;
+                                  Spectra* contribution) const noexcept;
 
   //! Evaluate the implicit connection
   template <bool Mis>
@@ -76,7 +76,7 @@ class PathTracing : public RenderingMethod<kSampleSize>
                                   const IntersectionInfo& intersection,
                                   const Spectra& ray_weight,
                                   MemoryPool& memory_pool,
-                                  Spectra* contribution) const;
+                                  Spectra* contribution) const noexcept;
 
   //! Generate a camera ray
   Ray generateRay(const CameraModel& camera,
@@ -85,18 +85,18 @@ class PathTracing : public RenderingMethod<kSampleSize>
                   Sampler& sampler,
                   MemoryPool& memory_pool,
                   Spectra* ray_weight,
-                  Float* inverse_direction_pdf) const;
+                  Float* inverse_direction_pdf) const noexcept;
 
   //! Initialize
-  void initialize(const SceneSettings& settings);
+  void initialize(const SceneSettings& settings) noexcept;
 
   //! Calculate the MIS weight
-  Float calcMisWeight(const Float pdf1, const Float inverse_pdf2) const;
+  Float calcMisWeight(const Float pdf1, const Float inverse_pdf2) const noexcept;
 
   //! Parallelize path tracing
   void traceCameraPath(System& system, 
                        Scene& scene, 
-                       const Wavelengths& sampled_wavelengths);
+                       const Wavelengths& sampled_wavelengths) noexcept;
 
   //! Trace the camera path
   void traceCameraPath(System& system,
@@ -104,7 +104,7 @@ class PathTracing : public RenderingMethod<kSampleSize>
                        const Wavelengths& sampled_wavelengths,
                        const int thread_id,
                        const uint x,
-                       const uint y);
+                       const uint y) noexcept;
 };
 
 //! \} Core
@@ -113,4 +113,4 @@ class PathTracing : public RenderingMethod<kSampleSize>
 
 #include "path_tracing-inl.hpp"
 
-#endif // _NANAIRO_PATH_TRACING_HPP_
+#endif // NANAIRO_PATH_TRACING_HPP

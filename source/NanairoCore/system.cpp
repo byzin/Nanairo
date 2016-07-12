@@ -29,7 +29,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-System::System(const SceneSettings& settings)
+System::System(const SceneSettings& settings) noexcept
 {
   initialize(settings);
 }
@@ -38,7 +38,7 @@ System::System(const SceneSettings& settings)
   \details
   No detailed.
   */
-System::~System()
+System::~System() noexcept
 {
 }
 
@@ -46,7 +46,7 @@ System::~System()
   \details
   No detailed.
   */
-void System::initialize(const SceneSettings& settings)
+void System::initialize(const SceneSettings& settings) noexcept
 {
   using zisc::cast;
 

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_NON_DIRECTIONAL_LIGHT_HPP_
-#define _NANAIRO_NON_DIRECTIONAL_LIGHT_HPP_
+#ifndef NANAIRO_NON_DIRECTIONAL_LIGHT_HPP
+#define NANAIRO_NON_DIRECTIONAL_LIGHT_HPP
 
 // Standard C++ library
 #include <tuple>
@@ -39,24 +39,24 @@ class NonDirectionalLight : public DiffuseShaderModel<kSampleSize>
   using Wavelengths = typename ShaderModel<kSampleSize>::Wavelengths;
 
   //! Create a non-directional light 
-  NonDirectionalLight(const Spectra& radiant_exitance);
+  NonDirectionalLight(const Spectra& radiant_exitance) noexcept;
   
 
   //! Evaluate the radiance of area sampling
   Spectra evaluateRadiance(const Vector3* vin,
                            const Vector3* vout,
                            const Vector3& normal,
-                           const Wavelengths& wavelengths) const override;
+                           const Wavelengths& wavelengths) const noexcept override;
 
   //! Sample a light ray direction and evaluate a ray weight
   std::tuple<SampledDirection, Spectra> sample(
       const Vector3* vin,
       const Vector3& normal,
       const Wavelengths& wavelengths,
-      Sampler& sampler) const override;
+      Sampler& sampler) const noexcept override;
 
   //! Check is wavelength selection occured
-  bool wavelengthIsSelected() const override;
+  bool wavelengthIsSelected() const noexcept override;
 
  private:
   const Spectra radiant_exitance_;
@@ -68,4 +68,4 @@ class NonDirectionalLight : public DiffuseShaderModel<kSampleSize>
 
 #include "non_directional_light-inl.hpp"
 
-#endif // _NANAIRO_NON_DIRECTIONAL_LIGHT_HPP_
+#endif // NANAIRO_NON_DIRECTIONAL_LIGHT_HPP

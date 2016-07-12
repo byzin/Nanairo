@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_RAY_INL_HPP_
-#define _NANAIRO_RAY_INL_HPP_
+#ifndef NANAIRO_RAY_INL_HPP
+#define NANAIRO_RAY_INL_HPP
 
 #include "ray.hpp"
 // Standard C++ library
@@ -25,7 +25,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-Ray::Ray() :
+Ray::Ray() noexcept :
     is_alive_{false}
 {
 }
@@ -35,7 +35,7 @@ Ray::Ray() :
   No detailed.
   */
 inline
-Ray::Ray(const Point3& origin, const Vector3& direction) :
+Ray::Ray(const Point3& origin, const Vector3& direction) noexcept :
     origin_{origin},
     direction_{direction},
     is_alive_{true}
@@ -48,7 +48,7 @@ Ray::Ray(const Point3& origin, const Vector3& direction) :
   No detailed.
   */
 inline
-const Vector3& Ray::direction() const
+const Vector3& Ray::direction() const noexcept
 {
   return direction_;
 }
@@ -58,7 +58,7 @@ const Vector3& Ray::direction() const
   No detailed.
   */
 inline
-const Vector3& Ray::inverseDirection() const
+const Vector3& Ray::inverseDirection() const noexcept
 {
   return inverse_direction_;
 }
@@ -68,7 +68,7 @@ const Vector3& Ray::inverseDirection() const
   No detailed.
   */
 inline
-bool Ray::isAlive() const
+bool Ray::isAlive() const noexcept
 {
   return is_alive_;
 }
@@ -78,7 +78,7 @@ bool Ray::isAlive() const
   No detailed.
   */
 inline
-const Point3& Ray::origin() const
+const Point3& Ray::origin() const noexcept
 {
   return origin_;
 }
@@ -88,7 +88,7 @@ const Point3& Ray::origin() const
   No detailed.
   */
 inline
-void Ray::setDirection(const Vector3& direction)
+void Ray::setDirection(const Vector3& direction) noexcept
 {
   direction_ = direction;
   setInverseDirection();
@@ -99,7 +99,7 @@ void Ray::setDirection(const Vector3& direction)
   No detailed.
   */
 inline
-void Ray::setInverseDirection()
+void Ray::setInverseDirection() noexcept
 {
   constexpr Float max = std::numeric_limits<Float>::max();
   inverse_direction_[0] = (direction_[0] != 0.0) ? (1.0 / direction_[0]) : max;
@@ -115,7 +115,7 @@ void Ray::setInverseDirection()
   No detailed.
   */
 inline
-void Ray::setOrigin(const Point3& origin)
+void Ray::setOrigin(const Point3& origin) noexcept
 {
   origin_ = origin;
 }
@@ -125,7 +125,7 @@ void Ray::setOrigin(const Point3& origin)
   No detailed.
   */
 inline
-void Ray::setAlive(const bool is_alive)
+void Ray::setAlive(const bool is_alive) noexcept
 {
   is_alive_ = is_alive;
 }
@@ -135,11 +135,11 @@ void Ray::setAlive(const bool is_alive)
   No detailed.
   */
 inline
-const uint8* Ray::sign() const
+const uint8* Ray::sign() const noexcept
 {
   return sign_;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_RAY_INL_HPP_
+#endif // NANAIRO_RAY_INL_HPP

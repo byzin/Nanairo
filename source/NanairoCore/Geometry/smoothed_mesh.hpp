@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SMOOTHED_MESH_HPP_
-#define _NANAIRO_SMOOTHED_MESH_HPP_
+#ifndef NANAIRO_SMOOTHED_MESH_HPP
+#define NANAIRO_SMOOTHED_MESH_HPP
 
 // Standard C++ library
 #include <tuple>
@@ -47,31 +47,31 @@ class SmoothedMesh : public TriangleMesh
                const Point3& vertex2,
                const Vector3& normal0, 
                const Vector3& normal1,
-               const Vector3& normal2);
+               const Vector3& normal2) noexcept;
 
 
   //! Return the bounding box
-  Aabb boundingBox() const override;
+  Aabb boundingBox() const noexcept override;
 
   //! Return the smoothd mesh size
-  std::size_t geometrySize() const override;
+  std::size_t geometrySize() const noexcept override;
 
   //! Return the cost of a ray-patch intersection test
-  Float getTraversalCost() const override;
+  Float getTraversalCost() const noexcept override;
 
   //! Test ray-mesh intersection
   bool testIntersection(const Ray& ray, 
-                        IntersectionInfo* intersection) const override;
+                        IntersectionInfo* intersection) const noexcept override;
 
   //! Sample a point randomly on the surface of the mesh
-  std::tuple<SampledPoint, Vector3> samplePoint(Sampler& sampler) const override;
+  std::tuple<SampledPoint, Vector3> samplePoint(Sampler& sampler) const noexcept override;
 
   //! Apply affine transformation
-  void transform(const Matrix4x4& matrix) override;
+  void transform(const Matrix4x4& matrix) noexcept override;
 
  private:
   // Calculate the bounding box
-  Aabb calcBoundingBox(const Vector3* distance, const Vector3* curvature) const;
+  Aabb calcBoundingBox(const Vector3* distance, const Vector3* curvature) const noexcept;
 
   //! Initialize
   void initialize(const Point3& vertex0,
@@ -79,13 +79,13 @@ class SmoothedMesh : public TriangleMesh
                   const Point3& vertex2,
                   const Vector3& normal0,
                   const Vector3& normal1,
-                  const Vector3& normal2);
+                  const Vector3& normal2) noexcept;
 
   //! Return the normal
-  Vector3 normal(const double eta, const double xi) const;
+  Vector3 normal(const double eta, const double xi) const noexcept;
 
   //! Return the surface point
-  Point3 point(const double eta, const double xi) const;
+  Point3 point(const double eta, const double xi) const noexcept;
 
 
   Vector3 c_[6]; //!< Vector coefficients of the patch
@@ -97,4 +97,4 @@ class SmoothedMesh : public TriangleMesh
 
 #include "smoothed_mesh-inl.hpp"
 
-#endif // _NANAIRO_SMOOTHED_MESH_HPP_
+#endif // NANAIRO_SMOOTHED_MESH_HPP

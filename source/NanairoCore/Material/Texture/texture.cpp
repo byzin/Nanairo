@@ -28,12 +28,18 @@
 namespace nanairo {
 
 /*!
+  */
+Texture::~Texture() noexcept
+{
+}
+
+/*!
   \details
   No detailed.
   */
 UniquePointer<Texture> makeTexture(const System& system,
                                    const SceneSettings& settings,
-                                   const QString& prefix)
+                                   const QString& prefix) noexcept
 {
   using zisc::toHash32;
 
@@ -64,7 +70,7 @@ UniquePointer<Texture> makeTexture(const System& system,
 //! Get a texture
 const Texture* getTexture(const SceneSettings& settings,
                           const QString& key,
-                          const std::vector<const Texture*>& texture_list)
+                          const std::vector<const Texture*>& texture_list) noexcept
 {
   using zisc::cast;
 

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_LAMBERT_BRDF_HPP_
-#define _NANAIRO_LAMBERT_BRDF_HPP_
+#ifndef NANAIRO_LAMBERT_BRDF_HPP
+#define NANAIRO_LAMBERT_BRDF_HPP
 
 // Standard C++ library
 #include <tuple>
@@ -42,37 +42,37 @@ class LambertBrdf : public DiffuseShaderModel<kSampleSize>
 
 
   //! Create a Lambert BRDF
-  LambertBrdf(const Spectra& reflectance);
+  LambertBrdf(const Spectra& reflectance) noexcept;
 
 
   //! Evaluate the pdf
   Float evaluatePdf(const Vector3* vin,
                     const Vector3* vout,
                     const Vector3& normal,
-                    const Wavelengths& wavelengths) const override;
+                    const Wavelengths& wavelengths) const noexcept override;
 
   //! Evaluate the BRDF of the area sampling
   Spectra evaluateRadiance(const Vector3* vin,
                            const Vector3* vout,
                            const Vector3& normal,
-                           const Wavelengths& wavelengths) const override;
+                           const Wavelengths& wavelengths) const noexcept override;
 
   //! Evaluate the BRDF of the area sampling
   std::tuple<Spectra, Float> evaluateRadianceAndPdf(
       const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,
-      const Wavelengths& wavelengths) const override;
+      const Wavelengths& wavelengths) const noexcept override;
 
   //! Sample a reflection direction and evaluate a reflection weight
   std::tuple<SampledDirection, Spectra> sample(
       const Vector3* vin,
       const Vector3& normal,
       const Wavelengths& wavelengths,
-      Sampler& sampler) const override;
+      Sampler& sampler) const noexcept override;
 
   //! Check is wavelength selection occured
-  bool wavelengthIsSelected() const override;
+  bool wavelengthIsSelected() const noexcept override;
 
  private:
   Spectra reflectance_;
@@ -84,4 +84,4 @@ class LambertBrdf : public DiffuseShaderModel<kSampleSize>
 
 #include "lambert_brdf-inl.hpp"
 
-#endif // _NANAIRO_LAMBERT_BRDF_HPP_
+#endif // NANAIRO_LAMBERT_BRDF_HPP

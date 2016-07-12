@@ -36,7 +36,7 @@ namespace nanairo {
   */
 Scene::Scene(System& system,
              const SceneSettings& settings,
-             const std::function<void (const QString&)>& message_sender)
+             const std::function<void (const QString&)>& message_sender) noexcept
 {
   initialize(system, settings, message_sender);
 }
@@ -47,7 +47,7 @@ Scene::Scene(System& system,
   */
 void Scene::initialize(System& system, 
                        const SceneSettings& settings,
-                       const std::function<void (const QString&)>& message_sender)
+                       const std::function<void (const QString&)>& message_sender) noexcept
 {
   using zisc::cast;
 

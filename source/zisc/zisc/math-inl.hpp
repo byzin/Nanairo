@@ -1,5 +1,5 @@
 /*!
-  \file math-inl.h
+  \file math-inl.hpp
   \author Sho Ikeda
 
   Copyright (c) 2015 Sho Ikeda
@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_MATH_INL_HPP_
-#define _ZISC_MATH_INL_HPP_
+#ifndef ZISC_MATH_INL_HPP
+#define ZISC_MATH_INL_HPP
 
 #include "math.hpp"
 // Standard C++ library
@@ -17,52 +17,64 @@
 #include <type_traits>
 // Zisc
 #include "error.hpp"
+#include "fraction.hpp"
+#include "floating_point.hpp"
 #include "utility.hpp"
 #include "type_traits.hpp"
 #include "zisc/zisc_config.hpp"
 
 namespace zisc {
 
-/*!
- \details
- No detailed.
+#if defined(ZISC_MATH_EFFICIENT_POWER)
+//#define ZISC_MATH_POW
+//#define ZISC_MATH_INVERSE_SQRT
+#define ZISC_MATH_SQRT
+#endif // ZISC_MATH_EFFICIENT_POWER
 
- \param[in] n 算術値
- \returh nが負ならばtrue、そうでなければfalse
- */
-template <typename Signed> inline
-constexpr bool isNegative(const Signed n)
+#if defined(ZISC_MATH_EFFICIENT_TRIGONOMETRIC)
+#define ZISC_MATH_SIN
+#define ZISC_MATH_COS
+#define ZISC_MATH_TAN
+#define ZISC_MATH_ASIN
+#define ZISC_MATH_ACOS
+#define ZISC_MATH_ATAN
+#endif // ZISC_MATH_EFFICIENT_TRIGONOMETRIC
+
+/*!
+  */
+template <typename Float> inline
+constexpr Float calculatePi() noexcept
 {
-  static_assert(std::is_signed<Signed>::value, "n must be signed type.");
-  return n < cast<Signed>(0);
+  static_assert(kIsFloat<Float>, "Float isn't floating point.");
+  constexpr int64 n = cast<int64>(sizeof(Float)) * 10ll;
+  constexpr Float t = cast<Float>(2.0);
+  Float pi = t;
+  for (int64 k = n; 0ll < k; --k) {
+    const Float a = Fraction64{k, 2ll * k + 1ll}.toFloat<Float>();
+    pi = t + a * pi;
+  }
+  return pi;
 }
 
 /*!
  \details
  No detailed.
-
- \param[in] n 符号付きの値
- \return nの絶対値
  */
 template <typename Signed> inline
-constexpr Signed abs(const Signed n)
+constexpr Signed abs(const Signed n) noexcept
 {
-  static_assert(std::is_signed<Signed>::value, "n must be signed type");
+  static_assert(std::is_signed<Signed>::value, "Signed isn't signed type");
   return isNegative(n) ? -n : n;
 }
 
 /*!
  \details
- ユークリッドの互除法を用います
-
- \param[in] m 自然数
- \param[in] n 自然数
- \return mとnの最大公約数
+ No detailed.
  */
 template <typename Integer> inline
-constexpr Integer gcd(Integer m, Integer n)
+constexpr Integer gcd(Integer m, Integer n) noexcept
 {
-  static_assert(std::is_integral<Integer>::value, "m, n must be integer type.");
+  static_assert(kIsInteger<Integer>, "The m and n aren't integer type.");
   while (n != 0) {
     const auto tmp = n;
     n = (m < n) ? m : m % n;
@@ -72,18 +84,54 @@ constexpr Integer gcd(Integer m, Integer n)
 }
 
 /*!
+  */
+template <typename Integer> inline
+constexpr Integer factorial(const Integer n) noexcept
+{
+  static_assert(kIsInteger<Integer>, "Integer isn't integer type.");
+  Integer x = 1;
+  for (Integer i = 1; i < n; ++i)
+    x = x * (i + 1);
+  return x;
+}
+
+/*!
+  */
+template <typename Float> inline
+constexpr Float invert(const Float x) noexcept
+{
+  static_assert(kIsFloat<Float>, "Float isn't floating point.");
+  constexpr Float one = cast<Float>(1.0);
+  return one / x;
+}
+
+/*!
+  */
+template <typename Integer> inline
+constexpr Integer sequence(const Integer m, const Integer n) noexcept
+{
+  static_assert(kIsInteger<Integer>, "Integer isn't integer type.");
+  Integer x = 1;
+  for (Integer i = m; i < n; ++i)
+    x = x * (i + 1);
+  return x;
+}
+
+/*!
   \details
   No detailed.
   */
 template <uint kExponent, typename Arithmetic> inline
-constexpr Arithmetic power(const Arithmetic x)
+constexpr Arithmetic power(const Arithmetic x) noexcept
 {
-  static_assert(std::is_arithmetic<Arithmetic>::value,"x must be arithmetic type");
-  constexpr uint half_e = kExponent >> 1;;
-  return (kExponent == 0)       ? cast<Arithmetic>(1) : 
-         (kExponent == 1)       ? x : 
-         ((kExponent & 1) == 1) ? x * power<half_e>(x) * power<half_e>(x)
-                                : power<half_e>(x) * power<half_e>(x);
+  static_assert(std::is_arithmetic<Arithmetic>::value, 
+                "Arithmetic isn't arithmetic type");
+  constexpr uint half_e = kExponent >> 1;
+  constexpr bool exponent_is_odd = isOdd(kExponent);
+  return (kExponent == 0) ? cast<Arithmetic>(1) :
+         (kExponent == 1) ? x :
+         (exponent_is_odd) ? (x * power<half_e>(x) * power<half_e>(x))
+                           : (power<half_e>(x) * power<half_e>(x));
 }
 
 /*!
@@ -91,18 +139,19 @@ constexpr Arithmetic power(const Arithmetic x)
   No detailed.
   */
 template <typename Arithmetic>
-Arithmetic power(Arithmetic x, int exponent)
+Arithmetic power(Arithmetic x, int exponent) noexcept
 {
-  static_assert(std::is_arithmetic<Arithmetic>::value,"x must be arithmetic type");
+  static_assert(std::is_arithmetic<Arithmetic>::value, 
+                "Arithmetic isn't arithmetic type");
   if (isNegative(exponent)) {
     x = cast<Arithmetic>(1) / x;
     exponent = -exponent;
   }
   Arithmetic result = cast<Arithmetic>(1);
   while (exponent) {
-    if ((exponent & 1) == 1)
-      result = result * x;
-    x = x * x;
+    if (isOdd(exponent))
+      result = x * result;
+    x = power<2>(x);
     exponent = exponent >> 1;
   }
   return result;
@@ -113,68 +162,203 @@ Arithmetic power(Arithmetic x, int exponent)
   No detailed.
   */
 template <typename Float> inline
-Float pow(const Float base, const Float exp)
+Float pow(const Float base, const Float exponent) noexcept
 {
-  static_assert(kIsFloat<Float>, "Arguments must be floating point.");
-#ifndef ZISC_MATH_FAST_POW
-  return std::pow(base, exp);
-#else // ZISC_MATH_FAST_POW
-  static_assert(false, "Approximate pow() is not implemented.");
-#endif // ZISC_MATH_FAST_POW
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+#ifndef ZISC_MATH_POW
+  return std::pow(base, exponent);
+#else // ZISC_MATH_POW
+  static_assert(false, "Optimized pow() is not implemented.");
+#endif // ZISC_MATH_POW
 }
-
-namespace zisc_math {
-
-inline
-float approxInvSqrt(const float n)
-{
-  constexpr int32 kMagicNumber = 0x5f3759df;
-  union {float f; int32 i;} u{n};
-  u.i = kMagicNumber - (u.i >> 1);
-  u.f = u.f * (1.5f - 0.5f * n * u.f * u.f);
-  return u.f * (1.5f - 0.5f * n * u.f * u.f);
-}
-
-inline
-double approxInvSqrt(const double n)
-{
-  constexpr int64 kMagicNumber = 0x5fe6eb50c7b537aaLL;
-  union {double f; int64 i;} u{n};
-  u.i = kMagicNumber - (u.i >> 1);
-  u.f = u.f * (1.5 - 0.5 * n * u.f * u.f);
-  return u.f * (1.5 - 0.5 * n * u.f * u.f);
-}
-
-} // namespace zisc_math
 
 /*!
   \details
   No detailed.
   */
 template <typename Float> inline
-Float invSqrt(const Float n)
+Float invSqrt(const Float n) noexcept
 {
-  static_assert(kIsFloat<Float>, "Arguments must be floating point.");
-#ifndef ZISC_MATH_FAST_SQRT
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+#ifndef ZISC_MATH_INVERSE_SQRT
   return cast<Float>(1.0) / sqrt(n);
-#else // ZISC_MATH_FAST_SQRT
-  return zisc_math::approxInvSqrt(n);
-#endif // ZISC_MATH_FAST_SQRT
+#else // ZISC_MATH_INVERSE_SQRT
+  static_assert(false, "Optimized invSqrt() is not implemented.");
+#endif // ZISC_MATH_INVERSE_SQRT
 }
+
+namespace zisc_math {
+
+template <int64 n, typename Float>
+struct TaylorCoefficient
+{
+  static_assert(0 < n, "The n isn't positive.");
+  static_assert(kIsFloat<Float>, "Float isn't floating point.");
+
+  static constexpr Float arctan() noexcept
+  {
+    const auto k = Fraction64{power<n>(-1ll), (2ll * n + 1ll)};
+    return k.toFloat<Float>();
+  }
+
+  static constexpr Float sin() noexcept
+  {
+    const Fraction64 k{power<n>(-1ll), factorial(2ll * n + 1ll)};
+    return k.toFloat<Float>();
+  }
+  
+  static constexpr Float sqrt() noexcept
+  {
+    int64 p = 1;
+    for (int64 i = 1; i < n; ++i)
+      p = p * (1ll - 2ll * i);
+    const auto k = Fraction64{p, power<n>(2ll)} * Fraction64{1, factorial(n)};
+    return k.toFloat<Float>();
+  }
+};
+
+template <int64 n, int64 end, bool is_last = (n == end)>
+struct IterationMethod
+{
+  static_assert(0 < n, "The n isn't positive.");
+  static_assert(0 < end, "The end isn't positive.");
+
+  template <typename Float>
+  static constexpr Float sinTaylor(const Float x) noexcept
+  {
+    static_assert(kIsFloat<Float>, "Float isn't floating point.");
+    constexpr auto k = TaylorCoefficient<n, Float>::sin();
+    return power<2>(x) * (k + IterationMethod<n + 1, end>::sinTaylor(x));
+  }
+
+  template <typename Float>
+  static constexpr Float arctanTaylor(const Float x) noexcept
+  {
+    static_assert(kIsFloat<Float>, "Float isn't floating point.");
+    constexpr auto k = TaylorCoefficient<n, Float>::arctan();
+    return power<2>(x) * (k + IterationMethod<n + 1, end>::arctanTaylor(x));
+  }
+
+  template <typename Float>
+  static constexpr Float sqrtTaylor(const Float x) noexcept
+  {
+    static_assert(kIsFloat<Float>, "Float isn't floating point.");
+    constexpr Float k = TaylorCoefficient<n, Float>::sqrt();
+    return x * (k + IterationMethod<n + 1, end>::sqrtTaylor(x));
+  }
+
+  template <typename Float>
+  static constexpr Float sqrtNewton(const Float s, const Float x) noexcept
+  {
+    static_assert(kIsFloat<Float>, "Float isn't floating point.");
+    constexpr Float half = cast<Float>(0.5);
+    const Float xn = IterationMethod<n + 1, end>::sqrtNewton(s, x);
+    return half * (xn + s / xn);
+  }
+};
+
+template <int64 n, int64 end>
+struct IterationMethod<n, end, true>
+{
+  static_assert(0 < n, "The n isn't positive.");
+  static_assert(0 < end, "The end isn't positive.");
+
+  template <typename Float>
+  static constexpr Float sinTaylor(const Float x) noexcept
+  {
+    static_assert(kIsFloat<Float>, "Float isn't floating point.");
+    constexpr auto k = TaylorCoefficient<n, Float>::sin();
+    return power<2>(x) * k;
+  }
+
+  template <typename Float>
+  static constexpr Float arctanTaylor(const Float x) noexcept
+  {
+    static_assert(kIsFloat<Float>, "Float isn't floating point.");
+    constexpr auto k = TaylorCoefficient<n, Float>::arctan();
+    return power<2>(x) * k;
+  }
+
+  template <typename Float>
+  static constexpr Float sqrtTaylor(const Float x) noexcept
+  {
+    static_assert(kIsFloat<Float>, "Float isn't floating point.");
+    return x * TaylorCoefficient<n, Float>::sqrt();
+  }
+
+  template <typename Float>
+  static constexpr Float sqrtNewton(const Float s, const Float x) noexcept
+  {
+    static_assert(kIsFloat<Float>, "Float isn't floating point.");
+    constexpr Float half = cast<Float>(0.5);
+    return half * (x + s / x);
+  }
+};
+
+/*!
+  */
+template <int64 max_n = 4, typename Float> inline
+constexpr Float sqrtTaylor(const Float x) noexcept
+{
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+  static_assert(0 < max_n, "The n isn't positive.");
+  constexpr Float one = cast<Float>(1.0);
+  return one + IterationMethod<1, max_n>::sqrtTaylor(x - one);
+}
+
+/*!
+  */
+template <int64 max_n = 4, typename Float> inline
+constexpr Float sqrtNewton(const Float s) noexcept
+{
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+  static_assert(0 < max_n, "The n isn't positive.");
+  const Float x0 = sqrtTaylor<8>(s);
+  return IterationMethod<1, max_n>::sqrtNewton(s, x0);
+}
+
+/*!
+  */
+template <int64 max_n = 3, typename Float> inline
+constexpr Float sqrt(const Float x) noexcept
+{
+  // Exponent sqrt
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+  constexpr int N = 8;
+  constexpr auto root2 = sqrtNewton<N>(cast<Float>(2.0));
+  constexpr auto inverse_root2 = sqrtNewton<N>(cast<Float>(0.5));
+  static_assert(root2 == sqrtNewton<N+1>(cast<Float>(2.0)),
+                "sqrt(2.0) isn't converged.");
+  static_assert(inverse_root2 == sqrtNewton<N+1>(cast<Float>(0.5)),
+                "sqrt(0.5) isn't converged.");
+  using FBit = FloatingPointBit<Float>;
+  const auto exponent = FBit::halfExponentBits(FBit::getExponentBits(x));
+  const Float e = FBit::makeFloat(cast<typename FBit::BitType>(0), exponent);
+  const Float s = (!FBit::isOddExponent(x))
+      ? cast<Float>(1.0) : (FBit::isPositiveExponent(x))
+      ? root2
+      : inverse_root2;
+  // Mantissa sqrt
+  auto m = FBit::makeFloat(FBit::getMantissaBits(x), FBit::exponentValueBitMask());
+  m = sqrtNewton<max_n>(m);
+  return m * s * e;
+}
+
+} // namespace zisc_math
 
 /*!
   \details
   No detailed.
   */
 template <typename Float> inline
-Float sqrt(const Float n)
+Float sqrt(const Float n) noexcept
 {
-  static_assert(kIsFloat<Float>, "Arguments must be floating point.");
-#ifndef ZISC_MATH_FAST_SQRT
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+#ifndef ZISC_MATH_SQRT
   return std::sqrt(n);
-#else // ZISC_MATH_FAST_SQRT
-  return n * invSqrt(n);
-#endif // ZISC_MATH_FAST_SQRT
+#else // ZISC_MATH_SQRT 
+  return zisc_math::sqrt(n);
+#endif // ZISC_MATH_SQRT 
 }
 
 /*!
@@ -182,14 +366,14 @@ Float sqrt(const Float n)
   No detailed.
   */
 template <typename Float> inline
-Float cbrt(const Float n)
+Float cbrt(const Float n) noexcept
 {
-  static_assert(kIsFloat<Float>, "Arguments must be floating point.");
-#ifndef ZISC_MATH_FAST_CBRT
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+#ifndef ZISC_MATH_CBRT
   return std::cbrt(n);
-#else // ZISC_MATH_FAST_CBRT
-  ZISC_ASSERT(false, "The fast cbrt function is not implemented.");
-#endif // ZISC_MATH_FAST_CBRT
+#else // ZISC_MATH_CBRT
+  static_assert(false, "Optimized cbrt() is not implemented.");
+#endif // ZISC_MATH_CBRT
 }
 
 /*!
@@ -197,54 +381,29 @@ Float cbrt(const Float n)
   No detailed.
   */
 template <typename Float> inline
-Float exp(const Float n)
+Float exp(const Float n) noexcept
 {
-  static_assert(kIsFloat<Float>, "Argument must be floating point.");
-#ifndef ZISC_MATH_FAST_EXP
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+#ifndef ZISC_MATH_EFFICIENT_EXPONENTIAL
   return std::exp(n);
-#else // ZISC_MATH_FAST_EXP
-  static_assert(false, "Approximate exp() is not implemented.");
-#endif // ZISC_MATH_FAST_EXP
+#else // ZISC_MATH_EFFICIENT_EXPONENTIAL
+  static_assert(false, "Optimized exp() is not implemented.");
+#endif // ZISC_MATH_EFFICIENT_EXPONENTIAL
 }
-
-namespace zisc_math {
-
-/*!
-  \details
-  No detailed.
-
-  \param[in] x 
-  */
-inline
-float approxLog2(const float x)
-{
-  union {float f; uint32 i;} const vx{x};
-  union {uint32 i; float f;} const mx{(vx.i & 0x007FFFFF) | 0x3f000000};
-  const float y = cast<float>(vx.i) * 1.1920928955078125e-7f;
-  return y - 124.22551499f - 1.498030302f * mx.f - 1.72587999f / (0.3520887068f+mx.f);
-}
-
-inline
-float appoxLog(const float x)
-{
-  return 0.69314718f * approxLog2(x);
-}
-
-} // namespace zisc_math
 
 /*!
   \details
   No detailed.
   */
 template <typename Float> inline 
-Float log(const Float x)
+Float log(const Float x) noexcept
 {
-  static_assert(kIsFloat<Float>, "Argument must be floating point.");
-#ifndef ZISC_MATH_FAST_LOG
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+#ifndef ZISC_MATH_EFFICIENT_EXPONENTIAL
   return std::log(x);
-#else // ZISC_MATH_FAST_LOG
-  return zisc_math::approxLog(x);
-#endif // ZISC_MATH_FAST_LOG
+#else // ZISC_MATH_EFFICIENT_EXPONENTIAL
+  static_assert(false, "Optimized log() is not implemented.");
+#endif // ZISC_MATH_EFFICIENT_EXPONENTIAL
 }
 
 /*!
@@ -252,62 +411,98 @@ Float log(const Float x)
   No detailed.
   */
 template <typename Float> inline 
-Float log2(const Float x)
+Float log2(const Float x) noexcept
 {
-  static_assert(kIsFloat<Float>, "Argument must be floating point.");
-#ifndef ZISC_MATH_FAST_LOG
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+#ifndef ZISC_MATH_EFFICIENT_EXPONENTIAL
   return std::log2(x);
-#else // ZISC_MATH_FAST_LOG
-  return zisc_math::approxLog2(x);
-#endif // ZISC_MATH_FAST_LOG
+#else // ZISC_MATH_EFFICIENT_EXPONENTIAL
+  static_assert(false, "Optimized log2() is not implemented.");
+#endif // ZISC_MATH_EFFICIENT_EXPONENTIAL
 }
 
 namespace zisc_math {
 
 /*!
- \details
- アルゴリズムの詳細はhttp://lab.polygonal.de/?p=205を参照して下さい。
-
- \attention theta は -pi <= theta < pi でなければなりません
-
- \tparam Float 浮動小数点型
- \tparam high_precision trueの場合、高精度な近似値を求めます
-
- \param[in] theta ラジアン
- \return sin(theta)の値
- */
-template <typename Float, bool high_precision> inline
-constexpr Float approxSin(const Float theta)
+  */
+template <typename Float> inline
+constexpr Float sin(Float x) noexcept
 {
-  static_assert(std::is_floating_point<Float>::value, "theta must be float type.");
-  return high_precision
-    ? approxSin<Float, false>(theta) * (isNegative(approxSin<Float, false>(theta))
-      ? cast<Float>(0.775) - cast<Float>(0.225) * approxSin<Float, false>(theta)
-      : cast<Float>(0.775) + cast<Float>(0.225) * approxSin<Float, false>(theta))
-    : theta * (isNegative(theta)
-      ? cast<Float>(1.2732395447) + cast<Float>(0.4052847346) * theta
-      : cast<Float>(1.2732395447) - cast<Float>(0.4052847346) * theta);
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+  return x + (x * IterationMethod<1, 9>::sinTaylor(x));
 }
 
 /*!
- \details
- アルゴリズムの詳細はhttp://lab.polygonal.de/?p=205を参照して下さい。
-
- \attention theta は -pi <= theta < pi でなければなりません
-
- \tparam Float 浮動小数点型
- \tparam high_precision trueの場合、高精度な近似値を求めます
-
- \param[in] theta ラジアン
- \return cos(theta)の値
- */
-template <typename Float, bool high_precision> inline
-constexpr Float approxCos(const Float theta)
+  */
+template <typename Float> inline
+constexpr Float cos(const Float x) noexcept
 {
-  static_assert(std::is_floating_point<Float>::value, "theta must be float type.");
-  return (theta > cast<Float>(kPi * 0.5))
-      ? approxSin<Float, high_precision>(theta - cast<Float>(kPi * 1.5))
-      : approxSin<Float, high_precision>(theta + cast<Float>(kPi * 0.5));
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+  constexpr Float half_pi = cast<Float>(0.5) * kPi<Float>;
+  return sin(half_pi - x);
+}
+
+/*!
+  */
+template <typename Float> inline
+constexpr Float tan(Float x) noexcept
+{
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+  return sin(x) / cos(x);
+}
+
+/*!
+  */
+template <typename Float> inline
+Float arctan(Float x) noexcept
+{
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+  constexpr Float half_pi = cast<Float>(0.5) * kPi<Float>;
+  ZISC_ASSERT(isInClosedBounds(x, -half_pi, half_pi), 
+              "The x is out of range [-pi, pi].");
+  constexpr Float half = cast<Float>(0.5);
+  constexpr Float one = cast<Float>(1.0);
+  constexpr Float twice = cast<Float>(2.0);
+
+  // Check if x is negative
+  const bool is_negative_number = isNegative(x);
+  x = abs(x);
+  // Check if x is greater than one
+  const bool is_greater_than_one = (one < x);
+  x = (is_greater_than_one) ? invert(x) : x;
+  // Check if x is greater than half
+  const bool is_greater_than_half = (half < x);
+  x = (is_greater_than_half) ?  (-one + zisc::sqrt(one + power<2>(x))) / x : x;
+  // Calculate arctan(x)
+  auto result = x + (x * IterationMethod<1, 24>::arctanTaylor(x));
+  //
+  result = (is_greater_than_half) ? twice * result : result;
+  result = (is_greater_than_one) ? half_pi - result : result;
+  return (is_negative_number) ? -result : result;
+}
+
+/*!
+  */
+template <typename Float> inline
+Float arcsin(const Float x) noexcept
+{
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+  constexpr Float one = cast<Float>(1.0);
+  constexpr Float twice = cast<Float>(2.0);
+  ZISC_ASSERT(isInClosedBounds(x, -one, one), "The x is out of range [-1, 1].");
+  return twice * arctan(x / (one + sqrt(one - power<2>(x))));
+}
+
+/*!
+  */
+template <typename Float> inline
+Float arccos(const Float x) noexcept
+{
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+  constexpr Float one = cast<Float>(1.0);
+  constexpr Float twice = cast<Float>(2.0);
+  ZISC_ASSERT(isInClosedBounds(x, -one, one), "The x is out of range [-1, 1].");
+  return twice * arctan(sqrt(one - power<2>(x)) / (one + x));
 }
 
 } // namespace zisc_math
@@ -317,14 +512,17 @@ constexpr Float approxCos(const Float theta)
   No detailed.
   */
 template <typename Float> inline 
-Float sin(const Float theta)
+Float sin(const Float theta) noexcept
 {
-  static_assert(kIsFloat<Float>, "Argument must be floating point.");
-#ifndef ZISC_MATH_FAST_SINCOS
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+  ZISC_ASSERTION_STATEMENT(constexpr auto half_pi = cast<Float>(0.5) * kPi<Float>);
+  ZISC_ASSERT(isInClosedBounds(theta, -half_pi, half_pi),
+              "The theta is out of range.");
+#ifndef ZISC_MATH_SIN
   return std::sin(theta);
-#else // ZISC_MATH_FAST_SINCOS
-  return zisc_math::approxSin(theta);
-#endif // ZISC_MATH_FAST_SINCOS
+#else // ZISC_MATH_SIN
+  return zisc_math::sin(theta);
+#endif // ZISC_MATH_SIN
 }
 
 /*!
@@ -332,87 +530,54 @@ Float sin(const Float theta)
   No detailed.
   */
 template <typename Float> inline 
-Float cos(const Float theta)
+Float cos(const Float theta) noexcept
 {
-  static_assert(kIsFloat<Float>, "Argument must be floating point.");
-#ifndef ZISC_MATH_FAST_SINCOS
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+  ZISC_ASSERTION_STATEMENT(constexpr auto pi = kPi<Float>);
+  ZISC_ASSERT(isInClosedBounds(theta, 0.0, pi), 
+              "The theta is out of range.");
+#ifndef ZISC_MATH_COS
   return std::cos(theta);
-#else // ZISC_MATH_FAST_SINCOS
-  return zisc_math::approxCos(theta);
-#endif // ZISC_MATH_FAST_SINCOS
+#else // ZISC_MATH_COS
+  return zisc_math::cos(theta);
+#endif // ZISC_MATH_COS
 }
-
-namespace zisc_math {
-
-/*!
-  \details
-  このアルゴリズムの詳細は "http://nghiaho.com/?p=997" を参照して下さい.
-
-  \param[in] x 
-  \return radian
-
-  \attention 有効なxの範囲は [-1, 1] です
-  */
-template <typename Float> inline
-constexpr Float approxArcTan(const Float x)
-{
-  static_assert(std::is_floating_point<Float>::value, "x must be float type.");
-  return x * (cast<Float>(kPi * 0.25) - (isNegative(x)
-    ? (-cast<Float>(1.0) - x) * (cast<Float>(0.2447) - cast<Float>(0.0663) * x)
-    : (-cast<Float>(1.0) + x) * (cast<Float>(0.2447) + cast<Float>(0.0663) * x)));
-}
-
-/*!
-  \details
-  No detailed.
-
-  \param[in] x 
-  \return radian
-
-  \attention 有効なxの範囲は [-1, 1] です
-  */
-template <typename Float> inline
-/* constexpr */ Float approxArcCos(const Float x)
-{
-  static_assert(std::is_floating_point<Float>::value, "x must be float type.");
-  return x < cast<Float>(0.0)
-    ? cast<Float>(kPi) - cast<Float>(2.0) *
-      approxArcTan((cast<Float>(1.0) + x) * invSqrt(cast<Float>(1.0) - x * x))
-    : cast<Float>(2.0) * 
-      approxArcTan((cast<Float>(1.0) - x) * invSqrt(cast<Float>(1.0) - x * x));
-}
-
-/*!
-  \details
-  No detailed.
-
-  \param[in] x 
-  \return radian
-
-  \attention 有効なxの範囲は [-1, 1] です
-  */
-template <typename Float> inline
-/* constexpr */ Float approxArcSin(const Float x)
-{
-  static_assert(std::is_floating_point<Float>::value, "x must be float type.");
-  return cast<Float>(kPi * 0.5) - approxArcCos(x);
-}
-
-} // namespace zisc_math
 
 /*!
   \details
   No detailed.
   */
 template <typename Float> inline 
-Float arcSin(const Float x)
+Float tan(const Float theta) noexcept
 {
-  static_assert(kIsFloat<Float>, "Argument must be floating point.");
-#ifndef ZISC_MATH_FAST_ARCSINCOS
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+  ZISC_ASSERT(theta != cast<Float>(0.0), "The x is 0.");
+  ZISC_ASSERTION_STATEMENT(constexpr auto half_pi = cast<Float>(0.5) * kPi<Float>);
+  ZISC_ASSERT(isInClosedBounds(theta, cast<Float>(0.0), half_pi),
+              "The theta is out of range.");
+#ifndef ZISC_MATH_TAN
+  return std::tan(theta);
+#else // ZISC_MATH_TAN
+  return zisc_math::tan(theta);
+#endif // ZISC_MATH_TAN
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Float> inline 
+Float asin(const Float x) noexcept
+{
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+  ZISC_ASSERTION_STATEMENT(constexpr auto one = cast<Float>(1.0));
+  ZISC_ASSERT(isInClosedBounds(x, -one, one),
+              "The x is out of range.");
+#ifndef ZISC_MATH_ASIN
   return std::asin(x);
-#else // ZISC_MATH_FAST_ARCSINCOS
-  return zisc_math::approxArcSin(x);
-#endif // ZISC_MATH_FAST_ARCSINCOS
+#else // ZISC_MATH_ASIN
+  return zisc_math::arcsin(x);
+#endif // ZISC_MATH_ASIN
 }
 
 /*!
@@ -420,14 +585,17 @@ Float arcSin(const Float x)
   No detailed.
   */
 template <typename Float> inline 
-Float arcCos(const Float x)
+Float acos(const Float x) noexcept
 {
-  static_assert(kIsFloat<Float>, "Argument must be floating point.");
-#ifndef ZISC_MATH_FAST_ARCSINCOS
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+  ZISC_ASSERTION_STATEMENT(constexpr auto one = cast<Float>(1.0));
+  ZISC_ASSERT(isInClosedBounds(x, -one, one),
+              "The x is out of range.");
+#ifndef ZISC_MATH_ACOS
   return std::acos(x);
-#else // ZISC_MATH_FAST_ARCSINCOS
-  return zisc_math::approxArcCos(x);
-#endif // ZISC_MATH_FAST_ARCSINCOS
+#else // ZISC_MATH_ACOS
+  return zisc_math::arccos(x);
+#endif // ZISC_MATH_ACOS
 }
 
 /*!
@@ -435,14 +603,15 @@ Float arcCos(const Float x)
   No detailed.
   */
 template <typename Float> inline 
-Float arcTan(const Float x)
+Float atan(const Float x) noexcept
 {
-  static_assert(kIsFloat<Float>, "Argument must be floating point.");
-#ifndef ZISC_MATH_FAST_ARCTAN
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
+  ZISC_ASSERT(x != cast<Float>(0.0), "The x is 0.");
+#ifndef ZISC_MATH_ATAN
   return std::atan(x);
-#else // ZISC_MATH_FAST_ARCTAN
-  return zisc_math::approxArcTan(x);
-#endif // ZISC_MATH_FAST_ARCTAN
+#else // ZISC_MATH_ATAN
+  return zisc_math::arctan(x);
+#endif // ZISC_MATH_ATAN
 }
 
 /*!
@@ -450,8 +619,9 @@ Float arcTan(const Float x)
   No detailed.
   */
 template <typename Float> inline
-std::tuple<std::array<Float, 2>, uint> solveQuadratic(
-    const Float a, const Float b, const Float c)
+std::tuple<std::array<Float, 2>, uint> solveQuadratic(const Float a, 
+                                                      const Float b, 
+                                                      const Float c) noexcept
 {
   constexpr Float min_x = std::numeric_limits<Float>::lowest();
   std::array<Float, 2> x = {{min_x, min_x}};
@@ -478,7 +648,7 @@ namespace zisc_math {
   No detailed.
   */
 template <typename Float> inline
-Float solveCubicOneY(const Float p, const Float q)
+Float solveCubicOneY(const Float p, const Float q) noexcept
 {
 //  ZISC_ASSERT(p != 0.0, "The p is zero.");
 //  ZISC_ASSERT(q != 0.0, "The q is zero.");
@@ -494,7 +664,7 @@ Float solveCubicOneY(const Float p, const Float q)
     y = z - (p / (3.0 * z));
   }
   else {
-    ZISC_VALUE_ASSERT(p < 0.0, p, "The p is positive.");
+    ZISC_ASSERT(p < 0.0, "The p is positive: ", p);
     const Float r = sqrt((-1.0 / 3.0) * p);
     const Float cos_theta = q / (-2.0 * r * r * r);
     const Float phi = (1.0 / 3.0) * acos(cos_theta);
@@ -510,10 +680,9 @@ Float solveCubicOneY(const Float p, const Float q)
   Solve a cubic equation using "cubic reduction" method.
   */
 template <typename Float> inline
-Float solveCubicOne(const Float b, const Float c, const Float d)
+Float solveCubicOne(const Float b, const Float c, const Float d) noexcept
 {
-  static_assert(std::is_floating_point<Float>::value,
-                "Float must be floating point type.");
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
 
   const Float k = (-1.0 / 3.0) * b;
 
@@ -529,12 +698,14 @@ Float solveCubicOne(const Float b, const Float c, const Float d)
   Solve a cubic equation using "cubic reduction" method.
   */
 template <typename Float> inline
-Float solveCubicOne(const Float a, const Float b, const Float c, const Float d)
+Float solveCubicOne(const Float a, 
+                    const Float b, 
+                    const Float c, 
+                    const Float d) noexcept
 {
-  static_assert(std::is_floating_point<Float>::value,
-                "Float must be floating point type.");
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
 
-  ZISC_ASSERT(a != 0.0, "The a must be non-zero value.");
+  ZISC_ASSERT(a != 0.0, "The a is zero.");
   const Float inv_a = 1.0 / a;
   const Float k = (-1.0 / 3.0) * b * inv_a;
 
@@ -554,34 +725,14 @@ namespace zisc_math {
 template <typename Float> inline
 void sortQuarticResults(const std::array<Float, 2>& x1,
                         const std::array<Float, 2>& x2,
-                        std::array<Float, 4>& x)
+                        std::array<Float, 4>& x) noexcept
 {
-  Float rest_max_x;
-  if (x1[0] < x2[0]) {
-    x[0] = x2[0];
-    rest_max_x = x1[0];
-  }
-  else {
-    x[0] = x1[0];
-    rest_max_x = x2[0];
-  }
-  Float rest_min_x;
-  if (x1[1] < x2[1]) {
-    x[3] = x1[1];
-    rest_min_x = x2[1];
-  }
-  else {
-    x[3] = x2[1];
-    rest_min_x = x1[1];
-  }
-  if (rest_min_x < rest_max_x) {
-    x[1] = rest_max_x;
-    x[2] = rest_min_x;
-  }
-  else {
-    x[1] = rest_min_x;
-    x[2] = rest_max_x;
-  }
+  x[0] = max(x1[0], x2[0]);
+  const Float tmp1 = min(x1[0], x2[0]);
+  const Float tmp2 = max(x1[1], x2[1]);
+  x[1] = max(tmp1, tmp2);
+  x[2] = min(tmp1, tmp2);
+  x[3] = min(x1[1], x2[1]);
 }
 
 } // namespace zisc_math
@@ -591,13 +742,15 @@ void sortQuarticResults(const std::array<Float, 2>& x1,
   No detailed.
   */
 template <typename Float> inline
-std::tuple<std::array<Float, 4>, uint> solveQuartic(
-    const Float a, const Float b, const Float c, const Float d, const Float e)
+std::tuple<std::array<Float, 4>, uint> solveQuartic(const Float a, 
+                                                    const Float b, 
+                                                    const Float c, 
+                                                    const Float d, 
+                                                    const Float e) noexcept
 {
-  static_assert(std::is_floating_point<Float>::value,
-                "Float must be floating point type.");
+  static_assert(kIsFloat<Float>, "Float isn't floating point type.");
 
-  ZISC_ASSERT(a != 0.0, "The a must be non-zero value.");
+  ZISC_ASSERT(a != 0.0, "The a is zero.");
   const Float inv_a = 1.0 / a;
   const Float k = (-1.0 / 4.0) * b * inv_a;
 
@@ -636,4 +789,4 @@ std::tuple<std::array<Float, 4>, uint> solveQuartic(
 
 } // namespace zisc
 
-#endif // _ZISC_MATH_INL_HPP_
+#endif // ZISC_MATH_INL_HPP

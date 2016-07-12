@@ -26,10 +26,10 @@
 namespace nanairo {
 
 namespace ggx_v_cavity {
-Vector3 sampleGgxMicrofacetNormal(const Float, const Vector3&, Sampler&);
+Vector3 sampleGgxMicrofacetNormal(const Float, const Vector3&, Sampler&) noexcept;
 } // namespace ggx_v_cavity
 namespace ggx_smith {
-Vector3 sampleGgxMicrofacetNormal(const Float, const Vector3&, Sampler&);
+Vector3 sampleGgxMicrofacetNormal(const Float, const Vector3&, Sampler&) noexcept;
 } // namespace ggx_smith
 
 /*!
@@ -42,7 +42,7 @@ Float evaluateGgxReflectance(const Float roughness,
                              const Vector3& normal,
                              const Float n,
                              const Float cos_theta_no,
-                             Float* pdf)
+                             Float* pdf) noexcept
 {
   // Calculate nanairoion half vector
   const auto m_normal = getMicrofacetReflectionHalfVector(vin, vout);
@@ -104,7 +104,7 @@ Float evaluateGgxTransmittance(const Float roughness,
                                const Vector3& normal,
                                const Float n,
                                const Float cos_theta_no,
-                               Float* pdf)
+                               Float* pdf) noexcept
 {
   // Calculate refraction half vector
   const auto m_normal = getMicrofacetRefractionHalfVector(vin, vout, n);
@@ -173,7 +173,7 @@ SampledDirection sampleGgxMicrofacetNormal(const Float roughness,
                                            Sampler& sampler,
                                            Float* cos_ni,
                                            Float* cos_mi,
-                                           Float* cos_nm)
+                                           Float* cos_nm) noexcept
 {
   // Change of basis of the incident vector
   const auto transformation = makeChangeOfBasisMatrixToLocal(normal);
@@ -182,11 +182,11 @@ SampledDirection sampleGgxMicrofacetNormal(const Float roughness,
               "Incident vector is not unit vector.");
 
   auto m_normal = 
-#if defined(_NANAIRO_GGX_V_CAVITY_)
+#if defined(NANAIRO_GGX_V_CAVITY)
       ggx_v_cavity::sampleGgxMicrofacetNormal(roughness, 
                                               incident_vector, 
                                               sampler);
-#elif defined(_NANAIRO_GGX_SMITH_)
+#elif defined(NANAIRO_GGX_SMITH)
       ggx_smith::sampleGgxMicrofacetNormal(roughness, 
                                            incident_vector, 
                                            sampler);
@@ -208,7 +208,7 @@ SampledDirection sampleGgxMicrofacetNormal(const Float roughness,
   const Float g1 = evaluateGgxG1(roughness, *cos_ni, *cos_mi, *cos_nm);
   const Float d = evaluateGgxD(roughness, *cos_nm);
   const Float inverse_pdf = *cos_ni / (*cos_mi * d * g1);
-  ZISC_VALUE_ASSERT(0.0 < inverse_pdf, d, "PDF must be positive.");
+  ZISC_ASSERT(0.0 < inverse_pdf, "PDF must be positive: ", d);
 
   m_normal = transformation.transposedMatrix() * m_normal;
   ZISC_ASSERT(isUnitVector(m_normal),
@@ -232,7 +232,7 @@ namespace ggx_v_cavity {
 //
 //  // Sample microfacet normal
 //  const Float t = roughness * zisc::sqrt(u1 / (1.0 - u1));
-//  const Float phi = 2.0 * zisc::kPi * u2;
+//  const Float phi = 2.0 * zisc::kPi<Float> * u2;
 //  const Float x = t * zisc::cos(phi);
 //  const Float y = t * zisc::sin(phi);
 //  auto microfacet_normal = Vector3{-x, -y, 1.0}.normalized();
@@ -263,12 +263,16 @@ namespace ggx_v_cavity {
 
 namespace ggx_smith {
 
+// Forward declaration
+std::tuple<Float, Float> sampleGgxSlopeXY(const Float cos_theta,
+                                          Sampler& sampler) noexcept;
+
 /*!
   \details
   No detailed.
   */
 std::tuple<Float, Float> sampleGgxSlopeXY(const Float cos_theta,
-                                          Sampler& sampler)
+                                          Sampler& sampler) noexcept
 {
   const Float u1 = sampler.sample(0.0, 1.0);
   const Float u2 = sampler.sample(0.0, 1.0);
@@ -277,7 +281,7 @@ std::tuple<Float, Float> sampleGgxSlopeXY(const Float cos_theta,
   constexpr Float threshold = 0.99999999;
   if (threshold < cos_theta) {
     const Float r = zisc::sqrt(u1 / (1.0 - u1));
-    const Float phi = 2.0 * zisc::kPi * u2;
+    const Float phi = 2.0 * zisc::kPi<Float> * u2;
     return std::make_pair(r * zisc::cos(phi), r * zisc::sin(phi));
   }
 
@@ -315,7 +319,7 @@ std::tuple<Float, Float> sampleGgxSlopeXY(const Float cos_theta,
   */
 Vector3 sampleGgxMicrofacetNormal(const Float roughness,
                                   const Vector3& vin,
-                                  Sampler& sampler)
+                                  Sampler& sampler) noexcept
 {
   // Stretch the incident vector
   const auto vin_dash = stretchGgxMicrosurface(roughness, vin);

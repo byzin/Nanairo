@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_DSFMT_ENGINE_INL_HPP_
-#define _ZISC_DSFMT_ENGINE_INL_HPP_
+#ifndef ZISC_DSFMT_ENGINE_INL_HPP
+#define ZISC_DSFMT_ENGINE_INL_HPP
 
 #include "dsfmt_engine.hpp"
 // Standard C++ library
@@ -16,6 +16,7 @@
 #include <cstdint>
 #include <type_traits>
 // Zisc
+#include "error.hpp"
 #include "utility.hpp"
 #include "type_traits.hpp"
 
@@ -29,7 +30,7 @@ template <std::size_t kN, std::size_t kPosition, int kSl,
           std::uint64_t kMask1, std::uint64_t kMask2, std::uint64_t kFix1, 
           std::uint64_t kFix2, std::uint64_t kPcv1, std::uint64_t kPcv2> inline
 DsfmtEngine<kN, kPosition, kSl, kMask1, kMask2, kFix1, kFix2, kPcv1, kPcv2>::
-DsfmtEngine() :
+DsfmtEngine() noexcept :
     index_{kN * 2},
     random_list_{&status_[0].d_[0]}
 {
@@ -44,7 +45,7 @@ template <std::size_t kN, std::size_t kPosition, int kSl,
           std::uint64_t kMask1, std::uint64_t kMask2, std::uint64_t kFix1, 
           std::uint64_t kFix2, std::uint64_t kPcv1, std::uint64_t kPcv2> inline
 DsfmtEngine<kN, kPosition, kSl, kMask1, kMask2, kFix1, kFix2, kPcv1, kPcv2>::
-DsfmtEngine(const std::uint32_t seed) :
+DsfmtEngine(const std::uint32_t seed) noexcept :
     index_{kN * 2},
     random_list_{&status_[0].d_[0]}
 {
@@ -59,13 +60,15 @@ template <std::size_t kN, std::size_t kPosition, int kSl,
           std::uint64_t kMask1, std::uint64_t kMask2, std::uint64_t kFix1, 
           std::uint64_t kFix2, std::uint64_t kPcv1, std::uint64_t kPcv2> inline
 double DsfmtEngine<kN, kPosition, kSl, kMask1, kMask2, kFix1, kFix2, kPcv1, kPcv2>::
-generate()
+generate() noexcept
 {
   if (index_ == (kN * 2)) {
     generateRandomAll();
     index_ = 0;
   }
-  return random_list_[index_++];
+  const auto random = random_list_[index_++];
+  ZISC_ASSERT(isInClosedBounds(random, min(), max()), "The random is out of range.");
+  return random;
 }
   
 /*!
@@ -78,11 +81,12 @@ template <std::size_t kN, std::size_t kPosition, int kSl,
 template <typename Arithmetic> inline
 Arithmetic 
     DsfmtEngine<kN, kPosition, kSl, kMask1, kMask2, kFix1, kFix2, kPcv1, kPcv2>::
-generate(const Arithmetic lower, const Arithmetic upper)
+generate(const Arithmetic lower, const Arithmetic upper) noexcept
 {
   static_assert(std::is_arithmetic<Arithmetic>::value,
-                "## Arguments must be arithmetic type.");
+                "Arithmetic isn't arithmetic type.");
   const auto random = generate();
+  ZISC_ASSERT(isInClosedBounds(random, min(), max()), "The random is out of range.");
   return bound(random, lower, upper);
 }
 
@@ -95,6 +99,7 @@ template <std::size_t kN, std::size_t kPosition, int kSl,
           std::uint64_t kFix2, std::uint64_t kPcv1, std::uint64_t kPcv2> inline
 constexpr double 
 DsfmtEngine<kN, kPosition, kSl, kMask1, kMask2, kFix1, kFix2, kPcv1, kPcv2>::max()
+    noexcept
 {
   return 2.0 - std::numeric_limits<double>::epsilon();
 }
@@ -108,6 +113,7 @@ template <std::size_t kN, std::size_t kPosition, int kSl,
           std::uint64_t kFix2, std::uint64_t kPcv1, std::uint64_t kPcv2> inline
 constexpr double 
 DsfmtEngine<kN, kPosition, kSl, kMask1, kMask2, kFix1, kFix2, kPcv1, kPcv2>::min()
+    noexcept
 {
   return 1.0;
 }
@@ -120,7 +126,7 @@ template <std::size_t kN, std::size_t kPosition, int kSl,
           std::uint64_t kMask1, std::uint64_t kMask2, std::uint64_t kFix1, 
           std::uint64_t kFix2, std::uint64_t kPcv1, std::uint64_t kPcv2> inline
 void DsfmtEngine<kN, kPosition, kSl, kMask1, kMask2, kFix1, kFix2, kPcv1, kPcv2>::
-setSeed(const std::uint32_t seed)
+setSeed(const std::uint32_t seed) noexcept
 {
   status_[0].u32_[0] = seed;
   initialize();
@@ -137,7 +143,10 @@ template <std::size_t kN, std::size_t kPosition, int kSl,
           std::uint64_t kFix2, std::uint64_t kPcv1, std::uint64_t kPcv2>
 template <typename Float> inline
 Float DsfmtEngine<kN, kPosition, kSl, kMask1, kMask2, kFix1, kFix2, kPcv1, kPcv2>::
-bound(const double random, const Float lower, const Float upper, EnableIfFloat<Float>)
+bound(const double random, 
+      const Float lower, 
+      const Float upper, 
+      EnableIfFloat<Float>) noexcept
 {
   return lower + cast<Float>(random - 1.0) * (upper - lower);
 }
@@ -150,7 +159,7 @@ template <std::size_t kN, std::size_t kPosition, int kSl,
           std::uint64_t kMask1, std::uint64_t kMask2, std::uint64_t kFix1, 
           std::uint64_t kFix2, std::uint64_t kPcv1, std::uint64_t kPcv2>
 void DsfmtEngine<kN, kPosition, kSl, kMask1, kMask2, kFix1, kFix2, kPcv1, kPcv2>::
-certificatePeriod()
+certificatePeriod() noexcept
 {
   std::uint64_t tmp[2];
   tmp[0] = status_[kN].u64_[0] ^ kFix1;
@@ -193,7 +202,7 @@ template <std::size_t kN, std::size_t kPosition, int kSl,
           std::uint64_t kMask1, std::uint64_t kMask2, std::uint64_t kFix1, 
           std::uint64_t kFix2, std::uint64_t kPcv1, std::uint64_t kPcv2> inline
 void DsfmtEngine<kN, kPosition, kSl, kMask1, kMask2, kFix1, kFix2, kPcv1, kPcv2>::
-generateRandom(const std::size_t destination, const std::size_t position)
+generateRandom(const std::size_t destination, const std::size_t position) noexcept
 {
   constexpr int kSr = 12;
   const std::uint64_t t0 = status_[destination].u64_[0],
@@ -218,7 +227,7 @@ template <std::size_t kN, std::size_t kPosition, int kSl,
           std::uint64_t kMask1, std::uint64_t kMask2, std::uint64_t kFix1, 
           std::uint64_t kFix2, std::uint64_t kPcv1, std::uint64_t kPcv2>
 void DsfmtEngine<kN, kPosition, kSl, kMask1, kMask2, kFix1, kFix2, kPcv1, kPcv2>::
-generateRandomAll()
+generateRandomAll() noexcept
 {
   for (std::size_t i = 0; i < (kN - kPosition); ++i)
     generateRandom(i, i + kPosition);
@@ -234,7 +243,7 @@ template <std::size_t kN, std::size_t kPosition, int kSl,
           std::uint64_t kMask1, std::uint64_t kMask2, std::uint64_t kFix1, 
           std::uint64_t kFix2, std::uint64_t kPcv1, std::uint64_t kPcv2>
 void DsfmtEngine<kN, kPosition, kSl, kMask1, kMask2, kFix1, kFix2, kPcv1, kPcv2>::
-initialize()
+initialize() noexcept
 {
   constexpr std::uint64_t kHighConst = 0x3ff0000000000000;
   constexpr std::uint64_t kLowMask = 0x000fffffffffffff;
@@ -256,4 +265,4 @@ initialize()
 
 } // namespace zisc
 
-#endif // _ZISC_DSFMT_ENGINE_INL_HPP_
+#endif // ZISC_DSFMT_ENGINE_INL_HPP

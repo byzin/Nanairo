@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_PLANE_HPP_
-#define _NANAIRO_PLANE_HPP_
+#ifndef NANAIRO_PLANE_HPP
+#define NANAIRO_PLANE_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -41,30 +41,30 @@ class Plane : public Geometry
 {
  public:
   //! Initialize
-  Plane();
+  Plane() noexcept;
 
   //! Get bounding box
-  Aabb boundingBox() const override;
+  Aabb boundingBox() const noexcept override;
 
   //! Return the plane size
-  std::size_t geometrySize() const override;
+  std::size_t geometrySize() const noexcept override;
 
   //! Return the cost of a ray-plane intersection test
-  Float getTraversalCost() const override;
+  Float getTraversalCost() const noexcept override;
 
   //! Test ray-plane intersection
   bool testIntersection(const Ray& ray, 
-                        IntersectionInfo* intersection) const override;
+                        IntersectionInfo* intersection) const noexcept override;
 
   //! Sample a point randomly on the surface of the plane 
-  std::tuple<SampledPoint, Vector3> samplePoint(Sampler& sampler) const override;
+  std::tuple<SampledPoint, Vector3> samplePoint(Sampler& sampler) const noexcept override;
 
   //! Apply affine transformation
-  void transform(const Matrix4x4& matrix) override;
+  void transform(const Matrix4x4& matrix) noexcept override;
  
  private:
   //! Initialize
-  void initialize();
+  void initialize() noexcept;
 
 
   Point3 top_left_;
@@ -81,4 +81,4 @@ class Plane : public Geometry
 
 } // namespace nanairo
 
-#endif // _NANAIRO_PLANE_HPP_
+#endif // NANAIRO_PLANE_HPP

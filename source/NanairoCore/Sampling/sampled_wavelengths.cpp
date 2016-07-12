@@ -30,7 +30,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-SpectralDistribution calculateLightPdf(const World& world)
+SpectralDistribution calculateLightPdf(const World& world) noexcept
 {
   constexpr uint exponent = 1; // Balance heuristics
 //  constexpr uint exponent = 2; // Power heuristics

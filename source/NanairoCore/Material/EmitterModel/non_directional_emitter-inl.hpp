@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_NON_DIRECTIONA_LIGHT_INL_HPP_
-#define _NANAIRO_NON_DIRECTIONA_LIGHT_INL_HPP_
+#ifndef NANAIRO_NON_DIRECTIONA_LIGHT_INL_HPP
+#define NANAIRO_NON_DIRECTIONA_LIGHT_INL_HPP
 
 #include "non_directional_emitter.hpp"
 // Zisc
@@ -31,7 +31,7 @@ namespace nanairo {
 template <uint kSampleSize> inline
 auto NonDirectionalEmitter::makeNonDirectionalLight(
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) const -> ShaderPointer<kSampleSize>
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
   const auto radiant_emittance = sample(powerDistribution(), wavelengths);
 
@@ -48,7 +48,7 @@ template <uint kSampleSize> inline
 EmitterModel::ShaderPointer<kSampleSize> makeNonDirectionalLight(
     const EmitterModel* emitter,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool)
+    MemoryPool& memory_pool) noexcept
 {
   using zisc::cast;
 
@@ -58,4 +58,4 @@ EmitterModel::ShaderPointer<kSampleSize> makeNonDirectionalLight(
 
 } // namespace nanairo
 
-#endif // _NANAIRO_NON_DIRECTIONA_LIGHT_INL_HPP_
+#endif // NANAIRO_NON_DIRECTIONA_LIGHT_INL_HPP

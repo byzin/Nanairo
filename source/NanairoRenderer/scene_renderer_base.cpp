@@ -12,6 +12,7 @@
 #include <chrono>
 #include <limits>
 #include <thread>
+#include <type_traits>
 // Qt
 #include <QColor>
 #include <QImage>
@@ -34,7 +35,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-SceneRendererBase::SceneRendererBase() :
+SceneRendererBase::SceneRendererBase() noexcept :
     camera_matrix_{makeIdentityMatrix()}
 {
 }
@@ -43,7 +44,7 @@ SceneRendererBase::SceneRendererBase() :
   \details
   No detailed.
   */
-SceneRendererBase::~SceneRendererBase()
+SceneRendererBase::~SceneRendererBase() noexcept
 {
 }
 
@@ -51,7 +52,7 @@ SceneRendererBase::~SceneRendererBase()
   \details
   No detailed.
   */
-void SceneRendererBase::previewImage()
+void SceneRendererBase::previewImage() noexcept
 {
   using zisc::cast;
 
@@ -94,7 +95,7 @@ void SceneRendererBase::previewImage()
   \details
   No detailed.
   */
-void SceneRendererBase::renderImage(const QString& output_dir)
+void SceneRendererBase::renderImage(const QString& output_dir) noexcept
 {
   using zisc::cast;
 
@@ -139,12 +140,15 @@ void SceneRendererBase::renderImage(const QString& output_dir)
   No detailed.
   */
 inline
-void SceneRendererBase::outputMatrix(const Matrix4x4& matrix) const
+void SceneRendererBase::outputMatrix(const Matrix4x4& matrix) const noexcept
 {
+  using zisc::cast;
+
   QMatrix4x4 m;
+  using QtFloat = std::remove_reference_t<decltype(m(0, 0))>;
   for (int row = 0; row < 4; ++row) {
     for (int column = 0; column < 4; ++column) {
-      m(row, column) = matrix(row, column);
+      m(row, column) = cast<QtFloat>(matrix(row, column));
     }
   }
   if (!m.isIdentity()) {
@@ -157,7 +161,7 @@ void SceneRendererBase::outputMatrix(const Matrix4x4& matrix) const
   \details
   No detailed.
   */
-void SceneRendererBase::initialize(const SceneSettings& settings)
+void SceneRendererBase::initialize(const SceneSettings& settings) noexcept
 {
   using zisc::cast;
   using std::chrono::duration_cast;

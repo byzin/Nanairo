@@ -35,13 +35,19 @@ namespace nanairo {
 class Texture;
 
 /*!
+  */
+SurfaceModel::~SurfaceModel() noexcept
+{
+}
+
+/*!
   \details
   No detailed.
   */
 UniquePointer<SurfaceModel> makeSurface(
     const SceneSettings& settings,
     const QString& prefix,
-    const std::vector<const Texture*>& texture_list)
+    const std::vector<const Texture*>& texture_list) noexcept
 {
   using zisc::toHash32;
 

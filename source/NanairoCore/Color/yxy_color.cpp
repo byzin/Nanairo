@@ -19,7 +19,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-XyzColor YxyColor::toXyz() const
+XyzColor YxyColor::toXyz() const noexcept
 {
   const Float coefficient = Y() / y();
   return XyzColor{coefficient * x(), Y(), coefficient * (1.0 - x() - y())};

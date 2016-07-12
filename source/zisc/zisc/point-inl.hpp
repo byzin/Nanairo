@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_POINT_INL_HPP_
-#define _ZISC_POINT_INL_HPP_
+#ifndef ZISC_POINT_INL_HPP
+#define ZISC_POINT_INL_HPP
 
 #include "point.hpp"
 // Zisc
@@ -24,7 +24,7 @@ namespace zisc {
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-Point<Arithmetic, kN>::Point()
+Point<Arithmetic, kN>::Point() noexcept
 {
 }
 
@@ -33,7 +33,7 @@ Point<Arithmetic, kN>::Point()
   No detailed.
   */
 template <typename Arithmetic, uint kN> template <typename ...Types> inline
-Point<Arithmetic, kN>::Point(const Types ...values) :
+Point<Arithmetic, kN>::Point(const Types ...values) noexcept :
     Dimension<Arithmetic, kN>(values...)
 {
 }
@@ -43,7 +43,7 @@ Point<Arithmetic, kN>::Point(const Types ...values) :
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-Point<Arithmetic, kN>::Point(const ArrayType& array) :
+Point<Arithmetic, kN>::Point(const ArrayType& array) noexcept :
     Dimension<Arithmetic, kN>(array)
 {
 }
@@ -54,7 +54,7 @@ Point<Arithmetic, kN>::Point(const ArrayType& array) :
   */
 template <typename Arithmetic, uint kN> inline
 Vector<Arithmetic, kN> operator-(const Point<Arithmetic, kN>& a,
-                                 const Point<Arithmetic, kN>& b)
+                                 const Point<Arithmetic, kN>& b) noexcept
 {
   return Vector<Arithmetic, kN>{a.data() - b.data()};
 }
@@ -65,7 +65,7 @@ Vector<Arithmetic, kN> operator-(const Point<Arithmetic, kN>& a,
   */
 template <typename Arithmetic, uint kN> inline
 Point<Arithmetic, kN> operator+(const Point<Arithmetic, kN>& point,
-                                const Vector<Arithmetic, kN>& vector)
+                                const Vector<Arithmetic, kN>& vector) noexcept
 {
   return Point<Arithmetic, kN>{point.data() + vector.data()};
 }
@@ -76,7 +76,7 @@ Point<Arithmetic, kN> operator+(const Point<Arithmetic, kN>& point,
   */
 template <typename Arithmetic, uint kN> inline
 Point<Arithmetic, kN> operator+(const Vector<Arithmetic, kN>& vector,
-                                const Point<Arithmetic, kN>& point)
+                                const Point<Arithmetic, kN>& point) noexcept
 {
   return point + vector;
 }
@@ -87,11 +87,11 @@ Point<Arithmetic, kN> operator+(const Vector<Arithmetic, kN>& vector,
   */
 template <typename Arithmetic, uint kN> inline
 Point<Arithmetic, kN> operator-(const Point<Arithmetic, kN>& point,
-                                const Vector<Arithmetic, kN>& vector)
+                                const Vector<Arithmetic, kN>& vector) noexcept
 {
   return Point<Arithmetic, kN>{point.data() - vector.data()};
 }
 
 } // namespace zisc
 
-#endif // _ZISC_POINT_INL_HPP_
+#endif // ZISC_POINT_INL_HPP

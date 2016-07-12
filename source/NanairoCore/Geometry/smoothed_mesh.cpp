@@ -37,7 +37,7 @@ namespace nanairo {
 // Calculate curvature parameter
 Vector3 calcCurvatureParameter(const Vector3& distance,
                                const Vector3& normal0,
-                               const Vector3& normal1);
+                               const Vector3& normal1) noexcept;
 
 // Calculate surface parameters
 bool calcSurfaceParameter(const std::array<Float, 5>& a,
@@ -45,7 +45,7 @@ bool calcSurfaceParameter(const std::array<Float, 5>& a,
                           const std::array<Float, 6>& r,
                           Float* eta,
                           Float* xi,
-                          Float* t);
+                          Float* t) noexcept;
 
 /*!
   \details
@@ -56,7 +56,7 @@ SmoothedMesh::SmoothedMesh(const Point3& vertex0,
                            const Point3& vertex2,
                            const Vector3& normal0,
                            const Vector3& normal1,
-                           const Vector3& normal2)
+                           const Vector3& normal2) noexcept
 {
   initialize(vertex0, vertex1, vertex2, normal0, normal1, normal2);
 }
@@ -65,7 +65,7 @@ SmoothedMesh::SmoothedMesh(const Point3& vertex0,
   \details
   No detailed.
   */
-Aabb SmoothedMesh::boundingBox() const
+Aabb SmoothedMesh::boundingBox() const noexcept
 {
   // Distance
   const auto d0 = c_[1] + c_[4];
@@ -152,7 +152,7 @@ Aabb SmoothedMesh::boundingBox() const
   \details
   No detailed.
   */
-std::size_t SmoothedMesh::geometrySize() const
+std::size_t SmoothedMesh::geometrySize() const noexcept
 {
   return sizeof(SmoothedMesh);
 }
@@ -161,7 +161,7 @@ std::size_t SmoothedMesh::geometrySize() const
   \details
   No detailed.
   */
-Float SmoothedMesh::getTraversalCost() const
+Float SmoothedMesh::getTraversalCost() const noexcept
 {
   return 6.0;
 }
@@ -171,7 +171,7 @@ Float SmoothedMesh::getTraversalCost() const
   No detailed.
   */
 bool SmoothedMesh::testIntersection(const Ray& ray, 
-                                    IntersectionInfo* intersection) const
+                                    IntersectionInfo* intersection) const noexcept
 {
   const auto& e3 = ray.direction();
   auto e1 = zisc::cross(e3, c_[5]);
@@ -228,7 +228,7 @@ bool SmoothedMesh::testIntersection(const Ray& ray,
   \details
   No detailed.
   */
-std::tuple<SampledPoint, Vector3> SmoothedMesh::samplePoint(Sampler& sampler) const
+std::tuple<SampledPoint, Vector3> SmoothedMesh::samplePoint(Sampler& sampler) const noexcept
 {
   Float u = sampler.sample(0.0, 1.0);
   Float v = sampler.sample(0.0, 1.0);
@@ -247,7 +247,7 @@ std::tuple<SampledPoint, Vector3> SmoothedMesh::samplePoint(Sampler& sampler) co
   \details
   No detailed.
   */
-void SmoothedMesh::transform(const Matrix4x4& matrix)
+void SmoothedMesh::transform(const Matrix4x4& matrix) noexcept
 {
   affineTransform(matrix, treatAs<Point3*>(&c_[0]));
   for (uint i = 1; i < 6; ++i)
@@ -263,7 +263,7 @@ void SmoothedMesh::initialize(const Point3& vertex0,
                               const Point3& vertex2,
                               const Vector3& normal0,
                               const Vector3& normal1,
-                              const Vector3& normal2)
+                              const Vector3& normal2) noexcept
 {
   const Vector3 distance[3] = {vertex1 - vertex0,
                                vertex2 - vertex1,
@@ -287,10 +287,10 @@ void SmoothedMesh::initialize(const Point3& vertex0,
   */
 Vector3 calcCurvatureParameter(const Vector3& distance,
                                const Vector3& normal0,
-                               const Vector3& normal1)
+                               const Vector3& normal1) noexcept
 {
   const auto c = zisc::dot(normal0, normal1);
-//  ZISC_VALUE_ASSERT((0.0 <= c) && (c <= 1.0), c, "The c must be [0, 1].");
+//  ZISC_ASSERT((0.0 <= c) && (c <= 1.0), "The c must be [0, 1]: ", c);
   if (std::abs(c) == 1.0)
     return Vector3{};
   const auto delta_c = (1.0 - c) * 0.5;
@@ -318,7 +318,7 @@ bool calcSurfaceParameter(const std::array<Float, 5>& a,
                           const std::array<Float, 6>& r,
                           Float* eta,
                           Float* xi,
-                          Float* t)
+                          Float* t) noexcept
 {
   // Calc eta
   constexpr Float lambda_max = std::numeric_limits<Float>::max();
@@ -376,8 +376,8 @@ bool calcSurfaceParameter(const std::array<Float, 5>& a,
           *eta = e;
           *xi = x;
           *t = lambda;
-          ZISC_VALUE_ASSERT((0.0 <= x) && (x <= e), x, "The xi must be [0, eta].");
-          ZISC_VALUE_ASSERT((x <= e) && (e <= 1.0), e, "The eta must be [xi, 1].");
+          ZISC_ASSERT((0.0 <= x) && (x <= e), "The xi must be [0, eta]: ", x);
+          ZISC_ASSERT((x <= e) && (e <= 1.0), "The eta must be [xi, 1]: ", e);
         }
       }
     }

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_XYZ_COLOR_MATCHING_FUNCTION_HPP_
-#define _NANAIRO_XYZ_COLOR_MATCHING_FUNCTION_HPP_
+#ifndef NANAIRO_XYZ_COLOR_MATCHING_FUNCTION_HPP
+#define NANAIRO_XYZ_COLOR_MATCHING_FUNCTION_HPP
 
 // Zisc
 #include "zisc/arithmetic_array.hpp"
@@ -33,33 +33,33 @@ class XyzColorMatchingFunction
 {
  public:
   //! Create a xyz color matching function
-  XyzColorMatchingFunction(const SceneSettings& settings);
+  XyzColorMatchingFunction(const SceneSettings& settings) noexcept;
 
 
   //! In the emissive case, convert spectrums to XYZ using color matching function.
-  XyzColor toXyzInEmissiveCase(const SpectralDistribution& spectra) const;
+  XyzColor toXyzInEmissiveCase(const SpectralDistribution& spectra) const noexcept;
 
   //! In the nanairoive or transmissive case, convert spectrums to XYZ
-  XyzColor toXyzInReflectiveCase(const SpectralDistribution& spectra) const;
+  XyzColor toXyzInReflectiveCase(const SpectralDistribution& spectra) const noexcept;
 
   //! Return the x bar
-  const SpectralDistribution& xBar() const;
+  const SpectralDistribution& xBar() const noexcept;
 
   //! Return the y bar
-  const SpectralDistribution& yBar() const;
+  const SpectralDistribution& yBar() const noexcept;
 
   //! Return the z bar
-  const SpectralDistribution& zBar() const;
+  const SpectralDistribution& zBar() const noexcept;
 
  private:
   //! Initialize
-  void initialize(const SceneSettings& settings);
+  void initialize(const SceneSettings& settings) noexcept;
 
   //! Set standard illuminant
-  void setStandardIlluminant(const SceneSettings& settings);
+  void setStandardIlluminant(const SceneSettings& settings) noexcept;
 
   //! Set standard obverser
-  void setStandardObserver(const SceneSettings& settings);
+  void setStandardObserver(const SceneSettings& settings) noexcept;
 
 
   SpectralDistribution standard_illuminant_;
@@ -75,4 +75,4 @@ class XyzColorMatchingFunction
 
 #include "xyz_color_matching_function-inl.hpp"
 
-#endif // _NANAIRO_XYZ_COLOR_MATCHING_FUNCTION_HPP_
+#endif // NANAIRO_XYZ_COLOR_MATCHING_FUNCTION_HPP

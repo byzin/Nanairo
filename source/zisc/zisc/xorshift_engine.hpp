@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_XORSHFIT_ENGINE_HPP_
-#define _ZISC_XORSHFIT_ENGINE_HPP_
+#ifndef ZISC_XORSHIFT_ENGINE_HPP
+#define ZISC_XORSHIFT_ENGINE_HPP
 
 // Zisc
 #include "pseudo_random_number_engine.hpp"
@@ -23,9 +23,8 @@ namespace zisc {
  No detailed.
  */
 template <typename Type>
-class XorshiftEngine : public PseudoRandomNumberEngine<XorshiftEngine<Type>, 
-                                                       Type, 
-                                                       Type>
+class XorshiftEngine : 
+    public PseudoRandomNumberEngine<XorshiftEngine<Type>, Type, Type>
 {
  public:
   using SeedType = Type;
@@ -33,33 +32,35 @@ class XorshiftEngine : public PseudoRandomNumberEngine<XorshiftEngine<Type>,
   
 
   //! Initialize generator using default random seed
-  XorshiftEngine();
+  XorshiftEngine() noexcept;
 
   //! Initialize generator
-  XorshiftEngine(const SeedType seed);
+  XorshiftEngine(const SeedType seed) noexcept;
 
 
   //! Generate a random number
-  ResultType generate();
+  ResultType generate() noexcept;
 
   //! Generate a bounded random number x satisfying lower <= x < upper
   template <typename Arithmetic>
-  Arithmetic generate(const Arithmetic lower, const Arithmetic upper);
+  Arithmetic generate(const Arithmetic lower, const Arithmetic upper) noexcept;
 
   //! Return the largest possible value in the output range
-  static constexpr ResultType max();
+  static constexpr ResultType max() noexcept;
 
   //! Return the smallest possible value in the output range
-  static constexpr ResultType min();
+  static constexpr ResultType min() noexcept;
 
   //! Set random seed
-  void setSeed(const SeedType seed);
+  void setSeed(const SeedType seed) noexcept;
 
  private:
   //! Return the bounded number
   template <typename Float>
-  Float bound(const ResultType random, const Float lower, const Float upper,
-              EnableIfFloat<Float> = kEnabler) const;
+  Float bound(const ResultType random, 
+              const Float lower, 
+              const Float upper,
+              EnableIfFloat<Float> = kEnabler) const noexcept;
 
   
   static constexpr uint N = 16 / sizeof(SeedType);
@@ -75,4 +76,4 @@ using Xorshift128Plus = XorshiftEngine<uint64>;
 
 #include "xorshift_engine-inl.hpp"
 
-#endif // _ZISC_XORSHFIT_ENGINE_HPP_
+#endif // ZISC_XORSHIFT_ENGINE_HPP

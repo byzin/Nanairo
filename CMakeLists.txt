@@ -6,38 +6,45 @@
 # http://opensource.org/licenses/mit-license.php
 #
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.4)
 
-
-## The project information
-project(Nanairo VERSION 0.1.0 LANGUAGES CXX)
+## Set project information
+project(Nanairo VERSION 0.2.0 LANGUAGES CXX)
 message(STATUS "## Nanairo version: ${PROJECT_VERSION}")
-
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 include(${PROJECT_SOURCE_DIR}/cmake/project.cmake)
 setNanairoProperties()
 
-## Command option
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Debug")
+endif()
+
+# Build configuration
+include(${PROJECT_SOURCE_DIR}/cmake/general.cmake)
+restrictBuildDirectory(${PROJECT_SOURCE_DIR}/build)
+detectEnvironment(environment_definitions)
+# Command option
 include(${PROJECT_SOURCE_DIR}/cmake/option.cmake)
 setCommandOptions()
-if(NANAIRO_DEBUG)
-  add_definitions(-DZISC_DEBUG)
-  add_definitions(-DNANAIRO_DEBUG)
-endif()
-
-## Build configuration
-include(${PROJECT_SOURCE_DIR}/cmake/general.cmake)
-initializeBuildEnvironment()
+#
 include(${PROJECT_SOURCE_DIR}/cmake/compiler.cmake)
-setCompilerOptionsForCxx14()
-setCompilerWarningOptionsForCxx()
+setCompilerOption()
+getCompilerOption(cxx_compiler_flags cxx_linker_flags cxx_definitions)
 
-# Set dependencies
-if(z_linux)
-  set(nanairo_dependencies pthread)
-endif()
+# Libraries
+# Thread
+find_package(Threads REQUIRED)
+# Qt5
+include(${PROJECT_SOURCE_DIR}/cmake/qt5.cmake)
+findQt5(5.7 Core Gui Qml Quick)
+# Zisc
+include(${PROJECT_SOURCE_DIR}/source/zisc/config.cmake)
+loadZisc(zisc_source_files
+         zisc_include_dirs
+         zisc_compile_flags
+         zisc_linker_flags
+         zisc_definitions)
 
-## Copy resources
+# Copy resources
 if(NOT EXISTS ${PROJECT_BINARY_DIR}/resources)
   file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/resources)
   file(COPY ${PROJECT_SOURCE_DIR}/resources/image
@@ -46,44 +53,20 @@ if(NOT EXISTS ${PROJECT_BINARY_DIR}/resources)
        DESTINATION ${PROJECT_BINARY_DIR}/resources)
 endif()
 
-## Set nanairo settings
-include(${PROJECT_SOURCE_DIR}/cmake/keyword.cmake)
-setNanairoKeywords()
+# Build
+buildNanairo()
 
-
-addLibraries()
-
-##MakeConfigFiles()
-if(NANAIRO_BUILD_DOCUMENTS)
+# Document
+if(${NANAIRO_BUILD_DOCUMENTS})
   include(${PROJECT_SOURCE_DIR}/cmake/document.cmake)
   buildDocuments()
 endif()
 
-
-## Make execution file
-addQtResources(nanairo_core_resource_file 
-               ${PROJECT_SOURCE_DIR}/resources/resource.qrc)
-addQtResources(nanairo_gui_resource_file 
-               ${PROJECT_BINARY_DIR}/resource/nanairo_gui.qrc)
-add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/source/main.cpp 
-                               ${nanairo_gui_resource_file} 
-                               ${nanairo_core_resource_file})
-target_link_libraries(${PROJECT_NAME} ${qt5_libraries} -pthread
-                                      ${nanairo_renderer_library}
-                                      ${nanairo_gui_library})
-
-if (NANAIRO_TEST)
+# Unit test
+if(${NANAIRO_BUILD_TEST})
   include(${PROJECT_SOURCE_DIR}/cmake/test.cmake)
   buildTest()
 endif()
 
-## Build extra tools
-#if(NANAIRO_BUILD_EXTRA_TOOLS)
-#  include(${PROJECT_SOURCE_DIR}/tools/spectra_rmse_calculator/config.cmake)
-#  BuildSpectraRmseCalculator()
-#endif()
-#
-#BuildSizeChecker()
-
-include(${PROJECT_SOURCE_DIR}/cmake/packaging.cmake)
-setupPackagingInfo()
+# include(${PROJECT_SOURCE_DIR}/cmake/packaging.cmake)
+# setupPackagingInfo()

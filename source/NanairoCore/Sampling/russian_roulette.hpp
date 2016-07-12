@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_RUSSIAN_ROULETTE_HPP_
-#define _NANAIRO_RUSSIAN_ROULETTE_HPP_
+#ifndef NANAIRO_RUSSIAN_ROULETTE_HPP
+#define NANAIRO_RUSSIAN_ROULETTE_HPP
 
 // Standard C++ library
 #include <functional>
@@ -38,23 +38,23 @@ class RouletteResult
 {
  public:
   //! Create result
-  RouletteResult();
+  RouletteResult() noexcept;
 
   //! Create result
-  RouletteResult(const bool result, const Float probability);
+  RouletteResult(const bool result, const Float probability) noexcept;
 
 
   //! Return the probability
-  Float probability() const;
+  Float probability() const noexcept;
 
   //! Return the result
-  bool result() const;
+  bool result() const noexcept;
 
   //! Set probability
-  void setProbability(const Float probability);
+  void setProbability(const Float probability) noexcept;
 
   //! Set result
-  void setResult(const bool result);
+  void setResult(const bool result) noexcept;
 
  private:
   Float probability_;
@@ -66,14 +66,14 @@ template <uint kSampleSize>
 RouletteResult playRussianRouletteWithAverage(
     const uint path,
     const SampledSpectra<kSampleSize>& weight,
-    Sampler& sampler);
+    Sampler& sampler) noexcept;
 
 //! Play russian roulette
 template <uint kSampleSize>
 RouletteResult playRussianRouletteWithMax(
     const uint path,
     const SampledSpectra<kSampleSize>& weight,
-    Sampler& sampler);
+    Sampler& sampler) noexcept;
 
 //! Play russian roulette
 template <uint kSampleSize>
@@ -81,7 +81,7 @@ RouletteResult playRussianRouletteWithPath(
     const uint max_path,
     const uint path,
     const SampledSpectra<kSampleSize>& weight,
-    Sampler& sampler);
+    Sampler& sampler) noexcept;
 
 template <uint kSampleSize>
 using RussianRouletteFunction = 
@@ -93,7 +93,7 @@ using RussianRouletteFunction =
 template <uint kSampleSize>
 RussianRouletteFunction<kSampleSize> makeRussianRoulette(
     const SceneSettings& settings,
-    const QString& prefix);
+    const QString& prefix) noexcept;
 
 //! \} Core
 
@@ -101,4 +101,4 @@ RussianRouletteFunction<kSampleSize> makeRussianRoulette(
 
 #include "russian_roulette-inl.hpp"
 
-#endif // _NANAIRO_RUSSIAN_ROULETTE_HPP_
+#endif // NANAIRO_RUSSIAN_ROULETTE_HPP

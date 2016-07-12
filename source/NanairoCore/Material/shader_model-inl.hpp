@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SHADER_MODEL_INL_HPP_
-#define _NANAIRO_SHADER_MODEL_INL_HPP_
+#ifndef NANAIRO_SHADER_MODEL_INL_HPP
+#define NANAIRO_SHADER_MODEL_INL_HPP
 
 #include "shader_model.hpp"
 // Standard C++ library
@@ -33,7 +33,7 @@ class SurfaceModel;
   No detailed.
   */
 template <uint kSampleSize> inline
-ShaderModel<kSampleSize>::ShaderModel()
+ShaderModel<kSampleSize>::ShaderModel() noexcept
 {
 }
 
@@ -42,7 +42,7 @@ ShaderModel<kSampleSize>::ShaderModel()
   No detailed.
   */
 template <uint kSampleSize> inline
-void ShaderModel<kSampleSize>::operator delete(void*)
+void ShaderModel<kSampleSize>::operator delete(void*) noexcept
 {
 }
 
@@ -51,7 +51,7 @@ void ShaderModel<kSampleSize>::operator delete(void*)
   No detailed.
   */
 template <uint kSampleSize> inline
-void* ShaderModel<kSampleSize>::operator new(std::size_t, void* memory)
+void* ShaderModel<kSampleSize>::operator new(std::size_t, void* memory) noexcept
 {
   return memory;
 }
@@ -65,7 +65,7 @@ Float ShaderModel<kSampleSize>::evaluatePdf(
     const Vector3* /* vin */, 
     const Vector3* /* vout */,
     const Vector3& /* normal */,
-    const Wavelengths& /* wavelengths */) const
+    const Wavelengths& /* wavelengths */) const noexcept
 {
   zisc::raiseError("The evaluatePdf function is not implemented.");
   return 0.0;
@@ -80,7 +80,7 @@ auto ShaderModel<kSampleSize>::evaluateRadiance(
     const Vector3* /* vin */, 
     const Vector3* /* vout */,
     const Vector3& /* normal */,
-    const Wavelengths& wavelengths) const -> Spectra
+    const Wavelengths& wavelengths) const noexcept -> Spectra
 {
   zisc::raiseError("The evaluatePdf function is not implemented.");
   return Spectra{wavelengths};
@@ -95,7 +95,7 @@ auto ShaderModel<kSampleSize>::evaluateRadianceAndPdf(
     const Vector3* /* vin */,
     const Vector3* /* vout */,
     const Vector3& /* normal */,
-    const Wavelengths& wavelengths) const -> std::tuple<Spectra, Float>
+    const Wavelengths& wavelengths) const noexcept -> std::tuple<Spectra, Float>
 {
   zisc::raiseError("The evaluateRadianceAndPdf function is not implemented.");
   return std::make_tuple(Spectra{wavelengths}, 0.0);
@@ -110,7 +110,7 @@ auto ShaderModel<kSampleSize>::sample(
     const Vector3* /* vin */,
     const Vector3& /* normal */,
     const Wavelengths& wavelengths,
-    Sampler& /* sampler */) const -> std::tuple<SampledDirection, Spectra>
+    Sampler& /* sampler */) const noexcept -> std::tuple<SampledDirection, Spectra>
 {
   zisc::raiseError("The sample function is not implemented.");
   return std::make_tuple(SampledDirection{}, Spectra{wavelengths});
@@ -118,4 +118,4 @@ auto ShaderModel<kSampleSize>::sample(
 
 } // namespace nanairo
 
-#endif // _NANAIRO_SHADER_MODEL_INL_HPP_
+#endif // NANAIRO_SHADER_MODEL_INL_HPP

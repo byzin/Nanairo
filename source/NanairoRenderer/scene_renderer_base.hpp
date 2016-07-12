@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SCENE_RENDERER_BASE_HPP_
-#define _NANAIRO_SCENE_RENDERER_BASE_HPP_
+#ifndef NANAIRO_SCENE_RENDERER_BASE_HPP
+#define NANAIRO_SCENE_RENDERER_BASE_HPP
 
 // Qt
 #include <QImage>
@@ -42,36 +42,36 @@ class SceneRendererBase : public QObject
 
  public:
   //! Create a renderer
-  SceneRendererBase();
+  SceneRendererBase() noexcept;
 
   //! Finalize the renderer
-  virtual ~SceneRendererBase();
+  virtual ~SceneRendererBase() noexcept;
 
 
   //! Initialize the renderer
-  void initialize(const SceneSettings& settings);
+  void initialize(const SceneSettings& settings) noexcept;
 
   //! Return the LDR image format
-  const QString& ldrImageFormat() const;
+  const QString& ldrImageFormat() const noexcept;
 
   //! Preview the rendered image
-  void previewImage();
+  void previewImage() noexcept;
 
   //! Render the scene image
-  void renderImage(const QString& output_dir);
+  void renderImage(const QString& output_dir) noexcept;
 
   //! Return the rendered image
-  const QImage& renderedImage() const;
+  const QImage& renderedImage() const noexcept;
 
  public slots:
   //! Handle mouse event in preview rendering
   void handlePreviewMouseEvent(const int buttons,
                                const int delta_x,
                                const int delta_y,
-                               const int delta_wheel);
+                               const int delta_wheel) noexcept;
 
   //! Stop rendering
-  void stopRendering() const;
+  void stopRendering() const noexcept;
 
  signals:
   //! Called when rendering is finished
@@ -94,54 +94,54 @@ class SceneRendererBase : public QObject
 
 
   //! Return the camera event
-  const CameraEvent& cameraEvent() const;
+  const CameraEvent& cameraEvent() const noexcept;
 
   //! Return the camera matrix
-  const Matrix4x4& cameraMatrix() const;
+  const Matrix4x4& cameraMatrix() const noexcept;
 
   //! Return the camera matrix
-  Matrix4x4& cameraMatrix();
+  Matrix4x4& cameraMatrix() noexcept;
 
   //! Convert the spectra buffer to HDR XYZ buffer
-  virtual void convertSpectraToHdr(const quint64 cycle) = 0;
+  virtual void convertSpectraToHdr(const quint64 cycle) noexcept = 0;
 
   //! Handle the camera event
-  virtual void handleCameraEvent() = 0;
+  virtual void handleCameraEvent() noexcept = 0;
 
   //! Initialize the renderer
-  virtual void initializeRenderer(const SceneSettings& settings) = 0;
+  virtual void initializeRenderer(const SceneSettings& settings) noexcept = 0;
 
   //! Render the scene image
-  virtual void render(const quint64 cycle) = 0;
+  virtual void render(const quint64 cycle) noexcept = 0;
 
   //! Return the rendered image
-  QImage& renderedImage();
+  QImage& renderedImage() noexcept;
 
   //! Tonemap
-  virtual void toneMap() = 0;
+  virtual void toneMap() noexcept = 0;
 
  private:
   //! Handle the camera event
-  void handleCameraEvent(quint64* cycle, zisc::Stopwatch* stopwatch);
+  void handleCameraEvent(quint64* cycle, zisc::Stopwatch* stopwatch) noexcept;
 
   //! Check if the current cycle is to save image
-  bool isCycleToSaveImage(const quint64 cycle) const;
+  bool isCycleToSaveImage(const quint64 cycle) const noexcept;
 
   //! Check if the current cycle is last
-  bool isLastCycle(const quint64 cycle) const;
+  bool isLastCycle(const quint64 cycle) const noexcept;
 
   //! Check if the current time is to save image
   bool isTimeToSaveImage(const Clock::duration& time, 
-                         Clock::rep* interval_count) const;
+                         Clock::rep* interval_count) const noexcept;
 
   //! Output the transformation matrix
-  void outputMatrix(const Matrix4x4& matrix) const;
+  void outputMatrix(const Matrix4x4& matrix) const noexcept;
 
   //! Save LDR iamge
-  void saveLdrImage(const quint64 cycle, const QString& output_dir) const;
+  void saveLdrImage(const quint64 cycle, const QString& output_dir) const noexcept;
 
   //! Wait for next frame, if necessary
-  bool waitForNextFrame(const Clock::duration& delta_time) const;
+  bool waitForNextFrame(const Clock::duration& delta_time) const noexcept;
 
 
   Matrix4x4 camera_matrix_;
@@ -159,4 +159,4 @@ class SceneRendererBase : public QObject
 
 #include "scene_renderer_base-inl.hpp"
 
-#endif // _NANAIRO_SCENE_RENDERER_BASE_HPP_
+#endif // NANAIRO_SCENE_RENDERER_BASE_HPP

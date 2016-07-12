@@ -41,7 +41,7 @@ namespace nanairo {
   No detailed.
   */
 ApproximateAgglomerativeClusteringBvh::ApproximateAgglomerativeClusteringBvh(
-    const SceneSettings& settings, const QString& prefix) :
+    const SceneSettings& settings, const QString& prefix) noexcept :
         Bvh(settings, prefix)
 {
   initialize(settings, prefix);
@@ -57,11 +57,13 @@ auto ApproximateAgglomerativeClusteringBvh::buildTree(
     const uint64 bit,
     MortonCodeIterator begin,
     MortonCodeIterator end,
-    std::vector<Float>& distance_matrix) const
+    std::vector<Float>& distance_matrix) const noexcept
     -> std::vector<ClusterPointer> 
 {
+  using zisc::cast;
+
   std::vector<ClusterPointer> cluster_list;
-  const uint num_of_primitives = std::distance(begin, end);
+  const uint num_of_primitives = cast<uint>(std::distance(begin, end));
   if (num_of_primitives < delta()) {
     cluster_list.reserve(num_of_primitives);
     for (auto iterator = begin; iterator != end; ++iterator)
@@ -126,14 +128,17 @@ auto ApproximateAgglomerativeClusteringBvh::buildTree(
 void ApproximateAgglomerativeClusteringBvh::combineClusters(
     const uint n,
     std::vector<ClusterPointer>& cluster_list,
-    std::vector<Float>& distance_matrix) const
+    std::vector<Float>& distance_matrix) const noexcept
 {
+  using zisc::cast;
+
   if (cluster_list.size() <= n)
     return;
   initializeDistanceMatrix(cluster_list, distance_matrix);
   while (true) {
     // Find the best match
-    const auto position = findBestMatch(cluster_list.size(), distance_matrix);
+    const auto position = findBestMatch(cast<uint>(cluster_list.size()), 
+                                        distance_matrix);
     const auto row = std::get<0>(position);
     const auto column = std::get<1>(position);
     ZISC_ASSERT(column < row, "Column must be smaller than row.");
@@ -164,10 +169,12 @@ void ApproximateAgglomerativeClusteringBvh::combineClusters(
 void ApproximateAgglomerativeClusteringBvh::constructBvh(
     System& system ,
     const std::vector<Object>& object_list,
-    std::vector<BvhNode>& tree) const
+    std::vector<BvhNode>& tree) const noexcept
 {
+  using zisc::cast;
+
   // Allocate memory
-  const uint num_of_objects = object_list.size();
+  const uint num_of_objects = cast<uint>(object_list.size());
   tree.resize((num_of_objects << 1) - 1);
   
   // Sort leaf nodes by the morton code
@@ -198,7 +205,7 @@ void ApproximateAgglomerativeClusteringBvh::constructBvh(
   No detailed.
   */
 inline
-uint ApproximateAgglomerativeClusteringBvh::delta() const
+uint ApproximateAgglomerativeClusteringBvh::delta() const noexcept
 {
   return delta_;
 }
@@ -208,7 +215,7 @@ uint ApproximateAgglomerativeClusteringBvh::delta() const
   No detailed.
   */
 inline
-uint ApproximateAgglomerativeClusteringBvh::f(const uint n) const
+uint ApproximateAgglomerativeClusteringBvh::f(const uint n) const noexcept
 {
   using zisc::cast;
   return cast<uint>(c_ * std::pow(cast<Float>(n), k_));
@@ -219,7 +226,7 @@ uint ApproximateAgglomerativeClusteringBvh::f(const uint n) const
   No detailed.
   */
 inline
-uint ApproximateAgglomerativeClusteringBvh::fDelta() const
+uint ApproximateAgglomerativeClusteringBvh::fDelta() const noexcept
 {
   return f_delta_;
 }
@@ -230,7 +237,7 @@ uint ApproximateAgglomerativeClusteringBvh::fDelta() const
   */
 std::tuple<uint, uint> ApproximateAgglomerativeClusteringBvh::findBestMatch(
     const uint n,
-    const std::vector<Float>& distance_matrix) const
+    const std::vector<Float>& distance_matrix) const noexcept
 {
   uint row = 1,
        column = 0;
@@ -256,7 +263,7 @@ std::tuple<uint, uint> ApproximateAgglomerativeClusteringBvh::findBestMatch(
   No detailed.
   */
 void ApproximateAgglomerativeClusteringBvh::initialize(const SceneSettings& settings,
-                                                       const QString& prefix)
+                                                       const QString& prefix) noexcept
 {
   using zisc::cast;
 
@@ -277,9 +284,11 @@ void ApproximateAgglomerativeClusteringBvh::initialize(const SceneSettings& sett
   */
 void ApproximateAgglomerativeClusteringBvh::initializeDistanceMatrix(
     const std::vector<ClusterPointer>& cluster_list,
-    std::vector<Float>& distance_matrix) const
+    std::vector<Float>& distance_matrix) const noexcept
 {
-  const uint n = cluster_list.size();
+  using zisc::cast;
+
+  const uint n = cast<uint>(cluster_list.size());
   const auto k = (n * (n - 1)) / 2;
   if (distance_matrix.size() < k)
     distance_matrix.resize(k, 0.0);
@@ -304,7 +313,7 @@ void ApproximateAgglomerativeClusteringBvh::initializeDistanceMatrix(
 uint32 ApproximateAgglomerativeClusteringBvh::setNode(
     const AgglomerativeCluster& cluster, 
     std::vector<BvhNode>& tree,
-    uint& number) const
+    uint& number) const noexcept
 {
   const uint32 index = zisc::cast<uint32>(number);
   ZISC_ASSERT(index < tree.size(), "BVH overflow!");
@@ -337,10 +346,12 @@ void ApproximateAgglomerativeClusteringBvh::updateDistanceMatrix(
     const std::vector<ClusterPointer>& cluster_list,
     const uint row,
     const uint column,
-    std::vector<Float>& distance_matrix) const
+    std::vector<Float>& distance_matrix) const noexcept
 {
+  using zisc::cast;
+
   ZISC_ASSERT(column < row, "Column must be samller than row.");
-  const uint n = cluster_list.size();
+  const uint n = cast<uint>(cluster_list.size());
   const uint k = (n * (n - 1)) / 2;
   // Re-calculation fase
   const auto& new_cluster = cluster_list[column];

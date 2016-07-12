@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_RENDERED_IMAGE_PROVIDER_INL_HPP_
-#define _NANAIRO_RENDERED_IMAGE_PROVIDER_INL_HPP_
+#ifndef NANAIRO_RENDERED_IMAGE_PROVIDER_INL_HPP
+#define NANAIRO_RENDERED_IMAGE_PROVIDER_INL_HPP
 
 #include "rendered_image_provider.hpp"
 // Qt
@@ -21,11 +21,11 @@ namespace nanairo {
   No detailed.
   */
 inline
-void RenderedImageProvider::setImage(const QImage* image)
+void RenderedImageProvider::setImage(const QImage* image) noexcept
 {
   image_ = image;
 }
 
 } // namespace nanairo
 
-#endif // _NANAIRO_RENDERED_IMAGE_PROVIDER_INL_HPP_
+#endif // NANAIRO_RENDERED_IMAGE_PROVIDER_INL_HPP

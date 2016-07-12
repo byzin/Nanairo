@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_MICROFACET_INL_HPP_
-#define _NANAIRO_MICROFACET_INL_HPP_
+#ifndef NANAIRO_MICROFACET_INL_HPP
+#define NANAIRO_MICROFACET_INL_HPP
 
 #include "microfacet.hpp"
 // Standard C++ library
@@ -33,7 +33,7 @@ inline
 SampledDirection getMicrofacetReflectionDirection(
     const Vector3& vin,
     const SampledDirection& microfacet_normal,
-    const Float cos_theta_mi)
+    const Float cos_theta_mi) noexcept
 {
   const auto& normal = microfacet_normal.direction();
   const auto vout = getFresnelReflectionDirection(vin, normal, cos_theta_mi);
@@ -50,7 +50,7 @@ SampledDirection getMicrofacetReflectionDirection(
   */
 inline
 Vector3 getMicrofacetReflectionHalfVector(const Vector3& vin, 
-                                          const Vector3& vout)
+                                          const Vector3& vout) noexcept
 {
   const auto half_vector = vout - vin;
   return half_vector.normalized();
@@ -61,7 +61,7 @@ Vector3 getMicrofacetReflectionHalfVector(const Vector3& vin,
   No detailed.
   */
 inline
-Float getMicrofacetReflectionInverseJacobian(const Float cos_theta_mi)
+Float getMicrofacetReflectionInverseJacobian(const Float cos_theta_mi) noexcept
 {
   const Float inverse_jacobian = 4.0 * cos_theta_mi;
   ZISC_ASSERT(0.0 < inverse_jacobian, "Jacobian must be positive.");
@@ -78,7 +78,7 @@ SampledDirection getMicrofacetRefractionDirection(
     const SampledDirection& microfacet_normal,
     const Float cos_theta_mi,
     const Float n,
-    const Float g)
+    const Float g) noexcept
 {
   // Direction
   const auto& m_normal = microfacet_normal.direction();
@@ -105,7 +105,7 @@ SampledDirection getMicrofacetRefractionDirection(
 inline
 Vector3 getMicrofacetRefractionHalfVector(const Vector3& vin,
                                           const Vector3& vout,
-                                          const Float n)
+                                          const Float n) noexcept
 {
   return (vin - n * vout).normalized();
 }
@@ -117,7 +117,7 @@ Vector3 getMicrofacetRefractionHalfVector(const Vector3& vin,
 inline
 Float getMicrofacetRefractionInverseJacobian(const Float cos_theta_mi,
                                              const Float cos_theta_mo,
-                                             const Float n)
+                                             const Float n) noexcept
 {
   const Float tmp = cos_theta_mi + n * cos_theta_mo;
   const Float inverse_jacobian = (tmp * tmp) / (n * n * -cos_theta_mo);
@@ -127,4 +127,4 @@ Float getMicrofacetRefractionInverseJacobian(const Float cos_theta_mi,
 
 } // namespace nanairo
 
-#endif // _NANAIRO_MICROFACET_INL_HPP_
+#endif // NANAIRO_MICROFACET_INL_HPP

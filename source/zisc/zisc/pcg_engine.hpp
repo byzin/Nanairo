@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_PCG_ENGINE_HPP_
-#define _ZISC_PCG_ENGINE_HPP_
+#ifndef ZISC_PCG_ENGINE_HPP
+#define ZISC_PCG_ENGINE_HPP
 
 // Standard C++ library
 #include <type_traits>
@@ -41,8 +41,8 @@ template <PcgBase Base, PcgAlgorithm Algorithm, typename Seed, typename Result>
 class PcgEngine : public PseudoRandomNumberEngine<
     PcgEngine<Base, Algorithm, Seed, Result>, Seed, Result>
 {
-  static_assert(kIsUnsignedInteger<Seed>, "Seed must be unsigned integer type.");
-  static_assert(kIsUnsignedInteger<Result>, "Result must be unsigned integer type.");
+  static_assert(kIsUnsignedInteger<Seed>, "Seed isn't unsigned integer type.");
+  static_assert(kIsUnsignedInteger<Result>, "Result isn't unsigned integer type.");
 
  public:
   using SeedType = Seed;
@@ -50,47 +50,47 @@ class PcgEngine : public PseudoRandomNumberEngine<
 
 
   //! Initialize
-  PcgEngine();
+  PcgEngine() noexcept;
 
   //! Initialize
-  PcgEngine(const SeedType seed);
+  PcgEngine(const SeedType seed) noexcept;
 
 
   //! Generate a random number
-  ResultType generate();
+  ResultType generate() noexcept;
 
   //! Generate a bounded random number
   template <typename Arithmetic>
-  Arithmetic generate(const Arithmetic lower, const Arithmetic upper);
+  Arithmetic generate(const Arithmetic lower, const Arithmetic upper) noexcept;
 
   //! Return the maximum value
-  static constexpr ResultType max();
+  static constexpr ResultType max() noexcept;
 
   //! Return the minimum value
-  static constexpr ResultType min();
+  static constexpr ResultType min() noexcept;
 
   //! Set seed
-  void setSeed(const SeedType seed);
+  void setSeed(const SeedType seed) noexcept;
 
  private:
   //! Bound
   template <typename Type>
-  Type bound(const ResultType random, const Type lower, const Type upper) const;
+  Type bound(const ResultType random, const Type lower, const Type upper) const noexcept;
 
   //! Bump
-  SeedType bump(const SeedType state) const;
+  SeedType bump(const SeedType state) const noexcept;
 
   //! Return the default increment
-  static constexpr SeedType increment();
+  static constexpr SeedType increment() noexcept;
 
   //! Return the default multiplier
-  static constexpr SeedType multiplier();
+  static constexpr SeedType multiplier() noexcept;
 
   //! Next state
-  void next();
+  void next() noexcept;
 
   //! Output random
-  ResultType output(SeedType internal) const;
+  ResultType output(SeedType internal) const noexcept;
 
 
   SeedType state_;
@@ -114,4 +114,4 @@ using PcgMcgRxsMXs32 = PcgMcgEngine<PcgAlgorithm::RxsMXs, uint32, uint32>;
 
 #include "pcg_engine-inl.hpp"
 
-#endif // _ZISC_PCG_ENGINE_HPP_
+#endif // ZISC_PCG_ENGINE_HPP

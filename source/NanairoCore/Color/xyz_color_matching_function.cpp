@@ -26,7 +26,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-XyzColorMatchingFunction::XyzColorMatchingFunction(const SceneSettings& settings)
+XyzColorMatchingFunction::XyzColorMatchingFunction(const SceneSettings& settings) noexcept
 {
   initialize(settings);
 }
@@ -35,7 +35,7 @@ XyzColorMatchingFunction::XyzColorMatchingFunction(const SceneSettings& settings
   \details
   No detailed.
   */
-void XyzColorMatchingFunction::initialize(const SceneSettings& settings)
+void XyzColorMatchingFunction::initialize(const SceneSettings& settings) noexcept
 {
   setStandardObserver(settings);
   setStandardIlluminant(settings);
@@ -46,7 +46,7 @@ void XyzColorMatchingFunction::initialize(const SceneSettings& settings)
   \details
   No detailed.
   */
-void XyzColorMatchingFunction::setStandardIlluminant(const SceneSettings& settings)
+void XyzColorMatchingFunction::setStandardIlluminant(const SceneSettings& settings) noexcept
 {
   using zisc::toHash32;
 
@@ -71,7 +71,7 @@ void XyzColorMatchingFunction::setStandardIlluminant(const SceneSettings& settin
   \details
   No detailed.
   */
-void XyzColorMatchingFunction::setStandardObserver(const SceneSettings& settings)
+void XyzColorMatchingFunction::setStandardObserver(const SceneSettings& settings) noexcept
 {
   using zisc::toHash32;
 

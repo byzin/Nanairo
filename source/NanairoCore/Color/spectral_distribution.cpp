@@ -39,29 +39,29 @@
 namespace nanairo {
 
 //! Check if the data is RGB
-bool isRgbData(const SceneSettings& settings, const QString& prefix);
+bool isRgbData(const SceneSettings& settings, const QString& prefix) noexcept;
 
 //! Load spectra data from a spectra file
-zisc::LinearInterp<Float> loadSpectraData(const QString& file_path);
+zisc::LinearInterp<Float> loadSpectraData(const QString& file_path) noexcept;
 
 //! Make a RGB
 RgbColor makeRgb(const System& system, 
                  const SceneSettings& settings, 
-                 const QString& prefix);
+                 const QString& prefix) noexcept;
 
 //! Convert emissive spectra to RGB spectra
 SpectralDistribution toEmissiveRgbSpectra(const System& system,
-                                          const SpectralDistribution& spectra);
+                                          const SpectralDistribution& spectra) noexcept;
 
 //! Convert nanairoive spectra to RGB spectra
 SpectralDistribution toReflectiveRgbSpectra(const System& system,
-                                            const SpectralDistribution& spectra);
+                                            const SpectralDistribution& spectra) noexcept;
 
 /*!
   \details
   No detailed.
   */
-void SpectralDistribution::clamp(const Float min, const Float max)
+void SpectralDistribution::clamp(const Float min, const Float max) noexcept
 {
   distribution_.clamp(min, max);
 }
@@ -70,7 +70,7 @@ void SpectralDistribution::clamp(const Float min, const Float max)
   \details
   No detailed.
   */
-void SpectralDistribution::correctGamma(const Float gamma)
+void SpectralDistribution::correctGamma(const Float gamma) noexcept
 {
   for (uint index = 0; index < size(); ++index)
     distribution_[index] = zisc::pow(distribution_[index], gamma);
@@ -80,7 +80,7 @@ void SpectralDistribution::correctGamma(const Float gamma)
   \details
   No detailed.
   */
-XyzColor SpectralDistribution::toEmissiveXyz(const System& system) const
+XyzColor SpectralDistribution::toEmissiveXyz(const System& system) const noexcept
 {
   if (system.isRgbRenderingMode()) {
     const RgbColor rgb{getByWavelength(kRedWavelength),
@@ -98,7 +98,7 @@ XyzColor SpectralDistribution::toEmissiveXyz(const System& system) const
   \details
   No detailed.
   */
-XyzColor SpectralDistribution::toReflectiveXyz(const System& system) const
+XyzColor SpectralDistribution::toReflectiveXyz(const System& system) const noexcept
 {
   if (system.isRgbRenderingMode()) {
     const RgbColor rgb{getByWavelength(kRedWavelength),
@@ -116,7 +116,7 @@ XyzColor SpectralDistribution::toReflectiveXyz(const System& system) const
   \details
   No detailed.
   */
-bool isRgbData(const SceneSettings& settings, const QString& prefix)
+bool isRgbData(const SceneSettings& settings, const QString& prefix) noexcept
 {
   return settings.booleanValue(prefix + "/" + keyword::isRgbMode);
 }
@@ -125,7 +125,7 @@ bool isRgbData(const SceneSettings& settings, const QString& prefix)
   \details
   No detailed.
   */
-zisc::LinearInterp<Float> loadSpectraData(const QString& file_path)
+zisc::LinearInterp<Float> loadSpectraData(const QString& file_path) noexcept
 {
   // Open distribution file
   QFile csv_file{file_path};
@@ -155,7 +155,7 @@ zisc::LinearInterp<Float> loadSpectraData(const QString& file_path)
 SpectralDistribution makeEmissiveDistribution(
     const System& system,
     const SceneSettings& settings, 
-    const QString& prefix)
+    const QString& prefix) noexcept
 {
   if (isRgbData(settings, prefix)) {
     const auto rgb = makeRgb(system, settings, prefix);
@@ -178,7 +178,7 @@ SpectralDistribution makeEmissiveDistribution(
 SpectralDistribution makeReflectiveDistribution(
     const System& system,
     const SceneSettings& settings, 
-    const QString& prefix)
+    const QString& prefix) noexcept
 {
   if (isRgbData(settings, prefix)) {
     const auto rgb = makeRgb(system, settings, prefix);
@@ -200,7 +200,7 @@ SpectralDistribution makeReflectiveDistribution(
   */
 RgbColor makeRgb(const System& system, 
                  const SceneSettings& settings, 
-                 const QString& prefix)
+                 const QString& prefix) noexcept
 {
   const auto key = prefix + "/" + keyword::rgbColor;
   const auto color = settings.colorValue(key);
@@ -216,7 +216,7 @@ RgbColor makeRgb(const System& system,
   No detailed.
   */
 SpectralDistribution makeEmissiveSpectra(const SceneSettings& settings, 
-                                         const QString& prefix)
+                                         const QString& prefix) noexcept
 {
   auto spectra = makeSpectra(settings, prefix);
   spectra.clamp(0.0, spectra.max());
@@ -229,7 +229,7 @@ SpectralDistribution makeEmissiveSpectra(const SceneSettings& settings,
   No detailed.
   */
 SpectralDistribution makeReflectiveSpectra(const SceneSettings& settings, 
-                                           const QString& prefix)
+                                           const QString& prefix) noexcept
 {
   auto spectra = makeSpectra(settings, prefix);
   spectra.clamp(0.0, 1.0);
@@ -241,7 +241,7 @@ SpectralDistribution makeReflectiveSpectra(const SceneSettings& settings,
   No detailed.
   */
 SpectralDistribution makeSpectra(const SceneSettings& settings, 
-                                 const QString& prefix)
+                                 const QString& prefix) noexcept
 {
   const auto key = prefix + "/" + keyword::spectraFilePath;
   const auto file_path = settings.stringValue(key);
@@ -252,7 +252,7 @@ SpectralDistribution makeSpectra(const SceneSettings& settings,
   \details
   No detailed.
   */
-SpectralDistribution makeSpectra(const QString& file_path)
+SpectralDistribution makeSpectra(const QString& file_path) noexcept
 {
   using zisc::cast;
 
@@ -270,7 +270,7 @@ SpectralDistribution makeSpectra(const QString& file_path)
   No detailed.
   */
 SpectralDistribution toEmissiveRgbSpectra(const System& system,
-                                          const SpectralDistribution& spectra)
+                                          const SpectralDistribution& spectra) noexcept
 {
   const auto& cmf = system.xyzColorMatchingFunction();
   const auto xyz = cmf.toXyzInEmissiveCase(spectra);
@@ -284,7 +284,7 @@ SpectralDistribution toEmissiveRgbSpectra(const System& system,
   No detailed.
   */
 SpectralDistribution toReflectiveRgbSpectra(const System& system,
-                                            const SpectralDistribution& spectra)
+                                            const SpectralDistribution& spectra) noexcept
 {
   const auto& cmf = system.xyzColorMatchingFunction();
   const auto xyz = cmf.toXyzInReflectiveCase(spectra);
@@ -297,7 +297,7 @@ SpectralDistribution toReflectiveRgbSpectra(const System& system,
   \details
   No detailed.
   */
-SpectralDistribution toRgbSpectra(const RgbColor& rgb)
+SpectralDistribution toRgbSpectra(const RgbColor& rgb) noexcept
 {
   SpectralDistribution rgb_spectra;
   rgb_spectra.setByWavelength(kBlueWavelength, rgb.blue());
@@ -310,7 +310,7 @@ SpectralDistribution toRgbSpectra(const RgbColor& rgb)
   \details
   No detailed.
   */
-SpectralDistribution toSpectra(const System& system, const RgbColor& color)
+SpectralDistribution toSpectra(const System& system, const RgbColor& color) noexcept
 {
   using zisc::cast;
 
@@ -328,9 +328,9 @@ SpectralDistribution toSpectra(const System& system, const RgbColor& color)
   const Float tmp1[] = {1.0 / (2.0 * sigma1 * sigma1),
                         1.0 / (2.0 * sigma2 * sigma2),
                         1.0 / (2.0 * sigma3 * sigma3)};
-  const Float tmp2[] = {1.0 / zisc::sqrt(2.0 * zisc::kPi * sigma1),
-                        1.0 / zisc::sqrt(2.0 * zisc::kPi * sigma2),
-                        1.0 / zisc::sqrt(2.0 * zisc::kPi * sigma3)};
+  const Float tmp2[] = {1.0 / zisc::sqrt(2.0 * zisc::kPi<Float> * sigma1),
+                        1.0 / zisc::sqrt(2.0 * zisc::kPi<Float> * sigma2),
+                        1.0 / zisc::sqrt(2.0 * zisc::kPi<Float> * sigma3)};
 
   const auto f = [&tmp1, &tmp2](const uint i, const uint16 lambda)
   {

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_THREAD_POOL_INL_HPP_
-#define _ZISC_THREAD_POOL_INL_HPP_
+#ifndef ZISC_THREAD_POOL_INL_HPP
+#define ZISC_THREAD_POOL_INL_HPP
 
 #include "thread_pool.hpp"
 // Standard C++ library
@@ -16,12 +16,15 @@
 #include <cmath>
 #include <functional>
 #include <future>
+#include <iterator>
 #include <memory>
 #include <thread>
+#include <type_traits>
 #include <queue>
 #include <utility>
 // Zisc
 #include "aligned_memory_pool.hpp"
+#include "type_traits.hpp"
 #include "utility.hpp"
 #include "zisc/zisc_config.hpp"
 
@@ -32,7 +35,7 @@ namespace zisc {
   No detailed.
   */
 inline
-ThreadPool::ThreadPool() :
+ThreadPool::ThreadPool() noexcept :
     ThreadPool(std::thread::hardware_concurrency())
 {
 }
@@ -42,7 +45,7 @@ ThreadPool::ThreadPool() :
   No detailed.
   */
 inline
-ThreadPool::ThreadPool(const uint num_of_threads) :
+ThreadPool::ThreadPool(const uint num_of_threads) noexcept :
     is_finish_{false}
 {
   createWorkers(num_of_threads);
@@ -69,7 +72,7 @@ ThreadPool::~ThreadPool()
   No detailed.
   */
 template <typename Type> inline
-std::future<Type> ThreadPool::enqueue(std::function<Type (void)>&& task)
+std::future<Type> ThreadPool::enqueue(std::function<Type (void)>&& task) noexcept
 {
   return enqueueTask(task);
 }
@@ -79,7 +82,7 @@ std::future<Type> ThreadPool::enqueue(std::function<Type (void)>&& task)
   No detailed.
   */
 template <typename Type> inline
-std::future<Type> ThreadPool::enqueue(std::function<Type (int)>&& task)
+std::future<Type> ThreadPool::enqueue(std::function<Type (int)>&& task) noexcept
 {
   return enqueueTask(task);
 }
@@ -89,7 +92,7 @@ std::future<Type> ThreadPool::enqueue(std::function<Type (int)>&& task)
   No detailed.
   */
 inline
-uint ThreadPool::logicalCores()
+uint ThreadPool::logicalCores() noexcept
 {
   return cast<uint>(std::thread::hardware_concurrency());
 }
@@ -101,7 +104,7 @@ uint ThreadPool::logicalCores()
 template <typename Iterator> inline
 std::future<void> ThreadPool::loop(std::function<void (Iterator)>&& task, 
                                    Iterator begin, 
-                                   Iterator end)
+                                   Iterator end) noexcept
 {
   return loopTask(task, begin, end);
 }
@@ -113,7 +116,7 @@ std::future<void> ThreadPool::loop(std::function<void (Iterator)>&& task,
 template <typename Iterator> inline
 std::future<void> ThreadPool::loop(std::function<void (int, Iterator)>&& task, 
                                    Iterator begin, 
-                                   Iterator end)
+                                   Iterator end) noexcept
 {
   return loopTask(task, begin, end);
 }
@@ -123,10 +126,11 @@ std::future<void> ThreadPool::loop(std::function<void (int, Iterator)>&& task,
   No detailed.
   */
 template <typename Iterator, uint kSize, uint kAlignment> inline
-std::future<void> ThreadPool::loop(std::function<void (Iterator)>&& task, 
-                                   Iterator begin, 
-                                   Iterator end,
-                                   AlignedMemoryPool<kSize, kAlignment>& memory_pool)
+std::future<void> ThreadPool::loop(
+    std::function<void (Iterator)>&& task, 
+    Iterator begin, 
+    Iterator end,
+    AlignedMemoryPool<kSize, kAlignment>& memory_pool) noexcept
 {
   return loopTask(task, begin, end, memory_pool);
 }
@@ -136,10 +140,11 @@ std::future<void> ThreadPool::loop(std::function<void (Iterator)>&& task,
   No detailed.
   */
 template <typename Iterator, uint kSize, uint kAlignment> inline
-std::future<void> ThreadPool::loop(std::function<void (int, Iterator)>&& task, 
-                                   Iterator begin, 
-                                   Iterator end,
-                                   AlignedMemoryPool<kSize, kAlignment>& memory_pool)
+std::future<void> ThreadPool::loop(
+    std::function<void (int, Iterator)>&& task, 
+    Iterator begin, 
+    Iterator end,
+    AlignedMemoryPool<kSize, kAlignment>& memory_pool) noexcept
 {
   return loopTask(task, begin, end, memory_pool);
 }
@@ -148,14 +153,16 @@ namespace zisc_thread_pool {
 
 //! Process a task
 template <typename Type> inline
-void processTask(std::packaged_task<Type (void)>& task, const int /* thread_number */)
+void processTask(std::packaged_task<Type (void)>& task, 
+                 const int /* thread_number */) noexcept
 {
   task();
 }
 
 //! Process a task
 template <typename Type> inline
-void processTask(std::packaged_task<Type (int)>& task, const int thread_number)
+void processTask(std::packaged_task<Type (int)>& task, 
+                 const int thread_number) noexcept
 {
   task(thread_number);
 }
@@ -164,7 +171,7 @@ void processTask(std::packaged_task<Type (int)>& task, const int thread_number)
 template <typename Iterator> inline
 void processTask(std::function<void (Iterator)>& task, 
                  const int /* thread_number */, 
-                 Iterator iterator)
+                 Iterator iterator) noexcept
 {
   task(iterator);
 }
@@ -173,9 +180,27 @@ void processTask(std::function<void (Iterator)>& task,
 template <typename Iterator> inline
 void processTask(std::function<void (int, Iterator)>& task, 
                  const int thread_number, 
-                 Iterator iterator)
+                 Iterator iterator) noexcept
 {
   task(thread_number, iterator);
+}
+
+//! Return the distance of two iterators
+template <typename Iterator> inline
+uint distance(Iterator begin, 
+              Iterator end, 
+              EnableIfIterator<Iterator> = kEnabler) noexcept
+{
+  return cast<uint>(std::distance(begin, end));
+}
+
+//! Return the distance of two iterators
+template <typename Iterator> inline
+uint distance(Iterator begin, 
+              Iterator end, 
+              EnableIfInteger<Iterator> = kEnabler) noexcept
+{
+  return cast<uint>(end - begin);
 }
 
 } // namespace zisc_thread_pool
@@ -184,9 +209,9 @@ void processTask(std::function<void (int, Iterator)>& task,
   \details
   No detailed.
   */
-template <typename ReturnType, typename ...Types>
+template <typename ReturnType, typename ...Types> inline
 std::future<ReturnType> ThreadPool::enqueueTask(
-    std::function<ReturnType (Types...)>& task)
+    std::function<ReturnType (Types...)>& task) noexcept
 {
   using PackagedTask = std::packaged_task<ReturnType (Types...)>;
 
@@ -207,13 +232,23 @@ std::future<ReturnType> ThreadPool::enqueueTask(
 }
 
 /*!
+  */
+inline
+bool ThreadPool::isFinished() const noexcept
+{
+ return (is_finish_ && task_queue_.empty());
+}
+
+/*!
   \details
   No detailed.
   */
 template <typename Task, typename Iterator> inline
-std::future<void> ThreadPool::loopTask(Task& task, Iterator begin, Iterator end)
+std::future<void> ThreadPool::loopTask(Task& task, 
+                                       Iterator begin, 
+                                       Iterator end) noexcept
 {
-  const uint distance = cast<uint>(end - begin);
+  const uint distance = zisc_thread_pool::distance(begin, end);
 
   auto shared_task = new Task{std::move(task)};
   auto finish_loop = new std::packaged_task<void ()>{[](){}};
@@ -235,17 +270,16 @@ std::future<void> ThreadPool::loopTask(Task& task, Iterator begin, Iterator end)
   }
 
   {
-    std::function<void (int)> wrapped_task;
     std::unique_lock<std::mutex> lock{queue_mutex_};
     for (auto iterator = begin; iterator != end; ++iterator) {
-      wrapped_task = 
+      std::function<void (int)> wrapped_task{
       [shared_task, shared_counter, iterator, finish](const int thread_number)
       {
         zisc_thread_pool::processTask(*shared_task, thread_number, iterator);
         const uint count = --(*shared_counter);
         if (count == 0)
           finish();
-      };
+      }};
       task_queue_.emplace(std::move(wrapped_task));
     }
   }
@@ -258,13 +292,12 @@ std::future<void> ThreadPool::loopTask(Task& task, Iterator begin, Iterator end)
   \details
   No detailed.
   */
-template <typename Task, typename Iterator, uint kSize, uint kAlignment>
-inline
+template <typename Task, typename Iterator, uint kSize, uint kAlignment> inline
 std::future<void> ThreadPool::loopTask(
     Task& task, 
     Iterator begin, 
     Iterator end,
-    AlignedMemoryPool<kSize, kAlignment>& memory_pool)
+    AlignedMemoryPool<kSize, kAlignment>& memory_pool) noexcept
 {
   using Manager = TaskManager<Task>;
 
@@ -307,9 +340,9 @@ std::future<void> ThreadPool::loopTask(
   \return The number of worker threads
   */
 inline
-uint ThreadPool::numOfThreads() const
+uint ThreadPool::numOfThreads() const noexcept
 {
-  return workers_.size();
+  return cast<uint>(workers_.size());
 }
 
 /*!
@@ -317,7 +350,7 @@ uint ThreadPool::numOfThreads() const
   No detailed.
   */
 inline
-void ThreadPool::createWorkers(const uint num_of_threads)
+void ThreadPool::createWorkers(const uint num_of_threads) noexcept
 {
   uint threads = (num_of_threads == 0)
       ? std::thread::hardware_concurrency()
@@ -326,16 +359,16 @@ void ThreadPool::createWorkers(const uint num_of_threads)
   for (int thread_number = 0; thread_number < cast<int>(threads); ++thread_number) {
     auto work = [this, thread_number]()
     {
-      while (true) {
+      while (!isFinished()) {
         std::unique_lock<std::mutex> lock{queue_mutex_};
         while (!is_finish_ && task_queue_.empty())
           condition_.wait(lock);
-        if (is_finish_ && task_queue_.empty())
-          return;
-        std::function<void (int)> task{std::move(task_queue_.front())};
-        task_queue_.pop();
-        lock.unlock();
-        task(thread_number);
+        if (!isFinished()) {
+          std::function<void (int)> task{std::move(task_queue_.front())};
+          task_queue_.pop();
+          lock.unlock();
+          task(thread_number);
+        }
       }
     };
     workers_.emplace_back(work);
@@ -344,4 +377,4 @@ void ThreadPool::createWorkers(const uint num_of_threads)
 
 } // namespace zisc
 
-#endif // _ZISC_THREAD_POOL_INL_HPP_
+#endif // ZISC_THREAD_POOL_INL_HPP

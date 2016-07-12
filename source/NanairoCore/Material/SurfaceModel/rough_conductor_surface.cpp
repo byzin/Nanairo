@@ -34,7 +34,7 @@ namespace nanairo {
 RoughConductorSurface::RoughConductorSurface(
     const SceneSettings& settings,
     const QString& prefix,
-    const std::vector<const Texture*>& texture_list)
+    const std::vector<const Texture*>& texture_list) noexcept
 {
   initialize(settings, prefix, texture_list);
 }
@@ -43,7 +43,7 @@ RoughConductorSurface::RoughConductorSurface(
   \details
   No detailed.
   */
-std::size_t RoughConductorSurface::surfaceSize() const
+std::size_t RoughConductorSurface::surfaceSize() const noexcept
 {
   return sizeof(reflectance_0deg_);
 }
@@ -52,7 +52,7 @@ std::size_t RoughConductorSurface::surfaceSize() const
   \details
   No detailed.
   */
-SurfaceType RoughConductorSurface::type() const
+SurfaceType RoughConductorSurface::type() const noexcept
 {
   return SurfaceType::RoughConductor;
 }
@@ -64,7 +64,7 @@ SurfaceType RoughConductorSurface::type() const
 void RoughConductorSurface::initialize(
     const SceneSettings& settings,
     const QString& prefix,
-    const std::vector<const Texture*>& texture_list)
+    const std::vector<const Texture*>& texture_list) noexcept
 {
   const auto p = prefix + "/" + keyword::roughConductorSurface;
 

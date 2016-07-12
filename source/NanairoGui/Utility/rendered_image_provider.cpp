@@ -20,7 +20,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-RenderedImageProvider::RenderedImageProvider() :
+RenderedImageProvider::RenderedImageProvider() noexcept :
     QQuickImageProvider(QQuickImageProvider::Image),
     image_{nullptr}
 {
@@ -32,7 +32,7 @@ RenderedImageProvider::RenderedImageProvider() :
   */
 QImage RenderedImageProvider::requestImage(const QString& /* id */,
                                            QSize* size,
-                                           const QSize& /* requested_size */)
+                                           const QSize& /* requested_size */) noexcept
 {
   if (image_ == nullptr) {
     QSize image_size{640, 480};

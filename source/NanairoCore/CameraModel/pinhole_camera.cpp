@@ -36,7 +36,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-PinholeCamera::PinholeCamera(const SceneSettings& settings, const QString& prefix) :
+PinholeCamera::PinholeCamera(const SceneSettings& settings, const QString& prefix) noexcept :
     CameraModel(settings, prefix),
     pinhole_position_{0.0, 0.0, 0.0},
     film_position_{0.0, 0.0, -1.0},
@@ -51,14 +51,14 @@ PinholeCamera::PinholeCamera(const SceneSettings& settings, const QString& prefi
   No detailed.
   */
 //! Calculate the pdf
-Float PinholeCamera::calcPdf(const Vector3& vout) const
+Float PinholeCamera::calcPdf(const Vector3& vout) const noexcept
 {
   const Float cos_theta_no = zisc::dot(normal(), vout);
   return 1.0 / (filmArea() * zisc::power<3>(cos_theta_no));
 }
 
 //! Calculate the radiance
-Float PinholeCamera::calcRadiance(const Vector3& vout) const
+Float PinholeCamera::calcRadiance(const Vector3& vout) const noexcept
 {
   const Float cos_theta_no = zisc::dot(normal(), vout);
   return 1.0 / (filmArea() * zisc::power<4>(cos_theta_no));
@@ -66,7 +66,7 @@ Float PinholeCamera::calcRadiance(const Vector3& vout) const
 
 //! Calculate the radiance and pdf
 std::tuple<Float, Float> PinholeCamera::calcRadianceAndPdf(
-    const Vector3& vout) const 
+    const Vector3& vout) const noexcept
 {
   const Float cos_theta_no = zisc::dot(normal(), vout);
   const Float f = 1.0 / (filmArea() * zisc::power<4>(cos_theta_no));
@@ -79,7 +79,7 @@ std::tuple<Float, Float> PinholeCamera::calcRadianceAndPdf(
   */
 bool PinholeCamera::getPixelLocation(const Vector3& ray_direction, 
                                      uint* x, 
-                                     uint* y) const
+                                     uint* y) const noexcept
 {
   using zisc::cast;
 
@@ -118,7 +118,7 @@ bool PinholeCamera::getPixelLocation(const Vector3& ray_direction,
   \details
   No detailed.
   */
-const Point3& PinholeCamera::position() const
+const Point3& PinholeCamera::position() const noexcept
 {
   return pinhole_position_;
 }
@@ -127,7 +127,7 @@ const Point3& PinholeCamera::position() const
   \details
   No detailed.
   */
-SampledDirection PinholeCamera::sampleDirection(const uint x, const uint y) const
+SampledDirection PinholeCamera::sampleDirection(const uint x, const uint y) const noexcept
 {
   using zisc::cast;
 
@@ -151,7 +151,7 @@ SampledDirection PinholeCamera::sampleDirection(const uint x, const uint y) cons
   \details
   No detailed.
   */
-void PinholeCamera::sampleLensPoint(Sampler& /* sampler */)
+void PinholeCamera::sampleLensPoint(Sampler& /* sampler */) noexcept
 {
   setSampledLensPoint(pinhole_position_);
 }
@@ -160,7 +160,7 @@ void PinholeCamera::sampleLensPoint(Sampler& /* sampler */)
   \details
   No detailed.
   */
-CameraType PinholeCamera::type() const
+CameraType PinholeCamera::type() const noexcept
 {
   return CameraType::Pinhole;
 }
@@ -170,7 +170,7 @@ CameraType PinholeCamera::type() const
   No detailed.
   */
 inline
-Float PinholeCamera::calcInversePdf(const Float cos_theta) const
+Float PinholeCamera::calcInversePdf(const Float cos_theta) const noexcept
 {
   return filmArea() * zisc::power<3>(cos_theta);
 }
@@ -180,7 +180,7 @@ Float PinholeCamera::calcInversePdf(const Float cos_theta) const
   No detailed.
   */
 inline
-Float PinholeCamera::filmArea() const
+Float PinholeCamera::filmArea() const noexcept
 {
   return film_area_;
 }
@@ -189,12 +189,12 @@ Float PinholeCamera::filmArea() const
   \details
   No detailed.
   */
-void PinholeCamera::initialize(const SceneSettings& settings, const QString& prefix)
+void PinholeCamera::initialize(const SceneSettings& settings, const QString& prefix) noexcept
 {
   const auto p = prefix + "/" + keyword::pinholeCamera;
   const Float angle = settings.realValue(p + "/" + keyword::angleOfView);
   angle_of_view_ = zisc::toRadian(angle);
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(angle_of_view_ / zisc::kPi),
+  ZISC_ASSERT(isBetweenZeroAndOneFloat(angle_of_view_ / zisc::kPi<Float>),
               "The angle of view must be [0, pi].");
   setNormal((pinhole_position_ - film_position_).normalized());
 }
@@ -203,7 +203,7 @@ void PinholeCamera::initialize(const SceneSettings& settings, const QString& pre
   \details
   No detailed.
   */
-void PinholeCamera::initializeFilm()
+void PinholeCamera::initializeFilm() noexcept
 {
   const Float theta = angle_of_view_ * 0.5;
   const Float r = std::tan(theta);
@@ -227,7 +227,7 @@ void PinholeCamera::initializeFilm()
  \details
  No detailed.
  */
-void PinholeCamera::transform(const Matrix4x4& matrix)
+void PinholeCamera::transform(const Matrix4x4& matrix) noexcept
 {
   affineTransform(matrix, &pinhole_position_);
   affineTransform(matrix, &film_position_);
@@ -247,7 +247,7 @@ void PinholeCamera::transform(const Matrix4x4& matrix)
   \details
   No detailed.
   */
-Vector3 PinholeCamera::xAxis() const
+Vector3 PinholeCamera::xAxis() const noexcept
 {
   return film_axis1_.normalized();
 }
@@ -256,7 +256,7 @@ Vector3 PinholeCamera::xAxis() const
   \details
   No detailed.
   */
-Vector3 PinholeCamera::yAxis() const
+Vector3 PinholeCamera::yAxis() const noexcept
 {
   return film_axis2_.normalized();
 }

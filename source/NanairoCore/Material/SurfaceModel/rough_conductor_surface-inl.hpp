@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_ROUGH_CONDUCTOR_SURFACE_INL_HPP_
-#define _NANAIRO_ROUGH_CONDUCTOR_SURFACE_INL_HPP_
+#ifndef NANAIRO_ROUGH_CONDUCTOR_SURFACE_INL_HPP
+#define NANAIRO_ROUGH_CONDUCTOR_SURFACE_INL_HPP
 
 #include "rough_conductor_surface.hpp"
 // Zisc
@@ -35,7 +35,7 @@ template <uint kSampleSize>
 auto RoughConductorSurface::makeGgxConductorBrdf(
     const Point2& texture_coordinate,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) const -> ShaderPointer<kSampleSize>
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
   // Get the roughness
   constexpr Float threshold = 0.001;
@@ -61,7 +61,7 @@ SurfaceModel::ShaderPointer<kSampleSize> makeGgxConductorBrdf(
     const SurfaceModel* surface,
     const Point2& texture_coordinate,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool)
+    MemoryPool& memory_pool) noexcept
 {
   using zisc::cast;
 
@@ -73,4 +73,4 @@ SurfaceModel::ShaderPointer<kSampleSize> makeGgxConductorBrdf(
 
 } // namespace nanairo
 
-#endif // _NANAIRO_ROUGH_CONDUCTOR_SURFACE_INL_HPP_
+#endif // NANAIRO_ROUGH_CONDUCTOR_SURFACE_INL_HPP

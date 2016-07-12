@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_MODIFIED_REINHARD_HPP_
-#define _NANAIRO_MODIFIED_REINHARD_HPP_
+#ifndef NANAIRO_MODIFIED_REINHARD_HPP
+#define NANAIRO_MODIFIED_REINHARD_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -39,17 +39,17 @@ class ModifiedReinhard : public ToneMappingMethod
 {
  public:
   //! Initialize reinhard method
-  ModifiedReinhard(const System& system, const SceneSettings& settings);
+  ModifiedReinhard(const System& system, const SceneSettings& settings) noexcept;
 
 
   //! Apply tone mapping
   void toneMap(System& system,
                const HdrImage& hdr_image, 
-               QImage& ldr_image) override;
+               QImage& ldr_image) noexcept override;
 
  private:
   //! Initialize
-  void initialize(const System& system, const SceneSettings& settings);
+  void initialize(const System& system, const SceneSettings& settings) noexcept;
 
 
   std::vector<YxyColor> pixel_luminance_;
@@ -59,4 +59,4 @@ class ModifiedReinhard : public ToneMappingMethod
 
 } // namespace nanairo
 
-#endif // _NANAIRO_MODIFIED_REINHARD_HPP_
+#endif // NANAIRO_MODIFIED_REINHARD_HPP

@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_UTILITY_INL_HPP_
-#define _ZISC_UTILITY_INL_HPP_
+#ifndef ZISC_UTILITY_INL_HPP
+#define ZISC_UTILITY_INL_HPP
 
 #include "utility.hpp"
 // Standard C++ library
@@ -21,28 +21,8 @@ namespace zisc {
   \details
   No detailed.
   */
-template <typename Type> inline
-constexpr const Type& max(const Type& a, const Type& b)
-{
-  return (a > b) ? a : b;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <typename Type> inline
-constexpr const Type& min(const Type& a, const Type& b)
-{
-  return (a < b) ? a : b;
-}
-
-/*!
-  \details
-  No detailed.
-  */
 template <typename Type, typename T> inline
-constexpr Type cast(const T value)
+constexpr Type cast(const T value) noexcept
 {
   return static_cast<Type>(value);
 }
@@ -51,61 +31,85 @@ constexpr Type cast(const T value)
  \details
  No detailed.
 */
-template <typename Arithmetic> inline
-constexpr Arithmetic clamp(const Arithmetic x, 
-                           const Arithmetic min_value, 
-                           const Arithmetic max_value)
+template <typename Type> inline
+constexpr Type clamp(const Type x, 
+                     const Type min_value, 
+                     const Type max_value) noexcept
 {
-  static_assert(std::is_arithmetic<Arithmetic>::value, "## Must be arithmetic type.");
   return min(max(x, min_value), max_value);
 }
 
 /*!
-  \details
-  No detailed.
-
-  \return 符号ビット
   */
-template <> inline
-constexpr std::int8_t getSignedBit<std::int8_t>()
+template <bool kIsLeftClosed, bool kIsRightClosed, typename Type> inline
+constexpr bool isInBounds(const Type& value, 
+                          const Type& lower, 
+                          const Type& upper) noexcept
 {
-  return static_cast<std::int8_t>(0x80);
+  return ((kIsLeftClosed) ? !(value < lower) : (lower < value)) &&
+         ((kIsRightClosed) ? !(upper < value) : (value < upper));
 }
 
 /*!
-  \details
-  No detailed.
-
-  \return 符号ビット
   */
-template <> inline
-constexpr std::int16_t getSignedBit<std::int16_t>()
+template <typename Type> inline
+constexpr bool isInOpenBounds(const Type& value, 
+                              const Type& lower, 
+                              const Type& upper) noexcept
 {
-  return static_cast<std::int16_t>(0x8000);
+  return isInBounds<false, false>(value, lower, upper);
 }
 
 /*!
-  \details
-  No detailed.
-
-  \return 符号ビット
   */
-template <> inline
-constexpr std::int32_t getSignedBit<std::int32_t>()
+template <typename Type> inline
+constexpr bool isInLClosedROpenBounds(const Type& value, 
+                                      const Type& lower, 
+                                      const Type& upper) noexcept
 {
-  return static_cast<std::int32_t>(0x80000000);
+  return isInBounds<true, false>(value, lower, upper);
 }
 
 /*!
-  \details
-  No detailed.
-
-  \return 符号ビット
   */
-template <> inline
-constexpr std::int64_t getSignedBit<std::int64_t>()
+template <typename Type> inline
+constexpr bool isInLOpenRClosedBounds(const Type& value, 
+                                      const Type& lower, 
+                                      const Type& upper) noexcept
 {
-  return static_cast<std::int64_t>(0x8000000000000000);
+  return isInBounds<false, true>(value, lower, upper);
+}
+
+/*!
+  */
+template <typename Type> inline
+constexpr bool isInClosedBounds(const Type& value, 
+                                const Type& lower, 
+                                const Type& upper) noexcept
+{
+  return isInBounds<true, true>(value, lower, upper);
+}
+
+/*!
+ \details
+ No detailed.
+ */
+template <typename Signed> inline
+constexpr bool isNegative(const Signed n) noexcept
+{
+  static_assert(std::is_signed<Signed>::value, "Signed isn't signed type.");
+  constexpr auto zero = static_cast<Signed>(0);
+  return (n < zero);
+}
+
+/*!
+  */
+template <typename Integer> inline
+constexpr bool isOdd(const Integer n) noexcept
+{
+  static_assert(std::is_integral<Integer>::value, "Integer isn't integer type.");
+  constexpr auto one = static_cast<Integer>(1);
+  return ((n & one) == one);
 }
 
 /*!
@@ -113,11 +117,19 @@ constexpr std::int64_t getSignedBit<std::int64_t>()
   No detailed.
   */
 template <typename Type> inline
-constexpr Type getSignedBit()
+constexpr const Type& max(const Type& a, const Type& b) noexcept
 {
-  static_assert(std::is_integral<Type>::value && std::is_signed<Type>::value,
-                "## Template must be signed integer type.");
-  return static_cast<Type>(0);
+  return (b < a) ? a : b;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <typename Type> inline
+constexpr const Type& min(const Type& a, const Type& b) noexcept
+{
+  return (b < a) ? b : a;
 }
 
 /*!
@@ -125,7 +137,7 @@ constexpr Type getSignedBit()
   No detailed.
   */
 template <typename Type, typename T> inline
-constexpr Type treatAs(const T* object)
+constexpr Type treatAs(const T* object) noexcept
 {
   return static_cast<Type>(static_cast<const void*>(object));
 }
@@ -135,11 +147,11 @@ constexpr Type treatAs(const T* object)
   No detailed.
   */
 template <typename Type, typename T> inline
-constexpr Type treatAs(T* object)
+constexpr Type treatAs(T* object) noexcept
 {
   return static_cast<Type>(static_cast<void*>(object));
 }
 
 } // namespace zisc
 
-#endif // _ZISC_UTILITY_INL_HPP_
+#endif // ZISC_UTILITY_INL_HPP

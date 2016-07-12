@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_NANAIRO_COMMON_CONFIG_HPP_
-#define _NANAIRO_NANAIRO_COMMON_CONFIG_HPP_
+#ifndef NANAIRO_NANAIRO_COMMON_CONFIG_HPP
+#define NANAIRO_NANAIRO_COMMON_CONFIG_HPP
 
 namespace nanairo {
 
@@ -25,4 +25,4 @@ constexpr int kVersionPatch = @nanairo_version_patch@;
 
 } // namespace nanairo
 
-#endif // _NANAIRO_NANAIRO_COMMON_CONFIG_HPP_
+#endif // NANAIRO_NANAIRO_COMMON_CONFIG_HPP

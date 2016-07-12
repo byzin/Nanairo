@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_NON_COPYABLE_HPP_
-#define _ZISC_NON_COPYABLE_HPP_
+#ifndef ZISC_NON_COPYABLE_HPP
+#define ZISC_NON_COPYABLE_HPP
 
 namespace zisc {
 
@@ -20,7 +20,7 @@ namespace zisc {
 class NonCopyable
 {
  protected:
-  NonCopyable() {}
+  NonCopyable() noexcept {}
 
  private:
   NonCopyable(const NonCopyable&) = delete;
@@ -29,4 +29,4 @@ class NonCopyable
 
 } // namespace misc
 
-#endif // _ZISC_NON_COPYABLE_HPP_
+#endif // ZISC_NON_COPYABLE_HPP

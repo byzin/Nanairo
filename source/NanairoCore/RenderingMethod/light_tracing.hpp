@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_LIGHT_TRACING_HPP_
-#define _NANAIRO_LIGHT_TRACING_HPP_
+#ifndef NANAIRO_LIGHT_TRACING_HPP
+#define NANAIRO_LIGHT_TRACING_HPP
 
 // Standard C++ library
 #include <bitset>
@@ -50,27 +50,27 @@ class LightTracing : public RenderingMethod<kSampleSize>
 
 
   //! Initialize light tracing method
-  LightTracing(const System& system, const SceneSettings& settings);
+  LightTracing(const System& system, const SceneSettings& settings) noexcept;
 
 
   //! Render scene using light tracing method
   void render(System& system,
               Scene& scene,
-              const Wavelengths& sampled_wavelengths) override;
+              const Wavelengths& sampled_wavelengths) noexcept override;
 
  private:
   //! Add the contributions
-  void addContribution(const System& system, CameraModel& camera);
+  void addContribution(const System& system, CameraModel& camera) noexcept;
 
   // Add the contribution to the light contribution buffer
   void addLightContribution(const CameraModel& camera,
                             const int thread_id, 
                             const uint x, 
                             const uint y,
-                            const Spectra& contribution);
+                            const Spectra& contribution) noexcept;
 
   //! Clear the light contribution buffer
-  void clearLightContribution();
+  void clearLightContribution() noexcept;
 
   //! Evaluate the explicit connection
   void evaluateExplicitConnection(const World& world,
@@ -80,7 +80,7 @@ class LightTracing : public RenderingMethod<kSampleSize>
                                   const IntersectionInfo& intersection,
                                   const Vector3* vin,
                                   const Spectra& ray_weight,
-                                  MemoryPool& memory_pool);
+                                  MemoryPool& memory_pool) noexcept;
 
   //! Generate a light ray
   Ray generateRay(const World& world,
@@ -88,30 +88,30 @@ class LightTracing : public RenderingMethod<kSampleSize>
                   const int thread_id,
                   Sampler& sampler,
                   MemoryPool& memory_pool,
-                  Spectra* weight);
+                  Spectra* weight) noexcept;
 
   //! Check if the buffer has contribution
-  bool hasLightContribution(const uint index) const;
+  bool hasLightContribution(const uint index) const noexcept;
 
   //! Initialize
-  void initialize(const System& system, const SceneSettings& settings);
+  void initialize(const System& system, const SceneSettings& settings) noexcept;
 
   //! Return the num of light rays per thread
-  uint numOfThreadRays() const;
+  uint numOfThreadRays() const noexcept;
 
   //! Set the light contribution flag
-  void setLightContributionFlag(const uint index, const bool flag);
+  void setLightContributionFlag(const uint index, const bool flag) noexcept;
 
   //! Parallelize light tracing
   void traceLightPath(System& system,
                       Scene& scene,
-                      const Wavelengths& sampled_wavelengths);
+                      const Wavelengths& sampled_wavelengths) noexcept;
 
   //! Trace the light path
   void traceLightPath(System& system,
                       Scene& scene,
                       const Wavelengths& sampled_wavelengths,
-                      const int thread_id);
+                      const int thread_id) noexcept;
 
 
   static constexpr uint kFlagBitsetSize = 64;
@@ -124,7 +124,7 @@ class LightTracing : public RenderingMethod<kSampleSize>
 
 
   //! Return the flag bitset size
-  static constexpr uint flagBitsetSize()
+  static constexpr uint flagBitsetSize() noexcept
   {
     return kFlagBitsetSize;
   }
@@ -136,4 +136,4 @@ class LightTracing : public RenderingMethod<kSampleSize>
 
 #include "light_tracing-inl.hpp"
 
-#endif // _NANAIRO_LIGHT_TRACING_HPP_
+#endif // NANAIRO_LIGHT_TRACING_HPP

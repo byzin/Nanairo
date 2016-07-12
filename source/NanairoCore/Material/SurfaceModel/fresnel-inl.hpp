@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_FRESNEL_INL_HPP_
-#define _NANAIRO_FRESNEL_INL_HPP_
+#ifndef NANAIRO_FRESNEL_INL_HPP
+#define NANAIRO_FRESNEL_INL_HPP
 
 #include "fresnel.hpp"
 // Standard C++ library
@@ -32,7 +32,7 @@ namespace nanairo {
 inline
 SpectralDistribution calculateFresnelConductorReflectance0(
     const SpectralDistribution& eta,
-    const SpectralDistribution& eta_k)
+    const SpectralDistribution& eta_k) noexcept
 {
   SpectralDistribution one;
   one.fill(1.0);
@@ -53,7 +53,7 @@ SpectralDistribution calculateFresnelConductorReflectance0(
 inline
 Vector3 getFresnelReflectionDirection(const Vector3& vin, 
                                       const Vector3& normal,
-                                      const Float cos_theta_ni)
+                                      const Float cos_theta_ni) noexcept
 {
   const auto vout = vin + (2.0 * cos_theta_ni) * normal;
   ZISC_ASSERT(isUnitVector(vout), "The vout is must be unit vector.");
@@ -69,7 +69,7 @@ Vector3 getFresnelRefractionDirection(const Vector3& vin,
                                       const Vector3& normal,
                                       const Float cos_theta_ni,
                                       const Float n,
-                                      const Float g)
+                                      const Float g) noexcept
 {
   const auto vout = (vin + (cos_theta_ni - g) * normal) * (1.0 / n);
   ZISC_ASSERT(isUnitVector(vout), "The vout is must be unit vector.");
@@ -82,7 +82,7 @@ Vector3 getFresnelRefractionDirection(const Vector3& vin,
   */
 inline
 std::tuple<bool, Float> evaluateFresnelG(const Float n, 
-                                         const Float cos_theta_ni)
+                                         const Float cos_theta_ni) noexcept
 {
   const Float g2 = n * n + cos_theta_ni * cos_theta_ni - 1.0;
   return (g2 < 0.0) 
@@ -97,7 +97,7 @@ std::tuple<bool, Float> evaluateFresnelG(const Float n,
 template <uint kSampleSize> inline
 SampledSpectra<kSampleSize> solveFresnelConductorEquation(
     const Float cos_theta_ni,
-    const SampledSpectra<kSampleSize>& reflectance_0deg)
+    const SampledSpectra<kSampleSize>& reflectance_0deg) noexcept
 {
   const auto& wavelengths = reflectance_0deg.wavelengths();
   const SampledSpectra<kSampleSize> one{wavelengths, 1.0};
@@ -115,7 +115,7 @@ SampledSpectra<kSampleSize> solveFresnelConductorEquation(
   */
 inline
 Float solveFresnelDielectricEquation(const Float cos_theta_ni, 
-                                     const Float g)
+                                     const Float g) noexcept
 {
   const Float a = g + cos_theta_ni,
               b = g - cos_theta_ni;
@@ -129,4 +129,4 @@ Float solveFresnelDielectricEquation(const Float cos_theta_ni,
 
 } // namespace refelct
 
-#endif // _NANAIRO_FRESNEL_INL_HPP_
+#endif // NANAIRO_FRESNEL_INL_HPP

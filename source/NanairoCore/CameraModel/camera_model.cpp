@@ -27,11 +27,17 @@ namespace nanairo {
 class Film;
 
 /*!
+  */
+CameraModel::~CameraModel() noexcept
+{
+}
+
+/*!
   \details
   No detailed.
   */
 CameraModel::CameraModel(const SceneSettings& settings, 
-                         const QString& prefix) :
+                         const QString& prefix) noexcept :
     jittering_{0.0, 0.0}
 {
   initialize(settings, prefix);
@@ -41,7 +47,7 @@ CameraModel::CameraModel(const SceneSettings& settings,
   \details
   No detailed.
   */
-Matrix4x4 CameraModel::distance(const Vector2& value)
+Matrix4x4 CameraModel::distance(const Vector2& value) noexcept
 {
   const auto v = normal() * value[1];
 
@@ -55,7 +61,7 @@ Matrix4x4 CameraModel::distance(const Vector2& value)
   \details
   No detailed.
   */
-Matrix4x4 CameraModel::rotate(const Vector2& value)
+Matrix4x4 CameraModel::rotate(const Vector2& value) noexcept
 {
   const auto& p = position();
 
@@ -72,7 +78,7 @@ Matrix4x4 CameraModel::rotate(const Vector2& value)
   \details
   No detailed.
   */
-Matrix4x4 CameraModel::translate(const Vector2& value)
+Matrix4x4 CameraModel::translate(const Vector2& value) noexcept
 {
   const auto v = xAxis() * -value[0] + yAxis() * -value[1];
   auto matrix = makeTranslationMatrix(v[0], v[1], v[2]);
@@ -86,7 +92,7 @@ Matrix4x4 CameraModel::translate(const Vector2& value)
   No detailed.
   */
 void CameraModel::initialize(const SceneSettings& settings, 
-                             const QString& prefix)
+                             const QString& prefix) noexcept
 {
   const auto key = prefix + "/" + keyword::jittering;
   is_jittering_enabled_ = settings.booleanValue(key);
@@ -97,7 +103,7 @@ void CameraModel::initialize(const SceneSettings& settings,
   No detailed.
   */
 UniquePointer<CameraModel> makeCameraModel(const SceneSettings& settings, 
-                                           const QString& prefix)
+                                           const QString& prefix) noexcept
 {
   using zisc::toHash32;
 

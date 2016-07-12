@@ -3,8 +3,8 @@
   \author Sho Ikeda
   */
 
-#ifndef _NANAIRO_SCENE_RENDERER_BASE_INL_HPP_
-#define _NANAIRO_SCENE_RENDERER_BASE_INL_HPP_
+#ifndef NANAIRO_SCENE_RENDERER_BASE_INL_HPP
+#define NANAIRO_SCENE_RENDERER_BASE_INL_HPP
 
 #include "scene_renderer_base.hpp"
 // Standard C++ library
@@ -31,7 +31,7 @@ inline
 void SceneRendererBase::handlePreviewMouseEvent(const int buttons,
                                                 const int delta_x,
                                                 const int delta_y,
-                                                const int delta_wheel)
+                                                const int delta_wheel) noexcept
 {
   camera_event_.addEvent(buttons, delta_x, delta_y, delta_wheel);
 }
@@ -41,7 +41,7 @@ void SceneRendererBase::handlePreviewMouseEvent(const int buttons,
   No detailed.
   */
 inline
-void SceneRendererBase::handleCameraEvent(quint64* cycle, zisc::Stopwatch* /* stopwatch */)
+void SceneRendererBase::handleCameraEvent(quint64* cycle, zisc::Stopwatch* /* stopwatch */) noexcept
 {
   if (camera_event_.isEventOccured()) {
     handleCameraEvent();
@@ -57,7 +57,7 @@ void SceneRendererBase::handleCameraEvent(quint64* cycle, zisc::Stopwatch* /* st
   No detailed.
   */
 inline
-const QString& SceneRendererBase::ldrImageFormat() const
+const QString& SceneRendererBase::ldrImageFormat() const noexcept
 {
   return ldr_image_format_;
 }
@@ -67,7 +67,7 @@ const QString& SceneRendererBase::ldrImageFormat() const
   No detailed.
   */
 inline
-QImage& SceneRendererBase::renderedImage()
+QImage& SceneRendererBase::renderedImage() noexcept
 {
   return ldr_image_;
 }
@@ -77,7 +77,7 @@ QImage& SceneRendererBase::renderedImage()
   No detailed.
   */
 inline
-const QImage& SceneRendererBase::renderedImage() const
+const QImage& SceneRendererBase::renderedImage() const noexcept
 {
   return ldr_image_;
 }
@@ -87,7 +87,7 @@ const QImage& SceneRendererBase::renderedImage() const
   No detailed.
   */
 inline
-void SceneRendererBase::stopRendering() const
+void SceneRendererBase::stopRendering() const noexcept
 {
   emit stop();
 }
@@ -97,7 +97,7 @@ void SceneRendererBase::stopRendering() const
   No detailed.
   */
 inline
-const CameraEvent& SceneRendererBase::cameraEvent() const
+const CameraEvent& SceneRendererBase::cameraEvent() const noexcept
 {
   return camera_event_;
 }
@@ -107,7 +107,7 @@ const CameraEvent& SceneRendererBase::cameraEvent() const
   No detailed.
   */
 inline
-const Matrix4x4& SceneRendererBase::cameraMatrix() const
+const Matrix4x4& SceneRendererBase::cameraMatrix() const noexcept
 {
   return camera_matrix_;
 }
@@ -117,7 +117,7 @@ const Matrix4x4& SceneRendererBase::cameraMatrix() const
   No detailed.
   */
 inline
-Matrix4x4& SceneRendererBase::cameraMatrix()
+Matrix4x4& SceneRendererBase::cameraMatrix() noexcept
 {
   return camera_matrix_;
 }
@@ -127,7 +127,7 @@ Matrix4x4& SceneRendererBase::cameraMatrix()
   No detailed.
   */
 inline
-bool SceneRendererBase::isCycleToSaveImage(const quint64 cycle) const
+bool SceneRendererBase::isCycleToSaveImage(const quint64 cycle) const noexcept
 {
   bool flag = false;
   if (is_power2_saving_)
@@ -140,7 +140,7 @@ bool SceneRendererBase::isCycleToSaveImage(const quint64 cycle) const
   No detailed.
   */
 inline
-bool SceneRendererBase::isLastCycle(const quint64 cycle) const
+bool SceneRendererBase::isLastCycle(const quint64 cycle) const noexcept
 {
   return (cycle == termination_pass_);
 }
@@ -151,7 +151,7 @@ bool SceneRendererBase::isLastCycle(const quint64 cycle) const
   */
 inline
 bool SceneRendererBase::isTimeToSaveImage(const Clock::duration& time,
-                                          Clock::rep* interval_count) const
+                                          Clock::rep* interval_count) const noexcept
 {
   if ((saving_interval_time_ * (*interval_count)) <= time) {
     ++(*interval_count);
@@ -166,7 +166,7 @@ bool SceneRendererBase::isTimeToSaveImage(const Clock::duration& time,
   */
 inline
 void SceneRendererBase::saveLdrImage(const quint64 cycle, 
-                                     const QString& output_dir) const
+                                     const QString& output_dir) const noexcept
 {
   const auto file_name = output_dir + "/" +
                          QString::number(cycle) + "cycle." + ldrImageFormat();
@@ -178,7 +178,7 @@ void SceneRendererBase::saveLdrImage(const quint64 cycle,
   No detailed.
   */
 inline
-bool SceneRendererBase::waitForNextFrame(const Clock::duration& delta_time) const
+bool SceneRendererBase::waitForNextFrame(const Clock::duration& delta_time) const noexcept
 {
   using std::chrono::duration_cast;
 

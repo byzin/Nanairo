@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_AGGLOMERATIVE_CLUSTER_HPP_
-#define _NANAIRO_AGGLOMERATIVE_CLUSTER_HPP_
+#ifndef NANAIRO_AGGLOMERATIVE_CLUSTER_HPP
+#define NANAIRO_AGGLOMERATIVE_CLUSTER_HPP
 
 // Standard C++ library
 #include <array>
@@ -34,36 +34,36 @@ class AgglomerativeCluster
 
  public:
   //! Create a singleton cluster
-  AgglomerativeCluster(const BvhNode* leaf_node);
+  AgglomerativeCluster(const BvhNode* leaf_node) noexcept;
 
   //! Create a cluster
   AgglomerativeCluster(std::unique_ptr<AgglomerativeCluster>&& left_child_cluster,
-                       std::unique_ptr<AgglomerativeCluster>&& right_child_cluster);
+                       std::unique_ptr<AgglomerativeCluster>&& right_child_cluster) noexcept;
 
   //! Free memory
-  ~AgglomerativeCluster();
+  ~AgglomerativeCluster() noexcept;
 
 
   //! Return the bounding box
-  const Aabb& boundingBox() const;
+  const Aabb& boundingBox() const noexcept;
 
   //! Return the cluster cost
-  Float cost() const;
+  Float cost() const noexcept;
 
   //! Check if the cluster is leaf
-  bool isLeaf() const;
+  bool isLeaf() const noexcept;
 
   //! Return the left child cluster
-  const AgglomerativeCluster& leftChildCluster() const;
+  const AgglomerativeCluster& leftChildCluster() const noexcept;
 
   //! Return the number of primitives
-  uint numOfPrimitives() const;
+  uint numOfPrimitives() const noexcept;
 
   //! Return the object list
-  std::array<ObjectPointer, kMaxNumOfObjectsPerNode> objectList() const;
+  std::array<ObjectPointer, kMaxNumOfObjectsPerNode> objectList() const noexcept;
 
   //! Return the right child cluster
-  const AgglomerativeCluster& rightChildCluster() const;
+  const AgglomerativeCluster& rightChildCluster() const noexcept;
 
  private:
   // Prohibit copy
@@ -72,15 +72,15 @@ class AgglomerativeCluster
 
 
   //! Initialize a singleton cluster
-  void initializeLeafCluster(const BvhNode* leaf_node);
+  void initializeLeafCluster(const BvhNode* leaf_node) noexcept;
 
   //! Initialize a inner cluster
   void initializeInnerCluster(
       std::unique_ptr<AgglomerativeCluster>&& left_child_cluster,
-      std::unique_ptr<AgglomerativeCluster>&& right_child_cluster);
+      std::unique_ptr<AgglomerativeCluster>&& right_child_cluster) noexcept;
 
   //! Treat this cluster as a leaf
-  void setAsLeaf();
+  void setAsLeaf() noexcept;
 
   union
   {
@@ -101,7 +101,7 @@ class AgglomerativeCluster
 
  private:
   //! Return the cost of a ray-box intersection
-  static constexpr Float rayBoxIntersectionCost()
+  static constexpr Float rayBoxIntersectionCost() noexcept
   {
     return 1.2;
   }
@@ -110,10 +110,11 @@ class AgglomerativeCluster
 using ClusterIterator = std::vector<AgglomerativeCluster>::iterator;
 
 //! Calculate the distance between a and b
-Float getClusterDistance(const AgglomerativeCluster& a, const AgglomerativeCluster& b);
+Float getClusterDistance(const AgglomerativeCluster& a, 
+                         const AgglomerativeCluster& b) noexcept;
 
 } // namespace nanairo
 
 #include "agglomerative_cluster-inl.hpp"
 
-#endif // _NANAIRO_AGGLOMERATIVE_CLUSTER_HPP_
+#endif // NANAIRO_AGGLOMERATIVE_CLUSTER_HPP

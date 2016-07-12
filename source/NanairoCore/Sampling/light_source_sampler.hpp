@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_LIGHT_SOURCE_SAMPLER_HPP_
-#define _NANAIRO_LIGHT_SOURCE_SAMPLER_HPP_
+#ifndef NANAIRO_LIGHT_SOURCE_SAMPLER_HPP
+#define NANAIRO_LIGHT_SOURCE_SAMPLER_HPP
 
 // Standard C++ library
 #include <vector>
@@ -34,14 +34,14 @@ class LightSourceSampler
 {
  public:
   //! Create a light source sampler
-  LightSourceSampler(const std::vector<LightSourceReference>& light_source_list);
+  LightSourceSampler(const std::vector<LightSourceReference>& light_source_list) noexcept;
 
 
   //! Sample a light source
-  const LightSourceReference& sample(Sampler& sampler) const;
+  const LightSourceReference& sample(Sampler& sampler) const noexcept;
 
   //! Return the pdf
-  Float getPdf(const Object* light_source) const;
+  Float getPdf(const Object* light_source) const noexcept;
 
  private:
   using LightSourceCdf = 
@@ -49,7 +49,7 @@ class LightSourceSampler
 
 
   //! Initialize
-  void initialize(const std::vector<LightSourceReference>& light_source_list);
+  void initialize(const std::vector<LightSourceReference>& light_source_list) noexcept;
 
 
   UniquePointer<LightSourceCdf> cdf_;
@@ -62,4 +62,4 @@ class LightSourceSampler
 
 #include "light_source_sampler-inl.hpp"
 
-#endif // _NANAIRO_LIGHT_SOURCE_SAMPLER_HPP_
+#endif // NANAIRO_LIGHT_SOURCE_SAMPLER_HPP

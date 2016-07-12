@@ -19,7 +19,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-Object::Object(const Material& material, UniquePointer<Geometry>&& geometry) :
+Object::Object(const Material& material, UniquePointer<Geometry>&& geometry) noexcept :
     material_{material},
     geometry_{std::move(geometry)}
 {
@@ -29,7 +29,7 @@ Object::Object(const Material& material, UniquePointer<Geometry>&& geometry) :
   \details
   No detailed.
   */
-Object::Object(Object&& object) :
+Object::Object(Object&& object) noexcept :
     material_{object.material_},
     geometry_{std::move(object.geometry_)}
 {

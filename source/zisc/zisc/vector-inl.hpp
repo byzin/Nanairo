@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _ZISC_VECTOR_INL_HPP_
-#define _ZISC_VECTOR_INL_HPP_
+#ifndef ZISC_VECTOR_INL_HPP
+#define ZISC_VECTOR_INL_HPP
 
 #include "vector.hpp"
 // Zisc
@@ -24,7 +24,7 @@ namespace zisc {
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-Vector<Arithmetic, kN>::Vector()
+Vector<Arithmetic, kN>::Vector() noexcept
 {
 }
 
@@ -35,7 +35,7 @@ Vector<Arithmetic, kN>::Vector()
   \param[in] values 要素の値
   */
 template <typename Arithmetic, uint kN> template <typename ...Types> inline
-Vector<Arithmetic, kN>::Vector(const Types ...values) :
+Vector<Arithmetic, kN>::Vector(const Types ...values) noexcept :
     Dimension<Arithmetic, kN>(values...)
 {
 }
@@ -45,7 +45,7 @@ Vector<Arithmetic, kN>::Vector(const Types ...values) :
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-Vector<Arithmetic, kN>::Vector(const ArrayType& array) :
+Vector<Arithmetic, kN>::Vector(const ArrayType& array) noexcept :
     Dimension<Arithmetic, kN>(array)
 {
 }
@@ -55,9 +55,10 @@ Vector<Arithmetic, kN>::Vector(const ArrayType& array) :
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-auto Vector<Arithmetic, kN>::operator+=(const Vector& vector) -> Vector&
+auto Vector<Arithmetic, kN>::operator+=(const Vector& vector) noexcept -> Vector&
 {
-  return *this = *this + vector;
+  *this = *this + vector;
+  return *this;
 }
 
 /*!
@@ -65,9 +66,10 @@ auto Vector<Arithmetic, kN>::operator+=(const Vector& vector) -> Vector&
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-auto Vector<Arithmetic, kN>::operator-=(const Vector& vector) -> Vector&
+auto Vector<Arithmetic, kN>::operator-=(const Vector& vector) noexcept -> Vector&
 {
-  return *this = *this - vector;
+  *this = *this - vector;
+  return *this;
 }
 
 /*!
@@ -75,9 +77,10 @@ auto Vector<Arithmetic, kN>::operator-=(const Vector& vector) -> Vector&
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-auto Vector<Arithmetic, kN>::operator*=(const Arithmetic scalar) -> Vector&
+auto Vector<Arithmetic, kN>::operator*=(const Arithmetic scalar) noexcept -> Vector&
 {
-  return *this = *this * scalar;
+  *this = *this * scalar;
+  return *this;
 }
 
 /*!
@@ -85,7 +88,7 @@ auto Vector<Arithmetic, kN>::operator*=(const Arithmetic scalar) -> Vector&
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-Arithmetic Vector<Arithmetic, kN>::inverseNorm() const
+Arithmetic Vector<Arithmetic, kN>::inverseNorm() const noexcept
 {
   return invSqrt(squareNorm());
 }
@@ -95,9 +98,9 @@ Arithmetic Vector<Arithmetic, kN>::inverseNorm() const
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-Arithmetic Vector<Arithmetic, kN>::norm() const
+Arithmetic Vector<Arithmetic, kN>::norm() const noexcept
 {
-  return zisc::sqrt(squareNorm());
+  return sqrt(squareNorm());
 }
 
 /*!
@@ -105,7 +108,7 @@ Arithmetic Vector<Arithmetic, kN>::norm() const
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-auto Vector<Arithmetic, kN>::normalized() const -> Vector
+auto Vector<Arithmetic, kN>::normalized() const noexcept -> Vector
 {
   return *this * inverseNorm();
 }
@@ -115,7 +118,7 @@ auto Vector<Arithmetic, kN>::normalized() const -> Vector
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-Arithmetic Vector<Arithmetic, kN>::squareNorm() const
+Arithmetic Vector<Arithmetic, kN>::squareNorm() const noexcept
 {
   return dot(*this, *this);
 }
@@ -125,7 +128,7 @@ Arithmetic Vector<Arithmetic, kN>::squareNorm() const
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-Vector<Arithmetic, kN> operator-(const Vector<Arithmetic, kN>& vector)
+Vector<Arithmetic, kN> operator-(const Vector<Arithmetic, kN>& vector) noexcept
 {
   auto reverse_vector = vector;
   for (uint i = 0; i < kN; ++i)
@@ -139,7 +142,7 @@ Vector<Arithmetic, kN> operator-(const Vector<Arithmetic, kN>& vector)
   */
 template <typename Arithmetic, uint kN> inline
 Vector<Arithmetic, kN> operator+(const Vector<Arithmetic, kN>& a,
-                                 const Vector<Arithmetic, kN>& b)
+                                 const Vector<Arithmetic, kN>& b) noexcept
 {
   return Vector<Arithmetic, kN>{a.data() + b.data()};
 }
@@ -150,7 +153,7 @@ Vector<Arithmetic, kN> operator+(const Vector<Arithmetic, kN>& a,
   */
 template <typename Arithmetic, uint kN> inline
 Vector<Arithmetic, kN> operator-(const Vector<Arithmetic, kN>& a,
-                                 const Vector<Arithmetic, kN>& b)
+                                 const Vector<Arithmetic, kN>& b) noexcept
 {
   return Vector<Arithmetic, kN>{a.data() - b.data()};
 }
@@ -161,7 +164,7 @@ Vector<Arithmetic, kN> operator-(const Vector<Arithmetic, kN>& a,
   */
 template <typename Arithmetic, uint kN> inline
 Vector<Arithmetic, kN> operator*(const Vector<Arithmetic, kN>& vector,
-                                 const Arithmetic scalar)
+                                 const Arithmetic scalar) noexcept
 {
   return Vector<Arithmetic, kN>{vector.data() * scalar};
 }
@@ -172,7 +175,7 @@ Vector<Arithmetic, kN> operator*(const Vector<Arithmetic, kN>& vector,
   */
 template <typename Arithmetic, uint kN> inline
 Vector<Arithmetic, kN> operator*(const Arithmetic scalar,
-                                 const Vector<Arithmetic, kN>& vector)
+                                 const Vector<Arithmetic, kN>& vector) noexcept
 {
   return vector * scalar;
 }
@@ -183,7 +186,7 @@ Vector<Arithmetic, kN> operator*(const Arithmetic scalar,
   */
 template <typename Arithmetic, uint kN> inline
 Vector<Arithmetic, kN> operator/(const Arithmetic scalar,
-                                 const Vector<Arithmetic, kN>& vector)
+                                 const Vector<Arithmetic, kN>& vector) noexcept
 {
   return Vector<Arithmetic, kN>{scalar / vector.data()};
 }
@@ -193,9 +196,10 @@ Vector<Arithmetic, kN> operator/(const Arithmetic scalar,
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-bool operator==(const Vector<Arithmetic, kN>& a,const Vector<Arithmetic, kN>& b)
+bool operator==(const Vector<Arithmetic, kN>& a,
+                const Vector<Arithmetic, kN>& b) noexcept
 {
-  return a.data() == b.data();
+  return (a.data() == b.data());
 }
 
 /*!
@@ -203,7 +207,8 @@ bool operator==(const Vector<Arithmetic, kN>& a,const Vector<Arithmetic, kN>& b)
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-bool operator!=(const Vector<Arithmetic, kN>& a,const Vector<Arithmetic, kN>& b)
+bool operator!=(const Vector<Arithmetic, kN>& a,
+                const Vector<Arithmetic, kN>& b) noexcept
 {
   return !(a == b);
 }
@@ -213,18 +218,19 @@ bool operator!=(const Vector<Arithmetic, kN>& a,const Vector<Arithmetic, kN>& b)
   No detailed.
   */
 template <typename Arithmetic, uint kN> inline
-Arithmetic dot(const Vector<Arithmetic, kN>& a, const Vector<Arithmetic, kN>& b)
+Arithmetic dot(const Vector<Arithmetic, kN>& a,
+               const Vector<Arithmetic, kN>& b) noexcept
 {
   return dot(a.data(), b.data());
 }
 
 template <typename Arithmetic> inline
 Vector<Arithmetic, 3> cross(const Vector<Arithmetic, 3>& a,
-                            const Vector<Arithmetic, 3>& b)
+                            const Vector<Arithmetic, 3>& b) noexcept
 {
   return Vector<Arithmetic, 3>{cross(a.data(), b.data())};
 }
 
 } // namespace zisc
 
-#endif // _ZISC_VECTOR_INL_HPP_
+#endif // ZISC_VECTOR_INL_HPP

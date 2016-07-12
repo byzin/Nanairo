@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_UNCHARTED2_FILMIC_HPP_
-#define _NANAIRO_UNCHARTED2_FILMIC_HPP_
+#ifndef NANAIRO_UNCHARTED2_FILMIC_HPP
+#define NANAIRO_UNCHARTED2_FILMIC_HPP
 
 // Standard C++ library
 #include <vector>
@@ -38,20 +38,20 @@ class Uncharted2Filmic : public ToneMappingMethod
 {
  public:
   //! Initialize reinhard method
-  Uncharted2Filmic(const System& system, const SceneSettings& settings);
+  Uncharted2Filmic(const System& system, const SceneSettings& settings) noexcept;
 
 
   //! Apply tone mapping
   void toneMap(System& system,
                const HdrImage& hdr_image, 
-               QImage& ldr_image) override;
+               QImage& ldr_image) noexcept override;
 
  private:
   //! Initialize
-  void initialize(const System& system, const SceneSettings& settings);
+  void initialize(const System& system, const SceneSettings& settings) noexcept;
 
   //! Apply uncharted2 tone map
-  Float uncharted2ToneMap(const Float x) const;
+  Float uncharted2ToneMap(const Float x) const noexcept;
 
 
   std::vector<YxyColor> pixel_luminance_;
@@ -61,4 +61,4 @@ class Uncharted2Filmic : public ToneMappingMethod
 
 } // namespace nanairo
 
-#endif // _NANAIRO_UNCHARTED2_FILMIC_HPP_
+#endif // NANAIRO_UNCHARTED2_FILMIC_HPP

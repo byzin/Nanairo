@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_MICROFACET_GGX_INL_HPP_
-#define _NANAIRO_MICROFACET_GGX_INL_HPP_
+#ifndef NANAIRO_MICROFACET_GGX_INL_HPP
+#define NANAIRO_MICROFACET_GGX_INL_HPP
 
 #include "microfacet_ggx.hpp"
 // Zisc
@@ -25,19 +25,19 @@
 namespace nanairo {
 
 namespace ggx_v_cavity {
-Float evaluateGgxG1(const Float, const Float, const Float, const Float);
+Float evaluateGgxG1(const Float, const Float, const Float, const Float) noexcept;
 Float evaluateGgxG2(const Float, const Float, const Float, 
-                    const Float, const Float, const Float);
+                    const Float, const Float, const Float) noexcept;
 Float evaluateGgxWeight(const Float, const Float, const Float,
-                        const Float, const Float, const Float);
+                        const Float, const Float, const Float) noexcept;
 } // namespace ggx_v_cavity
 
 namespace ggx_smith {
-Float evaluateGgxG1(const Float, const Float, const Float, const Float);
+Float evaluateGgxG1(const Float, const Float, const Float, const Float) noexcept;
 Float evaluateGgxG2(const Float, const Float, const Float, 
-                    const Float, const Float, const Float);
+                    const Float, const Float, const Float) noexcept;
 Float evaluateGgxWeight(const Float, const Float, const Float,
-                        const Float, const Float, const Float);
+                        const Float, const Float, const Float) noexcept;
 } // namespace ggx_v_cavity
 
 /*!
@@ -45,7 +45,7 @@ Float evaluateGgxWeight(const Float, const Float, const Float,
   No detailed.
   */
 inline
-Float evaluateGgxD(const Float roughness, const Float cos_theta_nm)
+Float evaluateGgxD(const Float roughness, const Float cos_theta_nm) noexcept
 {
   ZISC_ASSERT(0.0 <= cos_theta_nm, 
               "Microfacet normal must be in the same hemisphere as normal.");
@@ -53,7 +53,7 @@ Float evaluateGgxD(const Float roughness, const Float cos_theta_nm)
   const Float a2 = roughness * roughness;
   const Float cos2_theta_nm = cos_theta_nm * cos_theta_nm;
   const Float tmp = (a2 - 1.0) * cos2_theta_nm + 1.0;
-  const Float d = a2 / (zisc::kPi * tmp * tmp);
+  const Float d = a2 / (zisc::kPi<Float> * tmp * tmp);
   ZISC_ASSERT(0.0 <= d, "GGX D must be positive.");
   return d;
 }
@@ -66,12 +66,12 @@ inline
 Float evaluateGgxG1(const Float roughness,
                     const Float cos_theta_n,
                     const Float cos_theta_m,
-                    const Float cos_theta_nm)
+                    const Float cos_theta_nm) noexcept
 {
-#if defined(_NANAIRO_GGX_V_CAVITY_)
+#if defined(NANAIRO_GGX_V_CAVITY)
   return ggx_v_cavity::
       evaluateGgxG1(roughness, cos_theta_n, cos_theta_m, cos_theta_nm);
-#elif defined(_NANAIRO_GGX_SMITH_)
+#elif defined(NANAIRO_GGX_SMITH)
   return ggx_smith::
       evaluateGgxG1(roughness, cos_theta_n, cos_theta_m, cos_theta_nm);
 #else
@@ -90,13 +90,13 @@ Float evaluateGgxG2(const Float roughness,
                     const Float cos_theta_no,
                     const Float cos_theta_mi,
                     const Float cos_theta_mo,
-                    const Float cos_theta_nm)
+                    const Float cos_theta_nm) noexcept
 {
-#if defined(_NANAIRO_GGX_V_CAVITY_)
+#if defined(NANAIRO_GGX_V_CAVITY)
   return ggx_v_cavity::
       evaluateGgxG2(roughness, cos_theta_ni, cos_theta_no, 
                     cos_theta_mi, cos_theta_mo, cos_theta_nm);
-#elif defined(_NANAIRO_GGX_SMITH_)
+#elif defined(NANAIRO_GGX_SMITH)
   return ggx_smith::
       evaluateGgxG2(roughness, cos_theta_ni, cos_theta_no, 
                     cos_theta_mi, cos_theta_mo, cos_theta_nm);
@@ -117,7 +117,7 @@ Float evaluateGgxReflectionPdf(const Float roughness,
                                const Float d,
                                const Float cos_theta_ni,
                                const Float cos_theta_mi,
-                               const Float cos_theta_nm)
+                               const Float cos_theta_nm) noexcept
 {
   const Float g1 = 
       evaluateGgxG1(roughness, cos_theta_ni, cos_theta_mi, cos_theta_nm);
@@ -143,7 +143,7 @@ Float evaluateGgxRefractionPdf(const Float roughness,
                                const Float cos_theta_mi,
                                const Float cos_theta_mo,
                                const Float cos_theta_nm,
-                               const Float n)
+                               const Float n) noexcept
 {
   const Float g1 = 
       evaluateGgxG1(roughness, cos_theta_ni, cos_theta_mi, cos_theta_nm);
@@ -171,7 +171,7 @@ SampledSpectra<kSampleSize> evaluateGgxReflectance(
     const Vector3& vout,
     const Vector3& normal,
     const SampledSpectra<kSampleSize>& r0,
-    Float* pdf)
+    Float* pdf) noexcept
 {
   const auto& wavelengths = r0.wavelengths();
 
@@ -226,7 +226,7 @@ inline
 Float evaluateGgxReflectionPdf(const Float roughness,
                                const Vector3& vin,
                                const Vector3& vout,
-                               const Vector3& normal)
+                               const Vector3& normal) noexcept
 {
   // Calculate reflection half vector
   const auto m_normal = getMicrofacetReflectionHalfVector(vin, vout);
@@ -258,7 +258,7 @@ Float evaluateGgxDielectricReflectionPdf(const Float roughness,
                                          const Vector3& vin,
                                          const Vector3& vout,
                                          const Vector3& normal,
-                                         const Float n)
+                                         const Float n) noexcept
 {
   // Calculate reflection half vector
   const auto m_normal = getMicrofacetReflectionHalfVector(vin, vout);
@@ -303,7 +303,7 @@ Float evaluateGgxDielectricRefractionPdf(const Float roughness,
                                          const Vector3& vin,
                                          const Vector3& vout,
                                          const Vector3& normal,
-                                         const Float n)
+                                         const Float n) noexcept
 {
   // Calculate refraction half vector
   const auto m_normal = getMicrofacetRefractionHalfVector(vin, vout, n);
@@ -351,13 +351,13 @@ Float evaluateGgxWeight(const Float roughness,
                         const Float cos_theta_no,
                         const Float cos_theta_mi,
                         const Float cos_theta_mo,
-                        const Float cos_theta_nm)
+                        const Float cos_theta_nm) noexcept
 {
-#if defined(_NANAIRO_GGX_V_CAVITY_)
+#if defined(NANAIRO_GGX_V_CAVITY)
   return ggx_v_cavity::
     evaluateGgxWeight(roughness, cos_theta_ni, cos_theta_no,
                       cos_theta_mi, cos_theta_mo, cos_theta_nm);
-#elif defined(_NANAIRO_GGX_SMITH_)
+#elif defined(NANAIRO_GGX_SMITH)
   return ggx_smith::
     evaluateGgxWeight(roughness, cos_theta_ni, cos_theta_no,
                       cos_theta_mi, cos_theta_mo, cos_theta_nm);
@@ -436,7 +436,7 @@ inline
 Float evaluateGgxG1(const Float roughness, 
                     const Float cos_theta_n, 
                     const Float cos_theta_m,
-                    const Float /* cos_theta_nm */)
+                    const Float /* cos_theta_nm */) noexcept
 {
 //  ZISC_ASSERT(0.0 <= cos_theta_n * cos_theta_m,
 //              "Microfacet normal must be same direction as normal.");
@@ -462,7 +462,7 @@ Float evaluateGgxG2(const Float roughness,
                     const Float cos_theta_no,
                     const Float cos_theta_mi,
                     const Float cos_theta_mo,
-                    const Float cos_theta_nm)
+                    const Float cos_theta_nm) noexcept
 {
   const Float g2 = 
       evaluateGgxG1(roughness, cos_theta_ni, cos_theta_mi, cos_theta_nm) *
@@ -482,10 +482,9 @@ Float evaluateGgxWeight(const Float roughness,
                         const Float cos_theta_no,
                         const Float /* cos_theta_mi */,
                         const Float cos_theta_mo,
-                        const Float cos_theta_nm)
+                        const Float cos_theta_nm) noexcept
 {
-  return 
-      evaluateGgxG1(roughness, cos_theta_no, cos_theta_mo, cos_theta_nm);
+  return evaluateGgxG1(roughness, cos_theta_no, cos_theta_mo, cos_theta_nm);
 }
 
 /*!
@@ -493,7 +492,7 @@ Float evaluateGgxWeight(const Float roughness,
   No detailed.
   */
 inline
-Vector3 stretchGgxMicrosurface(const Float roughness, const Vector3& vin)
+Vector3 stretchGgxMicrosurface(const Float roughness, const Vector3& vin) noexcept
 {
   const Vector3 vin_dash{roughness * vin[0], roughness * vin[1], vin[2]};
   return vin_dash.normalized();
@@ -503,4 +502,4 @@ Vector3 stretchGgxMicrosurface(const Float roughness, const Vector3& vin)
 
 } // namespace nanairo
 
-#endif // _NANAIRO_MICROFACET_GGX_INL_HPP_
+#endif // NANAIRO_MICROFACET_GGX_INL_HPP

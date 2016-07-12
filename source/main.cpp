@@ -157,8 +157,10 @@ Options processCommandLineOptions(const QCoreApplication& application)
   */
 void initializeQtRandomSeed()
 {
+  using zisc::cast;
+
   const qint64 time = QDateTime::currentMSecsSinceEpoch();
   const qint32* array = zisc::treatAs<const qint32*>(&time);
   const qint32 seed = std::abs(array[0] | array[1]);
-  qsrand(seed);
+  qsrand(cast<uint>(seed));
 }

@@ -6,21 +6,7 @@
 # http://opensource.org/licenses/mit-license.php
 # 
 
-cmake_minimum_required(VERSION 3.0)
-
-
-# Inner functions and macros
-
-# Set boolean value option
-macro(setBooleanOption variable value doc_string)
-  set(${variable} ${value} CACHE BOOL ${doc_string})
-endmacro(setBooleanOption)
-
-
-# Set string value option
-macro(setStringOption variable value doc_string)
-  set(${variable} ${value} CACHE STRING ${doc_string})
-endmacro(setStringOption)
+cmake_minimum_required(VERSION 3.4)
 
 
 # Validate options
@@ -30,26 +16,23 @@ function(validateOptions)
   set(lambda_max ${NANAIRO_LONGEST_WAVELENGTH})
 
   if(${lambda_min} LESS 360)
-    message(FATAL_ERROR 
-            "## The shortest wavelength must be greater than equal to 360nm.")
+    message(FATAL_ERROR "The shortest wavelength isn't greater than equal to 360nm.")
   endif()
   if(830 LESS ${lambda_max})
-    message(FATAL_ERROR 
-            "## The longest wavelength must be less than equal to 830nm.")
+    message(FATAL_ERROR "The longest wavelength isn't less than equal to 830nm.")
   endif()
   if(NOT (${lambda_min} LESS ${lambda_max}))
-    message(FATAL_ERROR 
-            "## The shortest wavelength must be less than to the longest.")
+    message(FATAL_ERROR "The shortest wavelength isn't less than to the longest.")
   endif()
 
   set(delta_lambda ${NANAIRO_WAVELENGTH_RESOLUTION})
   if(NOT 0 LESS ${delta_lambda})
-    message(FATAL_ERROR "## Wavelength resolution is must be natural number.")
+    message(FATAL_ERROR "Wavelength resolution isn't positive number.")
   endif()
   math(EXPR range "${lambda_max} - ${lambda_min}")
   math(EXPR rest "${range} % ${delta_lambda}")
   if(NOT ${rest} EQUAL 0)
-    message(FATAL_ERROR "## Invalied wavelength resolution is specified.")
+    message(FATAL_ERROR "Invalied wavelength resolution is specified.")
   endif()
 
   math(EXPR spectra_size "${range} / ${delta_lambda}")
@@ -57,11 +40,10 @@ function(validateOptions)
   # !(0 < sampleSize <= spectraSize)
   if(NOT (0 LESS ${sample_size} AND (${sample_size} LESS ${spectra_size} OR
                                      ${sample_size} EQUAL ${spectra_size})))
-    message(FATAL_ERROR "## Invalid wavelength sample size is specified.")
+    message(FATAL_ERROR "Invalid wavelength sample size is specified.")
   endif()
 endfunction(validateOptions)
 
-# Functions and macros
 
 # Set command options
 function(setCommandOptions)
@@ -70,7 +52,7 @@ function(setCommandOptions)
   setBooleanOption(NANAIRO_BUILD_DOCUMENTS OFF ${option_description})
 
   set(option_description "Build extra tools")
-  setBooleanOption(NANAIRO_BUILD_EXTRA_TOOLS ON ${option_description})
+  setBooleanOption(NANAIRO_BUILD_EXTRA_TOOLS OFF ${option_description})
 
   # Rendering options
   set(option_description "Set the floating point type of the computation in rendering.")
@@ -92,7 +74,7 @@ function(setCommandOptions)
   setBooleanOption(NANAIRO_DEBUG OFF ${option_description})
 
   set(option_description "Build unit tests")
-  setBooleanOption(NANAIRO_TEST ON ${option_description})
+  setBooleanOption(NANAIRO_BUILD_TEST OFF ${option_description})
 
   Set(option_description "The size of a memory pool")
   math(EXPR __memory_size__ "1 << 15")

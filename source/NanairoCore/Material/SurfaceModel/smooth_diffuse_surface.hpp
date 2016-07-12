@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_SMOOTH_DIFFUSE_SURFACE_HPP_
-#define _NANAIRO_SMOOTH_DIFFUSE_SURFACE_HPP_
+#ifndef NANAIRO_SMOOTH_DIFFUSE_SURFACE_HPP
+#define NANAIRO_SMOOTH_DIFFUSE_SURFACE_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -47,7 +47,7 @@ class SmoothDiffuseSurface : public SurfaceModel
   //! Create a smooth diffuse surface
   SmoothDiffuseSurface(const SceneSettings& settings, 
                        const QString& prefix,
-                       const std::vector<const Texture*>& texture_list);
+                       const std::vector<const Texture*>& texture_list) noexcept;
 
 
   //! Make Lambert BRDF
@@ -55,19 +55,19 @@ class SmoothDiffuseSurface : public SurfaceModel
   ShaderPointer<kSampleSize> makeLambertBrdf(
       const Point2& texture_coordinate,
       const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const;
+      MemoryPool& memory_pool) const noexcept;
 
   //! Return the surface model size
-  std::size_t surfaceSize() const override;
+  std::size_t surfaceSize() const noexcept override;
 
   //! Return the diffuse surface type
-  SurfaceType type() const override;
+  SurfaceType type() const noexcept override;
 
  private:
   //! Initialize
   void initialize(const SceneSettings& settings, 
                   const QString& prefix,
-                  const std::vector<const Texture*>& texture_list);
+                  const std::vector<const Texture*>& texture_list) noexcept;
 
 
   const Texture* reflectance_;
@@ -79,4 +79,4 @@ class SmoothDiffuseSurface : public SurfaceModel
 
 #include "smooth_diffuse_surface-inl.hpp"
 
-#endif // _NANAIRO_SMOOTH_DIFFUSE_SURFACE_HPP_
+#endif // NANAIRO_SMOOTH_DIFFUSE_SURFACE_HPP
