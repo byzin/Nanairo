@@ -2,7 +2,7 @@
   \file sampled_wavelengths.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -18,12 +18,14 @@
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
 
+// Forward declaration
+class QJsonObject;
+
 namespace nanairo {
 
 // Forward declaration
 class CumulativeSpectralDistribution;
 class Sampler;
-class SceneSettings;
 class World;
 
 //! \addtogroup Core
@@ -94,8 +96,9 @@ WavelengthSampler<kSampleSize> makeRgbSampler() noexcept;
 
 //! Make a wavelengths sampler
 template <uint kSampleSize>
-WavelengthSampler<kSampleSize> makeWavelengthSampler(const SceneSettings& settings,
-                                                     const World& world) noexcept;
+WavelengthSampler<kSampleSize> makeWavelengthSampler(
+    const World& world,
+    const QJsonObject& settings) noexcept;
 
 //! Sample RGB wavelengths
 template <uint kSampleSize>

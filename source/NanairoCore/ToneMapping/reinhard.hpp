@@ -2,7 +2,7 @@
   \file reinhard.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -16,12 +16,12 @@
 
 // Forward declaration
 class QImage;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
 class HdrImage;
-class SceneSettings;
 class System;
 
 //! \addtogroup Core
@@ -35,7 +35,7 @@ class Reinhard : public ToneMappingMethod
 {
  public:
   //! Initialize reinhard method
-  Reinhard(const System& system, const SceneSettings& settings) noexcept;
+  Reinhard(const System& system, const QJsonObject& settings) noexcept;
 
 
   //! Apply tone mapping

@@ -1,13 +1,10 @@
 # file: qt5.cmake
 # author: Sho Ikeda
 # 
-# Copyright (c) 2015 Sho Ikeda
+# Copyright (c) 2015-2016 Sho Ikeda
 # This software is released under the MIT License.
 # http://opensource.org/licenses/mit-license.php
 # 
-
-cmake_minimum_required(VERSION 3.4)
-
 
 # Defined variables
 #   qt5_include_dirs: 

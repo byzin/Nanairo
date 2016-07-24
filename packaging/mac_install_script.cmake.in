@@ -1,0 +1,43 @@
+# file: mac_install_script.cmake
+# author: Sho Ikeda
+#
+# Copyright (c) 2015-2016 Sho Ikeda
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+# 
+
+set(__package_script_dir__ ${CMAKE_CURRENT_LIST_DIR})
+set(__project_root__ @PROJECT_SOURCE_DIR@)
+set(__build_dir__ @PROJECT_BINARY_DIR@)
+set(__project_name__ @PROJECT_NAME@)
+set(__install_dir__ ${CMAKE_INSTALL_PREFIX})
+set(__app_contents_path__ ${__install_dir__}/..)
+
+#
+function(installLibraryDependencies)
+  set(exe_path ${__install_dir__}/bin/${__project_name__})
+  set(script_path ${__app_contents_path__}/MacOS/${__project_name__})
+
+  # Deploy Qt libraries
+  message("Deploying Qt libraries")
+  file(MAKE_DIRECTORY ${__app_contents_path__}/MacOS)
+  file(RENAME ${exe_path} ${script_path})
+  execute_process(COMMAND macdeployqt
+                      ${__app_contents_path__}/../
+                      -qmldir=${__build_dir__}/resource_code)
+  file(RENAME ${script_path} ${exe_path})
+  #  execute_process(COMMAND install_name_tool
+  #                      -change
+  #                      @rpath/Qt*.framework/Versions/5/Qt*
+  #                      @executable_path/Qt*.framework/Versions/5/Qt*
+  #                      ${exe_path})
+
+  # Deploy other libraries
+  # message("Deploying other libraries")
+  # include(${__project_root__}/packaging/dependencies.cmake)
+  # set(library_dir ${__install_dir__}/lib)
+  # deployUnresolvedDependencies(${exe_path} ${library_dir})
+endfunction(installLibraryDependencies)
+
+# Main
+installLibraryDependencies()

@@ -2,7 +2,7 @@
   \file russian_roulette.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -18,14 +18,13 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 
 // Forward declaration
-class QString;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
 template <uint> class SampledSpectra;
 class Sampler;
-class SceneSettings;
 
 //! \addtogroup Core
 //! \{
@@ -92,8 +91,7 @@ using RussianRouletteFunction =
 //! Make a russian roulette function
 template <uint kSampleSize>
 RussianRouletteFunction<kSampleSize> makeRussianRoulette(
-    const SceneSettings& settings,
-    const QString& prefix) noexcept;
+    const QJsonObject& settings) noexcept;
 
 //! \} Core
 

@@ -2,7 +2,7 @@
   \file film.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -11,6 +11,7 @@
 // Standard C++ library
 #include <utility>
 // Qt
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/utility.hpp"
@@ -20,7 +21,7 @@
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Color/rgb_spectra_image.hpp"
 #include "NanairoCore/Color/spectra_image.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
@@ -29,7 +30,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-Film::Film(const System& system, const SceneSettings& settings) noexcept
+Film::Film(const System& system, const QJsonObject& settings) noexcept
 {
   initialize(system, settings);
 }
@@ -38,7 +39,7 @@ Film::Film(const System& system, const SceneSettings& settings) noexcept
   \details
   No detailed.
   */
-void Film::initialize(const System& system, const SceneSettings& /* settings */) noexcept
+void Film::initialize(const System& system, const QJsonObject& /* settings */) noexcept
 {
   using zisc::cast;
 

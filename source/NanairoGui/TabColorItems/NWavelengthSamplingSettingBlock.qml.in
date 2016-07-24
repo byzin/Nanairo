@@ -1,0 +1,41 @@
+/*!
+  \file NWavelengthSamplingSettingBlock.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "../SettingBlockItems"
+
+NSettingBlock {
+  id: wavelength_sampling_setting_block
+
+  labelText: qsTr("WavelengthSampling")
+  
+  NComboBox {
+    id: wavelength_sampling_combobox
+
+    y: wavelength_sampling_setting_block.labelHeight + @item_offset@
+    backgroundColor: wavelength_sampling_setting_block.color
+
+    model: ["@regularSampling@",
+            "@randomSampling@",
+            "@stratifiedSampling@",
+            "@lightsBasedImportanceSampling@"]
+  }
+
+  function getSceneData() {
+    var sceneData = {};
+    sceneData["@wavelengthSampling@"] = wavelength_sampling_combobox.currentText;
+    return sceneData;
+  }
+
+  function setSceneData(sceneData) {
+    wavelength_sampling_combobox.currentIndex =
+        wavelength_sampling_combobox.find(sceneData["@wavelengthSampling@"]);
+  }
+}

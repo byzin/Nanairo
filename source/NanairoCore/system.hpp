@@ -2,7 +2,7 @@
   \file system.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -19,13 +19,15 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "Utility/unique_pointer.hpp"
 
+// Forward declaration
+class QJsonObject;
+
 namespace nanairo {
 
 // Forward declaration
 class XyzColorMatchingFunction;
 class RgbColorMatchingFunction;
 class Sampler;
-class SceneSettings;
 
 //! \addtogroup Core
 //! \{
@@ -38,7 +40,7 @@ class System
 {
  public:
   //! Initialize the renderer system
-  System(const SceneSettings& settings) noexcept;
+  System(const QJsonObject& settings) noexcept;
 
   //! Finalize the renderer system
   ~System() noexcept;
@@ -87,7 +89,7 @@ class System
 
  private:
   //! Initialize the renderer system
-  void initialize(const SceneSettings& settings) noexcept;
+  void initialize(const QJsonObject& settings) noexcept;
 
 
   std::vector<Sampler> sampler_list_;

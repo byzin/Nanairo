@@ -1,0 +1,22 @@
+/*!
+  \file NIntSpinBoxStyle.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import QtQuick.Controls.Styles @qt_quick_controls_style_version@
+
+SpinBoxStyle {
+  background: Rectangle {
+    width: control.width
+    height: control.height
+    color: "white"
+    border.color: Qt.darker(color, @default_darker_scale@)
+    border.width: 1
+  }
+}

@@ -2,7 +2,7 @@
   \file rgb_spectra_image.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -91,8 +91,7 @@ void RgbSpectraImage::toHdrImage(System& system,
 
   const Float averager = 1.0 / cast<Float>(cycle);
 
-  std::function<void (const uint)> to_hdr_image{
-  [this, &system, hdr_image, averager](const uint y)
+  auto to_hdr_image = [this, &system, hdr_image, averager](const uint y)
   {
     const auto to_xyz_matrix = getRgbToXyzMatrix(system.colorSpace());
     const uint width = widthResolution();
@@ -100,11 +99,11 @@ void RgbSpectraImage::toHdrImage(System& system,
       const RgbColor rgb{averager * buffer_[index].data()};
       (*hdr_image)[index] = rgb.toXyz(to_xyz_matrix);
     }
-  }};
+  };
 
   auto& thread_pool = system.threadPool();
   constexpr uint start = 0;
-  auto result = thread_pool.loop(std::move(to_hdr_image), start, heightResolution());
+  auto result = thread_pool.enqueueLoop(to_hdr_image, start, heightResolution());
   result.get();
 }
 

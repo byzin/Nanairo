@@ -1,0 +1,114 @@
+/*!
+  \file NImageSettingBlock.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "../../SettingBlockItems"
+
+NSettingBlock {
+  id: image_setting_block
+
+  property url imageFilePath: Qt.resolvedUrl("")
+  property var currentItem: null
+  property bool isItemChangeMode: false
+
+  labelText:qsTr("Image")
+
+  height: @default_block_height@ * 2 + @block_offset@
+
+  Rectangle {
+    id: image_frame
+
+    readonly property int borderSize: 2
+
+    anchors.horizontalCenter: image_setting_block.horizontalCenter
+    y: image_setting_block.labelHeight + @item_offset@
+    width: image_setting_block.width - 2 * @item_offset@
+    height: image_setting_block.height - (y + @item_offset@)
+    color: image_open_area.containsMouse 
+        ? Qt.darker(image_setting_block.color, @default_darker_scale@)
+        : image_setting_block.color
+
+    border.color: Qt.darker(color, @default_darker_scale@)
+    border.width: borderSize
+
+    Image {
+      id: image_board
+
+      anchors.horizontalCenter: image_frame.horizontalCenter
+      anchors.verticalCenter: image_frame.verticalCenter
+      width: image_frame.width - 2 * image_frame.borderSize
+      height: image_frame.height - 2 * image_frame.borderSize
+
+      fillMode: Image.PreserveAspectFit
+      horizontalAlignment: Image.AlignHCenter
+      verticalAlignment: Image.AlignVCenter
+      
+      source: imageFilePath
+      sourceSize.width: width
+      sourceSize.height: height
+
+      NFileDialog {
+        id: open_image_dialog
+        title: qsTr("Open image file")
+        nameFilters: ["Image files (*.jpg *.png *.bmp)"]
+        onAccepted: imageFilePath = fileUrl
+      }
+
+      MouseArea {
+        id: image_open_area
+        anchors.fill: parent
+        hoverEnabled: true
+        onClicked: open_image_dialog.openDialog()
+      }
+    }
+  }
+
+  onImageFilePathChanged: {
+    var filePath = imageFilePath.toString();
+    if (filePath != "") {
+      setCurrentItemValue("@imageFilePath@", filePath);
+    }
+  }
+
+  function initializeItem(item) {
+    item["@imageFilePath@"] = Qt.resolvedUrl("");
+  }
+
+  function reflectItem() {
+    var item = currentItem;
+    // Image file path
+    imageFilePath = Qt.resolvedUrl(item["@imageFilePath@"]);
+  }
+
+  function setCurrentItem(item, itemChangeMode) {
+    currentItem = item;
+    isItemChangeMode = itemChangeMode;
+  }
+
+  function setCurrentItemValue(key, value) {
+    if (currentItem != null) {
+      currentItem[key] = value;
+    }
+  }
+
+  function getItemData(item) {
+    var itemData = {};
+    var filePath = Qt.resolvedUrl(item["@imageFilePath@"]);
+    itemData["@imageFilePath@"] = nanairoManager.toRelativeFilePath(filePath);
+    return itemData;
+  }
+
+  function makeItem(itemData) {
+    var item = {};
+    var filePath = nanairoManager.toAbsoluteFileUrl(itemData["@imageFilePath@"]);
+    item["@imageFilePath@"] = filePath.toString();
+    return item;
+  }
+}

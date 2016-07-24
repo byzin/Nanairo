@@ -2,7 +2,7 @@
   \file world.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -27,13 +27,12 @@
 #include "Utility/unique_pointer.hpp"
 
 // Forward declaration
-class QString;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
 class Bvh;
-class SceneSettings;
 class System;
 
 /*!
@@ -46,7 +45,7 @@ class World
  public:
   //! Initialize the world
   World(System& system, 
-        const SceneSettings& settings,
+        const QJsonObject& settings,
         const std::function<void (const QString&)>& message_sender) noexcept;
 
   //! Finalize the world
@@ -86,39 +85,38 @@ class World
 
   //! Initialize world
   void initialize(System& system, 
-                  const SceneSettings& settings, 
+                  const QJsonObject& settings, 
                   const std::function<void (const QString&)>& message_sender) noexcept;
 
   //! Initialize emitter list
-  void initializeEmitter(System& system, const SceneSettings& settings) noexcept;
+  void initializeEmitter(System& system, const QJsonArray& settings) noexcept;
 
   //! Initialize Objects
   std::vector<Object> initializeObject(System& system, 
-                                       const SceneSettings& settings) noexcept;
+                                       const QJsonArray& settings) noexcept;
 
   //! Initialize the world information of light sources
   void initializeWorldLightSource() noexcept;
 
   //! Initialize surface scattering list
-  void initializeSurface(System& system, const SceneSettings& settings) noexcept;
+  void initializeSurface(System& system, const QJsonArray& settings) noexcept;
 
   //! Initialize texture list
-  void initializeTexture(System& system, const SceneSettings& settings) noexcept;
+  void initializeTexture(System& system, const QJsonArray& settings) noexcept;
 
   //! Make objects
   std::list<std::future<std::vector<Object>>> makeObjects(
       System& system,
-      const SceneSettings& settings) const noexcept;
+      const QJsonArray& settings) const noexcept;
 
   //! Make a single object
-  std::vector<Object> makeSingleObject(const SceneSettings& settings,
-                                       const QString& prefix,
+  std::vector<Object> makeSingleObject(const QJsonObject& settings,
                                        const Matrix4x4& transformation) const noexcept;
 
   std::list<std::future<std::vector<Object>>> makeGroupObject(
       System& system,
-      const SceneSettings& settings,
-      const QString& prefix,
+      const QJsonArray& settings,
+      const QJsonObject& group_settings,
       const Matrix4x4& transformation,
       const uint count,
       uint& index) const noexcept;

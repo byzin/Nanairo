@@ -2,7 +2,7 @@
   \file transformation.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -18,12 +18,11 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 
 // Forward declaration
-class QString;
+class QJsonArray;
+class QJsonObject;
 
 namespace nanairo {
 
-// Forward declaration
-class SceneSettings;
 
 //! \addtogroup Core
 //! \{
@@ -41,29 +40,25 @@ Matrix3x3 makeChangeOfBasisMatrixToLocal(const Vector3& normal) noexcept;
 Matrix4x4 makeIdentityMatrix() noexcept;
 
 //! Make transformation matrix
-Matrix4x4 makeTransformationMatrix(const SceneSettings& settings, 
-                                   const QString& prefix) noexcept;
+Matrix4x4 makeTransformationMatrix(const QJsonArray& settings) noexcept;
 
 //! Make translation matrix
 Matrix4x4 makeTranslationMatrix(const Float x, const Float y, const Float z) noexcept;
 
 //! Make translation matrix
-Matrix4x4 makeTranslationMatrix(const SceneSettings& settings, 
-                                const QString& prefix) noexcept;
+Matrix4x4 makeTranslationMatrix(const QJsonObject& settings) noexcept;
 
 //! Make scaling matrix
 Matrix4x4 makeScalingMatrix(const Float x, const Float y, const Float z) noexcept;
 
 //! Make scaling matrix
-Matrix4x4 makeScalingMatrix(const SceneSettings& settings, 
-                            const QString& prefix) noexcept;
+Matrix4x4 makeScalingMatrix(const QJsonObject& settings) noexcept;
 
 //! Make rotation matrix
 Matrix4x4 makeRotationMatrix(const Vector3& a, const Vector3& b) noexcept;
 
 //! Make rotation matrix
-Matrix4x4 makeRotationMatrix(const SceneSettings& settings, 
-                             const QString& prefix) noexcept;
+Matrix4x4 makeRotationMatrix(const QJsonObject& settings) noexcept;
 
 //! Make x axis rotation matrix
 Matrix4x4 makeXAxisRotationMatrix(const Float theta) noexcept;

@@ -2,7 +2,7 @@
   \file geometry.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -22,7 +22,7 @@
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 // Forward declaration
-class QString;
+class QJsonObject;
 
 namespace nanairo {
 
@@ -31,7 +31,6 @@ class Aabb;
 class IntersectionInfo;
 class Ray;
 class Sampler;
-class SceneSettings;
 
 //! \addtogroup Core
 //! \{
@@ -77,8 +76,8 @@ class Geometry
 };
 
 //! Make geometries
-std::vector<UniquePointer<Geometry>> makeGeometry(const SceneSettings& settings,
-                                                  const QString& prefix) noexcept;
+std::vector<UniquePointer<Geometry>> makeGeometry(
+    const QJsonObject& settings) noexcept;
 
 //! \} Core
 

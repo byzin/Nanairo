@@ -2,7 +2,7 @@
   \file gui_engine.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -13,7 +13,6 @@
 // Qt
 #include <QQmlApplicationEngine>
 // Nanairo
-#include "NanairoCore/Utility/scene_settings.hpp"
 #include "Utility/gui_renderer_manager.hpp"
 
 // Forward declaration
@@ -48,7 +47,6 @@ class GuiEngine
 
   QQmlApplicationEngine engine_;
   GuiRendererManager manager_;
-  SceneSettings settings_;
   RenderedImageProvider* image_provider_;
 };
 

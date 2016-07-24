@@ -2,7 +2,7 @@
   \file rough_conductor_surface.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 // Qt
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/error.hpp"
@@ -23,7 +24,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Utility/floating_point.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -32,11 +33,10 @@ namespace nanairo {
   No detailed.
   */
 RoughConductorSurface::RoughConductorSurface(
-    const SceneSettings& settings,
-    const QString& prefix,
+    const QJsonObject& settings,
     const std::vector<const Texture*>& texture_list) noexcept
 {
-  initialize(settings, prefix, texture_list);
+  initialize(settings, texture_list);
 }
 
 /*!
@@ -62,27 +62,27 @@ SurfaceType RoughConductorSurface::type() const noexcept
   No detailed.
   */
 void RoughConductorSurface::initialize(
-    const SceneSettings& settings,
-    const QString& prefix,
+    const QJsonObject& settings,
     const std::vector<const Texture*>& texture_list) noexcept
 {
-  const auto p = prefix + "/" + keyword::roughConductorSurface;
+  const auto texture_index = intValue<uint>(settings, keyword::roughnessIndex);
+  roughness_ = texture_list[texture_index];
 
-  auto key = p + "/" + keyword::roughnessIndex;
-  roughness_ = getTexture(settings, key, texture_list);
+  const auto outer_refractive_index_settings =
+      stringValue(settings, keyword::outerRefractiveIndex);
+  const auto n1 = makeSpectra(outer_refractive_index_settings);
+  ZISC_ASSERT(!hasZeroFloat(n1), "The n1 contains zero value.");
+  ZISC_ASSERT(!hasNegativeFloat(n1), "The n1 contains negative value.");
 
-  key = p + "/" + keyword::outerRefractiveIndex;
-  const auto n1 = makeSpectra(settings, key);
-  ZISC_ASSERT(!hasZeroFloat(n1), "The n1 must not contain zero.");
-  ZISC_ASSERT(!hasNegativeFloat(n1), "The n1 must not contain negative.");
+  const auto inner_refractive_index_settings =
+      stringValue(settings, keyword::innerRefractiveIndex);
+  const auto n2 = makeSpectra(inner_refractive_index_settings);
+  ZISC_ASSERT(!hasNegativeFloat(n2), "The n2 contains negative value.");
 
-  key = p + "/" + keyword::innerRefractiveIndex;
-  const auto n2 = makeSpectra(settings, key);
-  ZISC_ASSERT(!hasNegativeFloat(n2), "The n2 must not contain negative.");
-
-  key = p + "/" + keyword::innerExtinction;
-  const auto k2 = makeSpectra(settings, key);
-  ZISC_ASSERT(!hasNegativeFloat(k2), "The k2 must not contain negative.");
+  const auto inner_extinction_settings =
+      stringValue(settings, keyword::innerExtinction);
+  const auto k2 = makeSpectra(inner_extinction_settings);
+  ZISC_ASSERT(!hasNegativeFloat(k2), "The k2 contains negative value.");
 
   const auto eta = n2 / n1;
   const auto eta_k = k2 / n1;

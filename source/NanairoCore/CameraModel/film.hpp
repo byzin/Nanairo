@@ -2,7 +2,7 @@
   \file film.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -16,11 +16,13 @@
 #include "NanairoCore/LinearAlgebra/point.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
+// Forward declaration
+class QJsonObject;
+
 namespace nanairo {
 
 // Forward declaration
 class Sampler;
-class SceneSettings;
 class System;
 
 //! \addtogroup Core
@@ -34,7 +36,7 @@ class Film
 {
  public:
   //! Create film
-  Film(const System& system, const SceneSettings& settings) noexcept;
+  Film(const System& system, const QJsonObject& settings) noexcept;
 
 
   //! Return the aspect ratio of image
@@ -60,7 +62,7 @@ class Film
 
  private:
   //! Initialize
-  void initialize(const System& system, const SceneSettings& settings) noexcept;
+  void initialize(const System& system, const QJsonObject& settings) noexcept;
 
 
   UniquePointer<SpectraImageInterface> spectra_buffer_; //!< The buffer of spectra

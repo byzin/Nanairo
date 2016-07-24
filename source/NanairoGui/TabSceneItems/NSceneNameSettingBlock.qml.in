@@ -1,0 +1,43 @@
+/*!
+  \file NSceneNameSettingBlock.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "../SettingBlockItems"
+
+NSettingBlock {
+  id: scene_name_setting_block
+
+  property var currentItem: null
+  property bool isItemChangeMode: false
+
+  labelText: qsTr("SceneName")
+
+  NTextField {
+    id: scene_name_editor
+
+    y: scene_name_setting_block.labelHeight + @item_offset@
+
+    placeholderText: qsTr("Name")
+  }
+
+  function getSceneName() {
+    return scene_name_editor.text;
+  }
+
+  function getSceneData() {
+    var sceneData = {};
+    sceneData["@sceneName@"] = scene_name_editor.text;
+    return sceneData;
+  }
+
+  function setSceneData(sceneData) {
+    scene_name_editor.text = sceneData["@sceneName@"];
+  }
+}

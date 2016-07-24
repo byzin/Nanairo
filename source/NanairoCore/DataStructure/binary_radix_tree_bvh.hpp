@@ -2,7 +2,7 @@
   \file binary_radix_tree_bvh.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -19,12 +19,11 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 
 // Forward declaration
-class QString;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
-class SceneSettings;
 class System;
 
 //! \addtogroup Core 
@@ -41,7 +40,7 @@ class BinaryRadixTreeBvh : public Bvh
 {
  public:
   //! Create a binary radix BVH
-  BinaryRadixTreeBvh(const SceneSettings& settings, const QString& prefix) noexcept;
+  BinaryRadixTreeBvh(const QJsonObject& settings) noexcept;
 
 
   //! Build a binary radix tree BVH

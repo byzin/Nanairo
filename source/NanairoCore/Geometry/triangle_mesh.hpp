@@ -2,7 +2,7 @@
   \file triangle_mesh.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -21,13 +21,12 @@
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 // Forward declaration
-class QString;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
 class Ray;
-class SceneSettings;
 
 //! \addtogroup Core 
 //! \{
@@ -70,8 +69,7 @@ bool calculateBarycentricCoordinate(const Ray& ray,
                                     Float* t) noexcept;
 
 //! Make a polygon
-std::vector<UniquePointer<Geometry>> makeMeshes(const SceneSettings& settings,
-                                                const QString& prefix) noexcept;
+std::vector<UniquePointer<Geometry>> makeMeshes(const QJsonObject& settings) noexcept;
 
 //! \} Core 
 

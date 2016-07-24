@@ -2,7 +2,7 @@
   \file scene_renderer_base.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -12,6 +12,7 @@
 
 // Qt
 #include <QImage>
+#include <QMatrix4x4>
 #include <QObject>
 #include <QString>
 #include <QtGlobal>
@@ -22,12 +23,9 @@
 #include "NanairoCore/LinearAlgebra/transformation.hpp"
 
 // Foward declaration
-class QMatrix4x4;
+class QJsonObject;
 
 namespace nanairo {
-
-// Forward declaration
-class SceneSettings;
 
 //! \addtogroup Renderer
 //! \{
@@ -49,10 +47,7 @@ class SceneRendererBase : public QObject
 
 
   //! Initialize the renderer
-  void initialize(const SceneSettings& settings) noexcept;
-
-  //! Return the LDR image format
-  const QString& ldrImageFormat() const noexcept;
+  void initialize(const QJsonObject& settings) noexcept;
 
   //! Preview the rendered image
   void previewImage() noexcept;
@@ -64,11 +59,10 @@ class SceneRendererBase : public QObject
   const QImage& renderedImage() const noexcept;
 
  public slots:
-  //! Handle mouse event in preview rendering
-  void handlePreviewMouseEvent(const int buttons,
-                               const int delta_x,
-                               const int delta_y,
-                               const int delta_wheel) noexcept;
+  //! Handle a preview event
+  void handlePreviewEvent(const int transformation_event_type,
+                          const int axis_event_type,
+                          const int value) noexcept;
 
   //! Stop rendering
   void stopRendering() const noexcept;
@@ -77,8 +71,8 @@ class SceneRendererBase : public QObject
   //! Called when rendering is finished
   void finished() const;
 
-  //! Output the transformation matrix
-  void outputMatrix(const QMatrix4x4& matrix) const;
+  //! Output the total camera event 
+  void cameraEventHandled(const QMatrix4x4& matrix) const;
 
   //! Output message
   void outputMessage(const QString& message) const;
@@ -94,13 +88,16 @@ class SceneRendererBase : public QObject
 
 
   //! Return the camera event
+  CameraEvent& cameraEvent() noexcept;
+
+  //! Return the camera event
   const CameraEvent& cameraEvent() const noexcept;
 
-  //! Return the camera matrix
-  const Matrix4x4& cameraMatrix() const noexcept;
-
-  //! Return the camera matrix
+  //! Return the camera transformation matrix
   Matrix4x4& cameraMatrix() noexcept;
+
+  //! Return the camera transformation matrix
+  const Matrix4x4& cameraMatrix() const noexcept;
 
   //! Convert the spectra buffer to HDR XYZ buffer
   virtual void convertSpectraToHdr(const quint64 cycle) noexcept = 0;
@@ -109,7 +106,7 @@ class SceneRendererBase : public QObject
   virtual void handleCameraEvent() noexcept = 0;
 
   //! Initialize the renderer
-  virtual void initializeRenderer(const SceneSettings& settings) noexcept = 0;
+  virtual void initializeRenderer(const QJsonObject& settings) noexcept = 0;
 
   //! Render the scene image
   virtual void render(const quint64 cycle) noexcept = 0;
@@ -135,7 +132,7 @@ class SceneRendererBase : public QObject
                          Clock::rep* interval_count) const noexcept;
 
   //! Output the transformation matrix
-  void outputMatrix(const Matrix4x4& matrix) const noexcept;
+  void outputCameraEvent() const noexcept;
 
   //! Save LDR iamge
   void saveLdrImage(const quint64 cycle, const QString& output_dir) const noexcept;
@@ -146,7 +143,6 @@ class SceneRendererBase : public QObject
 
   Matrix4x4 camera_matrix_;
   QImage ldr_image_;
-  QString ldr_image_format_;
   Clock::duration saving_interval_time_;
   CameraEvent camera_event_;
   quint64 termination_pass_;

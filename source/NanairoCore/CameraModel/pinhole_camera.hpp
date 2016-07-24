@@ -2,7 +2,7 @@
   \file pinhole_camera.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -21,14 +21,13 @@
 #include "NanairoCore/LinearAlgebra/vector.hpp"
 
 // Forward declaration
-class QString;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
 class SampledDirection;
 class Sampler;
-class SceneSettings;
 
 //! \addtogroup Core 
 //! \{
@@ -41,7 +40,7 @@ class PinholeCamera : public CameraModel
 {
  public:
   //! Create a pinhole camera
-  PinholeCamera(const SceneSettings& settings, const QString& prefix) noexcept;
+  PinholeCamera(const QJsonObject& settings) noexcept;
 
 
   //! Calculate the pdf
@@ -87,7 +86,7 @@ class PinholeCamera : public CameraModel
   Float filmArea() const noexcept;
 
   //! Initialize
-  void initialize(const SceneSettings& settings, const QString& prefix) noexcept;
+  void initialize(const QJsonObject& settings) noexcept;
 
   //! Initialize camera film
   void initializeFilm() noexcept override;

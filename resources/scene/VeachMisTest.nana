@@ -1,437 +1,533 @@
-[Bvh]
-BvhType=BinaryRadixTreeBvh
-
-[Color]
-ColorSpace=sRGB (D65)
-Gamma=2.2000000000000002
-RgbRendering=false
-StandardIllumination=CIE D65
-StandardObserver=CIE 2deg color matching function
-ToneMapping=Reinhard
-WavelengthSampling=Regular sampling
-
-[EmitterModel]
-0\Name=Light1
-0\NonDirectionalEmitter\Color\IsRgbMode=true
-0\NonDirectionalEmitter\Color\RgbColor\B=100
-0\NonDirectionalEmitter\Color\RgbColor\G=60
-0\NonDirectionalEmitter\Color\RgbColor\R=255
-0\NonDirectionalEmitter\RadiantExitance=16
-0\Type=NonDirectionalEmitter
-1\Name=Light2
-1\NonDirectionalEmitter\Color\IsRgbMode=true
-1\NonDirectionalEmitter\Color\RgbColor\B=255
-1\NonDirectionalEmitter\Color\RgbColor\G=100
-1\NonDirectionalEmitter\Color\RgbColor\R=60
-1\NonDirectionalEmitter\RadiantExitance=128
-1\Type=NonDirectionalEmitter
-2\Name=Light3
-2\NonDirectionalEmitter\Color\IsRgbMode=true
-2\NonDirectionalEmitter\Color\RgbColor\B=60
-2\NonDirectionalEmitter\Color\RgbColor\G=255
-2\NonDirectionalEmitter\Color\RgbColor\R=100
-2\NonDirectionalEmitter\RadiantExitance=1024
-2\Type=NonDirectionalEmitter
-3\Name=Light4
-3\NonDirectionalEmitter\Color\IsRgbMode=true
-3\NonDirectionalEmitter\Color\RgbColor\B=255
-3\NonDirectionalEmitter\Color\RgbColor\G=255
-3\NonDirectionalEmitter\Color\RgbColor\R=255
-3\NonDirectionalEmitter\RadiantExitance=8192
-3\Type=NonDirectionalEmitter
-Count=4
-
-[Object]
-0\CameraType=PinholeCamera
-0\Jittering=true
-0\Name=Camera
-0\PinholeCamera\AngleOfView=40
-0\Transformation\0\Active=true
-0\Transformation\0\Angle=20
-0\Transformation\0\Axis=X
-0\Transformation\0\Type=Rotation
-0\Transformation\0\Unit=Degree
-0\Transformation\1\Active=true
-0\Transformation\1\Type=Translation
-0\Transformation\1\X=0
-0\Transformation\1\Y=0.5
-0\Transformation\1\Z=-4
-0\Transformation\Count=2
-0\Type=CameraObject
-0\Visibility=true
-0\treeLevel=0
-1\Name=CornellBox
-1\Transformation\Count=0
-1\Type=GroupObject
-1\Visibility=true
-1\treeLevel=0
-10\GeometryType=MeshObject
-10\IsEmissiveObject=false
-10\Name=BackWall
-10\ObjectFilePath=resources/models/primitives/plane.obj
-10\Smoothing=false
-10\SurfaceIndex=1
-10\Transformation\0\Active=true
-10\Transformation\0\Type=Scaling
-10\Transformation\0\X=3
-10\Transformation\0\Y=1
-10\Transformation\0\Z=3
-10\Transformation\1\Active=true
-10\Transformation\1\Angle=90
-10\Transformation\1\Axis=X
-10\Transformation\1\Type=Rotation
-10\Transformation\1\Unit=Degree
-10\Transformation\2\Active=true
-10\Transformation\2\Type=Translation
-10\Transformation\2\X=0
-10\Transformation\2\Y=0
-10\Transformation\2\Z=3
-10\Transformation\Count=3
-10\Type=SingleObject
-10\Visibility=true
-10\treeLevel=1
-11\GeometryType=MeshObject
-11\IsEmissiveObject=false
-11\Name=RightWall
-11\ObjectFilePath=resources/models/primitives/plane.obj
-11\Smoothing=false
-11\SurfaceIndex=1
-11\Transformation\0\Active=true
-11\Transformation\0\Type=Scaling
-11\Transformation\0\X=3
-11\Transformation\0\Y=1
-11\Transformation\0\Z=6
-11\Transformation\1\Active=true
-11\Transformation\1\Angle=90
-11\Transformation\1\Axis=Z
-11\Transformation\1\Type=Rotation
-11\Transformation\1\Unit=Degree
-11\Transformation\2\Active=true
-11\Transformation\2\Type=Translation
-11\Transformation\2\X=-1.5
-11\Transformation\2\Y=0
-11\Transformation\2\Z=0
-11\Transformation\Count=3
-11\Type=SingleObject
-11\Visibility=true
-11\treeLevel=1
-12\GeometryType=MeshObject
-12\IsEmissiveObject=false
-12\Name=LeftWall
-12\ObjectFilePath=resources/models/primitives/plane.obj
-12\Smoothing=false
-12\SurfaceIndex=1
-12\Transformation\0\Active=true
-12\Transformation\0\Type=Scaling
-12\Transformation\0\X=3
-12\Transformation\0\Y=1
-12\Transformation\0\Z=6
-12\Transformation\1\Active=true
-12\Transformation\1\Angle=90
-12\Transformation\1\Axis=Z
-12\Transformation\1\Type=Rotation
-12\Transformation\1\Unit=Degree
-12\Transformation\2\Active=true
-12\Transformation\2\Type=Translation
-12\Transformation\2\X=1.5
-12\Transformation\2\Y=0
-12\Transformation\2\Z=0
-12\Transformation\Count=3
-12\Type=SingleObject
-12\Visibility=true
-12\treeLevel=1
-13\GeometryType=MeshObject
-13\IsEmissiveObject=false
-13\Name=Floor
-13\ObjectFilePath=resources/models/primitives/plane.obj
-13\Smoothing=false
-13\SurfaceIndex=1
-13\Transformation\0\Active=true
-13\Transformation\0\Type=Scaling
-13\Transformation\0\X=3
-13\Transformation\0\Y=1
-13\Transformation\0\Z=6
-13\Transformation\1\Active=true
-13\Transformation\1\Type=Translation
-13\Transformation\1\X=0
-13\Transformation\1\Y=-1.5
-13\Transformation\1\Z=0
-13\Transformation\Count=2
-13\Type=SingleObject
-13\Visibility=true
-13\treeLevel=1
-14\GeometryType=MeshObject
-14\IsEmissiveObject=false
-14\Name=Ceiling
-14\ObjectFilePath=resources/models/primitives/plane.obj
-14\Smoothing=false
-14\SurfaceIndex=1
-14\Transformation\0\Active=true
-14\Transformation\0\Type=Scaling
-14\Transformation\0\X=3
-14\Transformation\0\Y=1
-14\Transformation\0\Z=6
-14\Transformation\1\Active=true
-14\Transformation\1\Type=Translation
-14\Transformation\1\X=0
-14\Transformation\1\Y=1.5
-14\Transformation\1\Z=0
-14\Transformation\Count=2
-14\Type=SingleObject
-14\Visibility=true
-14\treeLevel=1
-2\EmitterIndex=3
-2\GeometryType=MeshObject
-2\IsEmissiveObject=true
-2\Name=SphereLight4
-2\ObjectFilePath=resources/models/primitives/sphere.obj
-2\Smoothing=false
-2\SurfaceIndex=0
-2\Transformation\0\Active=true
-2\Transformation\0\Type=Scaling
-2\Transformation\0\X=0.050000000000000003
-2\Transformation\0\Y=0.050000000000000003
-2\Transformation\0\Z=0.050000000000000003
-2\Transformation\1\Active=true
-2\Transformation\1\Type=Translation
-2\Transformation\1\X=0.90000000000000002
-2\Transformation\1\Y=-0.40000000000000002
-2\Transformation\1\Z=0.69999999999999996
-2\Transformation\Count=2
-2\Type=SingleObject
-2\Visibility=true
-2\treeLevel=1
-3\EmitterIndex=2
-3\GeometryType=MeshObject
-3\IsEmissiveObject=true
-3\Name=SphereLight3
-3\ObjectFilePath=resources/models/primitives/sphere.obj
-3\Smoothing=false
-3\SurfaceIndex=0
-3\Transformation\0\Active=true
-3\Transformation\0\Type=Scaling
-3\Transformation\0\X=0.10000000000000001
-3\Transformation\0\Y=0.10000000000000001
-3\Transformation\0\Z=0.10000000000000001
-3\Transformation\1\Active=true
-3\Transformation\1\Type=Translation
-3\Transformation\1\X=0.29999999999999999
-3\Transformation\1\Y=-0.40000000000000002
-3\Transformation\1\Z=0.72499999999999998
-3\Transformation\Count=2
-3\Type=SingleObject
-3\Visibility=true
-3\treeLevel=1
-4\EmitterIndex=1
-4\GeometryType=MeshObject
-4\IsEmissiveObject=true
-4\Name=SphereLight2
-4\ObjectFilePath=resources/models/primitives/sphere.obj
-4\Smoothing=false
-4\SurfaceIndex=0
-4\Transformation\0\Active=true
-4\Transformation\0\Type=Scaling
-4\Transformation\0\X=0.20000000000000001
-4\Transformation\0\Y=0.20000000000000001
-4\Transformation\0\Z=0.20000000000000001
-4\Transformation\1\Active=true
-4\Transformation\1\Type=Translation
-4\Transformation\1\X=-0.29999999999999999
-4\Transformation\1\Y=-0.42499999999999999
-4\Transformation\1\Z=0.75
-4\Transformation\Count=2
-4\Type=SingleObject
-4\Visibility=true
-4\treeLevel=1
-5\EmitterIndex=0
-5\GeometryType=MeshObject
-5\IsEmissiveObject=true
-5\Name=SphereLight1
-5\ObjectFilePath=resources/models/primitives/sphere.obj
-5\Smoothing=false
-5\SurfaceIndex=0
-5\Transformation\0\Active=true
-5\Transformation\0\Type=Scaling
-5\Transformation\0\X=0.40000000000000002
-5\Transformation\0\Y=0.40000000000000002
-5\Transformation\0\Z=0.40000000000000002
-5\Transformation\1\Active=true
-5\Transformation\1\Type=Translation
-5\Transformation\1\X=-0.90000000000000002
-5\Transformation\1\Y=-0.5
-5\Transformation\1\Z=0.80000000000000004
-5\Transformation\Count=2
-5\Type=SingleObject
-5\Visibility=true
-5\treeLevel=1
-6\GeometryType=MeshObject
-6\IsEmissiveObject=false
-6\Name=Board4
-6\ObjectFilePath=resources/models/primitives/cube.obj
-6\Smoothing=false
-6\SurfaceIndex=5
-6\Transformation\0\Active=true
-6\Transformation\0\Type=Scaling
-6\Transformation\0\X=2
-6\Transformation\0\Y=0.050000000000000003
-6\Transformation\0\Z=0.40000000000000002
-6\Transformation\1\Active=true
-6\Transformation\1\Angle=-30
-6\Transformation\1\Axis=X
-6\Transformation\1\Type=Rotation
-6\Transformation\1\Unit=Degree
-6\Transformation\2\Active=true
-6\Transformation\2\Type=Translation
-6\Transformation\2\X=0
-6\Transformation\2\Y=-1
-6\Transformation\2\Z=0.65000000000000002
-6\Transformation\Count=3
-6\Type=SingleObject
-6\Visibility=true
-6\treeLevel=1
-7\GeometryType=MeshObject
-7\IsEmissiveObject=false
-7\Name=Board3
-7\ObjectFilePath=resources/models/primitives/cube.obj
-7\Smoothing=false
-7\SurfaceIndex=4
-7\Transformation\0\Active=true
-7\Transformation\0\Type=Scaling
-7\Transformation\0\X=2
-7\Transformation\0\Y=0.050000000000000003
-7\Transformation\0\Z=0.40000000000000002
-7\Transformation\1\Active=true
-7\Transformation\1\Angle=-15
-7\Transformation\1\Axis=X
-7\Transformation\1\Type=Rotation
-7\Transformation\1\Unit=Degree
-7\Transformation\2\Active=true
-7\Transformation\2\Type=Translation
-7\Transformation\2\X=0
-7\Transformation\2\Y=-1.1499999999999999
-7\Transformation\2\Z=0.20000000000000001
-7\Transformation\Count=3
-7\Type=SingleObject
-7\Visibility=true
-7\treeLevel=1
-8\GeometryType=MeshObject
-8\IsEmissiveObject=false
-8\Name=Board2
-8\ObjectFilePath=resources/models/primitives/cube.obj
-8\Smoothing=false
-8\SurfaceIndex=3
-8\Transformation\0\Active=true
-8\Transformation\0\Type=Scaling
-8\Transformation\0\X=2
-8\Transformation\0\Y=0.050000000000000003
-8\Transformation\0\Z=0.40000000000000002
-8\Transformation\1\Active=true
-8\Transformation\1\Angle=-7.5
-8\Transformation\1\Axis=X
-8\Transformation\1\Type=Rotation
-8\Transformation\1\Unit=Degree
-8\Transformation\2\Active=true
-8\Transformation\2\Type=Translation
-8\Transformation\2\X=0
-8\Transformation\2\Y=-1.25
-8\Transformation\2\Z=-0.29999999999999999
-8\Transformation\Count=3
-8\Type=SingleObject
-8\Visibility=true
-8\treeLevel=1
-9\GeometryType=MeshObject
-9\IsEmissiveObject=false
-9\Name=Board1
-9\ObjectFilePath=resources/models/primitives/cube.obj
-9\Smoothing=false
-9\SurfaceIndex=2
-9\Transformation\0\Active=true
-9\Transformation\0\Type=Scaling
-9\Transformation\0\X=2
-9\Transformation\0\Y=0.050000000000000003
-9\Transformation\0\Z=0.40000000000000002
-9\Transformation\1\Active=true
-9\Transformation\1\Type=Translation
-9\Transformation\1\X=0
-9\Transformation\1\Y=-1.3
-9\Transformation\1\Z=-0.80000000000000004
-9\Transformation\Count=2
-9\Type=SingleObject
-9\Visibility=true
-9\treeLevel=1
-Count=15
-
-[RenderingMethod]
-RayCastEpsilon=9.9999999999999995e-08
-RenderingMethodType=PathTracing
-RussianRoulette=Reflectance (Max)
-
-[SurfaceModel]
-0\Name=WhiteSurface
-0\SmoothDiffuseSurface\ReflectanceIndex=0
-0\Type=SmoothDiffuseSurface
-1\Name=GraySurface
-1\SmoothDiffuseSurface\ReflectanceIndex=1
-1\Type=SmoothDiffuseSurface
-2\Name=Glossy1
-2\RoughConductorSurface\InnerExtinction\SpectraFilePath=resources/spectrum/conductor/Ag extinction coefficient.csv
-2\RoughConductorSurface\InnerRefractiveIndex\SpectraFilePath=resources/spectrum/conductor/Ag refractive index.csv
-2\RoughConductorSurface\OuterRefractiveIndex\SpectraFilePath=resources/spectrum/dielectric/Air.csv
-2\RoughConductorSurface\RoughnessIndex=2
-2\Type=RoughConductorSurface
-3\Name=Glossy2
-3\RoughConductorSurface\InnerExtinction\SpectraFilePath=resources/spectrum/conductor/Ag extinction coefficient.csv
-3\RoughConductorSurface\InnerRefractiveIndex\SpectraFilePath=resources/spectrum/conductor/Ag refractive index.csv
-3\RoughConductorSurface\OuterRefractiveIndex\SpectraFilePath=resources/spectrum/dielectric/Air.csv
-3\RoughConductorSurface\RoughnessIndex=3
-3\Type=RoughConductorSurface
-4\Name=Glossy3
-4\RoughConductorSurface\InnerExtinction\SpectraFilePath=resources/spectrum/conductor/Ag extinction coefficient.csv
-4\RoughConductorSurface\InnerRefractiveIndex\SpectraFilePath=resources/spectrum/conductor/Ag refractive index.csv
-4\RoughConductorSurface\OuterRefractiveIndex\SpectraFilePath=resources/spectrum/dielectric/Air.csv
-4\RoughConductorSurface\RoughnessIndex=4
-4\Type=RoughConductorSurface
-5\Name=Glossy4
-5\RoughConductorSurface\InnerExtinction\SpectraFilePath=resources/spectrum/conductor/Ag extinction coefficient.csv
-5\RoughConductorSurface\InnerRefractiveIndex\SpectraFilePath=resources/spectrum/conductor/Ag refractive index.csv
-5\RoughConductorSurface\OuterRefractiveIndex\SpectraFilePath=resources/spectrum/dielectric/Air.csv
-5\RoughConductorSurface\RoughnessIndex=5
-5\Type=RoughConductorSurface
-Count=6
-
-[System]
-EnableToSaveSpectraImage=false
-ImageHeightResolution=480
-ImageWidthResolution=640
-LdrImageFormat=PNG
-NumOfThreads=4
-OpenClRendering=false
-OpenClType=Single GPU
-Power2Saving=true
-RandomSeed=8857988
-SavingInterval=3600000
-SceneName=VeachMisTest
-TerminationPass=0
-
-[Texture]
-0\Name=White
-0\Type=UnicolorTexture
-0\UnicolorTexture\TextureColor\IsRgbMode=false
-0\UnicolorTexture\TextureColor\SpectraFilePath=resources/spectrum/reflectance/macbeth_19_white.csv
-1\Name=Gray
-1\Type=UnicolorTexture
-1\UnicolorTexture\TextureColor\IsRgbMode=false
-1\UnicolorTexture\TextureColor\SpectraFilePath=resources/spectrum/reflectance/macbeth_21_neutral_6_5.csv
-2\Name=Roughness1
-2\Type=ValueTexture
-2\ValueTexture\Value=0.40000000000000002
-3\Name=Roughness2
-3\Type=ValueTexture
-3\ValueTexture\Value=0.29999999999999999
-4\Name=Roughness3
-4\Type=ValueTexture
-4\ValueTexture\Value=0.20000000000000001
-5\Name=Roughness4
-5\Type=ValueTexture
-5\ValueTexture\Value=0.10000000000000001
-Count=6
+{
+    "Bvh": {
+        "OptimizationLoopCount": 2,
+        "TreeletSize": 9,
+        "Type": "AgglomerativeTreeletRestructuringBvh"
+    },
+    "Color": {
+        "ColorMode": "RGB",
+        "ColorSpace": "sRGB (D65)",
+        "Gamma": 2.2,
+        "StandardIllumination": "CIE D65",
+        "StandardObserver": "CIE 2deg color matching function",
+        "ToneMapping": "Reinhard",
+        "WavelengthSampling": "Regular sampling"
+    },
+    "EmitterModel": [
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.5019607843137255,
+                    0.25098039215686274,
+                    0.25098039215686274
+                ]
+            },
+            "Name": "Emitter1",
+            "RadiantExitance": 8e+06,
+            "Type": "NonDirectionalEmitter"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.25098039215686274,
+                    0.5019607843137255,
+                    0.25098039215686274
+                ]
+            },
+            "Name": "Emitter2",
+            "RadiantExitance": 63400,
+            "Type": "NonDirectionalEmitter"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.25098039215686274,
+                    0.25098039215686274,
+                    0.5019607843137255
+                ]
+            },
+            "Name": "Emitter3",
+            "RadiantExitance": 2370.3703704,
+            "Type": "NonDirectionalEmitter"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "Name": "Emitter4",
+            "RadiantExitance": 64,
+            "Type": "NonDirectionalEmitter"
+        }
+    ],
+    "Object": [
+        {
+            "AngleOfView": 60,
+            "CameraType": "PinholeCamera",
+            "Enabled": true,
+            "GroupLevel": 0,
+            "Jittering": true,
+            "Name": "Camera",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        3.5,
+                        -8
+                    ]
+                },
+                {
+                    "Angle": 25,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "CameraObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 0,
+            "Name": "World",
+            "Transformation": [
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "Lights",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.5,
+                        1.5,
+                        1.2
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "MeshObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": true,
+            "Name": "Light1",
+            "ObjectFilePath": "resources/models/primitives/sphere_low_poly.obj",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        2.25,
+                        -0.01,
+                        0
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.02,
+                        0.02,
+                        0.02
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 1,
+            "Enabled": true,
+            "GeometryType": "MeshObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": true,
+            "Name": "Light2",
+            "ObjectFilePath": "resources/models/primitives/sphere_low_poly.obj",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.75,
+                        -0.05,
+                        0
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.1,
+                        0.1,
+                        0.1
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 2,
+            "Enabled": true,
+            "GeometryType": "MeshObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": true,
+            "Name": "Light3",
+            "ObjectFilePath": "resources/models/primitives/sphere_low_poly.obj",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.75,
+                        -0.15,
+                        0
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.3,
+                        0.3,
+                        0.3
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 3,
+            "Enabled": true,
+            "GeometryType": "MeshObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": true,
+            "Name": "Light4",
+            "ObjectFilePath": "resources/models/primitives/sphere_low_poly.obj",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -2.75,
+                        -0.5,
+                        0
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "Floor",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -1.5,
+                        0
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        20,
+                        1,
+                        20
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "Boards",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        -1
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "MeshObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Board1",
+            "ObjectFilePath": "resources/models/primitives/cube.obj",
+            "Smoothing": false,
+            "SurfaceIndex": 1,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        2
+                    ]
+                },
+                {
+                    "Angle": -30,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        6,
+                        0.05,
+                        1
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "MeshObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Board2",
+            "ObjectFilePath": "resources/models/primitives/cube.obj",
+            "Smoothing": false,
+            "SurfaceIndex": 2,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -0.5,
+                        1
+                    ]
+                },
+                {
+                    "Angle": -16,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        6,
+                        0.05,
+                        1
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "MeshObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Board3",
+            "ObjectFilePath": "resources/models/primitives/cube.obj",
+            "Smoothing": false,
+            "SurfaceIndex": 3,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -0.83,
+                        0
+                    ]
+                },
+                {
+                    "Angle": -7,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        6,
+                        0.05,
+                        1
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "MeshObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Board4",
+            "ObjectFilePath": "resources/models/primitives/cube.obj",
+            "Smoothing": false,
+            "SurfaceIndex": 4,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -1,
+                        -1
+                    ]
+                },
+                {
+                    "Angle": -5,
+                    "Axis": "X Axis",
+                    "Enabled": false,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        6,
+                        0.05,
+                        1
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        }
+    ],
+    "RenderingMethod": {
+        "PathLength": 3,
+        "RayCastEpsilon": 1e-07,
+        "RussianRoulette": "Reflectance (Max)",
+        "Type": "PathTracing"
+    },
+    "Scene": {
+        "SceneName": "VeachMisTest"
+    },
+    "SurfaceModel": [
+        {
+            "Name": "WhiteSurface",
+            "ReflectanceIndex": 0,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "InnerExtinction": "resources/spectrum/conductor/Al extinction coefficient.csv",
+            "InnerRefractiveIndex": "resources/spectrum/conductor/Al refractive index.csv",
+            "Name": "BoardSurface1",
+            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "RoughnessIndex": 1,
+            "Type": "RoughConductorSurface"
+        },
+        {
+            "InnerExtinction": "resources/spectrum/conductor/Al extinction coefficient.csv",
+            "InnerRefractiveIndex": "resources/spectrum/conductor/Al refractive index.csv",
+            "Name": "BoardSurface2",
+            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "RoughnessIndex": 2,
+            "Type": "RoughConductorSurface"
+        },
+        {
+            "InnerExtinction": "resources/spectrum/conductor/Al extinction coefficient.csv",
+            "InnerRefractiveIndex": "resources/spectrum/conductor/Al refractive index.csv",
+            "Name": "BoardSurface3",
+            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "RoughnessIndex": 3,
+            "Type": "RoughConductorSurface"
+        },
+        {
+            "InnerExtinction": "resources/spectrum/conductor/Al extinction coefficient.csv",
+            "InnerRefractiveIndex": "resources/spectrum/conductor/Al refractive index.csv",
+            "Name": "BoardSurface4",
+            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "RoughnessIndex": 4,
+            "Type": "RoughConductorSurface"
+        }
+    ],
+    "System": {
+        "ImageResolution": [
+            960,
+            540
+        ],
+        "NumOfThreads": 4,
+        "Power2CycleSaving": true,
+        "RandomSeed": 123456789,
+        "SavingInterval": 3600000,
+        "TerminationCycle": 0
+    },
+    "TextureModel": [
+        {
+            "Name": "WhiteTexture",
+            "Type": "ValueTexture",
+            "Value": 0
+        },
+        {
+            "Name": "Roughness1",
+            "Type": "ValueTexture",
+            "Value": 0.01
+        },
+        {
+            "Name": "Roughness2",
+            "Type": "ValueTexture",
+            "Value": 0.05
+        },
+        {
+            "Name": "Roughness3",
+            "Type": "ValueTexture",
+            "Value": 0.1
+        },
+        {
+            "Name": "Roughness4",
+            "Type": "ValueTexture",
+            "Value": 0.3
+        }
+    ]
+}

@@ -1,0 +1,26 @@
+/*!
+  \file NImageButton.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "../Styles"
+
+Button {
+  id: button_item
+
+  property color backgroundColor
+
+  width: @default_image_button_size@
+  height: @default_image_button_size@
+
+  text: ""
+  style: NImageButtonStyle {
+    backgroundColor: button_item.backgroundColor
+  }
+}

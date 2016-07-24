@@ -2,7 +2,7 @@
   \file world.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -18,8 +18,11 @@
 #include <utility>
 #include <vector>
 // Qt
-#include <QString>
+#include <QJsonArray>
+#include <QJsonObject>
 #include <QLocale>
+#include <QString>
+#include <QtGlobal>
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/compensated_summation.hpp"
@@ -42,7 +45,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "Sampling/light_source_sampler.hpp"
 #include "Utility/unique_pointer.hpp"
-#include "Utility/scene_settings.hpp"
+#include "Utility/scene_value.hpp"
 
 
 namespace nanairo {
@@ -52,7 +55,7 @@ namespace nanairo {
   No detailed.
   */
 World::World(System& system,
-             const SceneSettings& settings, 
+             const QJsonObject& settings, 
              const std::function<void (const QString&)>& message_sender) noexcept
 {
   initialize(system, settings, message_sender);
@@ -138,84 +141,94 @@ std::size_t World::getObjectSize(const std::vector<Object>& object_list) const n
   No detailed.
   */
 void World::initialize(System& system,
-                       const SceneSettings& settings, 
-                       const std::function<void (const QString&)>& message_sender) noexcept
+                       const QJsonObject& settings, 
+                       const std::function<void (const QString&)>& /* message_sender */) noexcept
 {
+  using zisc::cast;
   using std::chrono::duration_cast;
   using Millis = std::chrono::milliseconds;
 
   zisc::Stopwatch timer;
  
-  auto time = timer.elapsedTime();
-  auto message = QString{""};
-
   // Initialize texture
   timer.start();
-  initializeTexture(system, settings);
-  time = timer.elapsedTime();
-  message = QStringLiteral("    Texture initialization time: %1 ms.");
-  message = message.arg(duration_cast<Millis>(time).count());
-  message_sender(message);
+  {
+    const auto texture_settings_list = arrayValue(settings, keyword::textureModel);
+    initializeTexture(system, texture_settings_list);
+    const auto time = timer.elapsedTime();
+    const auto time_count = cast<long int>(duration_cast<Millis>(time).count());
+    qInfo("    Texture initialization time: %ld ms.", time_count);
+  }
   timer.stop();
 
   // Initialize surface scattering
   timer.start();
-  initializeSurface(system, settings);
-  time = timer.elapsedTime();
-  message = QStringLiteral("    SurfaceModel  initialization time: %1 ms.");
-  message = message.arg(duration_cast<Millis>(time).count());
-  message_sender(message);
+  {
+    const auto surface_settings_list = arrayValue(settings, keyword::surfaceModel);
+    initializeSurface(system, surface_settings_list);
+    const auto time = timer.elapsedTime();
+    const auto time_count = cast<long int>(duration_cast<Millis>(time).count());
+    qInfo("    SurfaceModel  initialization time: %ld ms.", time_count);
+  }
   timer.stop();
 
   // Initialize emitter
   timer.start();
-  initializeEmitter(system, settings);
-  time = timer.elapsedTime();
-  message = QStringLiteral("    EmitterModel initialization time: %1 ms.");
-  message = message.arg(duration_cast<Millis>(time).count());
-  message_sender(message);
+  {
+    const auto emitter_settings_list = arrayValue(settings, keyword::emitterModel);
+    initializeEmitter(system, emitter_settings_list);
+    const auto time = timer.elapsedTime();
+    const auto time_count = cast<long int>(duration_cast<Millis>(time).count());
+    qInfo("    EmitterModel initialization time: %ld ms.", time_count);
+  }
   timer.stop();
 
   // Print material size
-  const auto material_byte = zisc::toMegaByte(getMaterialSize());
-  const auto material_size_string = 
-      QLocale{QLocale::English}.toString(material_byte, 'f', 3);
-  message = QStringLiteral("    Material size: %1 MB.").arg(material_size_string);
-  message_sender(message);
+  {
+    const auto material_byte = zisc::toMegaByte(getMaterialSize());
+    const auto material_size_string = 
+        QLocale{QLocale::English}.toString(material_byte, 'f', 3);
+    qInfo("    Material size: %s MB.", material_size_string.toStdString().c_str());
+  }
 
   // Initialize objects
   timer.start();
-  auto object_list = initializeObject(system, settings);
-  time = timer.elapsedTime();
-  message = QStringLiteral("    Object initialization time: %1 ms.");
-  message = message.arg(duration_cast<Millis>(time).count());
-  message_sender(message);
+  const auto object_settings_list = arrayValue(settings, keyword::object);
+  auto object_list = initializeObject(system, object_settings_list);
+  {
+    const auto time = timer.elapsedTime();
+    const auto time_count = cast<long int>(duration_cast<Millis>(time).count());
+    qInfo("    Object initialization time: %ld ms.", time_count);
+  }
   timer.stop();
 
   // Print object information
-  message = QStringLiteral("    Num of objects: %1.").arg(object_list.size());
-  message_sender(message);
-  auto object_byte = zisc::toMegaByte(getObjectSize(object_list));
-  const auto object_size_string = 
-      QLocale{QLocale::English}.toString(object_byte, 'f', 3);
-  message = QStringLiteral("    Object size: %1 MB.").arg(object_size_string);
-  message_sender(message);
+  {
+    qInfo("    Num of objects: %ld.", cast<long int>(object_list.size()));
+    auto object_byte = zisc::toMegaByte(getObjectSize(object_list));
+    const auto object_size_string = 
+        QLocale{QLocale::English}.toString(object_byte, 'f', 3);
+    qInfo("    Object size: %s MB.", object_size_string.toStdString().c_str());
+  }
 
-//  // Initialize a BVH
+  // Initialize a BVH
   timer.start();
-  bvh_ = makeBvh(settings);
-  bvh_->construct(system, std::move(object_list));
-  time = timer.elapsedTime();
-  message = QStringLiteral("    BVH construction time: %1 ms");
-  message = message.arg(duration_cast<Millis>(time).count());
-  message_sender(message);
+  {
+    const auto bvh_settings = objectValue(settings, keyword::bvh);
+    bvh_ = makeBvh(bvh_settings);
+    bvh_->construct(system, std::move(object_list));
+    const auto time = timer.elapsedTime();
+    const auto time_count = cast<long int>(duration_cast<Millis>(time).count());
+    qInfo("    BVH construction time: %ld ms", time_count);
+  }
+  timer.stop();
 
   // Print BVH information
-  auto bvh_byte = zisc::toMegaByte(bvh_->getBvhSize());
-  const auto bvh_size_string = QLocale{QLocale::English}.toString(bvh_byte, 'f', 3);
-  message = QStringLiteral("    BVH size: %1 MB.").arg(bvh_size_string);
-  message_sender(message);
-
+  {
+    auto bvh_byte = zisc::toMegaByte(bvh_->getBvhSize());
+    const auto bvh_size_string = QLocale{QLocale::English}.toString(bvh_byte, 'f', 3);
+    qInfo("    BVH size: %s MB.", bvh_size_string.toStdString().c_str());
+  }
 
   initializeWorldLightSource();
   light_source_sampler_ = new LightSourceSampler{light_source_list_};
@@ -225,25 +238,22 @@ void World::initialize(System& system,
   \details
   No detailed.
   */
-void World::initializeEmitter(System& system, const SceneSettings& settings) noexcept
+void World::initializeEmitter(System& system, const QJsonArray& settings) noexcept
 {
   using zisc::cast;
 
-  const QString prefix{keyword::emitterModel};
-  auto key = prefix + "/" + keyword::count;
-  const auto count = cast<uint>(settings.intValue(key));
+  const auto count = cast<uint>(settings.count());
   emitter_list_.resize(count);
 
-  std::function<void (const uint)> make_emitter{
-  [this, &system, &settings, &prefix](const uint index)
+  auto make_emitter = [this, &system, &settings](const uint index)
   {
-    const auto item_id = (prefix + "/%1").arg(index);
-    emitter_list_[index] = makeEmitter(system, settings, item_id);
-  }};
+    const auto emitter_settings = objectValue(settings[index]);
+    emitter_list_[index] = makeEmitter(system, emitter_settings);
+  };
 
   auto& thread_pool = system.threadPool();
   constexpr uint start = 0;
-  auto result = thread_pool.loop(std::move(make_emitter), start, count);
+  auto result = thread_pool.enqueueLoop(make_emitter, start, count);
   result.get();
 
   ZISC_ASSERT(0 < emitter_list_.size(), "The scene has no emitter.");
@@ -254,7 +264,7 @@ void World::initializeEmitter(System& system, const SceneSettings& settings) noe
   No detailed.
   */
 std::vector<Object> World::initializeObject(System& system, 
-                                            const SceneSettings& settings) noexcept
+                                            const QJsonArray& settings) noexcept
 {
   auto results = makeObjects(system, settings);
 
@@ -303,27 +313,24 @@ void World::initializeWorldLightSource() noexcept
   \details
   No detailed.
   */
-void World::initializeSurface(System& system, const SceneSettings& settings) noexcept
+void World::initializeSurface(System& system, const QJsonArray& settings) noexcept
 {
   using zisc::cast;
 
   auto texture_list = textureList();
 
-  const QString prefix{keyword::surfaceModel};
-  auto key = prefix + "/" + keyword::count;
-  const auto count = cast<uint>(settings.intValue(key));
+  const auto count = cast<uint>(settings.count());
   surface_list_.resize(count);
 
-  std::function<void (const uint)> make_surface{
-  [this, &settings, &prefix, &texture_list](const uint index)
+  auto make_surface = [this, &settings, &texture_list](const uint index)
   {
-    const auto item_id = (prefix + "/%1").arg(index);
-    surface_list_[index] = makeSurface(settings, item_id, texture_list);
-  }};
+    const auto surface_settings = objectValue(settings[index]);
+    surface_list_[index] = makeSurface(surface_settings, texture_list);
+  };
 
   auto& thread_pool = system.threadPool();
   constexpr uint start = 0;
-  auto result = thread_pool.loop(std::move(make_surface), start, count);
+  auto result = thread_pool.enqueueLoop(make_surface, start, count);
   result.get();
   ZISC_ASSERT(0 < surface_list_.size(), "The scene has no surface.");
 }
@@ -332,25 +339,22 @@ void World::initializeSurface(System& system, const SceneSettings& settings) noe
   \details
   No detailed.
   */
-void World::initializeTexture(System& system, const SceneSettings& settings) noexcept
+void World::initializeTexture(System& system, const QJsonArray& settings) noexcept
 {
   using zisc::cast;
 
-  const QString prefix{keyword::texture};
-  auto key = prefix + "/" + keyword::count;
-  const auto count = cast<uint>(settings.intValue(key));
+  const auto count = cast<uint>(settings.count());
   texture_list_.resize(count);
 
-  std::function<void (const uint)> make_texture{
-  [this, &system, &settings, &prefix](const uint index)
+  auto make_texture = [this, &system, &settings](const uint index)
   {
-    const auto item_id = (prefix + "/%1").arg(index);
-    texture_list_[index] = makeTexture(system, settings, item_id);
-  }};
+    const auto texture_settings = objectValue(settings[index]);
+    texture_list_[index] = makeTexture(system, texture_settings);
+  };
 
   auto& thread_pool = system.threadPool();
   constexpr uint start = 0;
-  auto result = thread_pool.loop(std::move(make_texture), start, count);
+  auto result = thread_pool.enqueueLoop(make_texture, start, count);
   result.get();
   ZISC_ASSERT(0 < texture_list_.size(), "The scene has no texture");
 }
@@ -361,40 +365,41 @@ void World::initializeTexture(System& system, const SceneSettings& settings) noe
   */
 std::list<std::future<std::vector<Object>>> World::makeObjects(
     System& system,
-    const SceneSettings& settings) const noexcept
+    const QJsonArray& settings) const noexcept
 {
   using zisc::cast;
   using zisc::toHash32;
 
   std::list<std::future<std::vector<Object>>> results;
 
-  const QString prefix{keyword::object};
-  auto key = prefix + "/" + keyword::count;
-  const auto count = cast<uint>(settings.intValue(key));
-
+  const auto count = cast<uint>(settings.count());
   auto t = makeIdentityMatrix();
-
   for (uint index = 1; index < count; ++index) {
-    const auto p = (prefix + "/%1").arg(index);
-    key = p + "/" + keyword::type;
-    const auto type = keyword::toHash32(settings.stringValue(key));
-    if (type == toHash32(keyword::singleObject)) {
-      const auto visibility = settings.booleanValue(p + "/" + keyword::visibility);
-      if (visibility) {
-        std::function<std::vector<Object> ()> make_single_object{
-        [this, &settings, p, t]()
-        {
-          return makeSingleObject(settings, p, t);
-        }};
-        auto& thread_pool = system.threadPool();
-        auto result = thread_pool.enqueue(std::move(make_single_object));
-        results.emplace_back(std::move(result));
+    const auto object_settings = objectValue(settings[index]);
+    const auto type = stringValue(object_settings, keyword::type);
+    switch (keyword::toHash32(type)) {
+      case toHash32(keyword::singleObject): {
+        const auto visibility = boolValue(object_settings, keyword::enabled);
+        if (visibility) {
+          auto make_single_object = [this, object_settings, t]()
+          {
+            return makeSingleObject(object_settings, t);
+          };
+          auto& thread_pool = system.threadPool();
+          auto result = thread_pool.enqueue<std::vector<Object>>(make_single_object);
+          results.emplace_back(std::move(result));
+        }
+        break;
       }
-    }
-    else {
-      auto object_results = makeGroupObject(system, settings, p, t, count, index);
-      for (auto& result : object_results)
-        results.emplace_back(std::move(result));
+      case toHash32(keyword::groupObject): {
+        auto result_list =
+            makeGroupObject(system, settings, object_settings, t, count, index);
+        for (auto& result : result_list)
+          results.emplace_back(std::move(result));
+        break;
+      }
+      default:
+        ZISC_ASSERT(false, "ObjectError: Unsupported type is specified.");
     }
   }
   return results;
@@ -404,27 +409,27 @@ std::list<std::future<std::vector<Object>>> World::makeObjects(
   \details
   No detailed.
   */
-std::vector<Object> World::makeSingleObject(const SceneSettings& settings,
-                                            const QString& prefix,
-                                            const Matrix4x4& transformation) const noexcept
+std::vector<Object> World::makeSingleObject(
+    const QJsonObject& settings,
+    const Matrix4x4& transformation) const noexcept
 {
-  auto geometry_list = makeGeometry(settings, prefix);
-  const auto t = transformation * makeTransformationMatrix(settings, prefix);
+  auto geometry_list = makeGeometry(settings);
+
+  // Transformation
+  const auto transformation_settings = arrayValue(settings, keyword::transformation);
+  const auto t = transformation * makeTransformationMatrix(transformation_settings);
   for (auto& geometry : geometry_list)
     geometry->transform(t);
 
   // Make a material
   // Set BSDF
-  auto key = prefix + "/" + keyword::surfaceIndex;
-  const auto surface_index = settings.intValue(key);
+  const auto surface_index = intValue<uint>(settings, keyword::surfaceIndex);
   const auto surface_model = surface_list_[surface_index].get();
   // Set Light
   const EmitterModel* emitter_model = nullptr;
-  key = prefix + "/" + keyword::isEmissiveObject;
-  const bool is_emissive_object = settings.booleanValue(key);
+  const bool is_emissive_object = boolValue(settings, keyword::isEmissiveObject);
   if (is_emissive_object) {
-    key = prefix + "/" + keyword::emitterIndex;
-    const auto emitter_index = settings.intValue(key);
+    const auto emitter_index = intValue<uint>(settings, keyword::emitterIndex);
     emitter_model = emitter_list_[emitter_index].get();
   }
   const Material material{surface_model, emitter_model};
@@ -443,8 +448,8 @@ std::vector<Object> World::makeSingleObject(const SceneSettings& settings,
   */
 std::list<std::future<std::vector<Object>>> World::makeGroupObject(
     System& system,
-    const SceneSettings& settings,
-    const QString& prefix,
+    const QJsonArray& settings,
+    const QJsonObject& group_settings,
     const Matrix4x4& transformation,
     const uint count,
     uint& index) const noexcept
@@ -453,40 +458,44 @@ std::list<std::future<std::vector<Object>>> World::makeGroupObject(
 
   std::list<std::future<std::vector<Object>>> results;
 
-  auto key = prefix + "/" + keyword::visibility;
-  const auto group_visibility = settings.booleanValue(key);
-  key = prefix + "/" + keyword::treeLevel;
-  const auto group_level = settings.intValue(key);
+  const auto group_visibility = boolValue(group_settings, keyword::enabled);
+  const auto group_level = intValue<uint>(group_settings, keyword::groupLevel);
 
-  const auto t = transformation * makeTransformationMatrix(settings, prefix);
+  const auto transformation_settings = arrayValue(group_settings,
+                                                  keyword::transformation);
+  const auto t = transformation * makeTransformationMatrix(transformation_settings);
 
   for (++index; index < count; ++index) {
-    const auto p = (QString{keyword::object} + "/%1").arg(index);
-    key = p + "/" + keyword::treeLevel;
-    const auto tree_level = settings.intValue(key);
-    if (tree_level <= group_level) {
+    const auto object_settings = objectValue(settings[index]);
+    const auto level = intValue<uint>(object_settings, keyword::groupLevel);
+    if (level <= group_level) {
       --index;
       break;
     }
-    key = p + "/" + keyword::type;
-    const auto type = keyword::toHash32(settings.stringValue(key));
-    if (type == toHash32(keyword::singleObject)) {
-      const auto visibility = settings.booleanValue(p + "/" + keyword::visibility);
-      if (group_visibility && visibility) {
-        std::function<std::vector<Object> ()> make_single_object{
-        [this, &settings, p, t]()
-        {
-          return makeSingleObject(settings, p, t);
-        }};
-        auto& thread_pool = system.threadPool();
-        auto result = thread_pool.enqueue(std::move(make_single_object));
-        results.emplace_back(std::move(result));
+    const auto type = stringValue(object_settings, keyword::type);
+    switch (keyword::toHash32(type)) {
+      case toHash32(keyword::singleObject): {
+        const auto visibility = boolValue(object_settings, keyword::enabled);
+        if (group_visibility && visibility) {
+          auto make_single_object = [this, object_settings, t]()
+          {
+            return makeSingleObject(object_settings, t);
+          };
+          auto& thread_pool = system.threadPool();
+          auto result = thread_pool.enqueue<std::vector<Object>>(make_single_object);
+          results.emplace_back(std::move(result));
+        }
+        break;
       }
-    }
-    else {
-      auto object_results = makeGroupObject(system, settings, p, t, count, index);
-      for (auto& result : object_results)
-        results.emplace_back(std::move(result));
+      case toHash32(keyword::groupObject): {
+        auto object_results =
+            makeGroupObject(system, settings, object_settings, t, count, index);
+        for (auto& result : object_results)
+          results.emplace_back(std::move(result));
+        break;
+      }
+      default:
+        ZISC_ASSERT(false, "ObjectError: Unsupported type is specified.");
     }
   }
   return results;

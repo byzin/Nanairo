@@ -2,7 +2,7 @@
   \file tone_mapping_method.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -22,12 +22,12 @@
 
 // Forward declaration
 class QImage;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
 class HdrImage;
-class SceneSettings;
 class System;
 
 //! \addtogroup Core 
@@ -42,7 +42,7 @@ class ToneMappingMethod
 {
  public:
   //! Initialize the method
-  ToneMappingMethod(const System& system, const SceneSettings& settings) noexcept;
+  ToneMappingMethod(const System& system, const QJsonObject& settings) noexcept;
 
   //! Finalize the method
   virtual ~ToneMappingMethod() noexcept;
@@ -76,7 +76,7 @@ class ToneMappingMethod
 
  private:
   //! Initialize
-  void initialize(const System& system, const SceneSettings& settings) noexcept;
+  void initialize(const System& system, const QJsonObject& settings) noexcept;
 
 
   Matrix3x3 to_rgb_matrix_;
@@ -86,7 +86,7 @@ class ToneMappingMethod
 
 //! Make tonemapping method
 UniquePointer<ToneMappingMethod> makeToneMappingMethod(const System& system,
-                                                       const SceneSettings& settings) noexcept;
+                                                       const QJsonObject& settings) noexcept;
 
 //! \} Core 
 

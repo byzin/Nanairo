@@ -2,7 +2,7 @@
   \file path_tracing.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -16,6 +16,9 @@
 #include "rendering_method.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 
+// Forward declaration
+class QJsonObject;
+
 namespace nanairo {
 
 // Forward declaration
@@ -24,7 +27,6 @@ class IntersectionInfo;
 class Material;
 class Ray;
 class Sampler;
-class SceneSettings;
 class Scene;
 template <uint> class ShaderModel;
 class System;
@@ -49,7 +51,7 @@ class PathTracing : public RenderingMethod<kSampleSize>
   
 
   //! Initialize path tracing method
-  PathTracing(const SceneSettings& settings) noexcept;
+  PathTracing(const QJsonObject& settings) noexcept;
 
 
   //! Render scene using path tracing method
@@ -88,7 +90,7 @@ class PathTracing : public RenderingMethod<kSampleSize>
                   Float* inverse_direction_pdf) const noexcept;
 
   //! Initialize
-  void initialize(const SceneSettings& settings) noexcept;
+  void initialize(const QJsonObject& settings) noexcept;
 
   //! Calculate the MIS weight
   Float calcMisWeight(const Float pdf1, const Float inverse_pdf2) const noexcept;

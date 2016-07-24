@@ -2,7 +2,7 @@
   \file spectra_image.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -17,7 +17,6 @@
 #include <QFile>
 #include <QtGlobal>
 // Zisc
-#include "zisc/binary_file.hpp"
 #include "zisc/thread_pool.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -130,18 +129,17 @@ void SpectraImage::toHdrImage(System& system,
 
   const Float averager = 1.0 / cast<Float>(cycle);
 
-  std::function<void (const uint)> to_hdr_image{
-  [this, &system, hdr_image, averager](const uint y)
+  auto to_hdr_image = [this, &system, hdr_image, averager](const uint y)
   {
     const auto& cmf = system.xyzColorMatchingFunction();
     const uint width = widthResolution();
     for (uint index = y * width; index < (y + 1) * width; ++index)
       (*hdr_image)[index] = cmf.toXyzInEmissiveCase(buffer_[index]) * averager;
-  }};
+  };
 
   auto& thread_pool = system.threadPool();
   constexpr uint start = 0;
-  auto result = thread_pool.loop(std::move(to_hdr_image), start, heightResolution()); 
+  auto result = thread_pool.enqueueLoop(to_hdr_image, start, heightResolution()); 
   result.get();
 }
 

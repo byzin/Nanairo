@@ -2,7 +2,7 @@
   \file smooth_dielectric_surface.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -20,12 +20,11 @@
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 // Forward declaration
-class QString;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
-class SceneSettings;
 template <uint> class WavelengthSamples;
 
 //! \addtogroup Core
@@ -43,8 +42,7 @@ class SmoothDielectricSurface : public SurfaceModel
 
 
   //! Create a smooth dielectric surface
-  SmoothDielectricSurface(const SceneSettings& settings, 
-                          const QString& prefix) noexcept;
+  SmoothDielectricSurface(const QJsonObject& settings) noexcept;
 
 
   //! Make a Fresnel BRDF
@@ -62,7 +60,7 @@ class SmoothDielectricSurface : public SurfaceModel
 
  private:
   //! Initialize
-  void initialize(const SceneSettings& settings, const QString& prefix) noexcept;
+  void initialize(const QJsonObject& settings) noexcept;
 
 
   SpectralDistribution eta_; //!< Interior exterior ratio of refractive index

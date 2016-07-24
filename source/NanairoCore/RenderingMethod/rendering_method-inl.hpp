@@ -2,7 +2,7 @@
   \file rendering_method-inl.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -16,6 +16,7 @@
 #include <limits>
 #include <utility>
 // Qt
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/algorithm.hpp"
@@ -47,7 +48,7 @@ class System;
   No detailed.
   */
 template <uint kSampleSize> inline
-RenderingMethod<kSampleSize>::RenderingMethod(const SceneSettings& settings) noexcept :
+RenderingMethod<kSampleSize>::RenderingMethod(const QJsonObject& settings) noexcept :
     clear_function_{[](){}}
 {
   initialize(settings);
@@ -128,17 +129,14 @@ void RenderingMethod<kSampleSize>::setClearFunction(
   No detailed.
   */
 template <uint kSampleSize> inline
-void RenderingMethod<kSampleSize>::initialize(const SceneSettings& settings) noexcept
+void RenderingMethod<kSampleSize>::initialize(const QJsonObject& settings) noexcept
 {
-  const QString prefix{keyword::renderingMethod};
-
   // Russian rolette
-  russian_roulette_ = makeRussianRoulette<kSampleSize>(settings, prefix);
+  russian_roulette_ = makeRussianRoulette<kSampleSize>(settings);
 
   // Ray cast epsilon
-  auto key = prefix + "/" + keyword::rayCastEpsilon;
-  ray_cast_epsilon_ = settings.realValue(key);
-  ZISC_ASSERT(0.0 < ray_cast_epsilon_, "Ray cast epsilon must be greater than 0.");
+  ray_cast_epsilon_ = floatValue<Float>(settings, keyword::rayCastEpsilon);
+  ZISC_ASSERT(0.0 < ray_cast_epsilon_, "Ray cast epsilon is negative.");
 }
 
 /*!
@@ -218,38 +216,36 @@ void RenderingMethod<kSampleSize>::updateSelectedWavelengthInfo(
 template <uint kSampleSize> inline
 UniquePointer<RenderingMethod<kSampleSize>> makeRenderingMethod(
     System& system,
-    const SceneSettings& settings) noexcept
+    const QJsonObject& settings) noexcept
 {
   using zisc::toHash32;
 
   RenderingMethod<kSampleSize>* method = nullptr;
 
-  const QString prefix{keyword::renderingMethod};
-  auto key = prefix + "/" + keyword::renderingMethodType;
-  const auto method_type = settings.stringValue(key);
+  const auto type = stringValue(settings, keyword::type);
+//  const bool glossy_photon_map = (type == keyword::probabilisticPpm)
+//    ? boolValue(settings, keyword::glossyPhotonMap)
+//    : false;
 
-  bool glossy_photon_map = false;
-  if (method_type == keyword::probabilisticPpm) {
-    key = prefix + "/" + keyword::probabilisticPpm + "/" + keyword::glossyPhotonMap;
-    glossy_photon_map = settings.booleanValue(key);
-  }
-
-  switch (keyword::toHash32(method_type)) {
-   case toHash32(keyword::pathTracing):
-    method = new PathTracing<kSampleSize>{settings};
-    break;
-   case toHash32(keyword::lightTracing):
-    method = new LightTracing<kSampleSize>{system, settings};
-    break;
+  switch (keyword::toHash32(type)) {
+    case toHash32(keyword::pathTracing): {
+      method = new PathTracing<kSampleSize>{settings};
+      break;
+    }
+    case toHash32(keyword::lightTracing): {
+      method = new LightTracing<kSampleSize>{system, settings};
+      break;
+    }
 //   case toHash32(keyword::probabilisticPpm):
 //    if (glossy_photon_map)
 //      method = new ProbabilisticPpm<kSampleSize, true>{system, settings};
 //    else
 //      method = new ProbabilisticPpm<kSampleSize, false>{system, settings};
 //    break;
-   default:
-    zisc::raiseError("RenderingMethodError: Unsupported type is speficied.");
-    break;
+    default: {
+      zisc::raiseError("RenderingMethodError: Unsupported type is speficied.");
+      break;
+    }
   }
   return UniquePointer<RenderingMethod<kSampleSize>>{method};
 }

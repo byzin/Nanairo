@@ -2,7 +2,7 @@
   \file light_tracing-inl.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -20,6 +20,7 @@
 #include <utility>
 #include <vector>
 // Qt
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/aligned_memory_pool.hpp"
@@ -64,7 +65,7 @@ namespace nanairo {
   */
 template <uint kSampleSize> inline
 LightTracing<kSampleSize>::LightTracing(const System& system,
-                                        const SceneSettings& settings) noexcept :
+                                        const QJsonObject& settings) noexcept :
     RenderingMethod<kSampleSize>(settings)
 {
   initialize(system, settings);
@@ -283,7 +284,7 @@ bool LightTracing<kSampleSize>::hasLightContribution(const uint index) const noe
   */
 template <uint kSampleSize>
 void LightTracing<kSampleSize>::initialize(const System& system,
-                                           const SceneSettings& /* settings */) noexcept
+                                           const QJsonObject& /* settings */) noexcept
 {
   using zisc::cast;
 
@@ -351,18 +352,18 @@ void LightTracing<kSampleSize>::traceLightPath(System& system,
 
   clearLightContribution();
 
-  std::function<void (const int, const uint)> trace_light_path{
+  auto trace_light_path =
   [this, &system, &scene, &sampled_wavelengths](const int thread_id, const uint)
   {
     for (uint i = 0; i < numOfThreadRays(); ++i) {
       traceLightPath(system, scene, sampled_wavelengths, thread_id);
     }
-  }};
+  };
 
   auto& thread_pool = system.threadPool();
   constexpr uint start = 0;
   const uint end = thread_pool.numOfThreads();
-  auto result = thread_pool.loop(std::move(trace_light_path), start, end);
+  auto result = thread_pool.enqueueLoop(trace_light_path, start, end);
   result.get();
   addContribution(system, camera);
 }

@@ -2,7 +2,7 @@
   \file sampled_wavelengths-inl.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -17,6 +17,7 @@
 #include <cstdint>
 #include <functional>
 // Qt
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/algorithm.hpp"
@@ -28,7 +29,7 @@
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -155,30 +156,34 @@ WavelengthSampler<kSampleSize> makeRgbSampler() noexcept
   No detailed.
   */
 template <uint kSampleSize> inline
-WavelengthSampler<kSampleSize> makeWavelengthSampler(const SceneSettings& settings, 
-                                                     const World& /* world */) noexcept
+WavelengthSampler<kSampleSize> makeWavelengthSampler(
+    const World& /* world */,
+    const QJsonObject& settings) noexcept
 {
   using zisc::toHash32;
 
   WavelengthSampler<kSampleSize> wavelength_sampler;
-  const auto key = QString{keyword::color} + "/" + keyword::wavelengthSampling;
-  const auto method = settings.stringValue(key);
+  const auto method = stringValue(settings, keyword::wavelengthSampling);
   switch (keyword::toHash32(method)) {
-   case toHash32(keyword::regularSampling):
-    wavelength_sampler = sampleWavelengthsRegularly<kSampleSize>;
-    break;
-   case toHash32(keyword::randomSampling):
-    wavelength_sampler = sampleWavelengthsRandomly<kSampleSize>;
-    break;
-   case toHash32(keyword::stratifiedSampling):
-    wavelength_sampler = sampleStratifiedWavelengths<kSampleSize>;
-    break;
+    case toHash32(keyword::regularSampling): {
+      wavelength_sampler = sampleWavelengthsRegularly<kSampleSize>;
+      break;
+    }
+    case toHash32(keyword::randomSampling): {
+      wavelength_sampler = sampleWavelengthsRandomly<kSampleSize>;
+      break;
+    }
+    case toHash32(keyword::stratifiedSampling): {
+      wavelength_sampler = sampleStratifiedWavelengths<kSampleSize>;
+      break;
+    }
 //   case toHash32(keyword::lightsBasedImportanceSampling):
 //    wavelength_sampler = makeLightsBasedImportanceSampler<kSampleSize>(world);
 //    break;
-   default:
-    zisc::raiseError("SystemError: Unsupported wavelength sampler is specified.");
-    break;
+    default: {
+      zisc::raiseError("SystemError: Unsupported wavelength sampler is specified.");
+      break;
+    }
   }
   return wavelength_sampler;
 }

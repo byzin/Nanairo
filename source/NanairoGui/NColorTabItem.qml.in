@@ -1,0 +1,91 @@
+/*!
+  \file NColorTabItem.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "Styles"
+import "TabColorItems"
+import "nanairo.js" as Nanairo
+
+Rectangle {
+  id: color_tab_item
+  width: @tab_item_width@
+  height: @tab_item_height@
+  
+  NSpectraRgbSettingBlock {
+    id: spectra_rgb_setting_block
+    x: @block_offset@
+    y: @block_offset@
+    color: color_tab_item.color
+  }
+
+  NStandardObserverSettingBlock {
+    id: standard_observer_setting_block
+    x: spectra_rgb_setting_block.x
+    y: (spectra_rgb_setting_block.y + spectra_rgb_setting_block.height) + @block_offset@
+    color: color_tab_item.color
+  }
+
+  NStandardIlluminationSettingBlock {
+    id: standard_illumination_setting_block
+    x: standard_observer_setting_block.x
+    y: (standard_observer_setting_block.y + standard_observer_setting_block.height) + @block_offset@
+    color: color_tab_item.color
+  }
+
+  NWavelengthSamplingSettingBlock {
+    id: wavelength_sampling_setting_block
+    x: standard_illumination_setting_block.x
+    y: (standard_illumination_setting_block.y + standard_illumination_setting_block.height) + @block_offset@
+    color: color_tab_item.color
+  }
+
+  NColorSpaceSettingBlock {
+    id: color_space_setting_block
+    x: wavelength_sampling_setting_block.x
+    y: (wavelength_sampling_setting_block.y + wavelength_sampling_setting_block.height) + @block_offset@
+    color: color_tab_item.color
+  }
+
+  NGammaSettingBlock {
+    id: gamma_setting_block
+    x: (spectra_rgb_setting_block.x + spectra_rgb_setting_block.width) + @block_offset@
+    y: spectra_rgb_setting_block.y
+    color: color_tab_item.color
+  }
+
+  NToneMappingSettingBlock {
+    id: tone_mapping_setting_block
+    x: gamma_setting_block.x
+    y: (gamma_setting_block.y + gamma_setting_block.height) + @block_offset@
+    color: color_tab_item.color
+  }
+
+  function getSceneData() {
+    var dataList = [];
+    dataList.push(spectra_rgb_setting_block.getSceneData()); 
+    dataList.push(standard_observer_setting_block.getSceneData()); 
+    dataList.push(standard_illumination_setting_block.getSceneData()); 
+    dataList.push(wavelength_sampling_setting_block.getSceneData()); 
+    dataList.push(color_space_setting_block.getSceneData()); 
+    dataList.push(gamma_setting_block.getSceneData()); 
+    dataList.push(tone_mapping_setting_block.getSceneData()); 
+    return Nanairo.mergeDataList(dataList);
+  }
+
+  function setSceneData(sceneData) {
+    spectra_rgb_setting_block.setSceneData(sceneData);
+    standard_observer_setting_block.setSceneData(sceneData);
+    standard_illumination_setting_block.setSceneData(sceneData);
+    wavelength_sampling_setting_block.setSceneData(sceneData);
+    color_space_setting_block.setSceneData(sceneData);
+    gamma_setting_block.setSceneData(sceneData);
+    tone_mapping_setting_block.setSceneData(sceneData);
+  }
+}

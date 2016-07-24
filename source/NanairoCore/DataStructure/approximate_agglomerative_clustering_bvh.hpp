@@ -2,7 +2,7 @@
   \file approximate_agglomerative_clustering_bvh.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -22,12 +22,11 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 
 // Forward declaration
-class QString;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
-class SceneSettings;
 class System;
 
 //! \addtogroup Core
@@ -44,8 +43,7 @@ class ApproximateAgglomerativeClusteringBvh : public Bvh
 {
  public:
   //! Create a approximate agglomerative clustering BVH
-  ApproximateAgglomerativeClusteringBvh(const SceneSettings& settings, 
-                                        const QString& prefix) noexcept;
+  ApproximateAgglomerativeClusteringBvh(const QJsonObject& settings) noexcept;
 
 
  private:
@@ -85,7 +83,7 @@ class ApproximateAgglomerativeClusteringBvh : public Bvh
       const std::vector<Float>& distance_matrix) const noexcept;
 
   //! Initialize
-  void initialize(const SceneSettings& settings, const QString& prefix) noexcept;
+  void initialize(const QJsonObject& settings) noexcept;
 
   //! Initialize the distance matrix
   void initializeDistanceMatrix(const std::vector<ClusterPointer>& cluster_list,

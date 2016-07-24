@@ -1,0 +1,75 @@
+/*!
+  \file NTransformationListItem.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import QtQuick.Controls.Styles @qt_quick_controls_style_version@
+
+Rectangle {
+  id: transformation_list_item
+
+  property color backgroundColor
+
+  width: @transformation_item_width@
+  height: @transformation_item_height@
+  color: ListView.isCurrentItem
+      ? Qt.darker(backgroundColor, @default_darker_scale@)
+      : (model.index % 2 == 0)
+          ? backgroundColor
+          : Qt.darker(backgroundColor, 1.05)
+
+  Loader {
+    id: transformation_item_loader
+    anchors.fill: parent
+    sourceComponent: getTransformationComponent(model.type)
+  }
+
+  Component {
+    id: translation_delegate
+    NTranslationItem {
+      color: transformation_list_item.color
+      transformationList: transformation_list_item.ListView.view
+    }
+  }
+
+  Component {
+    id: scaling_delegate
+    NScalingItem {
+      color: transformation_list_item.color
+      transformationList: transformation_list_item.ListView.view
+    }
+  }
+
+  Component {
+    id: rotation_delegate
+    NRotationItem {
+      color: transformation_list_item.color
+      transformationList: transformation_list_item.ListView.view
+    }
+  }
+
+  function getTransformationComponent(type) {
+    var item = null;
+    switch (type) {
+      case "@translation@":
+        item = translation_delegate;
+        break;
+      case "@scaling@":
+        item = scaling_delegate;
+        break;
+      case "@rotation@":
+        item = rotation_delegate;
+        break;
+      default:
+        console.assert(false, "Unsupported transformation type is specified: ", type);
+        break;
+    }
+    return item;
+  }
+}

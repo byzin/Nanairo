@@ -1,0 +1,41 @@
+/*!
+  \file NLoopCountSettingBlock.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "../SettingBlockItems"
+
+NSettingBlock {
+  id: loop_count_setting_block 
+
+  labelText: qsTr("OptimizationLoop")
+
+  NIntSpinBox {
+    id: loop_count_spinbox
+
+    y: loop_count_setting_block.labelHeight + @item_offset@
+
+    maximumValue: 99
+    minimumValue: 1
+  }
+
+  function initialize() {
+    loop_count_spinbox.value = 2;
+  }
+
+  function getSceneData() {
+    var sceneData = {};
+    sceneData["@optimizationLoopCount@"] = loop_count_spinbox.value;
+    return sceneData;
+  }
+
+  function setSceneData(sceneData) {
+    loop_count_spinbox.value = sceneData["@optimizationLoopCount@"];
+  }
+}

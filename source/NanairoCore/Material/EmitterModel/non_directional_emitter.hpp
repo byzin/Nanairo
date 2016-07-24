@@ -2,7 +2,7 @@
   \file non_directional_emitter.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -15,8 +15,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 
 // Forward declaration
-class SceneSettings;
-class QString;
+class QJsonObject;
 
 namespace nanairo {
 
@@ -36,9 +35,7 @@ class NonDirectionalEmitter : public EmitterModel
 {
  public:
   //! Create a non directional emitter
-  NonDirectionalEmitter(const System& system,
-                        const SceneSettings& settings, 
-                        const QString& prefix) noexcept;
+  NonDirectionalEmitter(const System& system, const QJsonObject& settings) noexcept;
 
 
   //! Make non-directional light
@@ -52,9 +49,7 @@ class NonDirectionalEmitter : public EmitterModel
 
  private:
   //! Initialize the emitter
-  void initialize(const System& system,
-                  const SceneSettings& settings,
-                  const QString& prefix) noexcept;
+  void initialize(const System& system, const QJsonObject& settings) noexcept;
 };
 
 //! \} Core

@@ -2,7 +2,7 @@
   \file triangle_mesh.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -17,6 +17,7 @@
 #include <vector>
 // Qt
 #include <QFileInfo>
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/algorithm.hpp"
@@ -37,7 +38,7 @@
 #include "NanairoCore/LinearAlgebra/transformation.hpp"
 #include "NanairoCore/Utility/floating_point.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo  {
 
@@ -294,14 +295,10 @@ std::vector<UniquePointer<Geometry>> makeMeshesFromWavefront(
   \details
   No detailed.
   */
-std::vector<UniquePointer<Geometry>> makeMeshes(const SceneSettings& settings,
-                                                const QString& prefix) noexcept
+std::vector<UniquePointer<Geometry>> makeMeshes(const QJsonObject& settings) noexcept
 {
-  auto key = prefix + "/" + keyword::objectFilePath;
-  const auto object_file_path = settings.stringValue(key);
-
-  key = prefix + "/" + keyword::smoothing;
-  const bool smoothing = settings.booleanValue(key);
+  const auto object_file_path = stringValue(settings, keyword::objectFilePath);
+  const bool smoothing = boolValue(settings, keyword::smoothing);
   const auto mesh_type = smoothing ? MeshType::Smoothed : MeshType::Flat;
 
   std::vector<UniquePointer<Geometry>> mesh_list;
@@ -312,7 +309,8 @@ std::vector<UniquePointer<Geometry>> makeMeshes(const SceneSettings& settings,
     mesh_list = makeMeshesFromWavefront(object_file_path, mesh_type);
   }
   else {
-    zisc::raiseError("TriangleMeshError: \"", object_file_path.toStdString(), 
+    zisc::raiseError("TriangleMeshError: \"",
+                     object_file_path.toStdString(), 
                      "\" is not supported format.");
   }
   return mesh_list;

@@ -2,7 +2,7 @@
   \file spectral_distribution.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -14,6 +14,7 @@
 // Qt
 #include <QColor>
 #include <QFile>
+#include <QJsonObject>
 #include <QString>
 #include <QTextStream>
 // Zisc
@@ -33,21 +34,19 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Utility/floating_point.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 #include "NanairoCore/Utility/value.hpp"
 
 namespace nanairo {
 
 //! Check if the data is RGB
-bool isRgbData(const SceneSettings& settings, const QString& prefix) noexcept;
+bool isRgbData(const QJsonObject& settings) noexcept;
 
 //! Load spectra data from a spectra file
 zisc::LinearInterp<Float> loadSpectraData(const QString& file_path) noexcept;
 
 //! Make a RGB
-RgbColor makeRgb(const System& system, 
-                 const SceneSettings& settings, 
-                 const QString& prefix) noexcept;
+RgbColor makeRgb(const System& system, const QJsonObject& settings) noexcept;
 
 //! Convert emissive spectra to RGB spectra
 SpectralDistribution toEmissiveRgbSpectra(const System& system,
@@ -116,9 +115,9 @@ XyzColor SpectralDistribution::toReflectiveXyz(const System& system) const noexc
   \details
   No detailed.
   */
-bool isRgbData(const SceneSettings& settings, const QString& prefix) noexcept
+bool isRgbData(const QJsonObject& settings) noexcept
 {
-  return settings.booleanValue(prefix + "/" + keyword::isRgbMode);
+  return stringValue(settings, keyword::colorMode) == keyword::rgb;
 }
 
 /*!
@@ -154,17 +153,16 @@ zisc::LinearInterp<Float> loadSpectraData(const QString& file_path) noexcept
   */
 SpectralDistribution makeEmissiveDistribution(
     const System& system,
-    const SceneSettings& settings, 
-    const QString& prefix) noexcept
+    const QJsonObject& settings) noexcept
 {
-  if (isRgbData(settings, prefix)) {
-    const auto rgb = makeRgb(system, settings, prefix);
+  if (isRgbData(settings)) {
+    const auto rgb = makeRgb(system, settings);
     return (system.isRgbRenderingMode())
         ? toRgbSpectra(rgb)
         : toSpectra(system, rgb);
   }
   else {
-    auto spectra = makeEmissiveSpectra(settings, prefix);
+    auto spectra = makeEmissiveSpectra(settings);
     return (system.isRgbRenderingMode())
         ? toEmissiveRgbSpectra(system, spectra)
         : spectra;
@@ -177,17 +175,16 @@ SpectralDistribution makeEmissiveDistribution(
   */
 SpectralDistribution makeReflectiveDistribution(
     const System& system,
-    const SceneSettings& settings, 
-    const QString& prefix) noexcept
+    const QJsonObject& settings) noexcept
 {
-  if (isRgbData(settings, prefix)) {
-    const auto rgb = makeRgb(system, settings, prefix);
+  if (isRgbData(settings)) {
+    const auto rgb = makeRgb(system, settings);
     return (system.isRgbRenderingMode())
         ? toRgbSpectra(rgb)
         : toSpectra(system, rgb);
   }
   else {
-    auto spectra = makeReflectiveSpectra(settings, prefix);
+    auto spectra = makeReflectiveSpectra(settings);
     return (system.isRgbRenderingMode())
         ? toReflectiveRgbSpectra(system, spectra)
         : spectra;
@@ -198,14 +195,12 @@ SpectralDistribution makeReflectiveDistribution(
   \details
   No detailed.
   */
-RgbColor makeRgb(const System& system, 
-                 const SceneSettings& settings, 
-                 const QString& prefix) noexcept
+RgbColor makeRgb(const System& system, const QJsonObject& settings) noexcept
 {
-  const auto key = prefix + "/" + keyword::rgbColor;
-  const auto color = settings.colorValue(key);
-  auto rgb = RgbColor{color};
-
+  const auto color = arrayValue(settings, keyword::value);
+  auto rgb = RgbColor{floatValue<Float>(color[0]),
+                      floatValue<Float>(color[1]),
+                      floatValue<Float>(color[2])};
   rgb.correctGamma(system.gamma());
   rgb.clamp(0.0, 1.0);
   return rgb;
@@ -215,10 +210,9 @@ RgbColor makeRgb(const System& system,
   \details
   No detailed.
   */
-SpectralDistribution makeEmissiveSpectra(const SceneSettings& settings, 
-                                         const QString& prefix) noexcept
+SpectralDistribution makeEmissiveSpectra(const QJsonObject& settings) noexcept
 {
-  auto spectra = makeSpectra(settings, prefix);
+  auto spectra = makeSpectra(settings);
   spectra.clamp(0.0, spectra.max());
   spectra = spectra.normalized();
   return spectra;
@@ -228,10 +222,9 @@ SpectralDistribution makeEmissiveSpectra(const SceneSettings& settings,
   \details
   No detailed.
   */
-SpectralDistribution makeReflectiveSpectra(const SceneSettings& settings, 
-                                           const QString& prefix) noexcept
+SpectralDistribution makeReflectiveSpectra(const QJsonObject& settings) noexcept
 {
-  auto spectra = makeSpectra(settings, prefix);
+  auto spectra = makeSpectra(settings);
   spectra.clamp(0.0, 1.0);
   return spectra;
 }
@@ -240,11 +233,9 @@ SpectralDistribution makeReflectiveSpectra(const SceneSettings& settings,
   \details
   No detailed.
   */
-SpectralDistribution makeSpectra(const SceneSettings& settings, 
-                                 const QString& prefix) noexcept
+SpectralDistribution makeSpectra(const QJsonObject& settings) noexcept
 {
-  const auto key = prefix + "/" + keyword::spectraFilePath;
-  const auto file_path = settings.stringValue(key);
+  const auto file_path = stringValue(settings, keyword::value);
   return makeSpectra(file_path);
 }
 

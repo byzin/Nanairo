@@ -2,7 +2,7 @@
   \file modified_reinhard.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -14,8 +14,9 @@
 #include <vector>
 #include <utility>
 // Qt
-#include <QString>
+#include <QJsonObject>
 #include <QImage>
+#include <QString>
 // Zisc
 #include "zisc/math.hpp"
 #include "zisc/thread_pool.hpp"
@@ -30,6 +31,7 @@
 #include "NanairoCore/Color/xyz_color.hpp"
 #include "NanairoCore/Color/yxy_color.hpp"
 #include "NanairoCore/Utility/floating_point.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -38,7 +40,7 @@ namespace nanairo {
   No detailed.
   */
 ModifiedReinhard::ModifiedReinhard(const System& system,
-                                   const SceneSettings& settings) noexcept :
+                                   const QJsonObject& settings) noexcept :
     ToneMappingMethod(system, settings)
 {
   initialize(system, settings);
@@ -59,8 +61,7 @@ void ModifiedReinhard::toneMap(System& system,
   const auto k = 1.0 / (white_point.Y() * white_point.Y());
 
   auto pixel_array = getPixelArray(ldr_image);
-  std::function<void (const int)> tone_map_image{
-  [this, &ldr_image, pixel_array, k](const int y)
+  auto tone_map_image = [this, &ldr_image, pixel_array, k](const int y)
   {
     uint index = cast<uint>(y * ldr_image.width());
     for (int x = 0; x < ldr_image.width(); ++x) {
@@ -85,10 +86,10 @@ void ModifiedReinhard::toneMap(System& system,
       }
       ++index;
     }
-  }};
+  };
 
   auto& thread_pool = system.threadPool();
-  auto result = thread_pool.loop(std::move(tone_map_image), 0, ldr_image.height());
+  auto result = thread_pool.enqueueLoop(tone_map_image, 0, ldr_image.height());
   result.get();
 }
 
@@ -97,7 +98,7 @@ void ModifiedReinhard::toneMap(System& system,
   No detailed.
   */
 void ModifiedReinhard::initialize(const System& system, 
-                                  const SceneSettings& /* settings */) noexcept
+                                  const QJsonObject& /* settings */) noexcept
 {
   const int width = system.imageWidthResolution(); 
   const int height = system.imageHeightResolution();

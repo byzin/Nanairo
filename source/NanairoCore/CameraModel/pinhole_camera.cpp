@@ -2,7 +2,7 @@
   \file pinhole_camera.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -12,6 +12,7 @@
 #include <cmath>
 #include <tuple>
 // Qt
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/error.hpp"
@@ -28,7 +29,7 @@
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
 #include "NanairoCore/Utility/floating_point.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -36,14 +37,14 @@ namespace nanairo {
   \details
   No detailed.
   */
-PinholeCamera::PinholeCamera(const SceneSettings& settings, const QString& prefix) noexcept :
-    CameraModel(settings, prefix),
+PinholeCamera::PinholeCamera(const QJsonObject& settings) noexcept :
+    CameraModel(settings),
     pinhole_position_{0.0, 0.0, 0.0},
     film_position_{0.0, 0.0, -1.0},
     film_axis1_{-1.0, 0.0, 0.0},
     film_axis2_{0.0, -1.0, 0.0}
 {
-  initialize(settings, prefix);
+  initialize(settings);
 }
 
 /*!
@@ -189,10 +190,9 @@ Float PinholeCamera::filmArea() const noexcept
   \details
   No detailed.
   */
-void PinholeCamera::initialize(const SceneSettings& settings, const QString& prefix) noexcept
+void PinholeCamera::initialize(const QJsonObject& settings) noexcept
 {
-  const auto p = prefix + "/" + keyword::pinholeCamera;
-  const Float angle = settings.realValue(p + "/" + keyword::angleOfView);
+  const Float angle = floatValue<Float>(settings, keyword::angleOfView);
   angle_of_view_ = zisc::toRadian(angle);
   ZISC_ASSERT(isBetweenZeroAndOneFloat(angle_of_view_ / zisc::kPi<Float>),
               "The angle of view must be [0, pi].");

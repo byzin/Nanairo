@@ -2,7 +2,7 @@
   \file rendering_method.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -20,13 +20,15 @@
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
+// Forward declaration
+class QJsonObject;
+
 namespace nanairo {
 
 // Forward declaration
 class IntersectionInfo;
 template <uint> class SampledSpectra;
 class Sampler;
-class SceneSettings;
 class Scene;
 class System;
 template <uint> class ShaderModel;
@@ -50,7 +52,7 @@ class RenderingMethod
 
 
   //! Initialize the rendering method
-  RenderingMethod(const SceneSettings& settings) noexcept;
+  RenderingMethod(const QJsonObject& settings) noexcept;
 
   //! Finalize the rendering method
   virtual ~RenderingMethod() noexcept {}
@@ -106,7 +108,7 @@ class RenderingMethod
 
  private:
   //! Initialize the rendering method
-  void initialize(const SceneSettings& settings) noexcept;
+  void initialize(const QJsonObject& settings) noexcept;
 
 
   std::function<void ()> clear_function_;
@@ -118,7 +120,7 @@ class RenderingMethod
 template <uint kSampleSize>
 UniquePointer<RenderingMethod<kSampleSize>> makeRenderingMethod(
     System& system,
-    const SceneSettings& settings) noexcept;
+    const QJsonObject& settings) noexcept;
 
 //! \} Core 
 

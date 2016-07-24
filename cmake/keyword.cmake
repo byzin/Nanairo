@@ -1,128 +1,87 @@
 # file: keyword.cmake
 # author: Sho Ikeda
 # 
-# Copyright (c) 2015 Sho Ikeda
+# Copyright (c) 2015-2016 Sho Ikeda
 # This software is released under the MIT License.
 # http://opensource.org/licenses/mit-license.php
 # 
 
-
-cmake_minimum_required(VERSION 3.4)
-
-
 # Gtt Nanairo keywords
 function(getNanairoKeywords nanairo_keyword_list)
   set(keyword_list 
-      # Value keywords
-      # System
-      png "PNG"
-      bmp "BMP"
-      ppm "PPM"
-      openClSingleGpu "Single GPU"
-      openClMultipleGpus "Multiple GPUs"
-      openClCpu "CPU"
-      # Color
-      cie2Deg "CIE 2deg color matching function"
-      cie10Deg "CIE 10deg color matching function"
-      cieD65 "CIE D65"
-      cieA "CIE A"
-      regularSampling "Regular sampling"
-      randomSampling "Random sampling"
-      stratifiedSampling "Stratified sampling"
-      lightsBasedImportanceSampling "Lights based importance sampling"
-      sRgbD65 "sRGB (D65)"
-      sRgbD50 "sRGB (D50)"
-      adobeRgbD65 "Adobe RGB (D65)"
-      adobeRgbD50 "Adobe RGB (D50)"
-      reinhard "Reinhard"
-      modifiedReinhard "Modified reinhard"
-      filmic "Filmic"
-      uncharted2Filmic "Uncharted2 filmic"
-      # Rendering
-      pathTracing "PathTracing"
-      lightTracing "LightTracing"
-      probabilisticPpm "ProbabilisticPPM"
-      rouletteMaxReflectance "Reflectance (Max)"
-      rouletteAverageReflectance "Reflectance (Average)"
-      roulettePathLength "Path length"
-      # BVH
-      binaryRadixTreeBvh "BinaryRadixTreeBvh"
-      approximateAgglomerativeClusteringBvh "ApproximateAgglomerativeClusteringBvh"
-      agglomerativeTreeletRestructuringBvh "AgglomerativeTreeletRestructuringBvh"
-      # Texture
-      valueTexture "ValueTexture"
-      unicolorTexture "UnicolorTexture"
-      checkerboardTexture "CheckerboardTexture"
-      imageTexture "ImageTexture"
-      # SurfaceModel
-      smoothDiffuseSurface "SmoothDiffuseSurface"
-      smoothDielectricSurface "SmoothDielectricSurface"
-      smoothConductorSurface "SmoothConductorSurface"
-      roughDielectricSurface "RoughDielectricSurface"
-      roughConductorSurface "RoughConductorSurface"
-      roughPlasticSurface "RoughPlasticSurface"
-      # EmitterModel
-      nonDirectionalEmitter "NonDirectionalEmitter"
-      # Object
-      cameraObject "CameraObject"
-      singleObject "SingleObject"
-      groupObject "GroupObject"
-      # Camera
-      pinholeCamera "PinholeCamera"
-      # Single object
-      planeObject "PlaneObject"
-      meshObject "MeshObject"
-      # Transformation
-      translation "Translation"
-      scaling "Scaling"
-      rotation "Rotation"
-      # Rotation
-      x "X"
-      y "Y"
-      z "Z"
-      degreeUnit "Degree"
-      radianUnit "Radian"
-
-      # Setting keywords
-      # General
+      # Nanairo files
       nanairoFileFormat "nana"
+      sceneBackupFileName "settings.nana"
+      previewDir "Preview"
+
       name "Name"
-      count "Count"
+      # General
       type "Type"
-      delta "Delta"
-      epsilon "Epsilon"
+      enabled "Enabled"
       value "Value"
       width "Width"
       height "Height"
+      delta "Delta"
+      epsilon "Epsilon"
+
+      # Scene
+      scene "Scene"
+      sceneName "SceneName"
+
       # System
       system "System"
-      sceneName "SceneName"
       numOfThreads "NumOfThreads"
       randomSeed "RandomSeed"
-      terminationPass "TerminationPass"
-      imageWidthResolution "ImageWidthResolution"
-      imageHeightResolution "ImageHeightResolution"
-      enableToSaveSpectraImage "EnableToSaveSpectraImage"
-      ldrImageFormat "LdrImageFormat"
-      power2Saving "Power2Saving"
+      terminationCycle "TerminationCycle"
+      imageResolution "ImageResolution"
+#      enableToSaveSpectraImage "EnableToSaveSpectraImage"
+      power2CycleSaving "Power2CycleSaving"
       savingInterval "SavingInterval"
-      openClRendering "OpenClRendering"
-      openClType "OpenClType"
+
       # Color
       color "Color"
-      rgbRendering "RgbRendering"
+      color1 "Color1"
+      color2 "Color2"
+      colorMode "ColorMode"
+          rgb "RGB"
+          spectra "Spectra"
       standardObserver "StandardObserver"
+          cie2Deg "CIE 2deg color matching function"
+          cie10Deg "CIE 10deg color matching function"
       standardIllumination "StandardIllumination"
+          cieD65 "CIE D65"
+          cieA "CIE A"
       wavelengthSampling "WavelengthSampling"
+          regularSampling "Regular sampling"
+          randomSampling "Random sampling"
+          stratifiedSampling "Stratified sampling"
+          lightsBasedImportanceSampling "Lights based importance sampling"
       colorSpace "ColorSpace"
+          sRgbD65 "sRGB (D65)"
+          sRgbD50 "sRGB (D50)"
+          adobeRgbD65 "Adobe RGB (D65)"
+          adobeRgbD50 "Adobe RGB (D50)"
       gamma "Gamma"
       toneMapping "ToneMapping"
+          reinhard "Reinhard"
+          modifiedReinhard "Modified reinhard"
+          filmic "Filmic"
+          uncharted2Filmic "Uncharted2 filmic"
+
       # Rendering
       renderingMethod "RenderingMethod"
-      renderingMethodType "RenderingMethodType"
+          pathTracing "PathTracing"
+          lightTracing "LightTracing"
+          probabilisticPpm "ProbabilisticPPM"
       rayCastEpsilon "RayCastEpsilon"
       russianRoulette "RussianRoulette"
+          rouletteMaxReflectance "Reflectance (Max)"
+          rouletteAverageReflectance "Reflectance (Average)"
+          roulettePathLength "Path length"
       pathLength "PathLength"
+      # Light tracing
+      numOfLightRays "NumOfLightRays"
+      isSameAsImageResolution "NumOfLightRaysIsSameAsImageResolution"
       # Probabilistic PPM
       numOfPhotons "NumOfPhotons"
       photonSearchRadius "PhotonSearchRadius"
@@ -130,45 +89,61 @@ function(getNanairoKeywords nanairo_keyword_list)
       kNearestNeighbor "KNearestNeighbor"
       glossyPhotonMap "GlossyPhotonMap"
       kernelType "KernelType"
-      # Photon map kernel
-      noKernel "NoKernel"
-      coneKernel "ConeKernel"
-      perlinKernel "PerlinKernel"
+          noKernel "NoKernel"
+          coneKernel "ConeKernel"
+          perlinKernel "PerlinKernel"
+
       # BVH
       bvh "Bvh"
-      bvhType "BvhType"
-      treeletSize "TreeletSize"
-      optimizationLoopCount "OptimizationLoopCount"
-      # Color palette
-      isRgbMode "IsRgbMode"
-      rgbColor "RgbColor"
-      spectraFilePath "SpectraFilePath"
+          binaryRadixTreeBvh "BinaryRadixTreeBvh"
+          approximateAgglomerativeClusteringBvh "ApproximateAgglomerativeClusteringBvh"
+          agglomerativeTreeletRestructuringBvh "AgglomerativeTreeletRestructuringBvh"
+              treeletSize "TreeletSize"
+              optimizationLoopCount "OptimizationLoopCount"
+
       # Texture
-      texture "Texture"
-      textureColor "TextureColor"
-      imageFilePath "ImageFilePath"
+      textureModel "TextureModel"
+          valueTexture "ValueTexture"
+          unicolorTexture "UnicolorTexture"
+          checkerboardTexture "CheckerboardTexture"
+          imageTexture "ImageTexture"
+              imageFilePath "ImageFilePath"
+
       # SurfaceModel
       surfaceModel "SurfaceModel"
-      reflectanceIndex "ReflectanceIndex"
-      outerRefractiveIndex "OuterRefractiveIndex"
-      innerRefractiveIndex "InnerRefractiveIndex"
-      innerExtinction "InnerExtinction"
-      diffuseColorIndex "DiffuseColorIndex"
-      roughnessIndex "RoughnessIndex"
+          smoothDiffuseSurface "SmoothDiffuseSurface"
+              reflectanceIndex "ReflectanceIndex"
+          smoothDielectricSurface "SmoothDielectricSurface"
+              outerRefractiveIndex "OuterRefractiveIndex"
+              innerRefractiveIndex "InnerRefractiveIndex"
+              innerExtinction "InnerExtinction"
+          smoothConductorSurface "SmoothConductorSurface"
+          roughDielectricSurface "RoughDielectricSurface"
+              roughnessIndex "RoughnessIndex"
+          roughConductorSurface "RoughConductorSurface"
+          roughPlasticSurface "RoughPlasticSurface"
+
       # EmitterModel
       emitterModel "EmitterModel"
-      radiantExitance "RadiantExitance"
+          nonDirectionalEmitter "NonDirectionalEmitter"
+              radiantExitance "RadiantExitance"
+
       # Object
       object "Object"
-      treeLevel "treeLevel"
-      visibility "Visibility"
+          cameraObject "CameraObject"
+          singleObject "SingleObject"
+          groupObject "GroupObject"
+      groupLevel "GroupLevel"
       # Camera
       cameraType "CameraType"
+          pinholeCamera "PinholeCamera"
       jittering "Jittering"
       # PinholeCamera
       angleOfView "AngleOfView"
       # SingleObject
       geometryType "GeometryType"
+          planeObject "PlaneObject"
+          meshObject "MeshObject"
       objectFilePath "ObjectFilePath"
       smoothing "Smoothing"
       surfaceIndex "SurfaceIndex"
@@ -176,10 +151,17 @@ function(getNanairoKeywords nanairo_keyword_list)
       emitterIndex "EmitterIndex"
       # Transformation
       transformation "Transformation"
-      axis "Axis"
-      angle "Angle"
-      unit "Unit"
-      active "Active"
+          translation "Translation"
+              xAxis "X Axis"
+              yAxis "Y Axis"
+              zAxis "Z Axis"
+          scaling "Scaling"
+          rotation "Rotation"
+              axis "Axis"
+              angle "Angle"
+              unit "Unit"
+              degreeUnit "Degree"
+              radianUnit "Radian"
       )
   if(Z_IS_MAC)
     list(APPEND nanairo_keyword_list ctrlKey "Meta")

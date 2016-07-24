@@ -2,7 +2,7 @@
   \file path_tracing-inl.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -59,7 +59,7 @@ namespace nanairo {
   No detailed.
   */
 template <uint kSampleSize> inline
-PathTracing<kSampleSize>::PathTracing(const SceneSettings& settings) noexcept :
+PathTracing<kSampleSize>::PathTracing(const QJsonObject& settings) noexcept :
     RenderingMethod<kSampleSize>(settings)
 {
   initialize(settings);
@@ -271,7 +271,7 @@ Ray PathTracing<kSampleSize>::generateRay(
   No detailed.
   */
 template <uint kSampleSize> inline
-void PathTracing<kSampleSize>::initialize(const SceneSettings& /* settings */) noexcept
+void PathTracing<kSampleSize>::initialize(const QJsonObject& /* settings */) noexcept
 {
 }
 
@@ -305,20 +305,19 @@ void PathTracing<kSampleSize>::traceCameraPath(
   camera.sampleLensPoint(sampler);
   camera.jitter(sampler);
 
-  std::function<void (const int, const uint)> trace_camera_path{
-  [this, &system, &scene, &sampled_wavelengths]
-  (const int thread_id, const uint y)
+  auto trace_camera_path =
+  [this, &system, &scene, &sampled_wavelengths] (const int thread_id, const uint y)
   {
     const auto& c = scene.camera();
     for (uint x = 0; x < c.widthResolution(); ++x) {
       traceCameraPath(system, scene, sampled_wavelengths, thread_id, x, y);
     }
-  }};
+  };
 
   auto& thread_pool = system.threadPool();
   constexpr uint start = 0;
   const uint end = camera.heightResolution();
-  auto result = thread_pool.loop(std::move(trace_camera_path), start, end);
+  auto result = thread_pool.enqueueLoop(trace_camera_path, start, end);
   result.get();
 }
 

@@ -2,7 +2,7 @@
   \file checkerboard_texture.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -14,6 +14,7 @@
 #include <limits>
 #include <vector>
 // Qt
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/utility.hpp"
@@ -24,7 +25,7 @@
 #include "NanairoCore/Color/xyz_color.hpp"
 #include "NanairoCore/LinearAlgebra/point.hpp"
 #include "NanairoCore/Utility/value.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -33,10 +34,9 @@ namespace nanairo {
   No detailed.
   */
 CheckerboardTexture::CheckerboardTexture(const System& system,
-                                         const SceneSettings& settings,
-                                         const QString& prefix) noexcept
+                                         const QJsonObject& settings) noexcept
 {
-  initialize(system, settings, prefix);
+  initialize(system, settings);
 }
 
 /*!
@@ -91,23 +91,21 @@ Float CheckerboardTexture::wavelengthValue(const Point2& coordinate,
   No detailed.
   */
 void CheckerboardTexture::initialize(const System& system,
-                                     const SceneSettings& settings,
-                                     const QString& prefix) noexcept
+                                     const QJsonObject& settings) noexcept
 {
   using zisc::cast;
 
-  auto p = prefix + "/" + keyword::checkerboardTexture;
-
-  const auto width = settings.intValue(p + "/" + keyword::width);
+  const auto resolution = arrayValue(settings, keyword::imageResolution);
+  const auto width = intValue<int>(resolution[0]);
   width_ = cast<Float>(width) - std::numeric_limits<Float>::epsilon();
 
-  const auto height = settings.intValue(p + "/" + keyword::height);
+  const auto height = intValue<int>(resolution[1]);
   height_ = cast<Float>(height) - std::numeric_limits<Float>::epsilon();
 
-  auto key = p + "/" + keyword::textureColor + "1";
-  spectra_value_[0] = makeReflectiveDistribution(system, settings, key);
-  key = p + "/" + keyword::textureColor + "2";
-  spectra_value_[1] = makeReflectiveDistribution(system, settings, key);
+  const auto color1_settings = objectValue(settings, keyword::color1);
+  spectra_value_[0] = makeReflectiveDistribution(system, color1_settings);
+  const auto color2_settings = objectValue(settings, keyword::color2);
+  spectra_value_[1] = makeReflectiveDistribution(system, color2_settings);
 
   float_value_[0] = spectra_value_[0].toReflectiveXyz(system).y();
   float_value_[0] = zisc::clamp(float_value_[0], 0.0, 1.0);

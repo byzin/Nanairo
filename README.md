@@ -1,14 +1,16 @@
 # Nanairo #
 
-![cover](https://github.com/byzin/Nanairo/wiki/readme/FitnessRoom.png)
+![cover](https://github.com/byzin/Nanairo/wiki/image/RaytracingCamp4.png)
 
 **Nanairo** is a physically plausible spectral renderer.
+
+Version: 0.0.1
 
 ## Description ##
 
 ### Demo ###
 
-![Demo](https://github.com/byzin/Nanairo/wiki/readme/nanairo_demo.gif)
+![Demo](https://github.com/byzin/Nanairo/wiki/image/NanairoDemo.gif)
 
 ### Features ###
 
@@ -58,51 +60,81 @@
 
 ### Build tools ###
 
-* CMake (version 3.4 or lator) [[CMake](http://www.cmake.org/)]
+* CMake (version 3.4 or later) [[CMake](http://www.cmake.org/)]
 
 ### Dependency Library ###
 
-* Qt (version 5.7.0 or lator)
-    - OS X or Linux: [[Qt Project](http://qt-project.org/)]
-    - Windows: [[MSYS2](https://msys2.github.io/)]
+* Qt (version 5.6.0 or later) [[Qt Project](http://qt-project.org/)]
 
 ## Usage ##
-Please see [wiki](https://github.com/byzin/Nanairo/wiki/Home "Nanairo wiki").
+Please see [wiki](https://github.com/byzin/Nanairo/wiki/Home "NanairoWiki").
 
 ## Installation ##
 
 ### Test environments ###
-Currently, I tested in the following environments  
+Building step is tested in the following environments  
 
 * OS X Mavericks + Clang 3.8 + Qt 5.7
 * Ubuntu 14.04 + GCC 5.3 + Qt 5.7
+* Ubuntu 14.04 + Clang 3.9 + Qt 5.7
+* Windows 8 (64bit) + MinGW GCC 5.3 + Qt 5.6
+* Windows 8 (64bit) + MSVC (Visual Studio 2015) + Qt 5.7
+
+### Download source code ###
+
+```
+% git clone https://github.com/byzin/Nanairo
+% cd Nanairo
+% git submodule init
+% git submodule update
+```
 
 ### Setup ###
-You need to add the Qt qmake path to **$PATH**.  
+To build Nanairo, you need to add the Qt qmake path to **$PATH**.  
 ``% export PATH=${qmake_path}:$PATH``  
 For example, on OS X, qmake path is maybe ``${qt_root}/${qt_version}/clang_64/bin``  
 
 ### Build ###
+Please see [wiki](https://github.com/byzin/Nanairo/wiki/Home "NanairoWiki")
+for details.
+
 First, You need to move the build directory.  
 ``% cd ${project_root}/build``
 
 Next, we generate a Makefile using cmake.
 
-On OS X or Linux  
-``% cmake -DCMAKE_BUILD_TYPE=Release ..``
+#### On OS X or Linux ####
 
-On Windows (MSYS2)  
-``% cmake -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release ..``
+GCC  
+```
+% CXX=g++ cmake -DCMAKE_BUILD_TYPE=Release ..
+% cmake --build .
+```
 
-If default compiler is old version, we can specify the compiler to build.  
-``% CXX=${c++_compiler_path} cmake ${options} ..``
+Clang  
+```
+% CXX=clang++ cmake -DCMAKE_BUILD_TYPE=Release -DZ_CLANG_USES_LIBCXX=ON ..
+% cmake --build .
+```
 
-Make **Nanairo**  
-``% make``
+#### On Windows (MSVC) ####
+
+Visual Studio 2015 64bit
+```
+% cmake -G"Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=Release -TLLVM-vs2014 ..
+% cmake --build . --config Release
+```
+
+#### On Windows (MinGW) ####
+
+```
+% cmake -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ..
+% cmake --build .
+```
 
 ## License ##
-[MIT license](./MIT-LICENSE.txt)
+[MIT-LICENSE.txt](./MIT-LICENSE.txt)
 except for *3d model* (resources/model) and *spectrum* (resources/spectrum) files.
 
 ## Acknowledgement ##
-Please see [Acknowledgement](./Acknowledgement.md).
+Please see [Acknowledgement.md](./Acknowledgement.md).

@@ -2,7 +2,7 @@
   \file binary_radix_tree_bvh.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -15,6 +15,7 @@
 #include <vector>
 #include <utility>
 // Qt
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/error.hpp"
@@ -25,7 +26,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Data/object.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -33,9 +34,8 @@ namespace nanairo {
   \details
   No detailed.
   */
-BinaryRadixTreeBvh::BinaryRadixTreeBvh(const SceneSettings& settings, 
-                                       const QString& prefix) noexcept :
-    Bvh(settings, prefix)
+BinaryRadixTreeBvh::BinaryRadixTreeBvh(const QJsonObject& settings) noexcept :
+    Bvh(settings)
 {
 }
 
@@ -127,21 +127,21 @@ void BinaryRadixTreeBvh::splitInMortonCode(System& system,
   ZISC_ASSERT(right_child_index < tree.size(), "BVH buffer is overrun!.");
 
   if (multithreading) {
-    std::function<void ()> split_in_left_morton_code{
+    auto split_in_left_morton_code =
     [&system, next_bit, left_child_index, &tree, first, begin, split_position]()
     {
       splitInMortonCode<false>(system, next_bit, left_child_index, tree, 
                                first, begin, split_position);
-    }};
-    std::function<void ()> split_in_right_morton_code{
+    };
+    auto split_in_right_morton_code =
     [&system, next_bit, right_child_index, &tree, first, split_position, end]()
     {
       splitInMortonCode<false>(system, next_bit, right_child_index, tree, 
                                first, split_position, end);
-    }};
+    };
     auto& thread_pool = system.threadPool();
-    auto left_result = thread_pool.enqueue(std::move(split_in_left_morton_code));
-    auto right_result = thread_pool.enqueue(std::move(split_in_right_morton_code));
+    auto left_result = thread_pool.enqueue<void>(split_in_left_morton_code);
+    auto right_result = thread_pool.enqueue<void>(split_in_right_morton_code);
     left_result.get();
     right_result.get();
   }

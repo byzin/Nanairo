@@ -1,0 +1,13 @@
+#! /bin/sh
+# author: Sho Ikeda
+# Copyright (c) 2015-2016 Sho Ikeda
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
+
+ZContentsRootPath=$(cd $(dirname $0) && pwd)/..
+ZResourcePath=${ZContentsRootPath}/Resources
+ZAppPath=${ZContentsRootPath}../..
+
+DYLD_LIBRARY_PATH=${ZContentsRootPath}/Frameworks:${DYLD_LIBRARY_PATH}
+${ZResourcePath}/bin/@PROJECT_NAME@ -w ${ZAppPath}

@@ -2,13 +2,14 @@
   \file smooth_dielectric_surface.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
 
 #include "smooth_dielectric_surface.hpp"
 // Qt
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/error.hpp"
@@ -17,7 +18,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Utility/floating_point.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -25,11 +26,9 @@ namespace nanairo {
   \details
   No detailed.
   */
-SmoothDielectricSurface::SmoothDielectricSurface(
-    const SceneSettings& settings,
-    const QString& prefix) noexcept
+SmoothDielectricSurface::SmoothDielectricSurface(const QJsonObject& settings) noexcept
 {
-  initialize(settings, prefix);
+  initialize(settings);
 }
 
 /*!
@@ -54,19 +53,18 @@ SurfaceType SmoothDielectricSurface::type() const noexcept
   \details
   No detailed.
   */
-void SmoothDielectricSurface::initialize(const SceneSettings& settings,
-                                         const QString& prefix) noexcept
+void SmoothDielectricSurface::initialize(const QJsonObject& settings) noexcept
 {
-  const auto p = prefix + "/" + keyword::smoothDielectricSurface;
+  const auto outer_refractive_index_settings =
+      stringValue(settings, keyword::outerRefractiveIndex);
+  const auto n1 = makeSpectra(outer_refractive_index_settings);
+  ZISC_ASSERT(!hasZeroFloat(n1), "The n1 contains zero value.");
+  ZISC_ASSERT(!hasNegativeFloat(n1), "The n1 contains negative value.");
 
-  auto key = p + "/" + keyword::outerRefractiveIndex;
-  const auto n1 = makeSpectra(settings, key);
-  ZISC_ASSERT(!hasZeroFloat(n1), "The n1 must not contain zero.");
-  ZISC_ASSERT(!hasNegativeFloat(n1), "The n1 must not contain negative.");
-
-  key = p + "/" + keyword::innerRefractiveIndex;
-  const auto n2 = makeSpectra(settings, key);
-  ZISC_ASSERT(!hasNegativeFloat(n2), "The n2 must not contain negative.");
+  const auto inner_refractive_index_settings =
+      stringValue(settings, keyword::innerRefractiveIndex);
+  const auto n2 = makeSpectra(inner_refractive_index_settings);
+  ZISC_ASSERT(!hasNegativeFloat(n2), "The n2 contains negative value.");
 
   eta_ = n2 / n1;
 }

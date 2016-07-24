@@ -1,13 +1,10 @@
 # file: general.cmake
 # author: Sho Ikeda
 # 
-# Copyright (c) 2015 Sho Ikeda
+# Copyright (c) 2015-2016 Sho Ikeda
 # This software is released under the MIT License.
 # http://opensource.org/licenses/mit-license.php
 # 
-
-cmake_minimum_required(VERSION 3.4)
-
 
 # Set boolean value option
 macro(setBooleanOption variable value doc_string)
@@ -76,6 +73,9 @@ function(detectEnvironment environment_definitions)
   if(CMAKE_GENERATOR MATCHES ".*Makefiles")
     set(Z_IS_MAKEFILE ON PARENT_SCOPE)
     set(Z_GENERATOR_DEFINITION Z_MAKEFILE)
+  elseif(CMAKE_GENERATOR MATCHES "Visual Studio.*")
+    set(Z_IS_VISUAL_STUDIO ON PARENT_SCOPE)
+    set(Z_GENERATOR_DEFINITION Z_VISUAL_STUDIO)
   else()
     set(unsupported_generator ON)
   endif()

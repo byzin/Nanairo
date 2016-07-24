@@ -1,13 +1,10 @@
 # file: compiler.cmake
 # author: Sho Ikeda
 #
-# Copyright (c) 2015 Sho Ikeda
+# Copyright (c) 2015-2016 Sho Ikeda
 # This software is released under the MIT License.
 # http://opensource.org/licenses/mit-license.php
 #
-
-cmake_minimum_required(VERSION 3.4)
-
 
 # Check compiler features
 function(checkCompilerHasCxx14Features target)
@@ -22,7 +19,7 @@ function(checkCompilerHasCxx14Features target)
     cxx_binary_literals
     cxx_constexpr
     cxx_contextual_conversions
-    cxx_decltype_incomplete_return_types
+#    cxx_decltype_incomplete_return_types
     cxx_decltype
     cxx_decltype_auto
     cxx_default_function_template_args
@@ -59,7 +56,7 @@ function(checkCompilerHasCxx14Features target)
     cxx_sizeof_member
     cxx_static_assert
     cxx_strong_enums
-    cxx_thread_local
+#    cxx_thread_local
     cxx_trailing_return_types
     cxx_unicode_literals
     cxx_uniform_initialization
@@ -88,12 +85,12 @@ function(getCompilerOption cxx_compile_flags cxx_linker_flags cxx_definitions)
   set(linker_flags "")
   set(definitions "")
   # libc++
-  if(Z_IS_CLANG AND ${Z_CLANG_USES_LIBCXX})
+  if(Z_IS_CLANG AND Z_CLANG_USES_LIBCXX)
     list(APPEND compile_flags -stdlib=libc++)
     list(APPEND linker_flags -stdlib=libc++)
   endif()
   # Debug info
-  if(${NANAIRO_DEBUG})
+  if(NANAIRO_DEBUG)
     list(APPEND definitions NANAIRO_DEBUG ZISC_ASSERTION)
   endif()
 
@@ -109,11 +106,15 @@ function(getCxxWarningOption compiler_warning_flags)
   set(environment "${CMAKE_SYSTEM_NAME} ${CMAKE_CXX_COMPILER_ID} ${compiler_version}")
 
   # Clang
-  if(Z_IS_CLANG)
+  if(Z_IS_VISUAL_STUDIO)
+    set(warning_flags /W4
+                      )
+  elseif(Z_IS_CLANG)
     set(warning_flags -Werror
                       -Weverything
                       -Wno-c++98-compat
-                      -Wno-c++98-compat-pedantic)
+                      -Wno-c++98-compat-pedantic
+                      )
   # GCC
   elseif(Z_IS_GCC)
     set(warning_flags -pedantic
@@ -139,7 +140,8 @@ function(getCxxWarningOption compiler_warning_flags)
                       -Wswitch-default
                       -Wundef
                       -Werror
-                      -Wno-unused)
+                      -Wno-unused
+                      )
   else()
     message(WARNING "${environment}: Warning option is not set.")
   endif()

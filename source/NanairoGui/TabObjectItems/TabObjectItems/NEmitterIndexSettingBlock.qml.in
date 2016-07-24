@@ -1,0 +1,81 @@
+/*!
+  \file NEmitterIndexSettingBlock.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "../../SettingBlockItems"
+
+NSettingBlock {
+  id: emitter_index_setting_block 
+
+  property var emitterModel: null
+  property var currentItem: null
+  property bool isItemChangeMode: false
+
+  labelText: qsTr("EmitterIndex")
+
+  NCheckBox {
+    id: emissive_object_checkbox
+
+    y: emitter_index_setting_block.labelHeight + @item_offset@
+    backgroundColor: emitter_index_setting_block.color
+
+    text: qsTr("Emissive object")
+    onCheckedChanged: setCurrentItemValue("@isEmissiveObject@", checked)
+  }
+
+  NComboBox {
+    id: emitter_model_combobox
+
+    y: (emissive_object_checkbox.y + emissive_object_checkbox.height) + @item_offset@
+    enabled: emissive_object_checkbox.checked
+    backgroundColor: emitter_index_setting_block.color
+
+    textRole: "name"
+    model: emitter_index_setting_block.emitterModel
+
+    onCurrentIndexChanged: setCurrentItemValue("@emitterIndex@", currentIndex)
+  }
+
+  function initializeItem(item) {
+    item["@isEmissiveObject@"] = false;
+    item["@emitterIndex@"] = 0;
+  }
+
+  function reflectItem() {
+    var item = currentItem;
+    emissive_object_checkbox.checked = item["@isEmissiveObject@"];
+    emitter_model_combobox.currentIndex = item["@emitterIndex@"];
+  }
+
+  function setCurrentItem(item, itemChangeMode) {
+    currentItem = item;
+    isItemChangeMode = itemChangeMode;
+  }
+
+  function setCurrentItemValue(key, value) {
+    if (currentItem != null) {
+      currentItem[key] = value;
+    }
+  }
+
+  function getItemData(item) {
+    var itemData = {};
+    itemData["@isEmissiveObject@"] = item["@isEmissiveObject@"];
+    itemData["@emitterIndex@"] = item["@emitterIndex@"];
+    return itemData;
+  }
+
+  function makeItem(itemData) {
+    var item = {};
+    item["@isEmissiveObject@"] = itemData["@isEmissiveObject@"];
+    item["@emitterIndex@"] = itemData["@emitterIndex@"];
+    return item;
+  }
+}

@@ -2,7 +2,7 @@
   \file image_texture.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -16,6 +16,7 @@
 // Qt
 #include <QColor>
 #include <QImage>
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/algorithm.hpp"
@@ -31,7 +32,7 @@
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/LinearAlgebra/point.hpp"
 #include "NanairoCore/LinearAlgebra/transformation.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -39,11 +40,9 @@ namespace nanairo {
   \details
   No detailed.
   */
-ImageTexture::ImageTexture(const System& system,
-                           const SceneSettings& settings, 
-                           const QString& prefix) noexcept
+ImageTexture::ImageTexture(const System& system, const QJsonObject& settings) noexcept
 {
-  initialize(system, settings, prefix);
+  initialize(system, settings);
 }
 
 /*!
@@ -102,16 +101,12 @@ Float ImageTexture::wavelengthValue(const Point2& coordinate,
   No detailed.
   */
 void ImageTexture::initialize(const System& system,
-                              const SceneSettings& settings, 
-                              const QString& prefix) noexcept
+                              const QJsonObject& settings) noexcept
 {
   using zisc::cast;
 
-  auto p = prefix + "/" + keyword::imageTexture;
-
-  auto key = p + "/" + keyword::imageFilePath;
-  const auto file_path = settings.stringValue(key);
-  const QImage image{file_path};
+  const auto image_file_path = stringValue(settings, keyword::imageFilePath);
+  const QImage image{image_file_path};
 
   const int width = image.width();
   const int height = image.height();

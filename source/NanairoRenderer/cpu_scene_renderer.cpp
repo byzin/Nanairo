@@ -2,7 +2,7 @@
   \file cpu_scene_renderer.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -13,6 +13,7 @@
 #include <functional>
 // Qt
 #include <QLocale>
+#include <QJsonObject>
 #include <QObject>
 #include <QString>
 #include <QtGlobal>
@@ -25,7 +26,6 @@
 #include "NanairoCore/RenderingMethod/rendering_method.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 #include "NanairoCore/ToneMapping/tone_mapping_method.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
@@ -55,22 +55,27 @@ void CpuSceneRenderer::convertSpectraToHdr(const quint64 cycle) noexcept
   */
 void CpuSceneRenderer::handleCameraEvent() noexcept
 {
-  const auto& camera_event = cameraEvent();
+  auto& camera_event = cameraEvent();
   auto& camera = scene_->camera();
   auto& matrix = cameraMatrix();
-
   // Transform camera
-  if (camera_event.isTranslationEventOccured())
-    matrix = matrix * camera.translate(camera_event.translation());
-  else if (camera_event.isDistanceEventOccured())
-    matrix = matrix * camera.distance(camera_event.distance());
-  else if (camera_event.isRotationEventOccured())
-    matrix = matrix * camera.rotate(camera_event.rotation());
+  if (camera_event.isHorizontalTranslationEventOccured()) {
+    const auto value = camera_event.flushHorizontalTranslationEvent();
+    matrix = matrix * camera.translateHorizontally(value);
+  }
+  if (camera_event.isVerticalTranslationEventOccured()) {
+    const auto value = camera_event.flushVerticalTranslationEvent();
+    matrix = matrix * camera.translateVertically(value);
+  }
+  if (camera_event.isRotationEventOccured()) {
+    const auto value = camera_event.flushRotationEvent();
+    matrix = matrix * camera.rotate(value);
+  }
+  cameraMatrix() = matrix;
   
   // Initialize memory
   auto& film = scene_->film();
-  auto& buffer = film.spectraBuffer();
-  buffer.clear();
+  film.spectraBuffer().clear();
   rgb_rendering_method_->clear();
   rendering_method_->clear();
 }
@@ -79,7 +84,7 @@ void CpuSceneRenderer::handleCameraEvent() noexcept
   \details
   No detailed.
   */
-void CpuSceneRenderer::initializeRenderer(const SceneSettings& settings) noexcept
+void CpuSceneRenderer::initializeRenderer(const QJsonObject& settings) noexcept
 {
   std::function<void (const QString&)> output_message{[this](const QString& message)
   {
@@ -99,12 +104,18 @@ void CpuSceneRenderer::initializeRenderer(const SceneSettings& settings) noexcep
   // Rendering method
   const auto& world = scene_->world();
   rgb_sampler_ = makeRgbSampler<3>();
-  wavelength_sampler_ = makeWavelengthSampler<kWavelengthSampleSize>(settings, world);
-  rgb_rendering_method_ = makeRenderingMethod<3>(*system_, settings);
-  rendering_method_ = makeRenderingMethod<kWavelengthSampleSize>(*system_, settings);
+  const auto color_settings = objectValue(settings, keyword::color);
+  wavelength_sampler_ =
+      makeWavelengthSampler<kWavelengthSampleSize>(world, color_settings);
+  const auto rendering_method_settings =
+      objectValue(settings, keyword::renderingMethod);
+  rgb_rendering_method_ = 
+      makeRenderingMethod<3>(*system_, rendering_method_settings);
+  rendering_method_ =
+      makeRenderingMethod<kWavelengthSampleSize>(*system_, rendering_method_settings);
 
   // ToneMapping
-  tone_mapping_method_ = makeToneMappingMethod(*system_, settings);
+  tone_mapping_method_ = makeToneMappingMethod(*system_, color_settings);
 
   // Images
   outputMessage(QStringLiteral("Create a HDR image buffer."));

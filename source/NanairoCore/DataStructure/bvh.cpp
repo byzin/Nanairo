@@ -2,7 +2,7 @@
   \file bvh.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -19,6 +19,7 @@
 #include <utility>
 #include <vector>
 // Qt
+#include <QJsonObject>
 #include <QString>
 // Zics
 #include "zisc/algorithm.hpp"
@@ -36,7 +37,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/object.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
@@ -51,7 +52,7 @@ Bvh::~Bvh() noexcept
   \details
   No detailed.
   */
-Bvh::Bvh(const SceneSettings& /* settings */, const QString& /* prefix */) noexcept
+Bvh::Bvh(const QJsonObject& /* settings */) noexcept
 {
 }
 
@@ -224,28 +225,30 @@ void Bvh::setUniqueObject(std::vector<Object>& object_list) noexcept
   \details
   No detailed.
   */
-UniquePointer<Bvh> makeBvh(const SceneSettings& settings) noexcept
+UniquePointer<Bvh> makeBvh(const QJsonObject& settings) noexcept
 {
   using zisc::toHash32;
 
   Bvh* bvh = nullptr;
 
-  const QString prefix{keyword::bvh};
-  auto key = prefix + "/" + keyword::bvhType;
-  const auto type = settings.stringValue(key);
+  const auto type = stringValue(settings, keyword::type);
   switch (keyword::toHash32(type)) {
-   case toHash32(keyword::binaryRadixTreeBvh):
-    bvh = new BinaryRadixTreeBvh{settings, prefix};
-    break;
-   case zisc::toHash32(keyword::approximateAgglomerativeClusteringBvh):
-    bvh = new ApproximateAgglomerativeClusteringBvh{settings, prefix};
-    break;
-  case toHash32(keyword::agglomerativeTreeletRestructuringBvh):
-    bvh = new AgglomerativeTreeletRestructuringBvh{settings, prefix};
-    break;
-   default:
-    zisc::raiseError("BvhError: Unsupported type is specified.");
-    break;
+    case toHash32(keyword::binaryRadixTreeBvh): {
+      bvh = new BinaryRadixTreeBvh{settings};
+      break;
+    }
+    case zisc::toHash32(keyword::approximateAgglomerativeClusteringBvh): {
+      bvh = new ApproximateAgglomerativeClusteringBvh{settings};
+      break;
+    }
+    case toHash32(keyword::agglomerativeTreeletRestructuringBvh): {
+      bvh = new AgglomerativeTreeletRestructuringBvh{settings};
+      break;
+    }
+    default: {
+      zisc::raiseError("BvhError: Unsupported type is specified.");
+      break;
+    }
   }
   return UniquePointer<Bvh>{bvh};
 }

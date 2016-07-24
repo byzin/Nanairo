@@ -2,7 +2,7 @@
   \file unicolor_texture.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -11,6 +11,7 @@
 // Standard C++ library
 #include <cstddef>
 // Qt
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/utility.hpp"
@@ -21,7 +22,7 @@
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -30,10 +31,9 @@ namespace nanairo {
   No detailed.
   */
 UnicolorTexture::UnicolorTexture(const System& system,
-                                 const SceneSettings& settings,
-                                 const QString& prefix) noexcept
+                                 const QJsonObject& settings) noexcept
 {
-  initialize(system, settings, prefix);
+  initialize(system, settings);
 }
 
 /*!
@@ -78,13 +78,11 @@ Float UnicolorTexture::wavelengthValue(const Point2& /* coordinate */,
   No detailed.
   */
 void UnicolorTexture::initialize(const System& system,
-                                 const SceneSettings& settings,
-                                 const QString& prefix) noexcept
+                                 const QJsonObject& settings) noexcept
 {
-  auto p = prefix + "/" + keyword::unicolorTexture;
-  const auto key = p + "/" + keyword::textureColor;
-  spectra_value_ = makeReflectiveDistribution(system, settings, key);
-  float_value_ = spectra_value_.toReflectiveXyz(system).y(), 
+  const auto color_settings = objectValue(settings, keyword::color);
+  spectra_value_ = makeReflectiveDistribution(system, color_settings);
+  float_value_ = spectra_value_.toReflectiveXyz(system).y();
   float_value_ = zisc::clamp(float_value_, 0.0, 1.0);
 }
 

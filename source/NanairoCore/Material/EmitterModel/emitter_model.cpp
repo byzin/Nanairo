@@ -2,13 +2,14 @@
   \file emitter_model.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
 
 #include "emitter_model.hpp"
 // Qt
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/algorithm.hpp"
@@ -19,6 +20,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -33,10 +35,9 @@ EmitterModel::~EmitterModel() noexcept
   No detailed.
   */
 EmitterModel::EmitterModel(const System& system,
-                           const SceneSettings& settings, 
-                           const QString& prefix) noexcept
+                           const QJsonObject& settings) noexcept
 {
-  initialize(system, settings, prefix);
+  initialize(system, settings);
 }
 
 /*!
@@ -44,8 +45,7 @@ EmitterModel::EmitterModel(const System& system,
   No detailed.
   */
 void EmitterModel::initialize(const System& /* system */,
-                              const SceneSettings& /* settings */, 
-                              const QString& /* prefix */) noexcept
+                              const QJsonObject& /* settings */) noexcept
 {
 }
 
@@ -65,17 +65,16 @@ void EmitterModel::setPowerDistribution(
   No detailed.
   */
 UniquePointer<EmitterModel> makeEmitter(const System& system,
-                                        const SceneSettings& settings,
-                                        const QString& prefix) noexcept
+                                        const QJsonObject& settings) noexcept
 {
   using zisc::toHash32;
 
   EmitterModel* emitter = nullptr;
 
-  const auto type = settings.stringValue(prefix + "/" + keyword::type);
+  const auto type = stringValue(settings, keyword::type);
   switch (keyword::toHash32(type)) {
    case toHash32(keyword::nonDirectionalEmitter):
-    emitter = new NonDirectionalEmitter{system, settings, prefix};
+    emitter = new NonDirectionalEmitter{system, settings};
     break;
    default:
     zisc::raiseError("EmitterError: Unsupported type is specified.");

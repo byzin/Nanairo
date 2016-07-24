@@ -2,7 +2,7 @@
   \file nanairo_core_config.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -53,18 +53,18 @@ constexpr uint16 kRedWavelength = 700;
 constexpr uint16 kShortestWavelength = @NANAIRO_SHORTEST_WAVELENGTH@;
 constexpr uint16 kLongestWavelength = @NANAIRO_LONGEST_WAVELENGTH@;
 static_assert(360 <= kShortestWavelength,
-              "## The shortest wavelength must be greater than equal to 360nm.");
+              "The shortest wavelength is less than 360nm.");
 static_assert(kLongestWavelength <= 830,
-              "## The longest wavelength must be less than equal to 830nm.");
+              "The longest wavelength is greater than 830nm.");
 static_assert(kShortestWavelength < kLongestWavelength,
-              "## The shortest wavelength must be less than to the longest.");
+              "The shortest wavelength is greater than the longest.");
 constexpr uint kWavelengthRange = kLongestWavelength - kShortestWavelength;
 constexpr uint kWavelengthResolution = @NANAIRO_WAVELENGTH_RESOLUTION@;
-static_assert((kWavelengthRange % kWavelengthResolution == 0) ||
-              ((kBlueWavelength-kShortestWavelength) % kWavelengthResolution == 0) ||
-              ((kGreenWavelength-kShortestWavelength) % kWavelengthResolution == 0) ||
+static_assert((kWavelengthRange % kWavelengthResolution == 0) &&
+              ((kBlueWavelength-kShortestWavelength) % kWavelengthResolution == 0) &&
+              ((kGreenWavelength-kShortestWavelength) % kWavelengthResolution == 0) &&
               ((kRedWavelength-kShortestWavelength) % kWavelengthResolution == 0),
-              "## Invalid wavelength resolution.");
+              "Invalid wavelength resolution is specified.");
 constexpr uint kSpectraSize = kWavelengthRange / kWavelengthResolution;
 // DataStructure
 constexpr uint kMaxNumOfObjectsPerNode = @NANAIRO_MAX_NUM_OF_OBJECTS@;

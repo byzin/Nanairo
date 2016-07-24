@@ -1,6 +1,6 @@
 # Acknowledgement #
 
-Nanairo includes the following 3d model and spectrum files.  I thank the authors.
+Nanairo includes the following 3d models and spectrum files.  I thank the authors.
 
 ## 3d models ##
 

@@ -2,7 +2,7 @@
   \file uncharted2_filmic.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -19,12 +19,12 @@
 
 // Forward declaration
 class QImage;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
 class HdrImage;
-class SceneSettings;
 class System;
 
 //! \addtogroup Core
@@ -38,7 +38,7 @@ class Uncharted2Filmic : public ToneMappingMethod
 {
  public:
   //! Initialize reinhard method
-  Uncharted2Filmic(const System& system, const SceneSettings& settings) noexcept;
+  Uncharted2Filmic(const System& system, const QJsonObject& settings) noexcept;
 
 
   //! Apply tone mapping
@@ -48,7 +48,7 @@ class Uncharted2Filmic : public ToneMappingMethod
 
  private:
   //! Initialize
-  void initialize(const System& system, const SceneSettings& settings) noexcept;
+  void initialize(const System& system, const QJsonObject& settings) noexcept;
 
   //! Apply uncharted2 tone map
   Float uncharted2ToneMap(const Float x) const noexcept;

@@ -2,7 +2,7 @@
   \file cpu_scene_renderer.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -19,11 +19,13 @@
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
+// Forward declaration
+class QJsonObject;
+
 namespace nanairo {
 
 // Forward declaration
 class HdrImage;
-class SceneSettings;
 class Scene;
 class System;
 template <uint> class RenderingMethod;
@@ -50,7 +52,7 @@ class CpuSceneRenderer : public SceneRendererBase
   void handleCameraEvent() noexcept override;
 
   //! Initialize the cpu renderer
-  void initializeRenderer(const SceneSettings& settings) noexcept override;
+  void initializeRenderer(const QJsonObject& settings) noexcept override;
 
   //! Render image
   void render(const quint64 cycle) noexcept override;

@@ -2,13 +2,14 @@
   \file color_matching_function.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
 
 #include "xyz_color_matching_function.hpp"
 // Qt
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/algorithm.hpp"
@@ -18,7 +19,7 @@
 #include "spectral_distribution.hpp"
 #include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -26,7 +27,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-XyzColorMatchingFunction::XyzColorMatchingFunction(const SceneSettings& settings) noexcept
+XyzColorMatchingFunction::XyzColorMatchingFunction(const QJsonObject& settings) noexcept
 {
   initialize(settings);
 }
@@ -35,7 +36,7 @@ XyzColorMatchingFunction::XyzColorMatchingFunction(const SceneSettings& settings
   \details
   No detailed.
   */
-void XyzColorMatchingFunction::initialize(const SceneSettings& settings) noexcept
+void XyzColorMatchingFunction::initialize(const QJsonObject& settings) noexcept
 {
   setStandardObserver(settings);
   setStandardIlluminant(settings);
@@ -46,23 +47,25 @@ void XyzColorMatchingFunction::initialize(const SceneSettings& settings) noexcep
   \details
   No detailed.
   */
-void XyzColorMatchingFunction::setStandardIlluminant(const SceneSettings& settings) noexcept
+void XyzColorMatchingFunction::setStandardIlluminant(const QJsonObject& settings) noexcept
 {
   using zisc::toHash32;
 
-  const auto key = QString(keyword::color) + "/" + keyword::standardIllumination;
-  const auto standard_illuminant = settings.stringValue(key);
-
+  const auto standard_illuminant = stringValue(settings,
+                                               keyword::standardIllumination);
   switch (keyword::toHash32(standard_illuminant)) {
-   case toHash32(keyword::cieD65):
-    standard_illuminant_ = makeSpectra(":/spectrum/cie_si_d65.csv");
-    break;
-   case toHash32(keyword::cieA):
-    standard_illuminant_ = makeSpectra(":/spectrum/cie_si_a.csv");
-    break;
-   default:
-    zisc::raiseError("XyzColorMatchingFunctionError: Unsupported standard illuminant.");
-    break;
+    case toHash32(keyword::cieD65): {
+      standard_illuminant_ = makeSpectra(":/spectrum/illuminant/cie_si_d65.csv");
+      break;
+    }
+    case toHash32(keyword::cieA): {
+      standard_illuminant_ = makeSpectra(":/spectrum/illuminant/cie_si_a.csv");
+      break;
+    }
+    default: {
+      zisc::raiseError("XyzColorMatchingFunctionError: Unsupported standard illuminant.");
+      break;
+    }
   }
   standard_illuminant_ = standard_illuminant_.normalized();
 }
@@ -71,27 +74,29 @@ void XyzColorMatchingFunction::setStandardIlluminant(const SceneSettings& settin
   \details
   No detailed.
   */
-void XyzColorMatchingFunction::setStandardObserver(const SceneSettings& settings) noexcept
+void XyzColorMatchingFunction::setStandardObserver(const QJsonObject& settings) noexcept
 {
   using zisc::toHash32;
 
-  const auto key = QString{keyword::color} + "/" + keyword::standardObserver;
-  const auto standard_observer = settings.stringValue(key);
-
+  const auto standard_observer = stringValue(settings,
+                                             keyword::standardObserver);
   switch (keyword::toHash32(standard_observer)) {
-   case toHash32(keyword::cie2Deg):
-     x_bar_ = makeSpectra(":/spectrum/cie_sco_2degree_xbar.csv");
-     y_bar_ = makeSpectra(":/spectrum/cie_sco_2degree_ybar.csv");
-     z_bar_ = makeSpectra(":/spectrum/cie_sco_2degree_zbar.csv");
-    break;
-   case toHash32(keyword::cie10Deg):
-     x_bar_ = makeSpectra(":/spectrum/cie_sco_10degree_xbar.csv");
-     y_bar_ = makeSpectra(":/spectrum/cie_sco_10degree_ybar.csv");
-     z_bar_ = makeSpectra(":/spectrum/cie_sco_10degree_zbar.csv");
-    break;
-   default:
-    zisc::raiseError("XyzColorMatchingFunctionError: Unsupported standard observer.");
-    break;
+    case toHash32(keyword::cie2Deg): {
+      x_bar_ = makeSpectra(":/spectrum/observer/cie_sco_2degree_xbar.csv");
+      y_bar_ = makeSpectra(":/spectrum/observer/cie_sco_2degree_ybar.csv");
+      z_bar_ = makeSpectra(":/spectrum/observer/cie_sco_2degree_zbar.csv");
+      break;
+    }
+    case toHash32(keyword::cie10Deg): {
+      x_bar_ = makeSpectra(":/spectrum/observer/cie_sco_10degree_xbar.csv");
+      y_bar_ = makeSpectra(":/spectrum/observer/cie_sco_10degree_ybar.csv");
+      z_bar_ = makeSpectra(":/spectrum/observer/cie_sco_10degree_zbar.csv");
+      break;
+    }
+    default: {
+      zisc::raiseError("XyzColorMatchingFunctionError: Unsupported standard observer.");
+      break;
+    }
   }
 
 //  constexpr Float k = 107.0;

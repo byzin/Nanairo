@@ -2,7 +2,7 @@
   \file scene.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -17,6 +17,7 @@
 #include "Utility/unique_pointer.hpp"
 
 // Forward declaration
+class QJsonObject;
 class QString;
 
 namespace nanairo {
@@ -24,7 +25,6 @@ namespace nanairo {
 // Forward declaration
 class CameraModel;
 class Film;
-class SceneSettings;
 class System;
 class World;
 
@@ -38,7 +38,7 @@ class Scene
  public:
   //! Initialize the scene
   Scene(System& system, 
-        const SceneSettings& settings, 
+        const QJsonObject& settings, 
         const std::function<void (const QString&)>& message_sender) noexcept;
 
 
@@ -60,7 +60,7 @@ class Scene
  private:
   //! Initialize the scene
   void initialize(System& system, 
-                  const SceneSettings& settings,
+                  const QJsonObject& settings,
                   const std::function<void (const QString&)>& message_sender) noexcept;
 
 

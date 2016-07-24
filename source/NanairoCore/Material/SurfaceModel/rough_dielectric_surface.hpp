@@ -2,7 +2,7 @@
   \file rough_dielectric_surface.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -20,13 +20,12 @@
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 // Forward declaration
-class QString;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
 class Sampler;
-class SceneSettings;
 template <uint> class ShaderModel;
 class Texture;
 template <uint> class WavelengthSamples;
@@ -46,8 +45,7 @@ class RoughDielectricSurface : public SurfaceModel
 
 
   //! Create a rough dielectric surface
-  RoughDielectricSurface(const SceneSettings& settings, 
-                         const QString& prefix,
+  RoughDielectricSurface(const QJsonObject& settings, 
                          const std::vector<const Texture*>& texture_list) noexcept;
 
 
@@ -67,8 +65,7 @@ class RoughDielectricSurface : public SurfaceModel
 
  private:
   //! Initialize
-  void initialize(const SceneSettings& settings,
-                  const QString& prefix,
+  void initialize(const QJsonObject& settings,
                   const std::vector<const Texture*>& texture_list) noexcept;
   
 

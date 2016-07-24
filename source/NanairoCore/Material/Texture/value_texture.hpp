@@ -2,7 +2,7 @@
   \file value_texture.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -18,13 +18,12 @@
 #include "NanairoCore/Color/spectral_distribution.hpp"
 
 // Forward declaration
-class QString;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
 template <uint> class SampledSpectra;
-class SceneSettings;
 class System;
 template <uint> class WavelengthSamples;
 
@@ -39,9 +38,7 @@ class ValueTexture : public Texture
 {
  public:
   //! Create a value texture
-  ValueTexture(const System& system,
-               const SceneSettings& settings, 
-               const QString& prefix) noexcept;
+  ValueTexture(const System& system, const QJsonObject& settings) noexcept;
 
   //! Return the unique float value
   Float uniqueValue() const noexcept;
@@ -60,9 +57,7 @@ class ValueTexture : public Texture
                         const uint16 wavelength) const noexcept override;
  private:
   //! Initialize
-  void initialize(const System& system,
-                  const SceneSettings& settings, 
-                  const QString& prefix) noexcept;
+  void initialize(const System& system, const QJsonObject& settings) noexcept;
 
 
   Float value_;

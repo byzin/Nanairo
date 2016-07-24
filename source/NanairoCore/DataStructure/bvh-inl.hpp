@@ -2,7 +2,7 @@
   \file bvh-inl.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -58,19 +58,17 @@ void Bvh::setBoundingBox(System& system,
     const auto left_child_index = node.leftChildIndex();
     const auto right_child_index = node.rightChildIndex();
     if (multithreading) {
-      std::function<void ()> set_left_bounding_box{
-      [&system, &tree, left_child_index]()
+      auto set_left_bounding_box = [&system, &tree, left_child_index]()
       {
         setBoundingBox<false>(system, tree, left_child_index);
-      }};
-      std::function<void ()> set_right_bounding_box{
-      [&system, &tree, right_child_index]()
+      };
+      auto set_right_bounding_box = [&system, &tree, right_child_index]()
       {
         setBoundingBox<false>(system, tree, right_child_index);
-      }};
+      };
       auto& thread_pool = system.threadPool();
-      auto left_result = thread_pool.enqueue(std::move(set_left_bounding_box));
-      auto right_result = thread_pool.enqueue(std::move(set_right_bounding_box));
+      auto left_result = thread_pool.enqueue<void>(set_left_bounding_box);
+      auto right_result = thread_pool.enqueue<void>(set_right_bounding_box);
       left_result.get();
       right_result.get();
     }

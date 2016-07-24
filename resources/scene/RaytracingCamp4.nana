@@ -1,0 +1,898 @@
+{
+    "Bvh": {
+        "OptimizationLoopCount": 2,
+        "TreeletSize": 9,
+        "Type": "AgglomerativeTreeletRestructuringBvh"
+    },
+    "Color": {
+        "ColorMode": "RGB",
+        "ColorSpace": "sRGB (D65)",
+        "Gamma": 2.2,
+        "StandardIllumination": "CIE D65",
+        "StandardObserver": "CIE 2deg color matching function",
+        "ToneMapping": "Reinhard",
+        "WavelengthSampling": "Regular sampling"
+    },
+    "EmitterModel": [
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
+            },
+            "Name": "Emitter",
+            "RadiantExitance": 2048,
+            "Type": "NonDirectionalEmitter"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    1,
+                    0.9280384527351797,
+                    0.28038452735179675
+                ]
+            },
+            "Name": "WeakEmitter1",
+            "RadiantExitance": 256,
+            "Type": "NonDirectionalEmitter"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.14596780346379798,
+                    0.6817578393224994,
+                    0.9973296711680781
+                ]
+            },
+            "Name": "WeakEmitter2",
+            "RadiantExitance": 128,
+            "Type": "NonDirectionalEmitter"
+        }
+    ],
+    "Object": [
+        {
+            "AngleOfView": 80,
+            "CameraType": "PinholeCamera",
+            "Enabled": true,
+            "GroupLevel": 0,
+            "Jittering": true,
+            "Name": "Camera",
+            "Transformation": [
+                {
+                    "Angle": -32,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -0.5,
+                        -9
+                    ]
+                }
+            ],
+            "Type": "CameraObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 0,
+            "Name": "Room",
+            "Transformation": [
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "Floor",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -1,
+                        0
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        20,
+                        1,
+                        20
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "FarWall",
+            "Smoothing": false,
+            "SurfaceIndex": 2,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        2.5,
+                        10
+                    ]
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        20,
+                        1,
+                        7
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "LeftWall",
+            "Smoothing": false,
+            "SurfaceIndex": 1,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        10,
+                        2.5,
+                        0
+                    ]
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        7,
+                        1,
+                        20
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "RightWall",
+            "Smoothing": false,
+            "SurfaceIndex": 1,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -10,
+                        2.5,
+                        0
+                    ]
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        7,
+                        1,
+                        20
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "NearWall",
+            "Smoothing": false,
+            "SurfaceIndex": 1,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        2.5,
+                        -10
+                    ]
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        20,
+                        1,
+                        7
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "Ceiling",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        6,
+                        0
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        20,
+                        1,
+                        20
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 1,
+            "Enabled": true,
+            "GeometryType": "MeshObject",
+            "GroupLevel": 1,
+            "IsEmissiveObject": true,
+            "Name": "SphereLight1",
+            "ObjectFilePath": "resources/models/primitives/sphere_low_poly.obj",
+            "Smoothing": false,
+            "SurfaceIndex": 4,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        4.5,
+                        -1,
+                        6
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.2,
+                        0.2,
+                        0.2
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 2,
+            "Enabled": true,
+            "GeometryType": "MeshObject",
+            "GroupLevel": 1,
+            "IsEmissiveObject": true,
+            "Name": "SphereLight2",
+            "ObjectFilePath": "resources/models/primitives/sphere_low_poly.obj",
+            "Smoothing": false,
+            "SurfaceIndex": 4,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        2.3,
+                        0,
+                        -1
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -2,
+                        -1,
+                        -2.1
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.2,
+                        0.2,
+                        0.2
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "RayTracingCampLabel",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        4.15,
+                        -1,
+                        2.1
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.8,
+                        2.5,
+                        0.2
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0.5,
+                        0
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Label",
+            "Smoothing": false,
+            "SurfaceIndex": 5,
+            "Transformation": [
+                {
+                    "Angle": -90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "LabelPlane",
+            "Smoothing": false,
+            "SurfaceIndex": 6,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        1
+                    ]
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "LabelPlane",
+            "Smoothing": false,
+            "SurfaceIndex": 6,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0.5,
+                        0
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "LabelPlane",
+            "Smoothing": false,
+            "SurfaceIndex": 6,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -0.5,
+                        0
+                    ]
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "LabelPlane",
+            "Smoothing": false,
+            "SurfaceIndex": 6,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.5,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "Angle": -90,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "LabelPlane",
+            "Smoothing": false,
+            "SurfaceIndex": 6,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.5,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "DragonGlass",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -5,
+                        -1,
+                        2
+                    ]
+                },
+                {
+                    "Angle": -30,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        1.5,
+                        1.5,
+                        1.5
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "MeshObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "StanfordDragon",
+            "ObjectFilePath": "resources/models/stanford_models/stanford_dragon.obj",
+            "Smoothing": false,
+            "SurfaceIndex": 7,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        1
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        1.5,
+                        1.5,
+                        1.5
+                    ]
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "MeshObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "RoughGlass",
+            "ObjectFilePath": "resources/models/primitives/cube.obj",
+            "Smoothing": false,
+            "SurfaceIndex": 3,
+            "Transformation": [
+                {
+                    "Enabled": false,
+                    "Type": "Translation",
+                    "Value": [
+                        -5,
+                        -1,
+                        3
+                    ]
+                },
+                {
+                    "Angle": -45,
+                    "Axis": "Y Axis",
+                    "Enabled": false,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        3,
+                        1.5,
+                        0.1
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "MeshObject",
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "XyzDragon",
+            "ObjectFilePath": "resources/models/stanford_models/xyzrgb_dragon.obj",
+            "Smoothing": false,
+            "SurfaceIndex": 7,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        2,
+                        -1,
+                        -2
+                    ]
+                },
+                {
+                    "Angle": 160,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        2,
+                        2,
+                        2
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 1,
+            "IsEmissiveObject": true,
+            "Name": "Light",
+            "Smoothing": false,
+            "SurfaceIndex": 4,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -8,
+                        0,
+                        8
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        4,
+                        0
+                    ]
+                },
+                {
+                    "Angle": -45,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 195,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "SingleObject"
+        }
+    ],
+    "RenderingMethod": {
+        "PathLength": 3,
+        "RayCastEpsilon": 1e-07,
+        "RussianRoulette": "Reflectance (Max)",
+        "Type": "PathTracing"
+    },
+    "Scene": {
+        "SceneName": "RaytracingCamp4"
+    },
+    "SurfaceModel": [
+        {
+            "InnerExtinction": "resources/spectrum/conductor/Pt extinction coefficient.csv",
+            "InnerRefractiveIndex": "resources/spectrum/conductor/Pt refractive index.csv",
+            "Name": "FloorSurface",
+            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "RoughnessIndex": 5,
+            "Type": "RoughConductorSurface"
+        },
+        {
+            "Name": "RedWallSurface",
+            "ReflectanceIndex": 0,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "InnerExtinction": "resources/spectrum/conductor/Al extinction coefficient.csv",
+            "InnerRefractiveIndex": "resources/spectrum/conductor/Al refractive index.csv",
+            "Name": "FarWallSurface",
+            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "RoughnessIndex": 1,
+            "Type": "RoughConductorSurface"
+        },
+        {
+            "InnerRefractiveIndex": "resources/spectrum/dielectric/SiO2.csv",
+            "Name": "RoughGlassSurface",
+            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "RoughnessIndex": 2,
+            "Type": "RoughDielectricSurface"
+        },
+        {
+            "Name": "DefaultSurface",
+            "ReflectanceIndex": 3,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "InnerRefractiveIndex": "resources/spectrum/dielectric/Quartz.csv",
+            "Name": "RayTracingCampGlass",
+            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "RoughnessIndex": 4,
+            "Type": "RoughDielectricSurface"
+        },
+        {
+            "InnerRefractiveIndex": "resources/spectrum/dielectric/Quartz.csv",
+            "Name": "LabelGlass",
+            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "RoughnessIndex": 7,
+            "Type": "RoughDielectricSurface"
+        },
+        {
+            "InnerExtinction": "resources/spectrum/conductor/Au extinction coefficient.csv",
+            "InnerRefractiveIndex": "resources/spectrum/conductor/Au refractive index.csv",
+            "Name": "DragonSurface",
+            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "RoughnessIndex": 6,
+            "Type": "RoughConductorSurface"
+        }
+    ],
+    "System": {
+        "ImageResolution": [
+            1280,
+            720
+        ],
+        "NumOfThreads": 4,
+        "Power2CycleSaving": true,
+        "RandomSeed": 123456789,
+        "SavingInterval": 3600000,
+        "TerminationCycle": 0
+    },
+    "TextureModel": [
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.7309681849393453,
+                    0.12907606622415504,
+                    0.1070267795834287
+                ]
+            },
+            "Name": "RedTexture",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "ImageFilePath": "resources/image/raytracing_camp4_wall_texture.png",
+            "Name": "FarWallTexture",
+            "Type": "ImageTexture"
+        },
+        {
+            "Name": "RoughGlassTexture",
+            "Type": "ValueTexture",
+            "Value": 0.3
+        },
+        {
+            "Name": "DefaultTexture",
+            "Type": "ValueTexture",
+            "Value": 0.5
+        },
+        {
+            "ImageFilePath": "resources/image/raytracing_camp4_label.png",
+            "Name": "RayTracingCampTexture",
+            "Type": "ImageTexture"
+        },
+        {
+            "ImageFilePath": "resources/image/raytracing_camp4_floor_texture.png",
+            "Name": "FloorTexture",
+            "Type": "ImageTexture"
+        },
+        {
+            "Name": "DragonTexture",
+            "Type": "ValueTexture",
+            "Value": 0.3
+        },
+        {
+            "Name": "LabelTexture",
+            "Type": "ValueTexture",
+            "Value": 0.2
+        }
+    ]
+}

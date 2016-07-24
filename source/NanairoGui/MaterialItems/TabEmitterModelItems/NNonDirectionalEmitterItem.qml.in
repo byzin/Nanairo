@@ -1,0 +1,63 @@
+/*!
+  \file NNonDirectionalEmitterItem.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import ".."
+import "../../nanairo.js" as Nanairo
+
+Rectangle {
+  id: non_directional_emitter_item
+
+  width: @material_setting_view_width@
+  height: @material_setting_view_height@
+
+  NColorSettingBlock {
+    id: color_setting_block
+    x: @block_offset@
+    y: @block_offset@
+    color: non_directional_emitter_item.color
+  }
+
+  NRadiantExitanceSettingBlock {
+    id: radiant_exitance_setting_block
+    x: color_setting_block.x
+    y: (color_setting_block.y + color_setting_block.height) + @block_offset@
+    color: color_setting_block.color
+  }
+
+  function initializeItem(item) {
+    color_setting_block.initializeItem(item);
+    radiant_exitance_setting_block.initializeItem(item);
+  }
+
+  function reflectItem() {
+    color_setting_block.reflectItem();
+    radiant_exitance_setting_block.reflectItem();
+  }
+
+  function setCurrentItem(item, itemChangeMode) {
+    color_setting_block.setCurrentItem(item, itemChangeMode);
+    radiant_exitance_setting_block.setCurrentItem(item, itemChangeMode);
+  }
+
+  function getItemData(item) {
+    var dataList = [];
+    dataList.push(color_setting_block.getItemData(item));
+    dataList.push(radiant_exitance_setting_block.getItemData(item));
+    return Nanairo.mergeDataList(dataList);
+  }
+
+  function makeItem(itemData) {
+    var dataList = [];
+    dataList.push(color_setting_block.makeItem(itemData));
+    dataList.push(radiant_exitance_setting_block.makeItem(itemData));
+    return Nanairo.mergeDataList(dataList);
+  }
+}

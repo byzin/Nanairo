@@ -1,0 +1,41 @@
+/*!
+  \file NToneMappingSettingBlock.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "../SettingBlockItems"
+
+NSettingBlock {
+  id: tone_mapping_setting_block
+
+  labelText: qsTr("ToneMapping")
+  
+  NComboBox {
+    id: tone_mapping_combobox
+
+    y: tone_mapping_setting_block.labelHeight + @item_offset@
+    backgroundColor: tone_mapping_setting_block.color
+
+    model: ["@reinhard@",
+            "@modifiedReinhard@",
+            "@filmic@",
+            "@uncharted2Filmic@"]
+  }
+
+  function getSceneData() {
+    var sceneData = {};
+    sceneData["@toneMapping@"] = tone_mapping_combobox.currentText;
+    return sceneData;
+  }
+
+  function setSceneData(sceneData) {
+    tone_mapping_combobox.currentIndex =
+        tone_mapping_combobox.find(sceneData["@toneMapping@"]);
+  }
+}

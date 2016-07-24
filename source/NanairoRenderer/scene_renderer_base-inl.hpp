@@ -24,16 +24,19 @@
 namespace nanairo {
 
 /*!
-  \details
-  No detailed.
   */
 inline
-void SceneRendererBase::handlePreviewMouseEvent(const int buttons,
-                                                const int delta_x,
-                                                const int delta_y,
-                                                const int delta_wheel) noexcept
+Matrix4x4& SceneRendererBase::cameraMatrix() noexcept
 {
-  camera_event_.addEvent(buttons, delta_x, delta_y, delta_wheel);
+  return camera_matrix_;
+}
+
+/*!
+  */
+inline
+const Matrix4x4& SceneRendererBase::cameraMatrix() const noexcept
+{
+  return camera_matrix_;
 }
 
 /*!
@@ -41,25 +44,28 @@ void SceneRendererBase::handlePreviewMouseEvent(const int buttons,
   No detailed.
   */
 inline
-void SceneRendererBase::handleCameraEvent(quint64* cycle, zisc::Stopwatch* /* stopwatch */) noexcept
+void SceneRendererBase::handlePreviewEvent(const int transformation_event_type,
+                                           const int axis_event_type,
+                                           const int value) noexcept
+{
+  camera_event_.addEvent(transformation_event_type, axis_event_type, value);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+void SceneRendererBase::handleCameraEvent(quint64* cycle,
+                                          zisc::Stopwatch* /* stopwatch */)
+    noexcept
 {
   if (camera_event_.isEventOccured()) {
     handleCameraEvent();
-    *cycle = 0;
 //    stopwatch->stop();
 //    stopwatch->start();
-    camera_event_.clear();
+    *cycle = 0;
   }
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-const QString& SceneRendererBase::ldrImageFormat() const noexcept
-{
-  return ldr_image_format_;
 }
 
 /*!
@@ -97,7 +103,7 @@ void SceneRendererBase::stopRendering() const noexcept
   No detailed.
   */
 inline
-const CameraEvent& SceneRendererBase::cameraEvent() const noexcept
+CameraEvent& SceneRendererBase::cameraEvent() noexcept
 {
   return camera_event_;
 }
@@ -107,19 +113,9 @@ const CameraEvent& SceneRendererBase::cameraEvent() const noexcept
   No detailed.
   */
 inline
-const Matrix4x4& SceneRendererBase::cameraMatrix() const noexcept
+const CameraEvent& SceneRendererBase::cameraEvent() const noexcept
 {
-  return camera_matrix_;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-Matrix4x4& SceneRendererBase::cameraMatrix() noexcept
-{
-  return camera_matrix_;
+  return camera_event_;
 }
 
 /*!
@@ -168,8 +164,7 @@ inline
 void SceneRendererBase::saveLdrImage(const quint64 cycle, 
                                      const QString& output_dir) const noexcept
 {
-  const auto file_name = output_dir + "/" +
-                         QString::number(cycle) + "cycle." + ldrImageFormat();
+  const auto file_name = output_dir + "/" + QString::number(cycle) + "cycle.png";
   ldr_image_.save(file_name);
 }
 

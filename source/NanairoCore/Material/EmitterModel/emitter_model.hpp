@@ -2,7 +2,7 @@
   \file emitter_model.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -18,13 +18,12 @@
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 // Forward declaration
-class QString;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
 class Sampler;
-class SceneSettings;
 template <uint> class ShaderModel;
 class System;
 template <uint> class WavelengthSamples;
@@ -53,9 +52,7 @@ class EmitterModel
 
 
   //! Create a emitter model
-  EmitterModel(const System& system,
-               const SceneSettings& settings, 
-               const QString& prefix) noexcept;
+  EmitterModel(const System& system, const QJsonObject& settings) noexcept;
 
   //! Finalize the emitter model
   virtual ~EmitterModel() noexcept;
@@ -85,9 +82,7 @@ class EmitterModel
 
  private:
   //! Initialize
-  void initialize(const System& system,
-                  const SceneSettings& settings, 
-                  const QString& prefix) noexcept;
+  void initialize(const System& system, const QJsonObject& settings) noexcept;
 
 
   SpectralDistribution power_distribution_;
@@ -104,8 +99,7 @@ EmitterModel::ShaderPointer<kSampleSize> makeNonDirectionalLight(
 
 //! Make a emitter model
 UniquePointer<EmitterModel> makeEmitter(const System& system,
-                                        const SceneSettings& settings,
-                                        const QString& prefix) noexcept;
+                                        const QJsonObject& settings) noexcept;
 
 //! \} Core
 

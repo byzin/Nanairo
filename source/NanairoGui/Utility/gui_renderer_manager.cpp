@@ -2,7 +2,7 @@
   \file gui_renderer_manager.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -13,14 +13,18 @@
 #include <functional>
 #include <utility>
 // Qt
+#include <QFileInfo>
 #include <QDir>
 #include <QImage>
+#include <QJsonObject>
 #include <QMatrix4x4>
 #include <QObject>
+#include <QSizeF>
 #include <QSharedPointer>
 #include <QString>
 #include <QThread>
 #include <QUrl>
+#include <QVariant>
 #include <QtGlobal>
 // Zisc
 #include "zisc/algorithm.hpp"
@@ -30,10 +34,12 @@
 #include "zisc/utility.hpp"
 // Nanairo
 #include "rendered_image_provider.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCommon/keyword.hpp"
+#include "NanairoCore/LinearAlgebra/transformation.hpp"
 #include "NanairoGui/nanairo_gui_config.hpp"
 #include "NanairoRenderer/cpu_scene_renderer.hpp"
 #include "NanairoRenderer/renderer_utility.hpp"
+#include "NanairoRenderer/scene_document.hpp"
 #include "NanairoRenderer/scene_renderer_base.hpp"
 
 namespace nanairo {
@@ -52,9 +58,9 @@ GuiRendererManager::GuiRendererManager() noexcept :
   \details
   No detailed.
   */
-void GuiRendererManager::addCameraMatrix(const QMatrix4x4& matrix) noexcept
+void GuiRendererManager::outputCameraEvent(const QMatrix4x4& matrix) const noexcept
 {
-  outputCameraMatrix(matrix);
+  emit cameraEventHandled(matrix);
 }
 
 /*!
@@ -63,7 +69,7 @@ void GuiRendererManager::addCameraMatrix(const QMatrix4x4& matrix) noexcept
   */
 void GuiRendererManager::finishRendering() noexcept
 {
-  emit updated("0", "00000000", "00 h 00 m 00.000 s");
+  setRenderingInfo(0, 1);
   emit finished();
 }
 
@@ -80,18 +86,6 @@ QString GuiRendererManager::currentWorkingDir() const noexcept
   \details
   No detailed.
   */
-int GuiRendererManager::defaultRandomSeed() const noexcept
-{
-  using zisc::abs;
-  using zisc::cast;
-  constexpr int random_seed = abs(cast<int>(zisc::toHash32(kRandomSeedKey)));
-  return random_seed;
-}
-
-/*!
-  \details
-  No detailed.
-  */
 QString GuiRendererManager::getFileName(const QUrl& file_path) const noexcept
 {
   return file_path.fileName();
@@ -101,30 +95,72 @@ QString GuiRendererManager::getFileName(const QUrl& file_path) const noexcept
   \details
   No detailed.
   */
-void GuiRendererManager::render(const QString& output_dir) noexcept
+int GuiRendererManager::idealThreadCount() const noexcept
 {
-  QSharedPointer<SceneRendererBase> renderer{new CpuSceneRenderer};
-  setRenderer(renderer.data());
-  std::function<void ()> render{[this, renderer, output_dir]()
-  {
-    // Initialize the renderer
-    renderer->initialize(*settings_);
-    // Start rendering
-    emit started();
-    renderer->renderImage(output_dir);
-    // Finish rendering
-    image_provider_->setImage(nullptr);
-  }};
-  rendering_thread_.enqueue(std::move(render));
+  return QThread::idealThreadCount();
 }
 
 /*!
   \details
   No detailed.
   */
-int GuiRendererManager::idealThreadCount() const noexcept
+void GuiRendererManager::invokeRendering(const QString& output_dir) noexcept
 {
-  return QThread::idealThreadCount();
+  // Load a scene data
+  const QString scene_file_path = output_dir + "/" + keyword::sceneBackupFileName;
+  QJsonObject settings;
+  QString message;
+  const bool result = SceneDocument::loadDocument(scene_file_path, settings, message);
+  if (!result) {
+    qFatal("%s", message.toStdString().c_str());
+  }
+
+  // Invoke renderer
+  QSharedPointer<SceneRendererBase> renderer{new CpuSceneRenderer};
+  setRenderer(renderer.data());
+  auto render = [this, renderer, output_dir, settings]()
+  {
+    // Initialize the renderer
+    renderer->initialize(settings);
+    // Start rendering
+    emit started();
+    renderer->renderImage(output_dir);
+    // Finish rendering
+    image_provider_->setImage(nullptr);
+  };
+  rendering_thread_.enqueue<void>(render);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+void GuiRendererManager::invokePreviewing() noexcept
+{
+  // Load a scene data
+  const QString scene_file_path = QString{keyword::previewDir} + "/" +
+                                  keyword::sceneBackupFileName;
+  QJsonObject settings;
+  QString message;
+  const bool result = SceneDocument::loadDocument(scene_file_path, settings, message);
+  if (!result) {
+    qFatal("%s", message.toStdString().c_str());
+  }
+
+  // Invoke renderer
+  QSharedPointer<SceneRendererBase> renderer{new CpuSceneRenderer};
+  setRenderer(renderer.data());
+  auto preview = [this, renderer, settings]()
+  {
+    // Initialize the renderer
+    renderer->initialize(settings);
+    // Start rendering
+    emit started();
+    renderer->previewImage();
+    // Finish rendering
+    image_provider_->setImage(nullptr);
+  };
+  rendering_thread_.enqueue<void>(preview);
 }
 
 /*!
@@ -141,30 +177,53 @@ void GuiRendererManager::makeDir(const QString& dir) const noexcept
   \details
   No detailed.
   */
-void GuiRendererManager::preview() noexcept
-{
-  QSharedPointer<SceneRendererBase> renderer{new CpuSceneRenderer};
-  setRenderer(renderer.data());
-  std::function<void ()> preview_rendering{[this, renderer]()
-  {
-    // Initialize the renderer
-    renderer->initialize(*settings_);
-    // Start rendering
-    emit started();
-    renderer->previewImage();
-    // Finish rendering
-    image_provider_->setImage(nullptr);
-  }};
-  rendering_thread_.enqueue(std::move(preview_rendering));
-}
-
-/*!
-  \details
-  No detailed.
-  */
 int GuiRendererManager::random() const noexcept
 {
   return qrand();
+}
+
+/*!
+  */
+QVariantMap GuiRendererManager::loadSceneData(const QUrl& file_url) const noexcept
+{
+  QVariantMap scene_data;
+  QString message;
+  const bool result = SceneDocument::loadDocument(file_url, scene_data, message);
+  if (!result) {
+    qFatal("%s", message.toStdString().c_str());
+  }
+  return scene_data;
+}
+
+/*!
+  */
+void GuiRendererManager::saveSceneData(const QUrl& file_url,
+                                       const QVariantMap& scene_data) const noexcept
+{
+  QString message;
+  const bool result = SceneDocument::saveDocument(file_url, scene_data, message);
+  if (!result) {
+    qFatal("%s", message.toStdString().c_str());
+  }
+}
+
+/*!
+  */
+QUrl GuiRendererManager::toAbsoluteFileUrl( const QString& relative_path) const noexcept
+{
+  QDir working_dir;
+  const auto absolute_path = working_dir.absolutePath() + "/" +
+                             QDir::cleanPath(relative_path);
+  return QUrl::fromLocalFile(absolute_path);
+}
+
+/*!
+  */
+QString GuiRendererManager::toRelativeFilePath(
+    const QUrl& absolute_path) const noexcept
+{
+  const QDir working_dir;
+  return QDir::cleanPath(working_dir.relativeFilePath(absolute_path.toLocalFile()));
 }
 
 /*!
@@ -190,12 +249,12 @@ void GuiRendererManager::setRenderer(const SceneRendererBase* renderer) noexcept
           this, SLOT(finishRendering()));
   connect(renderer, SIGNAL(outputMessage(const QString&)),
           this, SLOT(setMessage(const QString&)));
-  connect(renderer, SIGNAL(outputMatrix(const QMatrix4x4&)),
-          this, SLOT(addCameraMatrix(const QMatrix4x4&)));
+  connect(renderer, &SceneRendererBase::cameraEventHandled,
+          this, &GuiRendererManager::outputCameraEvent);
   connect(this, SIGNAL(stopRendering()),
           renderer, SLOT(stopRendering()));
-  connect(this, SIGNAL(previewMouseEvent(int, int, int, int)),
-          renderer, SLOT(handlePreviewMouseEvent(int, int, int, int)));
+  connect(this, SIGNAL(previewEvent(int, int, int)),
+          renderer, SLOT(handlePreviewEvent(int, int, int)));
           
   image_provider_->setImage(&renderer->renderedImage());
 }
@@ -204,7 +263,8 @@ void GuiRendererManager::setRenderer(const SceneRendererBase* renderer) noexcept
   \details
   No detailed.
   */
-void GuiRendererManager::setRenderingInfo(const quint64 cycle, const qint64 time) noexcept
+void GuiRendererManager::setRenderingInfo(const quint64 cycle,
+                                          const qint64 time) noexcept
 {
   using zisc::cast;
   constexpr quint64 k = cast<quint64>(zisc::Stopwatch::Clock::period::den);
@@ -214,15 +274,6 @@ void GuiRendererManager::setRenderingInfo(const quint64 cycle, const qint64 time
   const auto time_string = getTimeString(zisc::Stopwatch::Clock::duration{time});
 
   emit updated(fps_string, cycle_string, time_string);
-}
-
-/*!
-  \details
-  No detailed.
-  */
-void GuiRendererManager::setSceneSettings(const SceneSettings* settings) noexcept
-{
-  settings_ = settings;
 }
 
 } // namespace nanairo

@@ -1,0 +1,67 @@
+/*!
+  \file NRadiantExitanceSettingBlock.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "../../SettingBlockItems"
+
+NSettingBlock {
+  id: radiant_exitance_setting_block
+
+  property var currentItem: null
+  property bool isItemChangeMode: false
+  
+  labelText: qsTr("RadiantExitance")
+
+  NSpinBox {
+    id: radiant_exitance_spinbox 
+
+    y: radiant_exitance_setting_block.labelHeight + @item_offset@
+
+    maximumValue: @integer32_max@
+    minimumValue: 0.0000001
+
+    onEditingFinished: {
+      setCurrentItemValue("@radiantExitance@", value);
+    }
+  }
+
+  function initializeItem(item) {
+    item["@radiantExitance@"] = 128.0;
+  }
+
+  function reflectItem() {
+    var item = currentItem;
+    // Radiant exitance
+    radiant_exitance_spinbox.value = item["@radiantExitance@"];
+  }
+
+  function setCurrentItem(item, itemChangeMode) {
+    currentItem = item;
+    isItemChangeMode = itemChangeMode;
+  }
+
+  function setCurrentItemValue(key, value) {
+    if (currentItem != null) {
+      currentItem[key] = value;
+    }
+  }
+
+  function getItemData(item) {
+    var itemData = {};
+    itemData["@radiantExitance@"] = item["@radiantExitance@"];
+    return itemData;
+  }
+
+  function makeItem(itemData) {
+    var item = {};
+    item["@radiantExitance@"] = itemData["@radiantExitance@"];
+    return item;
+  }
+}

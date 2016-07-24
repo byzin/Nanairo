@@ -2,7 +2,7 @@
   \file bvh.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -21,6 +21,7 @@
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 // Forward declaration
+class QJsonObject;
 class QString;
 
 namespace nanairo {
@@ -30,7 +31,6 @@ class IntersectionInfo;
 class Ray;
 class Object;
 class System;
-class SceneSettings;
 
 //! \addtogroup Core
 //! \{
@@ -43,7 +43,7 @@ class Bvh
 {
  public:
   //! Initialize BVH
-  Bvh(const SceneSettings& settings, const QString& prefix) noexcept;
+  Bvh(const QJsonObject& settings) noexcept;
 
   //! Finalize BVH
   virtual ~Bvh() noexcept;
@@ -124,7 +124,7 @@ class Bvh
 };
 
 //! Make BVH
-UniquePointer<Bvh> makeBvh(const SceneSettings& settings) noexcept;
+UniquePointer<Bvh> makeBvh(const QJsonObject& settings) noexcept;
 
 //! \} Core
 

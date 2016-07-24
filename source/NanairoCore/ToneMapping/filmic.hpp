@@ -2,7 +2,7 @@
   \file filmic.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -19,13 +19,13 @@
 #include "NanairoCore/Color/yxy_color.hpp"
 
 // Forward declaration
+class QJsonObject;
 class QImage;
 
 namespace nanairo {
 
 // Forward declaration
 class HdrImage;
-class SceneSettings;
 class System;
 
 //! \addtogroup Core
@@ -39,7 +39,7 @@ class Filmic : public ToneMappingMethod
 {
  public:
   //! Initialize reinhard method
-  Filmic(const System& system, const SceneSettings& settings) noexcept;
+  Filmic(const System& system, const QJsonObject& settings) noexcept;
 
 
   //! Apply tone mapping
@@ -49,7 +49,7 @@ class Filmic : public ToneMappingMethod
 
  private:
   //! Initialize
-  void initialize(const System& system, const SceneSettings& settings) noexcept;
+  void initialize(const System& system, const QJsonObject& settings) noexcept;
 
   //! Apply the filmic tonemap
   Float filmicToneMap(Float x) const noexcept;

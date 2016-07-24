@@ -2,7 +2,7 @@
   \file tone_mapping_method.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -11,6 +11,7 @@
 // Standard C++ library
 #include <functional>
 // Qt
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/algorithm.hpp"
@@ -30,7 +31,7 @@
 #include "NanairoCore/Color/yxy_color.hpp"
 #include "NanairoCore/LinearAlgebra/transformation.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -39,7 +40,7 @@ namespace nanairo {
   No detailed.
   */
 ToneMappingMethod::ToneMappingMethod(const System& system,
-                                     const SceneSettings& settings) noexcept
+                                     const QJsonObject& settings) noexcept
 {
   initialize(system, settings);
 }
@@ -78,8 +79,7 @@ void ToneMappingMethod::setPixelLuminance(System& system,
 {
   using zisc::cast;
 
-  std::function<void (const uint)> set_pixel_luminance{
-  [&hdr_image, &pixel_luminance](const uint y)
+  auto set_pixel_luminance = [&hdr_image, &pixel_luminance](const uint y)
   {
     uint index = cast<uint>(y) * hdr_image.widthResolution();
     for (uint x = 0; x < hdr_image.widthResolution(); ++x) {
@@ -88,12 +88,12 @@ void ToneMappingMethod::setPixelLuminance(System& system,
           : hdr_image[index].toYxy();
       ++index;
     }
-  }};
+  };
 
   auto& thread_pool = system.threadPool();
   constexpr uint start = 0;
   const auto height = hdr_image.heightResolution();
-  auto result = thread_pool.loop(std::move(set_pixel_luminance), start, height);
+  auto result = thread_pool.enqueueLoop(set_pixel_luminance, start, height);
   result.get();
 }
 
@@ -102,7 +102,7 @@ void ToneMappingMethod::setPixelLuminance(System& system,
   No detailed.
   */
 void ToneMappingMethod::initialize(const System& system,
-                                   const SceneSettings& /* settings */) noexcept
+                                   const QJsonObject& /* settings */) noexcept
 {
   inverse_gamma_ = 1.0 / system.gamma();
   const auto color_space = system.colorSpace();
@@ -115,31 +115,32 @@ void ToneMappingMethod::initialize(const System& system,
   No detailed.
   */
 UniquePointer<ToneMappingMethod> makeToneMappingMethod(const System& system,
-                                                       const SceneSettings& settings) noexcept
+                                                       const QJsonObject& settings) noexcept
 {
   using zisc::toHash32;
 
   ToneMappingMethod* method = nullptr;
 
-  const QString prefix{keyword::color};
-  auto key = prefix + "/" + keyword::toneMapping;
-  const auto type = settings.stringValue(key);
+  const auto type = stringValue(settings, keyword::toneMapping);
   switch (keyword::toHash32(type)) {
-   case toHash32(keyword::reinhard):
-    method = new Reinhard{system, settings};
-    break;
-   case toHash32(keyword::modifiedReinhard):
-    method = new ModifiedReinhard{system, settings};
-    break;
-   case toHash32(keyword::filmic):
-    method = new Filmic{system, settings};
-    break;
-   case toHash32(keyword::uncharted2Filmic):
-    method = new Uncharted2Filmic{system, settings};
-    break;
-   default:
-    zisc::raiseError("ToneMappingError: Unsupprted type is specified.");
-    break;
+    case toHash32(keyword::reinhard): {
+      method = new Reinhard{system, settings};
+      break;
+    }
+    case toHash32(keyword::modifiedReinhard): {
+      method = new ModifiedReinhard{system, settings};
+      break;
+    }
+    case toHash32(keyword::filmic): {
+      method = new Filmic{system, settings};
+      break;
+    }
+    case toHash32(keyword::uncharted2Filmic): {
+      method = new Uncharted2Filmic{system, settings};
+      break;
+    }
+    default:
+      zisc::raiseError("ToneMappingError: Unsupprted type is specified.");
   }
 
   return UniquePointer<ToneMappingMethod>{method};

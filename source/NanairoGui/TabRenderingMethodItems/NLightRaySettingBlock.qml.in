@@ -1,0 +1,54 @@
+/*!
+  \file NLightRaySettingBlock.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "../SettingBlockItems"
+
+NSettingBlock {
+  id: light_ray_setting_block
+
+  labelText: qsTr("LightRays")
+
+  NIntSpinBox {
+    id: light_ray_spinbox 
+
+    y: light_ray_setting_block.labelHeight + @item_offset@
+    enabled: !resolution_light_ray_checkbox.checked
+
+    maximumValue: @integer32_max@
+    minimumValue: 1024
+  }
+
+  NCheckBox {
+    id: resolution_light_ray_checkbox
+
+    y: (light_ray_spinbox.y + light_ray_spinbox.height) + @item_offset@
+    backgroundColor: light_ray_setting_block.color
+
+    text: qsTr("Same as resolution")
+  }
+
+  function initialize() {
+    light_ray_spinbox.value = 100000;
+    resolution_light_ray_checkbox.checked = true;
+  }
+
+  function getSceneData() {
+    var sceneData = {};
+    sceneData["@numOfLightRays@"] = light_ray_spinbox.value;
+    sceneData["@isSameAsImageResolution@"] = resolution_light_ray_checkbox.checked
+    return sceneData;
+  }
+
+  function setSceneData(sceneData) {
+    light_ray_spinbox.value = sceneData["@numOfLightRays@"];
+    resolution_light_ray_checkbox.checked = sceneData["@isSameAsImageResolution@"];
+  }
+}

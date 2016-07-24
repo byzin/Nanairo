@@ -2,7 +2,7 @@
   \file scene.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -13,6 +13,7 @@
 #include <future>
 #include <utility>
 // Qt
+#include <QJsonObject>
 #include <QString>
 #include <QLocale>
 // Zisc
@@ -25,8 +26,8 @@
 #include "CameraModel/camera_model.hpp"
 #include "CameraModel/film.hpp"
 #include "LinearAlgebra/transformation.hpp"
+#include "Utility/scene_value.hpp"
 #include "NanairoCommon/keyword.hpp"
-#include "Utility/scene_settings.hpp"
 
 namespace nanairo {
 
@@ -35,7 +36,7 @@ namespace nanairo {
   No detailed.
   */
 Scene::Scene(System& system,
-             const SceneSettings& settings,
+             const QJsonObject& settings,
              const std::function<void (const QString&)>& message_sender) noexcept
 {
   initialize(system, settings, message_sender);
@@ -46,24 +47,25 @@ Scene::Scene(System& system,
   No detailed.
   */
 void Scene::initialize(System& system, 
-                       const SceneSettings& settings,
+                       const QJsonObject& settings,
                        const std::function<void (const QString&)>& message_sender) noexcept
 {
   using zisc::cast;
 
-  auto& thread_pool = system.threadPool();
-
   // Create a camera
-  std::function<void ()> initialize_camera{
-  [this, &system, &settings, message_sender]()
+  const auto object_settings_list = arrayValue(settings, keyword::object);
+  const auto camera_settings = objectValue(object_settings_list[0]);
+  auto make_camera = [this, &system, &camera_settings, message_sender]()
   {
     // Film
-    film_ = new Film{system, settings};
+    film_ = new Film{system, camera_settings};
     // Camera
-    const auto object_id = QString{keyword::object} + "/0";
-    camera_ = makeCameraModel(settings, object_id);
+    camera_ = makeCameraModel(camera_settings);
     camera_->setFilm(film_.get());
-    const auto transformation = makeTransformationMatrix(settings, object_id);
+    // Transformation
+    const auto transformation_settings = arrayValue(camera_settings, 
+                                                    keyword::transformation);
+    const auto transformation = makeTransformationMatrix(transformation_settings);
     camera_->transform(transformation);
     
     const auto byte = zisc::toMegaByte(film().spectraBuffer().bufferMemorySize());
@@ -71,12 +73,14 @@ void Scene::initialize(System& system,
     const auto message = 
         QStringLiteral("    Spectra image buffer size: %1 MB.").arg(byte_string);
     message_sender(message);
-  }};
-  auto camera_result = thread_pool.enqueue(std::move(initialize_camera));
+  };
+  auto& thread_pool = system.threadPool();
+  auto camera_result = thread_pool.enqueue<void>(make_camera);
 
   // Create a world
   world_ = new World{system, settings, message_sender};
   
+  // Wait for the initialization completion
   camera_result.get();
 }
 

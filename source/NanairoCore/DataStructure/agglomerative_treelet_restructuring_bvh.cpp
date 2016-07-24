@@ -2,7 +2,7 @@
   \file agglomerative_treelet_restructuring_bvh.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -17,6 +17,7 @@
 #include <utility>
 #include <vector>
 // Qt
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/error.hpp"
@@ -29,7 +30,7 @@
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Data/object.hpp"
 #include "NanairoCore/Geometry/geometry.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -38,11 +39,10 @@ namespace nanairo {
   No detailed.
   */
 AgglomerativeTreeletRestructuringBvh::AgglomerativeTreeletRestructuringBvh(
-    const SceneSettings& settings,
-    const QString& prefix) noexcept :
-        Bvh(settings, prefix)
+    const QJsonObject& settings) noexcept :
+        Bvh(settings)
 {
-  initialize(settings, prefix);
+  initialize(settings);
 }
 
 /*!
@@ -233,18 +233,10 @@ Float AgglomerativeTreeletRestructuringBvh::getNodeDistance(
   No detailed.
   */
 void AgglomerativeTreeletRestructuringBvh::initialize(
-    const SceneSettings& settings,
-    const QString& prefix) noexcept
+    const QJsonObject& settings) noexcept
 {
-  using zisc::cast;
-
-  auto p = prefix + "/" + keyword::agglomerativeTreeletRestructuringBvh;
-
-  auto key = p + "/" + keyword::treeletSize;
-  treelet_size_ = cast<uint>(settings.intValue(key));
-  key = p + "/" + keyword::optimizationLoopCount;
-  optimization_loop_count_ = cast<uint>(settings.intValue(key));
-
+  treelet_size_ = intValue<uint>(settings, keyword::treeletSize);
+  optimization_loop_count_ = intValue<uint>(settings, keyword::optimizationLoopCount);
   ZISC_ASSERT(4 <= treelet_size_, "Invalid treelet size is specified.");
 }
 
@@ -304,7 +296,7 @@ uint AgglomerativeTreeletRestructuringBvh::restructureTreelet(
     return num_of_subtree_nodes;
 
   if (multithreading) {
-    std::function<uint ()> restructure_left_treelet{
+    auto restructure_left_treelet =
     [this, &system, &root, &inner_index_list, &leaf_index_list, 
      &distance_matrix, &tree]()
     {
@@ -313,8 +305,8 @@ uint AgglomerativeTreeletRestructuringBvh::restructureTreelet(
       auto matrix = distance_matrix;
       return restructureTreelet<false>(system, root.leftChildIndex(), inner_list, 
                                        leaf_list, matrix, tree);
-    }};
-    std::function<uint ()> restructure_right_treelet{
+    };
+    auto restructure_right_treelet =
     [this, &system, &root, &inner_index_list, &leaf_index_list, 
      &distance_matrix, &tree]()
     {
@@ -323,10 +315,10 @@ uint AgglomerativeTreeletRestructuringBvh::restructureTreelet(
       auto& matrix = distance_matrix;
       return restructureTreelet<false>(system, root.rightChildIndex(), inner_list, 
                                        leaf_list, matrix, tree);
-    }};
+    };
     auto& thread_pool = system.threadPool();
-    auto left_result = thread_pool.enqueue(std::move(restructure_left_treelet));
-    auto right_result = thread_pool.enqueue(std::move(restructure_right_treelet));
+    auto left_result = thread_pool.enqueue<uint>(restructure_left_treelet);
+    auto right_result = thread_pool.enqueue<uint>(restructure_right_treelet);
     num_of_subtree_nodes += left_result.get();
     num_of_subtree_nodes += right_result.get();
   }

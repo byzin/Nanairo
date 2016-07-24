@@ -2,7 +2,7 @@
   \file agglomerative_treelet_restructuring_bvh.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -20,12 +20,11 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 
 // Forward declaration
-class QString;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
-class SceneSettings;
 class System;
 
 //! \addtogroup Core
@@ -41,8 +40,7 @@ class AgglomerativeTreeletRestructuringBvh : public Bvh
 {
  public:
   //! Create a treelet restructuring BVH
-  AgglomerativeTreeletRestructuringBvh(const SceneSettings& settings, 
-                                       const QString& prefix) noexcept;
+  AgglomerativeTreeletRestructuringBvh(const QJsonObject& settings) noexcept;
 
  private:
   //! Build a parent-child relationship
@@ -78,7 +76,7 @@ class AgglomerativeTreeletRestructuringBvh : public Bvh
   Float getNodeDistance(const BvhNode& node1, const BvhNode& node2) const noexcept;
 
   //! Initialize
-  void initialize(const SceneSettings& settings, const QString& prefix) noexcept;
+  void initialize(const QJsonObject& settings) noexcept;
 
   //! Initialize the distance matrix, calculate the distances
   void initializeDistanceMatrix(const std::vector<uint>& leaf_index_list,

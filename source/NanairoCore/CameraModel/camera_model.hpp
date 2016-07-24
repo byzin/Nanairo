@@ -2,7 +2,7 @@
   \file camera_model.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -18,8 +18,8 @@
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
-// Forward decralation
-class QString;
+// Forward declaration
+class QJsonObject;
 
 namespace nanairo {
 
@@ -27,7 +27,6 @@ namespace nanairo {
 class Film;
 template <uint> class SampledSpectra;
 class Sampler;
-class SceneSettings;
 template <uint> class ShaderModel;
 template <uint> class WavelengthSamples;
 
@@ -56,7 +55,7 @@ class CameraModel
 
 
   //! Initialize the camera
-  CameraModel(const SceneSettings& settings, const QString& prefix) noexcept;
+  CameraModel(const QJsonObject& settings) noexcept;
 
   //! Finalize the camera
   virtual ~CameraModel() noexcept;
@@ -112,13 +111,13 @@ class CameraModel
   virtual const Point3& position() const noexcept = 0;
 
   //! Rotate the camera
-  Matrix4x4 distance(const Vector2& value) noexcept;
-
-  //! Rotate the camera
   Matrix4x4 rotate(const Vector2& value) noexcept;
 
-  //! Rotate the camera
-  Matrix4x4 translate(const Vector2& value) noexcept;
+  //! Translate the camera horizontally
+  Matrix4x4 translateHorizontally(const Vector2& value) noexcept;
+
+  //! Translate the camera vertically
+  Matrix4x4 translateVertically(const Vector2& value) noexcept;
 
   //! Return the sampled point
   const Point3& sampledLensPoint() const noexcept;
@@ -156,7 +155,7 @@ class CameraModel
 
  private:
   //! Initialize
-  void initialize(const SceneSettings& settings, const QString& prefix) noexcept;
+  void initialize(const QJsonObject& settings) noexcept;
 
   //! Initialize camera film
   virtual void initializeFilm() noexcept = 0;
@@ -170,8 +169,7 @@ class CameraModel
 };
 
 //! Make a camera
-UniquePointer<CameraModel> makeCameraModel(const SceneSettings& settings, 
-                                           const QString& prefix) noexcept;
+UniquePointer<CameraModel> makeCameraModel(const QJsonObject& settings) noexcept;
 
 //! \} Core
 

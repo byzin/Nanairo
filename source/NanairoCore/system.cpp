@@ -2,7 +2,7 @@
   \file system.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -10,6 +10,8 @@
 #include "system.hpp"
 // Standard C++ library
 #include <vector>
+// Qt
+#include <QJsonObject>
 // Zisc
 #include "zisc/aligned_memory_pool.hpp"
 #include "zisc/thread_pool.hpp"
@@ -20,7 +22,7 @@
 #include "NanairoCommon/keyword.hpp"
 #include "Sampling/sampler.hpp"
 #include "Utility/unique_pointer.hpp"
-#include "Utility/scene_settings.hpp"
+#include "Utility/scene_value.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 
 namespace nanairo {
@@ -29,7 +31,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-System::System(const SceneSettings& settings) noexcept
+System::System(const QJsonObject& settings) noexcept
 {
   initialize(settings);
 }
@@ -46,46 +48,48 @@ System::~System() noexcept
   \details
   No detailed.
   */
-void System::initialize(const SceneSettings& settings) noexcept
+void System::initialize(const QJsonObject& settings) noexcept
 {
   using zisc::cast;
 
-  // System
-  QString prefix{keyword::system};
   // Thread pool
-  auto key = prefix + "/" + keyword::numOfThreads;
-  const auto num_of_threads = cast<uint>(settings.intValue(key));
-  thread_pool_ = new zisc::ThreadPool{num_of_threads};
-
-  // Random generator
-  key = prefix + "/" + keyword::randomSeed;
-  const auto random_seed = cast<uint32>(settings.intValue(key));
-  sampler_list_.reserve(thread_pool_->numOfThreads() + 1);
-  for (uint i = 0; i < thread_pool_->numOfThreads() + 1; ++i)
-    sampler_list_.emplace_back(random_seed + cast<uint32>(i));
-
-  // Memory pool
-  memory_pool_list_.resize(thread_pool_->numOfThreads() + 1);
-
-  // Image resolution
-  key = prefix + "/" + keyword::imageWidthResolution;
-  image_width_resolution_ = cast<uint>(settings.intValue(key));
-  key = prefix + "/" + keyword::imageHeightResolution;
-  image_height_resolution_ = cast<uint>(settings.intValue(key));
+  auto initialize_system = [this](const QJsonObject& node)
+  {
+    // Threading
+    const auto num_of_threads = intValue<uint>(node, keyword::numOfThreads);
+    thread_pool_ = new zisc::ThreadPool{num_of_threads};
+  
+    // Random number generator
+    const auto random_seed = intValue<uint32>(node, keyword::randomSeed);
+    sampler_list_.reserve(num_of_threads + 1);
+    for (uint i = 0; i < (num_of_threads + 1); ++i)
+      sampler_list_.emplace_back(random_seed + cast<uint32>(i));
+  
+    // Memory pool
+    memory_pool_list_.resize(num_of_threads + 1);
+  
+    // Image resolution
+    const auto image_resolution = arrayValue(node, keyword::imageResolution);
+    image_width_resolution_ = intValue<uint>(image_resolution[0]);
+    image_height_resolution_ = intValue<uint>(image_resolution[1]);
+  };
+  const auto system_settings = objectValue(settings, keyword::system);
+  initialize_system(system_settings);
 
   // Color
-  prefix = keyword::color;
-  // RGB rendering
-  key = prefix + "/" + keyword::rgbRendering;
-  is_rgb_rendering_mode_ = settings.booleanValue(key);
-  // Color space
-  key = prefix + "/" + keyword::colorSpace;
-  color_space_ = keyword::toHash32(settings.stringValue(key));
-  key = prefix + "/" + keyword::gamma;
-  gamma_ = cast<Float>(settings.realValue(key));
-  // Color matching function
-  rgb_color_matching_function_ = new RgbColorMatchingFunction{};
-  xyz_color_matching_function_ = new XyzColorMatchingFunction{settings};
+  auto initialize_color_system = [this](const QJsonObject& node)
+  {
+    // RGB rendering
+    is_rgb_rendering_mode_ = (stringValue(node, keyword::colorMode) == keyword::rgb);
+    // Color space
+    color_space_ = keyword::toHash32(stringValue(node, keyword::colorSpace));
+    gamma_ = floatValue<Float>(node, keyword::gamma);
+    // Color matching function
+    rgb_color_matching_function_ = new RgbColorMatchingFunction{};
+    xyz_color_matching_function_ = new XyzColorMatchingFunction{node};
+  };
+  const auto color_settings = objectValue(settings, keyword::color);
+  initialize_color_system(color_settings);
 }
 
 } // namespace nanairo

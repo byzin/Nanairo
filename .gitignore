@@ -104,40 +104,50 @@
 !/source/NanairoGui/*.hpp
 !/source/NanairoGui/*.hpp.in
 !/source/NanairoGui/*.cpp
-!/source/NanairoGui/*.qml
+!/source/NanairoGui/*.qml.in
 !/source/NanairoGui/*.js
-!/source/NanairoGui/*.js.in
 !/source/NanairoGui/*.cmake
-!/source/NanairoGui/BvhItems/
-!/source/NanairoGui/BvhItems/*.qml
-!/source/NanairoGui/CameraItems/
-!/source/NanairoGui/CameraItems/*.qml
-!/source/NanairoGui/EmitterItems/
-!/source/NanairoGui/EmitterItems/*.qml
-!/source/NanairoGui/RenderingMethodItems/
-!/source/NanairoGui/RenderingMethodItems/*.qml
-!/source/NanairoGui/SurfaceItems/
-!/source/NanairoGui/SurfaceItems/*.qml
-!/source/NanairoGui/TextureItems/
-!/source/NanairoGui/TextureItems/*.qml
-!/source/NanairoGui/TransformationItems/
-!/source/NanairoGui/TransformationItems/*.qml
+!/source/NanairoGui/MaterialItems/
+!/source/NanairoGui/MaterialItems/*.qml.in
+!/source/NanairoGui/MaterialItems/TabSurfaceModelItems/
+!/source/NanairoGui/MaterialItems/TabSurfaceModelItems/*.qml.in
+!/source/NanairoGui/MaterialItems/TabEmitterModelItems/
+!/source/NanairoGui/MaterialItems/TabEmitterModelItems/*.qml.in
+!/source/NanairoGui/MaterialItems/TabTextureModelItems/
+!/source/NanairoGui/MaterialItems/TabTextureModelItems/*.qml.in
+!/source/NanairoGui/RenderedImageWindowItems/
+!/source/NanairoGui/RenderedImageWindowItems/*.qml.in
+!/source/NanairoGui/SettingBlockItems/
+!/source/NanairoGui/SettingBlockItems/*.qml.in
+!/source/NanairoGui/TabSceneItems/
+!/source/NanairoGui/TabSceneItems/*.qml.in
+!/source/NanairoGui/TabSystemItems/
+!/source/NanairoGui/TabSystemItems/*.qml.in
+!/source/NanairoGui/TabColorItems/
+!/source/NanairoGui/TabColorItems/*.qml.in
+!/source/NanairoGui/TabRenderingMethodItems/
+!/source/NanairoGui/TabRenderingMethodItems/*.qml.in
+!/source/NanairoGui/TabBvhItems/
+!/source/NanairoGui/TabBvhItems/*.qml.in
+!/source/NanairoGui/TabObjectItems/
+!/source/NanairoGui/TabObjectItems/*.qml.in
+!/source/NanairoGui/TabObjectItems/ObjectTreeItems/
+!/source/NanairoGui/TabObjectItems/ObjectTreeItems/*.qml.in
+!/source/NanairoGui/TabObjectItems/TabCameraItems/
+!/source/NanairoGui/TabObjectItems/TabCameraItems/*.qml.in
+!/source/NanairoGui/TabObjectItems/TabObjectItems/
+!/source/NanairoGui/TabObjectItems/TabObjectItems/*.qml.in
+!/source/NanairoGui/TabObjectItems/TransformationItems/
+!/source/NanairoGui/TabObjectItems/TransformationItems/*.qml.in
+!/source/NanairoGui/Styles/
+!/source/NanairoGui/Styles/*.qml.in
 !/source/NanairoGui/Utility/
 !/source/NanairoGui/Utility/*.hpp
 !/source/NanairoGui/Utility/*.cpp
 !/source/NanairoGui/image/
 !/source/NanairoGui/image/*.png
 ## Zisc
-!/source/zisc/
-!/source/zisc/config.cmake
-!/source/zisc/document.dox
-!/source/zisc/zisc/
-!/source/zisc/zisc/*.hpp
-!/source/zisc/zisc/*.hpp.in
-!/source/zisc/zisc/*.cpp
-!/source/zisc/zisc/packrat_parser/
-!/source/zisc/zisc/packrat_parser/*.hpp
-!/source/zisc/zisc/packrat_parser/*.cpp
+!/source/zisc
 ## Test
 !/test/
 !/test/gtest/
@@ -175,11 +185,15 @@
 !resources/image/
 !resources/image/*.png
 
-# Tools
-!tools/
-!tools/nanairo_script_linux.sh
-!tools/windows/
-!tools/windows/Nanairo.bat
+# Packaging
+!packaging/
+!packaging/*.sh.in
+!packaging/*.cmd.in
+!packaging/*.cmake
+!packaging/*.cmake.in
+!packaging/icon.icns
+!packaging/icon.pxm
+!packaging/mac_plist.in
 
 # Build directories
 !/build/

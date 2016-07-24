@@ -2,7 +2,7 @@
   \file light_tracing.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -17,6 +17,9 @@
 #include "rendering_method.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 
+// Forward declaration
+class QJsonObject;
+
 namespace nanairo {
 
 // Forward declaration
@@ -25,7 +28,6 @@ class IntersectionInfo;
 class Material;
 class Ray;
 class Sampler;
-class SceneSettings;
 class Scene;
 template <uint> class ShaderModel;
 class System;
@@ -50,7 +52,7 @@ class LightTracing : public RenderingMethod<kSampleSize>
 
 
   //! Initialize light tracing method
-  LightTracing(const System& system, const SceneSettings& settings) noexcept;
+  LightTracing(const System& system, const QJsonObject& settings) noexcept;
 
 
   //! Render scene using light tracing method
@@ -94,7 +96,7 @@ class LightTracing : public RenderingMethod<kSampleSize>
   bool hasLightContribution(const uint index) const noexcept;
 
   //! Initialize
-  void initialize(const System& system, const SceneSettings& settings) noexcept;
+  void initialize(const System& system, const QJsonObject& settings) noexcept;
 
   //! Return the num of light rays per thread
   uint numOfThreadRays() const noexcept;

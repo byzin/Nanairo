@@ -2,7 +2,7 @@
   \file xyz_color_matching_function.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -17,10 +17,10 @@
 #include "xyz_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 
-namespace nanairo {
-
 // Forward declaration
-class SceneSettings;
+class QJsonObject;
+
+namespace nanairo {
 
 //! \addtogroup Core
 //! \{
@@ -33,7 +33,7 @@ class XyzColorMatchingFunction
 {
  public:
   //! Create a xyz color matching function
-  XyzColorMatchingFunction(const SceneSettings& settings) noexcept;
+  XyzColorMatchingFunction(const QJsonObject& settings) noexcept;
 
 
   //! In the emissive case, convert spectrums to XYZ using color matching function.
@@ -53,13 +53,13 @@ class XyzColorMatchingFunction
 
  private:
   //! Initialize
-  void initialize(const SceneSettings& settings) noexcept;
+  void initialize(const QJsonObject& settings) noexcept;
 
   //! Set standard illuminant
-  void setStandardIlluminant(const SceneSettings& settings) noexcept;
+  void setStandardIlluminant(const QJsonObject& settings) noexcept;
 
   //! Set standard obverser
-  void setStandardObserver(const SceneSettings& settings) noexcept;
+  void setStandardObserver(const QJsonObject& settings) noexcept;
 
 
   SpectralDistribution standard_illuminant_;

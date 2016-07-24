@@ -1,0 +1,107 @@
+/*!
+  \file NEmitterModelSettingView.qml
+  \author Sho Ikeda
+  
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import QtQuick.Controls.Styles @qt_quick_controls_style_version@
+import "TabEmitterModelItems"
+
+Rectangle {
+  id: emitter_model_setting_view
+
+  property int currentTypeIndex: 0
+  property var currentItem: null
+  property bool isItemChangeMode: false
+
+  width: @material_setting_view_width@
+  height: @material_setting_view_height@
+
+  TabView {
+    id: emitter_model_tab_view
+
+    width: emitter_model_setting_view.width
+    height: emitter_model_setting_view.height - y
+
+    style: tab_view_style
+
+    Tab {
+      title: "@nonDirectionalEmitter@"
+      active: true
+
+      NNonDirectionalEmitterItem {
+        color: emitter_model_setting_view.color
+      }
+    }
+  }
+
+  onCurrentTypeIndexChanged: {
+    emitter_model_tab_view.currentIndex = currentTypeIndex;
+    if ((currentItem != null) && (!isItemChangeMode)) {
+      initializeItem(currentItem, currentTypeIndex);
+      reflectItem(currentTypeIndex);
+    }
+  }
+
+  Component {
+    id: tab_view_style
+
+    TabViewStyle {
+      tab: Rectangle {
+        implicitWidth: 0
+        implicitHeight: 0
+      }
+    }
+  }
+
+  function getEmitterTabIndex(type) {
+    var tabIndex = -1;
+    for (var i = 0; i < emitter_model_tab_view.count; ++i) {
+      var tab = emitter_model_tab_view.getTab(i);
+      if (type == tab.title) {
+        tabIndex = i;
+        break;
+      }
+    }
+    console.assert(tabIndex != -1, "Unsupported emitter type is specified: ", type);
+    return tabIndex;
+  }
+ 
+  function getEmitterTab(index) {
+    return emitter_model_tab_view.getTab(index).item;
+  }
+
+  function initializeItem(item, tabIndex) {
+    var emitterTab = getEmitterTab(tabIndex);
+    emitterTab.initializeItem(item);
+  }
+
+  function reflectItem(tabIndex) {
+    var emitterTab = getEmitterTab(tabIndex);
+    emitterTab.reflectItem();
+  }
+
+  function setCurrentItem(item, itemChangeMode) {
+    currentItem = item;
+    isItemChangeMode = itemChangeMode;
+    for (var i = 0; i < emitter_model_tab_view.count; ++i) {
+      var emitterTab = getEmitterTab(i);
+      emitterTab.setCurrentItem(item, itemChangeMode);
+    }
+  }
+
+  function getItemData(item) {
+    var emitterTab = getEmitterTab(getEmitterTabIndex(item["@type@"]));
+    return emitterTab.getItemData(item);
+  }
+
+  function makeItem(itemData) {
+    var emitterTab = getEmitterTab(getEmitterTabIndex(itemData["@type@"]));
+    return emitterTab.makeItem(itemData);
+  }
+}

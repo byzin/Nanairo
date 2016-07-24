@@ -2,7 +2,7 @@
   \file russian_roulette-inl.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -14,6 +14,7 @@
 // Standard C++ library
 #include <functional>
 // Qt
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/error.hpp"
@@ -24,7 +25,7 @@
 #include "sampler.hpp"
 #include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -142,39 +143,39 @@ RouletteResult playRussianRouletteWithPath(
   */
 template <uint kSampleSize> inline
 RussianRouletteFunction<kSampleSize> makeRussianRoulette(
-    const SceneSettings& settings,
-    const QString& prefix) noexcept
+    const QJsonObject& settings) noexcept
 {
   using zisc::cast;
   using zisc::toHash32;
 
   RussianRouletteFunction<kSampleSize> russian_roulette;
 
-  auto key = prefix + "/" + keyword::russianRoulette;
-  const auto type = settings.stringValue(key);
+  const auto type = stringValue(settings, keyword::russianRoulette);
   uint path_length = 0;
-  if (type == keyword::roulettePathLength) {
-    key = prefix + "/" + keyword::pathLength;
-    path_length = cast<uint>(settings.intValue(key));
-  }
+  if (type == keyword::roulettePathLength)
+    path_length = intValue<uint>(settings, keyword::pathLength);
   switch (keyword::toHash32(type)) {
-   case toHash32(keyword::rouletteMaxReflectance):
-    russian_roulette = playRussianRouletteWithMax<kSampleSize>;
-    break;
-   case toHash32(keyword::rouletteAverageReflectance):
-    russian_roulette = playRussianRouletteWithAverage<kSampleSize>;
-    break;
-   case toHash32(keyword::roulettePathLength):
-    russian_roulette = [path_length](const uint path,
-                                     const SampledSpectra<kSampleSize>& weight,
-                                     Sampler& sampler)
-    {
-      return playRussianRouletteWithPath(path_length, path, weight, sampler);
-    };
-    break;
-   default:
-    zisc::raiseError("RussianRouletteError: Unsupported type is supecified.");
-    break;
+    case toHash32(keyword::rouletteMaxReflectance): {
+      russian_roulette = playRussianRouletteWithMax<kSampleSize>;
+      break;
+    }
+    case toHash32(keyword::rouletteAverageReflectance): {
+      russian_roulette = playRussianRouletteWithAverage<kSampleSize>;
+      break;
+    }
+    case toHash32(keyword::roulettePathLength): {
+      russian_roulette = [path_length](const uint path,
+                                       const SampledSpectra<kSampleSize>& weight,
+                                       Sampler& sampler)
+      {
+        return playRussianRouletteWithPath(path_length, path, weight, sampler);
+      };
+      break;
+    }
+    default: {
+      zisc::raiseError("RussianRouletteError: Unsupported type is supecified.");
+      break;
+    }
   }
   return russian_roulette;
 }

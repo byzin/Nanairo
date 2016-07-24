@@ -1,0 +1,41 @@
+/*!
+  \file NRenderingMethodSettingBlock.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "../SettingBlockItems"
+
+NSettingBlock {
+  id: rendering_method_setting_block
+  readonly property int currentMethodIndex: rendering_method_type_combobox.currentIndex
+
+  labelText: qsTr("RenderingMethod")
+
+  NComboBox {
+    id: rendering_method_type_combobox
+
+    y: rendering_method_setting_block.labelHeight + @item_offset@
+    backgroundColor: rendering_method_setting_block.color
+
+    model: ["@pathTracing@",
+            "@lightTracing@"]
+//            "@probabilisticPpm@"]
+  }
+
+  function getSceneData() {
+    var sceneData = {};
+    sceneData["@type@"] = rendering_method_type_combobox.currentText;
+    return sceneData;
+  }
+
+  function setSceneData(sceneData) {
+    rendering_method_type_combobox.currentIndex = 
+        rendering_method_type_combobox.find(sceneData["@type@"]);
+  }
+}

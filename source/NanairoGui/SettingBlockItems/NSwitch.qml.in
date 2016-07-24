@@ -1,0 +1,31 @@
+/*!
+  \file NSwitch.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "../Styles"
+
+Switch {
+  id: switch_item
+
+  property color backgroundColor
+  property string falseText
+  property string trueText
+
+  anchors.horizontalCenter: parent.horizontalCenter
+
+  style: NSwitchStyle {
+    backgroundColor: switch_item.backgroundColor
+    switchWidth: @default_switch_width@
+    switchHeight: @default_switch_height@
+    fontPixelSize: 10
+    falseText: switch_item.falseText
+    trueText: switch_item.trueText
+  }
+}

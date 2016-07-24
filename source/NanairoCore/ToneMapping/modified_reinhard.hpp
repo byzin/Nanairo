@@ -2,7 +2,7 @@
   \file modified_reinhard.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -20,12 +20,12 @@
 
 // Forward declaration
 class QImage;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
 class HdrImage;
-class SceneSettings;
 class System;
 
 //! \addtogroup Core
@@ -39,7 +39,7 @@ class ModifiedReinhard : public ToneMappingMethod
 {
  public:
   //! Initialize reinhard method
-  ModifiedReinhard(const System& system, const SceneSettings& settings) noexcept;
+  ModifiedReinhard(const System& system, const QJsonObject& settings) noexcept;
 
 
   //! Apply tone mapping
@@ -49,7 +49,7 @@ class ModifiedReinhard : public ToneMappingMethod
 
  private:
   //! Initialize
-  void initialize(const System& system, const SceneSettings& settings) noexcept;
+  void initialize(const System& system, const QJsonObject& settings) noexcept;
 
 
   std::vector<YxyColor> pixel_luminance_;

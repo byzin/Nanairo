@@ -2,7 +2,7 @@
   \file smooth_conductor_surface.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -19,12 +19,11 @@
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 // Forward declaration
-class QString;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
-class SceneSettings;
 template <uint> class WavelengthSamples;
 
 //! \addtogroup Core
@@ -42,8 +41,7 @@ class SmoothConductorSurface : public SurfaceModel
 
 
   //! Create a smooth conductor surface
-  SmoothConductorSurface(const SceneSettings& settings, 
-                         const QString& prefix) noexcept;
+  SmoothConductorSurface(const QJsonObject& settingsx) noexcept;
 
 
   //! Make a Fresnel BRDF
@@ -60,7 +58,7 @@ class SmoothConductorSurface : public SurfaceModel
 
  private:
   //! Initialize
-  void initialize(const SceneSettings& settings, const QString& prefix) noexcept;
+  void initialize(const QJsonObject& settings) noexcept;
 
 
 //  SpectralDistribution eta_, //!< The ratio of refractive index

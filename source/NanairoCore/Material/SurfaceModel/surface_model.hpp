@@ -2,7 +2,7 @@
   \file surface_model.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -18,13 +18,12 @@
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 // Forward declaration
-class QString;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
 class Sampler;
-class SceneSettings;
 template <uint> class ShaderModel;
 class SpectralDistribution;
 class Texture;
@@ -119,8 +118,7 @@ SurfaceModel::ShaderPointer<kSampleSize> makeGgxConductorBrdf(
 
 //! Make a surface scattering model
 UniquePointer<SurfaceModel> makeSurface(
-    const SceneSettings& settings,
-    const QString& prefix,
+    const QJsonObject& settings,
     const std::vector<const Texture*>& weight_list) noexcept;
 
 //! \} Core 

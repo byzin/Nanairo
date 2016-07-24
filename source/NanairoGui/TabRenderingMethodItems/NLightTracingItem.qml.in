@@ -1,0 +1,40 @@
+/*!
+  \file NLightTracingItem.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "../nanairo.js" as Nanairo
+
+Rectangle {
+  id: light_tracing_item
+
+  width: @rendering_tab_item_width@
+  height: @rendering_tab_item_height@
+
+  NLightRaySettingBlock {
+    id: light_ray_setting_block
+    x: @block_offset@
+    y: @block_offset@
+    color: light_tracing_item.color
+  }
+
+  function initialize() {
+    light_ray_setting_block.initialize();
+  }
+
+  function getSceneData() {
+    var dataList = [];
+    dataList.push(light_ray_setting_block.getSceneData());
+    return Nanairo.mergeDataList(dataList);
+  }
+
+  function setSceneData(sceneData) {
+    light_ray_setting_block.setSceneData(sceneData);
+  }
+}

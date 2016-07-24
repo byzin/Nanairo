@@ -1,0 +1,26 @@
+/*!
+  \file NCheckBox.qml
+  \author Sho Ikeda
+  
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "../Styles"
+
+CheckBox {
+  id: checkbox_item
+
+  property color backgroundColor
+
+  anchors.horizontalCenter: parent.horizontalCenter
+  height: @default_checkbox_height@
+
+  text: ""
+  style: NCheckBoxStyle {
+    backgroundColor: checkbox_item.backgroundColor
+  }
+}

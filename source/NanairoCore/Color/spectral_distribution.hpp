@@ -2,7 +2,7 @@
   \file spectral_distribution.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -17,13 +17,13 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 
 // Forward decralation
+class QJsonObject;
 class QString;
 
 namespace nanairo {
 
 // Forward declaration
 class RgbColor;
-class SceneSettings;
 class System;
 
 //! \addtogroup Core
@@ -141,23 +141,20 @@ class SpectralDistribution
 
 //! Make a emissive spectra
 SpectralDistribution makeEmissiveDistribution(const System& system,
-                                              const SceneSettings& settings,
-                                              const QString& prefix) noexcept;
+                                              const QJsonObject& settings) noexcept;
 
 //! Make a nanairoive spectra
 SpectralDistribution makeReflectiveDistribution(const System& system,
-                                                const SceneSettings& settings,
-                                                const QString& prefix) noexcept;
+                                                const QJsonObject& settings) noexcept;
 
-SpectralDistribution makeEmissiveSpectra(const SceneSettings& settings, 
-                                         const QString& prefix) noexcept;
+//!
+SpectralDistribution makeEmissiveSpectra(const QJsonObject& settings) noexcept;
 
-SpectralDistribution makeReflectiveSpectra(const SceneSettings& settings, 
-                                           const QString& prefix) noexcept;
+//!
+SpectralDistribution makeReflectiveSpectra(const QJsonObject& settings) noexcept;
 
 //! Make a spectral property
-SpectralDistribution makeSpectra(const SceneSettings& settings, 
-                                 const QString& prefix) noexcept;
+SpectralDistribution makeSpectra(const QJsonObject& settings) noexcept;
 
 //! Make a spectral property
 SpectralDistribution makeSpectra(const QString& file_path) noexcept;

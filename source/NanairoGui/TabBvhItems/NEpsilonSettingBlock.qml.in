@@ -1,0 +1,42 @@
+/*!
+  \file NEpsilonSettingBlock.qml
+  \author Sho Ikeda
+  
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "../SettingBlockItems"
+
+NSettingBlock {
+  id: epsilon_setting_block_item
+
+  labelText: qsTr("Epsilon")
+
+  NSpinBox {
+    id: epsilon_spinbox
+
+    y: epsilon_setting_block_item.labelHeight + @item_offset@
+
+    maximumValue: 0.5
+    minimumValue: 0.0
+  }
+
+  function initialize() {
+    epsilon_spinbox.value = 0.2;
+  }
+
+  function getSceneData() {
+    var sceneData = {};
+    sceneData["@epsilon@"] = epsilon_spinbox.value;
+    return sceneData;
+  }
+
+  function setSceneData(sceneData) {
+    epsilon_spinbox.value = sceneData["@epsilon@"];
+  }
+
+}

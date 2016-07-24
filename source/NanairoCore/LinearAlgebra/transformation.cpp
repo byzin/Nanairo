@@ -2,7 +2,7 @@
   \file transformation.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -12,6 +12,8 @@
 #include <cmath>
 #include <utility>
 // Qt
+#include <QJsonArray>
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/algorithm.hpp"
@@ -22,7 +24,7 @@
 #include "point.hpp"
 #include "vector.hpp"
 #include "NanairoCommon/keyword.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -30,33 +32,36 @@ namespace nanairo {
   \details
   No detailed.
   */
-Matrix4x4 makeTransformationMatrix(const SceneSettings& settings, 
-                                   const QString& prefix) noexcept
+Matrix4x4 makeTransformationMatrix(const QJsonArray& settings) noexcept
 {
   using zisc::toHash32;
 
   auto matrix = makeIdentityMatrix();
 
-  const QString p = prefix + "/" + keyword::transformation;
-  const int count = settings.intValue(p + "/" + keyword::count);
-  for (int index = 0; index < count; ++index) {
-    const auto item_id = (p + "/%1").arg(index);
-    if (!settings.booleanValue(item_id + "/" + keyword::active))
+  const int count = settings.count();
+  for (int index = count - 1; 0 <= index; --index) {
+    const auto transformation_settings = objectValue(settings[index]);
+    const bool is_enabled = boolValue(transformation_settings, keyword::enabled);
+    if (!is_enabled)
       continue;
-    const auto type = settings.stringValue(item_id + "/" + keyword::type);
+    const auto type = stringValue(transformation_settings, keyword::type);
     switch (keyword::toHash32(type)) {
-     case toHash32(keyword::translation):
-      matrix = makeTranslationMatrix(settings, item_id) * matrix;
-      break;
-     case toHash32(keyword::scaling):
-      matrix = makeScalingMatrix(settings, item_id) * matrix;
-      break;
-     case toHash32(keyword::rotation):
-      matrix = makeRotationMatrix(settings, item_id) * matrix;
-      break;
-     default:
-      zisc::raiseError("TransformationError: Unsupported type is specified.");
-      break;
+      case toHash32(keyword::translation): {
+        matrix = makeTranslationMatrix(transformation_settings) * matrix;
+        break;
+      }
+      case toHash32(keyword::scaling): {
+        matrix = makeScalingMatrix(transformation_settings) * matrix;
+        break;
+      }
+      case toHash32(keyword::rotation): {
+        matrix = makeRotationMatrix(transformation_settings) * matrix;
+        break;
+      }
+      default: {
+        zisc::raiseError("TransformationError: Unsupported type is specified.");
+        break;
+      }
     }
   }
   return matrix;
@@ -66,11 +71,12 @@ Matrix4x4 makeTransformationMatrix(const SceneSettings& settings,
   \details
   No detailed.
   */
-Matrix4x4 makeTranslationMatrix(const SceneSettings& settings, const QString& prefix) noexcept
+Matrix4x4 makeTranslationMatrix(const QJsonObject& settings) noexcept
 {
-  const Float x = settings.realValue(prefix + "/" + keyword::x);
-  const Float y = settings.realValue(prefix + "/" + keyword::y);
-  const Float z = settings.realValue(prefix + "/" + keyword::z);
+  const auto value = arrayValue(settings, keyword::value);
+  const Float x = floatValue<Float>(value[0]); 
+  const Float y = floatValue<Float>(value[1]); 
+  const Float z = floatValue<Float>(value[2]); 
   return makeTranslationMatrix(x, y, z);
 }
 
@@ -78,11 +84,12 @@ Matrix4x4 makeTranslationMatrix(const SceneSettings& settings, const QString& pr
   \details
   No detailed.
   */
-Matrix4x4 makeScalingMatrix(const SceneSettings& settings, const QString& prefix) noexcept
+Matrix4x4 makeScalingMatrix(const QJsonObject& settings) noexcept
 {
-  const Float x = settings.realValue(prefix + "/" + keyword::x);
-  const Float y = settings.realValue(prefix + "/" + keyword::y);
-  const Float z = settings.realValue(prefix + "/" + keyword::z);
+  const auto value = arrayValue(settings, keyword::value);
+  const Float x = floatValue<Float>(value[0]); 
+  const Float y = floatValue<Float>(value[1]); 
+  const Float z = floatValue<Float>(value[2]); 
   return makeScalingMatrix(x, y, z);
 }
 
@@ -90,31 +97,35 @@ Matrix4x4 makeScalingMatrix(const SceneSettings& settings, const QString& prefix
   \details
   No detailed.
   */
-Matrix4x4 makeRotationMatrix(const SceneSettings& settings, const QString& prefix) noexcept
+Matrix4x4 makeRotationMatrix(const QJsonObject& settings) noexcept
 {
   using zisc::toHash32;
 
-  const auto unit = settings.stringValue(prefix + "/" + keyword::unit);
-  const Float angle = settings.realValue(prefix + "/" + keyword::angle);
+  const auto angle = floatValue<Float>(settings, keyword::angle);
+  const auto unit = stringValue(settings, keyword::unit);
   const Float theta = (unit == keyword::degreeUnit)
       ? zisc::toRadian(angle)
       : angle;
 
   Matrix4x4 matrix;
-  const auto axis = settings.stringValue(prefix + "/" + keyword::axis);
+  const auto axis = stringValue(settings, keyword::axis);
   switch (keyword::toHash32(axis)) {
-   case toHash32(keyword::x):
-    matrix = makeXAxisRotationMatrix(theta);
-    break;
-   case toHash32(keyword::y):
-    matrix = makeYAxisRotationMatrix(theta);
-    break;
-   case toHash32(keyword::z):
-    matrix = makeZAxisRotationMatrix(theta);
-    break;
-   default:
-    zisc::raiseError("TransformationError: Unsupported axis is specified.");
-    break;
+    case toHash32(keyword::xAxis): {
+      matrix = makeXAxisRotationMatrix(theta);
+      break;
+    }
+    case toHash32(keyword::yAxis): {
+      matrix = makeYAxisRotationMatrix(theta);
+      break;
+    }
+    case toHash32(keyword::zAxis): {
+      matrix = makeZAxisRotationMatrix(theta);
+      break;
+    }
+    default: {
+      zisc::raiseError("TransformationError: Unsupported axis is specified.");
+      break;
+    }
   }
   return matrix;
 }

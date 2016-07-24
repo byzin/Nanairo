@@ -1,0 +1,72 @@
+/*!
+  \file NSmoothConductorSurfaceItem.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "../../nanairo.js" as Nanairo
+
+Rectangle {
+  id: smooth_conductor_surface_item
+
+  readonly property alias outerRefractiveIndexSettingBlock: outer_refractive_index_setting_block
+  readonly property alias innerRefractiveIndexSettingBlock: inner_refractive_index_setting_block
+
+  width: @material_setting_view_width@
+  height: @material_setting_view_height@
+
+  NRefractiveIndexSettingBlock {
+    id: outer_refractive_index_setting_block
+    x: @block_offset@
+    y: @block_offset@
+    color: smooth_conductor_surface_item.color
+
+    refractiveIndexKey: "@outerRefractiveIndex@"
+    labelText: qsTr("Outer refractive index")
+  }
+
+  NComplexRefractiveIndexSettingBlock {
+    id: inner_refractive_index_setting_block
+    x: outer_refractive_index_setting_block.x
+    y: (outer_refractive_index_setting_block.y + outer_refractive_index_setting_block.height) + @block_offset@
+    color: smooth_conductor_surface_item.color
+
+    refractiveIndexKey: "@innerRefractiveIndex@"
+    extinctionKey: "@innerExtinction@"
+    labelText: qsTr("Inner refractive index")
+  }
+
+  function initializeItem(item) {
+    outer_refractive_index_setting_block.initializeItem(item);
+    inner_refractive_index_setting_block.initializeItem(item);
+  }
+
+  function reflectItem() {
+    outer_refractive_index_setting_block.reflectItem();
+    inner_refractive_index_setting_block.reflectItem();
+  }
+
+  function setCurrentItem(item, itemChangeMode) {
+    outer_refractive_index_setting_block.setCurrentItem(item, itemChangeMode);
+    inner_refractive_index_setting_block.setCurrentItem(item, itemChangeMode);
+  }
+
+  function getItemData(item) {
+    var dataList = [];
+    dataList.push(outer_refractive_index_setting_block.getItemData(item));
+    dataList.push(inner_refractive_index_setting_block.getItemData(item));
+    return Nanairo.mergeDataList(dataList);
+  }
+
+  function makeItem(itemData) {
+    var dataList = [];
+    dataList.push(outer_refractive_index_setting_block.makeItem(itemData));
+    dataList.push(inner_refractive_index_setting_block.makeItem(itemData));
+    return Nanairo.mergeDataList(dataList);
+  }
+}

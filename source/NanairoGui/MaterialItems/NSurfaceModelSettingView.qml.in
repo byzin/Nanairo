@@ -1,0 +1,147 @@
+/*!
+  \file NSurfaceModelSettingView.qml
+  \author Sho Ikeda
+  
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import QtQuick.Controls.Styles @qt_quick_controls_style_version@
+import "TabSurfaceModelItems"
+
+Rectangle {
+  id: surface_model_setting_view
+
+  property int currentTypeIndex: 0
+  property var textureModel: null
+  property var currentItem: null
+  property bool isItemChangeMode: false
+
+  width: @material_setting_view_width@
+  height: @material_setting_view_height@
+
+  TabView {
+    id: surface_model_tab_view
+
+    width: surface_model_setting_view.width
+    height: surface_model_setting_view.height - y
+
+    style: tab_view_style
+
+    Tab {
+      title: "@smoothDiffuseSurface@"
+      active: true
+
+      NSmoothDiffuseSurfaceItem {
+        textureModel: surface_model_setting_view.textureModel
+        color: surface_model_setting_view.color
+      }
+    }
+
+    Tab {
+      title: "@smoothDielectricSurface@"
+      active: true
+
+      NSmoothDielectricSurfaceItem {
+        color: surface_model_setting_view.color
+      }
+    }
+
+    Tab {
+      title: "@smoothConductorSurface@"
+      active: true
+
+      NSmoothConductorSurfaceItem {
+        color: surface_model_setting_view.color
+      }
+    }
+
+    Tab {
+      title: "@roughDielectricSurface@"
+      active: true
+
+      NRoughDielectricSurfaceItem {
+        textureModel: surface_model_setting_view.textureModel
+        color: surface_model_setting_view.color
+      }
+    }
+
+    Tab {
+      title: "@roughConductorSurface@"
+      active: true
+
+      NRoughConductorSurfaceItem {
+        textureModel: surface_model_setting_view.textureModel
+        color: surface_model_setting_view.color
+      }
+    }
+  }
+
+  onCurrentTypeIndexChanged: {
+    surface_model_tab_view.currentIndex = currentTypeIndex;
+    if ((currentItem != null) && (!isItemChangeMode)) {
+      initializeItem(currentItem, currentTypeIndex);
+      reflectItem(currentTypeIndex);
+    }
+  }
+
+  Component {
+    id: tab_view_style
+
+    TabViewStyle {
+      tab: Rectangle {
+        implicitWidth: 0
+        implicitHeight: 0
+      }
+    }
+  }
+
+  function getSurfaceTabIndex(type) {
+    var tabIndex = -1;
+    for (var i = 0; i < surface_model_tab_view.count; ++i) {
+      var tab = surface_model_tab_view.getTab(i);
+      if (type == tab.title) {
+        tabIndex = i;
+        break;
+      }
+    }
+    console.assert(tabIndex != -1, "Unsupported surface type is specified: ", type);
+    return tabIndex;
+  }
+
+  function getSurfaceTab(index) {
+    return surface_model_tab_view.getTab(index).item
+  }
+
+  function initializeItem(item, tabIndex) {
+    var surfaceTab = getSurfaceTab(tabIndex);
+    surfaceTab.initializeItem(item);
+  }
+
+  function reflectItem(tabIndex) {
+    var surfaceTab = getSurfaceTab(tabIndex);
+    surfaceTab.reflectItem();
+  }
+
+  function setCurrentItem(item, itemChangeMode) {
+    currentItem = item;
+    isItemChangeMode = itemChangeMode;
+    for (var i = 0; i < surface_model_tab_view.count; ++i) {
+      var surfaceTab = getSurfaceTab(i);
+      surfaceTab.setCurrentItem(item, itemChangeMode);
+    }
+  }
+
+  function getItemData(item) {
+    var surfaceTab = getSurfaceTab(getSurfaceTabIndex(item["@type@"]));
+    return surfaceTab.getItemData(item);
+  }
+
+  function makeItem(itemData) {
+    var surfaceTab = getSurfaceTab(getSurfaceTabIndex(itemData["@type@"]));
+    return surfaceTab.makeItem(itemData);
+  }
+}

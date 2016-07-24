@@ -1,0 +1,3 @@
+[submodule "source/zisc"]
+	path = source/zisc
+	url = https://github.com/byzin/Zisc.git

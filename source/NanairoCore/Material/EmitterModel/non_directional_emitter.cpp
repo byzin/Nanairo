@@ -2,13 +2,14 @@
   \file non_directional_emitter.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
 
 #include "non_directional_emitter.hpp"
 // Qt
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/error.hpp"
@@ -16,7 +17,7 @@
 #include "emitter_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -25,11 +26,10 @@ namespace nanairo {
   No detailed.
   */
 NonDirectionalEmitter::NonDirectionalEmitter(const System& system,
-                                             const SceneSettings& settings,
-                                             const QString& prefix) noexcept :
-    EmitterModel(system, settings, prefix)
+                                             const QJsonObject& settings) noexcept
+    : EmitterModel(system, settings)
 {
-  initialize(system, settings, prefix);
+  initialize(system, settings);
 }
 
 /*!
@@ -46,18 +46,14 @@ EmitterType NonDirectionalEmitter::type() const noexcept
   No detailed.
   */
 void NonDirectionalEmitter::initialize(const System& system,
-                                       const SceneSettings& settings,
-                                       const QString& prefix) noexcept
+                                       const QJsonObject& settings) noexcept
 {
-  auto p = prefix + "/" + keyword::nonDirectionalEmitter;
-  auto key = p + "/" + keyword::radiantExitance;
-  const Float radiant_exitance = settings.realValue(key);
-  ZISC_ASSERT(0.0 < radiant_exitance, 
-              "Radiance exitance must be positive.");
+  const Float radiant_exitance = floatValue<Float>(settings,
+                                                   keyword::radiantExitance);
+  ZISC_ASSERT(0.0 < radiant_exitance, "Radiance exitance is negative.");
 
-  key = p + "/" + keyword::color;
-  auto power_distribution = 
-      makeEmissiveDistribution(system, settings, key);
+  const auto color_setting = objectValue(settings, keyword::color);
+  auto power_distribution = makeEmissiveDistribution(system, color_setting);
 
   const Float k = radiant_exitance / power_distribution.sum(); 
   power_distribution = power_distribution * k;

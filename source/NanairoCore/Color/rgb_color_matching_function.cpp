@@ -2,7 +2,7 @@
   \file rgb_color_matching_function.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -58,9 +58,9 @@ const SpectralDistribution& RgbColorMatchingFunction::redBar() const noexcept
   */
 void RgbColorMatchingFunction::initialize() noexcept
 {
-  red_bar_ = makeSpectra(":/spectrum/cie_1931_red.csv");
-  green_bar_ = makeSpectra(":/spectrum/cie_1931_green.csv");
-  blue_bar_ = makeSpectra(":/spectrum/cie_1931_blue.csv");
+  red_bar_ = makeSpectra(":/spectrum/observer/cie_1931_red.csv");
+  green_bar_ = makeSpectra(":/spectrum/observer/cie_1931_green.csv");
+  blue_bar_ = makeSpectra(":/spectrum/observer/cie_1931_blue.csv");
 
 //  constexpr Float k = 3.782;
 //  red_bar_ = red_bar_.normalized() * k;

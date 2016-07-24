@@ -2,7 +2,7 @@
   \file approximate_agglomerative_clustering_bvh.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -19,6 +19,7 @@
 #include <vector>
 #include <utility>
 // Qt
+#include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/thread_pool.hpp"
@@ -32,7 +33,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Data/object.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -41,10 +42,10 @@ namespace nanairo {
   No detailed.
   */
 ApproximateAgglomerativeClusteringBvh::ApproximateAgglomerativeClusteringBvh(
-    const SceneSettings& settings, const QString& prefix) noexcept :
-        Bvh(settings, prefix)
+    const QJsonObject& settings) noexcept :
+        Bvh(settings)
 {
-  initialize(settings, prefix);
+  initialize(settings);
 }
 
 /*!
@@ -87,21 +88,23 @@ auto ApproximateAgglomerativeClusteringBvh::buildTree(
   std::vector<ClusterPointer> left_cluster_list,
                               right_cluster_list;
   if (multithreading) {
-    std::function<std::vector<ClusterPointer> ()> build_left_tree{
+    auto build_left_tree =
     [this, &system, next_bit, begin, split_position, &distance_matrix]()
     {
       auto matrix = distance_matrix;
       return buildTree<false>(system, next_bit, begin, split_position, matrix);
-    }};
-    std::function<std::vector<ClusterPointer> ()> build_right_tree{
+    };
+    auto build_right_tree =
     [this, &system, next_bit, split_position, end, &distance_matrix]()
     {
       auto& matrix = distance_matrix;
       return buildTree<false>(system, next_bit, split_position, end, matrix);
-    }};
+    };
     auto& thread_pool = system.threadPool();
-    auto left_result = thread_pool.enqueue(std::move(build_left_tree));
-    auto right_result = thread_pool.enqueue(std::move(build_right_tree));
+    auto left_result = 
+        thread_pool.enqueue<std::vector<ClusterPointer>>(build_left_tree);
+    auto right_result = 
+        thread_pool.enqueue<std::vector<ClusterPointer>>(build_right_tree);
     left_cluster_list = left_result.get();
     right_cluster_list = right_result.get();
   }
@@ -262,17 +265,13 @@ std::tuple<uint, uint> ApproximateAgglomerativeClusteringBvh::findBestMatch(
   \details
   No detailed.
   */
-void ApproximateAgglomerativeClusteringBvh::initialize(const SceneSettings& settings,
-                                                       const QString& prefix) noexcept
+void ApproximateAgglomerativeClusteringBvh::initialize(
+    const QJsonObject& settings) noexcept
 {
   using zisc::cast;
 
-  auto p = prefix + "/" + keyword::approximateAgglomerativeClusteringBvh;
-
-  auto key = p + "/" + keyword::delta;
-  delta_ = cast<uint>(settings.intValue(key));
-  key = p + "/" + keyword::epsilon;
-  const Float epsilon = settings.realValue(key);
+  delta_ = intValue<uint>(settings, keyword::delta);
+  const Float epsilon = floatValue<Float>(settings, keyword::epsilon);
   c_ = std::pow(cast<Float>(delta()), kAlpha + epsilon) * 0.5;
   k_ = kAlpha - epsilon;
   f_delta_ = f(delta());

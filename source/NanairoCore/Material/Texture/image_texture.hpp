@@ -2,7 +2,7 @@
   \file image_texture.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015 Sho Ikeda
+  Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -20,13 +20,12 @@
 
 // Forward declaration
 class QImage;
-class QString;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
 template <uint> class SampledSpectra;
-class SceneSettings;
 class System;
 template <uint> class WavelengthSamples;
 
@@ -41,9 +40,7 @@ class ImageTexture : public Texture
 {
  public:
   //! Create a image texture
-  ImageTexture(const System& system,
-               const SceneSettings& settings, 
-               const QString& prefix) noexcept;
+  ImageTexture(const System& system, const QJsonObject& settings) noexcept;
 
 
   //! Evaluate a float value at the coordinate
@@ -66,9 +63,7 @@ class ImageTexture : public Texture
                         const uint16 wavelength) const noexcept override;
  private:
   //! Initialize
-  void initialize(const System& system,
-                  const SceneSettings& settings, 
-                  const QString& prefix) noexcept;
+  void initialize(const System& system, const QJsonObject& settings) noexcept;
 
   //! Set color
   void setColor(const System& system,
