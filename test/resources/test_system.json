@@ -1,0 +1,22 @@
+{
+    "Color": {
+        "ColorMode": "%3",
+        "ColorSpace": "sRGB (D65)",
+        "Gamma": 2.2,
+        "StandardIllumination": "CIE D65",
+        "StandardObserver": "CIE 2deg color matching function",
+        "ToneMapping": "Reinhard",
+        "WavelengthSampling": "Regular sampling"
+    },
+    "System": {
+        "ImageResolution": [
+            %1,
+            %2 
+        ],
+        "NumOfThreads": 1,
+        "Power2CycleSaving": true,
+        "RandomSeed": 123456789,
+        "SavingInterval": 3600000,
+        "TerminationCycle": 0
+    }
+}

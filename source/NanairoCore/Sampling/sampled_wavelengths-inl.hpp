@@ -163,7 +163,7 @@ WavelengthSampler<kSampleSize> makeWavelengthSampler(
   using zisc::toHash32;
 
   WavelengthSampler<kSampleSize> wavelength_sampler;
-  const auto method = stringValue(settings, keyword::wavelengthSampling);
+  const auto method = SceneValue::toString(settings, keyword::wavelengthSampling);
   switch (keyword::toHash32(method)) {
     case toHash32(keyword::regularSampling): {
       wavelength_sampler = sampleWavelengthsRegularly<kSampleSize>;

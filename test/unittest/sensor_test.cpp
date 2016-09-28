@@ -24,11 +24,11 @@
 #include "NanairoCore/Material/Sensor/sensor.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
+
+using nanairo::uint;
 
 constexpr double kError = 0.01;
-//constexpr int kLoopCount = 1000;
-constexpr int kLoopCount = 100000;
+constexpr uint kLoopCount = 1'000'000'00;
 
 /*!
   \details
@@ -52,23 +52,20 @@ void testSensorSampling(
   const auto& normal = camera.normal();
   CompensatedSummation<Float> p{0.0};
   for (uint i = 0; i < vec_loop; ++i) {
-    const auto sampled_vout = 
-        sampleDirectionOnHemisphere<0>(normal, sampler);
+    const auto sampled_vout = sampleDirectionOnHemisphere<0>(normal, sampler);
     const auto& vout = sampled_vout.direction();
     uint x = 0,
          y = 0;
     const bool is_hit = camera.getPixelLocation(-vout, &x, &y);
     if (is_hit) {
-      const auto sensor = 
-          camera.makeSensor(x, y, wavelengths, memory_pool);
-      const auto result = 
-          sensor->evaluateRadianceAndPdf(nullptr, &vout, 
-                                         normal, wavelengths);
+      const auto sensor = camera.makeSensor(x, y, wavelengths, memory_pool);
+      const auto result = sensor->evaluateRadianceAndPdf(nullptr, &vout,
+                                                         normal, wavelengths);
       const auto& f1 = std::get<0>(result);
       const auto& pdf1 = std::get<1>(result);
-      const auto f2 = 
+      const auto f2 =
           sensor->evaluateRadiance(nullptr, &vout, normal, wavelengths);
-      const auto pdf2 = 
+      const auto pdf2 =
           sensor->evaluatePdf(nullptr, &vout, normal, wavelengths);
       ASSERT_NEAR(f1.intensity(0), f2.intensity(0), error)
           << sensor_name << ": Radiance evaluation test failed.";
@@ -106,16 +103,15 @@ void testSensorEnergyConservation(
   const auto& normal = camera.normal();
   CompensatedSummation<Float> e{0.0};
   for (uint i = 0; i < vec_loop; ++i) {
-    const auto sampled_vout = 
-        sampleDirectionOnHemisphere<0>(normal, sampler);
+    const auto sampled_vout = sampleDirectionOnHemisphere<0>(normal, sampler);
     const auto& vout = sampled_vout.direction();
     uint x = 0,
          y = 0;
     const bool is_hit = camera.getPixelLocation(-vout, &x, &y);
     if (is_hit) {
-      const auto sensor = 
+      const auto sensor =
           camera.makeSensor(x, y, wavelengths, memory_pool);
-      const auto f = 
+      const auto f =
           sensor->evaluateRadiance(nullptr, &vout, normal, wavelengths);
       // Positive intensity test
       ASSERT_TRUE(0.0 <= f.intensity(0))
@@ -158,17 +154,14 @@ void testSensorImportanceSampling(
 
   for (uint y = 0; y < camera.heightResolution(); ++y) {
     for (uint x = 0; x < camera.widthResolution(); ++x) {
-      const auto sensor = 
-          camera.makeSensor(x, y, wavelengths, memory_pool);
+      const auto sensor = camera.makeSensor(x, y, wavelengths, memory_pool);
       // Test importance sampling
-      const auto result1 = 
-          sensor->sample(nullptr, normal, wavelengths, sampler);
+      const auto result1 = sensor->sample(nullptr, normal, wavelengths, sampler);
       const auto& sampled_vout = std::get<0>(result1);
       const auto& weight = std::get<1>(result1);
       const auto& vout = sampled_vout.direction();
-      const auto result2 =
-          sensor->evaluateRadianceAndPdf(nullptr, &vout, 
-                                         normal, wavelengths);
+      const auto result2 = sensor->evaluateRadianceAndPdf(nullptr, &vout, 
+                                                          normal, wavelengths);
       const auto& f = std::get<0>(result2);
       const auto& pdf = std::get<1>(result2);
       const Float cos_theta_no = dot(normal, vout);

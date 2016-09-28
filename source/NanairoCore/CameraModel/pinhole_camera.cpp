@@ -192,7 +192,7 @@ Float PinholeCamera::filmArea() const noexcept
   */
 void PinholeCamera::initialize(const QJsonObject& settings) noexcept
 {
-  const Float angle = floatValue<Float>(settings, keyword::angleOfView);
+  const Float angle = SceneValue::toFloat<Float>(settings, keyword::angleOfView);
   angle_of_view_ = zisc::toRadian(angle);
   ZISC_ASSERT(isBetweenZeroAndOneFloat(angle_of_view_ / zisc::kPi<Float>),
               "The angle of view must be [0, pi].");

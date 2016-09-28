@@ -1,0 +1,6 @@
+{
+  "InnerExtinction": "resources/spectrum/conductor/Al extinction coefficient.csv",
+  "InnerRefractiveIndex": "resources/spectrum/conductor/Al refractive index.csv",
+  "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+  "RoughnessIndex": 0
+}

@@ -104,11 +104,11 @@ void CpuSceneRenderer::initializeRenderer(const QJsonObject& settings) noexcept
   // Rendering method
   const auto& world = scene_->world();
   rgb_sampler_ = makeRgbSampler<3>();
-  const auto color_settings = objectValue(settings, keyword::color);
+  const auto color_settings = SceneValue::toObject(settings, keyword::color);
   wavelength_sampler_ =
       makeWavelengthSampler<kWavelengthSampleSize>(world, color_settings);
   const auto rendering_method_settings =
-      objectValue(settings, keyword::renderingMethod);
+      SceneValue::toObject(settings, keyword::renderingMethod);
   rgb_rendering_method_ = 
       makeRenderingMethod<3>(*system_, rendering_method_settings);
   rendering_method_ =

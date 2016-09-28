@@ -6,33 +6,33 @@
 # http://opensource.org/licenses/mit-license.php
 # 
 
-# Build the google test
-function(buildGoogleTest google_library)
-  add_library(GoogleTest SHARED ${PROJECT_SOURCE_DIR}/test/gtest/gtest-all.cc
-                                ${PROJECT_SOURCE_DIR}/test/gtest/gtest/gtest.h)
-  set_target_properties(GoogleTest PROPERTIES CXX_STANDARD 14
-                                              CXX_STANDARD_REQUIRED ON)
-  checkCompilerHasCxx14Features(GoogleTest)
-  target_compile_options(GoogleTest PRIVATE ${cxx_compiler_flags})
-  target_link_libraries(GoogleTest ${CMAKE_THREAD_LIBS_INIT}
-                                   ${cxx_linker_flags})
-  target_compile_definitions(GoogleTest PRIVATE ${cxx_definitions}
-                                                ${environment_definitions})
-
-
-  # Output
-  set(${google_library} GoogleTest PARENT_SCOPE)
-endfunction(buildGoogleTest)
-
+set(__test_root__ ${CMAKE_CURRENT_LIST_DIR})
 
 # Build tests
-function(buildTest)
-  buildGoogleTest(google_library)
+function(buildUnitTest)
+  # Load GoogleTest
+  include(${PROJECT_SOURCE_DIR}/source/zisc/cmake/googletest.cmake)
+  set(gtest_project_root ${__test_root__}/googletest/googletest)
+  buildGoogleTest(${gtest_project_root} gtest_include_dir gtest_libraries)
 
-  aux_source_directory(${PROJECT_SOURCE_DIR}/test/UnitTest unit_test_sources)
-  add_executable(UnitTest ${unit_test_sources})
+  # Build unit tests
+  file(GLOB unittest_source_files ${__test_root__}/unittest/*.cpp)
+  file(GLOB unittest_header_files ${__test_root__}/unittest/*.hpp)
+  set(test_resource_file ${__test_root__}/resources/test_resource.qrc)
+  add_executable(UnitTest ${unittest_source_files}
+                          ${unittest_header_files}
+                          ${test_resource_file}
+                          ${common_source_files}
+                          ${core_source_files}
+                          ${zisc_source_files})
+  source_group(UnitTest FILES ${unittest_source_files}
+                              ${unittest_header_files}
+                              ${test_resource_file})
+  # Set unit test properties
   set_target_properties(UnitTest PROPERTIES CXX_STANDARD 14
-                                            CXX_STANDARD_REQUIRED ON)
+                                            CXX_STANDARD_REQUIRED ON
+                                            AUTOMOC ON
+                                            AUTORCC ON)
   getCxxWarningOption(cxx_warning_flags)
   getNanairoWarningOption(nanairo_warning_flags)
   checkCompilerHasCxx14Features(UnitTest)
@@ -45,9 +45,9 @@ function(buildTest)
                                               ${PROJECT_BINARY_DIR}/include
                                               ${zisc_include_dirs})
   target_include_directories(UnitTest SYSTEM PRIVATE ${qt5_include_dirs}
-                                                     ${PROJECT_SOURCE_DIR}/test/gtest)
-  target_link_libraries(UnitTest ${PROJECT_NAME}Core
-                                 GoogleTest 
+                                                     ${gtest_include_dir})
+  target_link_libraries(UnitTest ${CMAKE_THREAD_LIBS_INIT}
+                                 ${gtest_libraries}
                                  ${cxx_linker_flags}
                                  ${qt5_libraries} 
                                  ${zisc_linker_flags})
@@ -58,4 +58,4 @@ function(buildTest)
                                               ${qt5_definitions}
                                               ${zisc_definitions}
                                               ${environment_definitions})
-endfunction(buildTest)
+endfunction(buildUnitTest)

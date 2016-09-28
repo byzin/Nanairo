@@ -80,7 +80,7 @@ Float UnicolorTexture::wavelengthValue(const Point2& /* coordinate */,
 void UnicolorTexture::initialize(const System& system,
                                  const QJsonObject& settings) noexcept
 {
-  const auto color_settings = objectValue(settings, keyword::color);
+  const auto color_settings = SceneValue::toObject(settings, keyword::color);
   spectra_value_ = makeReflectiveDistribution(system, color_settings);
   float_value_ = spectra_value_.toReflectiveXyz(system).y();
   float_value_ = zisc::clamp(float_value_, 0.0, 1.0);

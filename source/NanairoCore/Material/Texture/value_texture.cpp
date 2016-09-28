@@ -23,21 +23,6 @@
 #include "NanairoCore/Utility/floating_point.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 
-namespace {
-
-template <typename FloatingPoint>
-FloatingPoint fValue(const QJsonObject& object, const QString key) noexcept;
-
-//!
-template <typename FloatingPoint>
-FloatingPoint fValue(const QJsonObject& object, const QString key) noexcept
-{
-  return nanairo::floatValue<FloatingPoint>(object, key);
-}
-
-} // namespace
-
-
 namespace nanairo {
 
 /*!
@@ -95,7 +80,7 @@ Float ValueTexture::wavelengthValue(const Point2& /* coordinate */,
 void ValueTexture::initialize(const System& /* system */,
                               const QJsonObject& settings) noexcept
 {
-  value_ = ::fValue<Float>(settings, keyword::value);
+  value_ = SceneValue::toFloat<Float>(settings, keyword::value);
   ZISC_ASSERT(isBetweenZeroAndOneFloat(value_), "Texture value isn't [0, 1].");
 }
 

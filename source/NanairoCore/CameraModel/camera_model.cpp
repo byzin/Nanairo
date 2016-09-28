@@ -88,7 +88,7 @@ Matrix4x4 CameraModel::translateVertically(const Vector2& value) noexcept
   */
 void CameraModel::initialize(const QJsonObject& settings) noexcept
 {
-  is_jittering_enabled_ = boolValue(settings, keyword::jittering);
+  is_jittering_enabled_ = SceneValue::toBool(settings, keyword::jittering);
 }
 
 /*!
@@ -101,7 +101,7 @@ UniquePointer<CameraModel> makeCameraModel(const QJsonObject& settings) noexcept
 
   CameraModel* camera_model = nullptr;
 
-  const auto camera_type = stringValue(settings, keyword::cameraType);
+  const auto camera_type = SceneValue::toString(settings, keyword::cameraType);
   switch (keyword::toHash32(camera_type)) {
     case toHash32(keyword::pinholeCamera): {
       camera_model = new PinholeCamera{settings};

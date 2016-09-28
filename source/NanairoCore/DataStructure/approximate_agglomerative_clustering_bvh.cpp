@@ -270,8 +270,8 @@ void ApproximateAgglomerativeClusteringBvh::initialize(
 {
   using zisc::cast;
 
-  delta_ = intValue<uint>(settings, keyword::delta);
-  const Float epsilon = floatValue<Float>(settings, keyword::epsilon);
+  delta_ = SceneValue::toInt<uint>(settings, keyword::delta);
+  const Float epsilon = SceneValue::toFloat<Float>(settings, keyword::epsilon);
   c_ = std::pow(cast<Float>(delta()), kAlpha + epsilon) * 0.5;
   k_ = kAlpha - epsilon;
   f_delta_ = f(delta());

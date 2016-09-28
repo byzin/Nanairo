@@ -71,7 +71,7 @@ function(setCommandOptions)
   setBooleanOption(NANAIRO_DEBUG OFF ${option_description})
 
   set(option_description "Build unit tests")
-  setBooleanOption(NANAIRO_BUILD_TEST OFF ${option_description})
+  setBooleanOption(NANAIRO_BUILD_TESTS OFF ${option_description})
 
   Set(option_description "The size of a memory pool")
   math(EXPR __memory_size__ "1 << 15")

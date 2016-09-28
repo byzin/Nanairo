@@ -1,0 +1,10 @@
+{
+  "AngleOfView": 45,
+  "CameraType": "PinholeCamera",
+  "Enabled": true,
+  "GroupLevel": 0,
+  "Jittering": true,
+  "Name": "Camera",
+  "Transformation": [],
+  "Type": "CameraObject"
+}

@@ -153,7 +153,8 @@ void World::initialize(System& system,
   // Initialize texture
   timer.start();
   {
-    const auto texture_settings_list = arrayValue(settings, keyword::textureModel);
+    const auto texture_settings_list = SceneValue::toArray(settings,
+                                                           keyword::textureModel);
     initializeTexture(system, texture_settings_list);
     const auto time = timer.elapsedTime();
     const auto time_count = cast<long int>(duration_cast<Millis>(time).count());
@@ -164,7 +165,8 @@ void World::initialize(System& system,
   // Initialize surface scattering
   timer.start();
   {
-    const auto surface_settings_list = arrayValue(settings, keyword::surfaceModel);
+    const auto surface_settings_list = SceneValue::toArray(settings,
+                                                           keyword::surfaceModel);
     initializeSurface(system, surface_settings_list);
     const auto time = timer.elapsedTime();
     const auto time_count = cast<long int>(duration_cast<Millis>(time).count());
@@ -175,7 +177,8 @@ void World::initialize(System& system,
   // Initialize emitter
   timer.start();
   {
-    const auto emitter_settings_list = arrayValue(settings, keyword::emitterModel);
+    const auto emitter_settings_list = SceneValue::toArray(settings,
+                                                           keyword::emitterModel);
     initializeEmitter(system, emitter_settings_list);
     const auto time = timer.elapsedTime();
     const auto time_count = cast<long int>(duration_cast<Millis>(time).count());
@@ -193,7 +196,7 @@ void World::initialize(System& system,
 
   // Initialize objects
   timer.start();
-  const auto object_settings_list = arrayValue(settings, keyword::object);
+  const auto object_settings_list = SceneValue::toArray(settings, keyword::object);
   auto object_list = initializeObject(system, object_settings_list);
   {
     const auto time = timer.elapsedTime();
@@ -214,7 +217,7 @@ void World::initialize(System& system,
   // Initialize a BVH
   timer.start();
   {
-    const auto bvh_settings = objectValue(settings, keyword::bvh);
+    const auto bvh_settings = SceneValue::toObject(settings, keyword::bvh);
     bvh_ = makeBvh(bvh_settings);
     bvh_->construct(system, std::move(object_list));
     const auto time = timer.elapsedTime();
@@ -247,7 +250,7 @@ void World::initializeEmitter(System& system, const QJsonArray& settings) noexce
 
   auto make_emitter = [this, &system, &settings](const uint index)
   {
-    const auto emitter_settings = objectValue(settings[index]);
+    const auto emitter_settings = SceneValue::toObject(settings[index]);
     emitter_list_[index] = makeEmitter(system, emitter_settings);
   };
 
@@ -324,7 +327,7 @@ void World::initializeSurface(System& system, const QJsonArray& settings) noexce
 
   auto make_surface = [this, &settings, &texture_list](const uint index)
   {
-    const auto surface_settings = objectValue(settings[index]);
+    const auto surface_settings = SceneValue::toObject(settings[index]);
     surface_list_[index] = makeSurface(surface_settings, texture_list);
   };
 
@@ -348,7 +351,7 @@ void World::initializeTexture(System& system, const QJsonArray& settings) noexce
 
   auto make_texture = [this, &system, &settings](const uint index)
   {
-    const auto texture_settings = objectValue(settings[index]);
+    const auto texture_settings = SceneValue::toObject(settings[index]);
     texture_list_[index] = makeTexture(system, texture_settings);
   };
 
@@ -375,11 +378,12 @@ std::list<std::future<std::vector<Object>>> World::makeObjects(
   const auto count = cast<uint>(settings.count());
   auto t = makeIdentityMatrix();
   for (uint index = 1; index < count; ++index) {
-    const auto object_settings = objectValue(settings[index]);
-    const auto type = stringValue(object_settings, keyword::type);
+    const auto object_settings = SceneValue::toObject(settings[index]);
+    const auto type = SceneValue::toString(object_settings, keyword::type);
     switch (keyword::toHash32(type)) {
       case toHash32(keyword::singleObject): {
-        const auto visibility = boolValue(object_settings, keyword::enabled);
+        const auto visibility = SceneValue::toBool(object_settings,
+                                                   keyword::enabled);
         if (visibility) {
           auto make_single_object = [this, object_settings, t]()
           {
@@ -416,20 +420,24 @@ std::vector<Object> World::makeSingleObject(
   auto geometry_list = makeGeometry(settings);
 
   // Transformation
-  const auto transformation_settings = arrayValue(settings, keyword::transformation);
+  const auto transformation_settings = SceneValue::toArray(settings,
+                                                           keyword::transformation);
   const auto t = transformation * makeTransformationMatrix(transformation_settings);
   for (auto& geometry : geometry_list)
     geometry->transform(t);
 
   // Make a material
   // Set BSDF
-  const auto surface_index = intValue<uint>(settings, keyword::surfaceIndex);
+  const auto surface_index = SceneValue::toInt<uint>(settings,
+                                                     keyword::surfaceIndex);
   const auto surface_model = surface_list_[surface_index].get();
   // Set Light
   const EmitterModel* emitter_model = nullptr;
-  const bool is_emissive_object = boolValue(settings, keyword::isEmissiveObject);
+  const bool is_emissive_object = SceneValue::toBool(settings,
+                                                     keyword::isEmissiveObject);
   if (is_emissive_object) {
-    const auto emitter_index = intValue<uint>(settings, keyword::emitterIndex);
+    const auto emitter_index = SceneValue::toInt<uint>(settings,
+                                                       keyword::emitterIndex);
     emitter_model = emitter_list_[emitter_index].get();
   }
   const Material material{surface_model, emitter_model};
@@ -458,24 +466,28 @@ std::list<std::future<std::vector<Object>>> World::makeGroupObject(
 
   std::list<std::future<std::vector<Object>>> results;
 
-  const auto group_visibility = boolValue(group_settings, keyword::enabled);
-  const auto group_level = intValue<uint>(group_settings, keyword::groupLevel);
+  const auto group_visibility = SceneValue::toBool(group_settings,
+                                                   keyword::enabled);
+  const auto group_level = SceneValue::toInt<uint>(group_settings,
+                                                   keyword::groupLevel);
 
-  const auto transformation_settings = arrayValue(group_settings,
+  const auto transformation_settings = SceneValue::toArray(group_settings,
                                                   keyword::transformation);
   const auto t = transformation * makeTransformationMatrix(transformation_settings);
 
   for (++index; index < count; ++index) {
-    const auto object_settings = objectValue(settings[index]);
-    const auto level = intValue<uint>(object_settings, keyword::groupLevel);
+    const auto object_settings = SceneValue::toObject(settings[index]);
+    const auto level = SceneValue::toInt<uint>(object_settings,
+                                               keyword::groupLevel);
     if (level <= group_level) {
       --index;
       break;
     }
-    const auto type = stringValue(object_settings, keyword::type);
+    const auto type = SceneValue::toString(object_settings, keyword::type);
     switch (keyword::toHash32(type)) {
       case toHash32(keyword::singleObject): {
-        const auto visibility = boolValue(object_settings, keyword::enabled);
+        const auto visibility = SceneValue::toBool(object_settings,
+                                                   keyword::enabled);
         if (group_visibility && visibility) {
           auto make_single_object = [this, object_settings, t]()
           {

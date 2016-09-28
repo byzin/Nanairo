@@ -25,57 +25,41 @@
 
 namespace nanairo {
 
-namespace inner {
-
-//! Return a json value
-QJsonValue value(const QJsonObject& object, const QString& key) noexcept;
-
 /*!
   */
 inline
-QJsonValue value(const QJsonObject& object, const QString& key) noexcept
+QJsonArray SceneValue::toArray(const QJsonObject& object,
+                               const QString& key) noexcept
 {
-  ZISC_ASSERT(object.contains(key), 
-              "Object doesn't have the item: ", key.toStdString());
-  return object[key];
-}
-
-} // namespace inner
-
-/*!
-  */
-inline
-QJsonArray arrayValue(const QJsonObject& object, const QString& key) noexcept
-{
-  const auto value = inner::value(object, key);
-  ZISC_ASSERT(value.isArray(), "The value \"", key.toStdString(), "\" isn't array.");
-  return arrayValue(value);
+  const auto v = getValue(object, key);
+  ZISC_ASSERT(v.isArray(), "The value \"", key.toStdString(), "\" isn't array.");
+  return toArray(v);
 }
 
 /*!
   */
 inline
-QJsonArray arrayValue(const QJsonValue& value) noexcept
+QJsonArray SceneValue::toArray(const QJsonValue& value) noexcept
 {
   ZISC_ASSERT(value.isArray(), "The value isn't array.");
   return value.toArray();
 }
 
-
 /*!
   */
 inline
-bool boolValue(const QJsonObject& object, const QString& key) noexcept
+bool SceneValue::toBool(const QJsonObject& object,
+                        const QString& key) noexcept
 {
-  const auto value = inner::value(object, key);
-  ZISC_ASSERT(value.isBool(), "The value \"", key.toStdString(), "\" isn't boolean.");
-  return boolValue(value);
+  const auto v = getValue(object, key);
+  ZISC_ASSERT(v.isBool(), "The value \"", key.toStdString(), "\" isn't boolean.");
+  return toBool(v);
 }
 
 /*!
   */
 inline
-bool boolValue(const QJsonValue& value) noexcept
+bool SceneValue::toBool(const QJsonValue& value) noexcept
 {
   ZISC_ASSERT(value.isBool(), "The value isn't boolean.");
   return value.toBool();
@@ -84,18 +68,19 @@ bool boolValue(const QJsonValue& value) noexcept
 /*!
   */
 template <typename FloatingPoint> inline
-FloatingPoint floatValue(const QJsonObject& object, const QString& key) noexcept
+FloatingPoint SceneValue::toFloat(const QJsonObject& object,
+                                  const QString& key) noexcept
 {
   static_assert(zisc::kIsFloat<FloatingPoint>, "FloatingPoint isn't float.");
-  const auto value = inner::value(object, key);
-  ZISC_ASSERT(value.isDouble(), "The value \"", key.toStdString(), "\" isn't float.");
-  return floatValue<FloatingPoint>(value);
+  const auto v = getValue(object, key);
+  ZISC_ASSERT(v.isDouble(), "The value \"", key.toStdString(), "\" isn't float.");
+  return toFloat<FloatingPoint>(v);
 }
 
 /*!
   */
 template <typename FloatingPoint> inline
-FloatingPoint floatValue(const QJsonValue& value) noexcept
+FloatingPoint SceneValue::toFloat(const QJsonValue& value) noexcept
 {
   static_assert(zisc::kIsFloat<FloatingPoint>, "FloatingPoint isn't float.");
   ZISC_ASSERT(value.isDouble(), "The value isn't float.");
@@ -105,18 +90,19 @@ FloatingPoint floatValue(const QJsonValue& value) noexcept
 /*!
   */
 template <typename Integer> inline
-Integer intValue(const QJsonObject& object, const QString& key) noexcept
+Integer SceneValue::toInt(const QJsonObject& object,
+                          const QString& key) noexcept
 {
   static_assert(zisc::kIsInteger<Integer>, "Integer isn't integer.");
-  const auto value = inner::value(object, key);
-  ZISC_ASSERT(value.isDouble(), "The value \"", key.toStdString(), "\" isn't integer.");
-  return intValue<Integer>(value);
+  const auto v = getValue(object, key);
+  ZISC_ASSERT(v.isDouble(), "The value \"", key.toStdString(), "\" isn't integer.");
+  return toInt<Integer>(v);
 }
 
 /*!
   */
 template <typename Integer> inline
-Integer intValue(const QJsonValue& value) noexcept
+Integer SceneValue::toInt(const QJsonValue& value) noexcept
 {
   static_assert(zisc::kIsInteger<Integer>, "Integer isn't integer.");
   ZISC_ASSERT(value.isDouble(), "The value isn't integer.");
@@ -126,17 +112,18 @@ Integer intValue(const QJsonValue& value) noexcept
 /*!
   */
 inline
-QJsonObject objectValue(const QJsonObject& object, const QString& key) noexcept
+QJsonObject SceneValue::toObject(const QJsonObject& object,
+                                 const QString& key) noexcept
 {
-  const auto value = inner::value(object, key);
-  ZISC_ASSERT(value.isObject(), "The value \"", key.toStdString(), "\" isn't object.");
-  return objectValue(value);
+  const auto v = getValue(object, key);
+  ZISC_ASSERT(v.isObject(), "The value \"", key.toStdString(), "\" isn't object.");
+  return toObject(v);
 }
 
 /*!
   */
 inline
-QJsonObject objectValue(const QJsonValue& value) noexcept
+QJsonObject SceneValue::toObject(const QJsonValue& value) noexcept
 {
   ZISC_ASSERT(value.isObject(), "The value isn't object.");
   return value.toObject();
@@ -145,20 +132,32 @@ QJsonObject objectValue(const QJsonValue& value) noexcept
 /*!
   */
 inline
-QString stringValue(const QJsonObject& object, const QString& key) noexcept
+QString SceneValue::toString(const QJsonObject& object,
+                             const QString& key) noexcept
 {
-  const auto value = inner::value(object, key);
-  ZISC_ASSERT(value.isString(), "The value \"", key.toStdString(), "\" isn't string.");
-  return stringValue(value);
+  const auto v = getValue(object, key);
+  ZISC_ASSERT(v.isString(), "The value \"", key.toStdString(), "\" isn't string.");
+  return toString(v);
 }
 
 /*!
   */
 inline
-QString stringValue(const QJsonValue& value) noexcept
+QString SceneValue::toString(const QJsonValue& value) noexcept
 {
   ZISC_ASSERT(value.isString(), "The value isn't string.");
   return value.toString();
+}
+
+/*!
+  */
+inline
+QJsonValue SceneValue::getValue(const QJsonObject& object,
+                                const QString& key) noexcept
+{
+  ZISC_ASSERT(object.contains(key),
+              "Object doesn't have the item: ", key.toStdString());
+  return object[key];
 }
 
 } // namespace nanairo

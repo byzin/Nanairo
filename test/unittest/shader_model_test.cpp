@@ -11,6 +11,12 @@
 // Standard C++ library
 #include <iostream>
 #include <tuple>
+// Qt
+#include <QByteArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QString>
+#include <QtGlobal>
 // GoogleTestk
 #include "gtest/gtest.h"
 // Zisc
@@ -19,16 +25,42 @@
 #include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/system.hpp"
 #include "NanairoCore/Material/SurfaceModel/surface_model.hpp"
+#include "NanairoCore/Material/Texture/texture.hpp"
+#include "NanairoCore/Material/Texture/value_texture.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
-#include "NanairoCore/Utility/floating_point.hpp"
+#include "NanairoCore/Utility/unique_pointer.hpp"
+
+/*!
+  */
+nanairo::UniquePointer<nanairo::Texture> makeTestValueTexture(
+    const nanairo::System& system,
+    const nanairo::Float value)
+{
+  // Make value texture json
+  auto json_text = QStringLiteral("{\"Value\":%1}");
+  json_text = json_text.arg(QString::number(value));
+  // Parse json
+  QJsonObject settings;
+  {
+    QJsonParseError parse_result;
+    const auto texture_document = QJsonDocument::fromJson(json_text.toLatin1(),
+                                                          &parse_result);
+    if (parse_result.error != QJsonParseError::NoError) {
+      qFatal("Parsing test value json failed.");
+    }
+    settings = texture_document.object();
+  }
+  return nanairo::UniquePointer<nanairo::Texture>{
+      new nanairo::ValueTexture{system, settings}};
+}
 
 constexpr double kError = 0.01;
-//constexpr int kLoopCount = 1000;
-constexpr int kLoopCount = 100000;
+constexpr int kLoopCountBase = 1'000;
 
 /*!
   \details
@@ -48,8 +80,8 @@ void testBxdfSampling(
   using namespace zisc;
 
   constexpr Float error = kError;
-  constexpr uint in_vec_loop = kLoopCount;
-  constexpr uint out_vec_loop = kLoopCount;
+  constexpr uint in_vec_loop = kLoopCountBase;
+  constexpr uint out_vec_loop = kLoopCountBase * 1000;
 
   const auto& normal = intersection.normal();
   for (uint i = 0; i < in_vec_loop; ++i) {
@@ -67,13 +99,13 @@ void testBxdfSampling(
       auto sampled_vout = sampleDirectionOnHemisphere<0>(normal, sampler);
       const auto& vout = sampled_vout.direction();
       // Test sampling
-      auto result = 
+      auto result =
           bxdf->evaluateRadianceAndPdf(&vin, &vout, normal, wavelengths);
       const auto& f1 = std::get<0>(result);
       const auto& pdf1 = std::get<1>(result);
-      const auto f2 = 
+      const auto f2 =
           bxdf->evaluateRadiance(&vin, &vout, normal, wavelengths);
-      const auto pdf2 = 
+      const auto pdf2 =
           bxdf->evaluatePdf(&vin, &vout, normal, wavelengths);
       ASSERT_NEAR(f1.intensity(0), f2.intensity(0), error)
           << bxdf_name << ": Radiance evaluation test failed.";
@@ -107,7 +139,7 @@ void testBxdfImportanceSampling(
   using namespace zisc;
 
   constexpr Float error = kError;
-  constexpr uint in_vec_loop = kLoopCount;
+  constexpr uint in_vec_loop = kLoopCountBase * kLoopCountBase;
 
   const auto& normal = intersection.normal();
   for (uint i = 0; i < in_vec_loop; ++i) {
@@ -157,8 +189,8 @@ void testBxdfEnergyConservation(
   using namespace zisc;
 
   constexpr Float error = kError;
-  constexpr uint in_vec_loop = kLoopCount;
-  constexpr uint out_vec_loop = kLoopCount;
+  constexpr uint in_vec_loop = kLoopCountBase;
+  constexpr uint out_vec_loop = kLoopCountBase * 1000;
 
   const auto& normal = intersection.normal();
   for (uint i = 0; i < in_vec_loop; ++i) {
@@ -215,8 +247,8 @@ void testBxdfHelmholtzReciprocity(
   using namespace zisc;
 
   constexpr Float error = kError;
-  constexpr uint in_vec_loop = kLoopCount;
-  constexpr uint out_vec_loop = kLoopCount;
+  constexpr uint in_vec_loop = kLoopCountBase;
+  constexpr uint out_vec_loop = kLoopCountBase * 100;
 
   const auto& normal = intersection.normal();
   for (uint i = 0; i < in_vec_loop; ++i) {

@@ -117,7 +117,7 @@ XyzColor SpectralDistribution::toReflectiveXyz(const System& system) const noexc
   */
 bool isRgbData(const QJsonObject& settings) noexcept
 {
-  return stringValue(settings, keyword::colorMode) == keyword::rgb;
+  return SceneValue::toString(settings, keyword::colorMode) == keyword::rgb;
 }
 
 /*!
@@ -197,10 +197,10 @@ SpectralDistribution makeReflectiveDistribution(
   */
 RgbColor makeRgb(const System& system, const QJsonObject& settings) noexcept
 {
-  const auto color = arrayValue(settings, keyword::value);
-  auto rgb = RgbColor{floatValue<Float>(color[0]),
-                      floatValue<Float>(color[1]),
-                      floatValue<Float>(color[2])};
+  const auto color = SceneValue::toArray(settings, keyword::value);
+  auto rgb = RgbColor{SceneValue::toFloat<Float>(color[0]),
+                      SceneValue::toFloat<Float>(color[1]),
+                      SceneValue::toFloat<Float>(color[2])};
   rgb.correctGamma(system.gamma());
   rgb.clamp(0.0, 1.0);
   return rgb;
@@ -235,7 +235,7 @@ SpectralDistribution makeReflectiveSpectra(const QJsonObject& settings) noexcept
   */
 SpectralDistribution makeSpectra(const QJsonObject& settings) noexcept
 {
-  const auto file_path = stringValue(settings, keyword::value);
+  const auto file_path = SceneValue::toString(settings, keyword::value);
   return makeSpectra(file_path);
 }
 

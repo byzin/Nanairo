@@ -9,6 +9,7 @@
 
 // Standard C++ library
 #include <array>
+#include <memory>
 // GoogleTest
 #include "gtest/gtest.h"
 // Test
@@ -17,19 +18,10 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
-#include "NanairoCore/Utility/scene_settings.hpp"
-#include "NanairoCore/Utility/value.hpp"
 
 constexpr nanairo::uint kSampleSize = nanairo::kWavelengthSampleSize;
 
-// Forward declaration
-template <nanairo::uint N>
-std::array<nanairo::uint, nanairo::kSpectraSize> testWavelengthDistribution(
-    const nanairo::WavelengthSampler<kSampleSize>& wavelength_sampler,
-    nanairo::Sampler& sampler);
-
-void testUniformWavelengthSampler(
-    const nanairo::WavelengthSampler<kSampleSize>& wavelength_sampler);
+namespace {
 
 /*!
   \details
@@ -66,30 +58,29 @@ void testUniformWavelengthSampler(
 {
   using namespace nanairo;
   using zisc::cast;
-  // Initialize test scene
-  SceneSettings settings;
-  settings.open("unit_test.nana");
-  settings.clear();
+
   // Initialize test system
-  auto system = makeTestSystem(512, 512, false, settings);
+  auto system = makeTestSystem(512, 512, false);
   auto& sampler = system->globalSampler();
 
   // Distribution test
-  constexpr uint n = 1000000;
+  constexpr uint n = 1'000'000'0;
   constexpr uint loop_count = kSpectraSize * n;
   constexpr uint expectation = kSampleSize * n;
-  constexpr uint error = expectation / 1000;
-  const auto wavelength_distribution = 
+  constexpr uint error = kSampleSize * 1'000;
+  const auto wavelength_distribution =
       testWavelengthDistribution<loop_count>(wavelength_sampler, sampler);
   for (uint i = 0; i < kSpectraSize; ++i) {
+    const auto w = getWavelength(i);
     const auto w_count = wavelength_distribution[i];
-    const auto wavelength = getWavelength(i);
-    EXPECT_GT(w_count, expectation - error) 
-        << "The wavelength (" << wavelength << ") is less than the expectation value.";
-    EXPECT_LT(w_count, expectation + error) 
-        << "The wavelength (" << wavelength << ") is greater than the expectation value.";
+    EXPECT_GT(w_count, expectation - error)
+        << "The wavelength (" << w << ") is less than the expectation value.";
+    EXPECT_LT(w_count, expectation + error)
+        << "The wavelength (" << w << ") is greater than the expectation value.";
   }
 }
+
+} // namespace
 
 TEST(SamplingWavelengthsTest, RegularSamplingTest)
 {

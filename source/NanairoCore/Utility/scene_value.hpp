@@ -24,45 +24,65 @@ namespace nanairo {
 //! \addtogroup Core
 //! \{
 
-//! Return a array value
-QJsonArray arrayValue(const QJsonObject& object, const QString& key) noexcept;
+/*!
+  */
+class SceneValue
+{
+ public:
+  //! Return a array value
+  static QJsonArray toArray(const QJsonObject& object,
+                            const QString& key) noexcept;
 
-//! Return a array value
-QJsonArray arrayValue(const QJsonValue& value) noexcept;
+  //! Return a array value
+  static QJsonArray toArray(const QJsonValue& value) noexcept;
 
-//! Return a boolean value
-bool boolValue(const QJsonObject& object, const QString& key) noexcept;
+  //! Return a boolean value
+  static bool toBool(const QJsonObject& object,
+                     const QString& key) noexcept;
 
-//! Return a boolean value
-bool boolValue(const QJsonValue& value) noexcept;
+  //! Return a boolean value
+  static bool toBool(const QJsonValue& value) noexcept;
 
-//! Return a float value
-template <typename FloatingPoint>
-FloatingPoint floatValue(const QJsonObject& object, const QString& key) noexcept;
+  //! Return a float value
+  template <typename FloatingPoint>
+  static FloatingPoint toFloat(const QJsonObject& object,
+                               const QString& key) noexcept;
 
-//! Return a float value
-template <typename FloatingPoint>
-FloatingPoint floatValue(const QJsonValue& value) noexcept;
+  //! Return a float value
+  template <typename FloatingPoint>
+  static FloatingPoint toFloat(const QJsonValue& value) noexcept;
 
-//! Return a integer value
-template <typename Integer>
-Integer intValue(const QJsonObject& object, const QString& key) noexcept;
+  //! Return a integer value
+  template <typename Integer>
+  static Integer toInt(const QJsonObject& object,
+                       const QString& key) noexcept;
 
-//! Return a integer value
-template <typename Integer>
-Integer intValue(const QJsonValue& value) noexcept;
+  //! Return a integer value
+  template <typename Integer>
+  static Integer toInt(const QJsonValue& value) noexcept;
 
-//! Return a object value
-QJsonObject objectValue(const QJsonObject& object, const QString& key) noexcept;
+  //! Return a object value
+  static QJsonObject toObject(const QJsonObject& object,
+                              const QString& key) noexcept;
 
-//! Return a object value
-QJsonObject objectValue(const QJsonValue& value) noexcept;
+  //! Return a object value
+  static QJsonObject toObject(const QJsonValue& value) noexcept;
 
-//! Return a string value
-QString stringValue(const QJsonObject& object, const QString& key) noexcept;
+  //! Return a string value
+  static QString toString(const QJsonObject& object,
+                          const QString& key) noexcept;
 
-//! Return a string value
-QString stringValue(const QJsonValue& value) noexcept;
+  //! Return a string value
+  static QString toString(const QJsonValue& value) noexcept;
+
+ private:
+  // Prevent instance
+  SceneValue() noexcept;
+
+  //! Return a json value
+  static QJsonValue getValue(const QJsonObject& object,
+                             const QString& key) noexcept;
+};
 
 //! \}
 

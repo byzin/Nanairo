@@ -62,7 +62,8 @@ void SmoothDiffuseSurface::initialize(
     const QJsonObject& settings,
     const std::vector<const Texture*>& texture_list) noexcept
 {
-  const auto texture_index = intValue<uint>(settings, keyword::reflectanceIndex);
+  const auto texture_index = SceneValue::toInt<uint>(settings,
+                                                     keyword::reflectanceIndex);
   reflectance_ = texture_list[texture_index];
 }
 

@@ -55,7 +55,7 @@ std::vector<UniquePointer<Geometry>> makeGeometry(
 
   std::vector<UniquePointer<Geometry>> geometry_list;
 
-  const auto type = stringValue(settings, keyword::geometryType);
+  const auto type = SceneValue::toString(settings, keyword::geometryType);
   switch (keyword::toHash32(type)) {
     case toHash32(keyword::planeObject): {
       geometry_list.emplace_back(new Plane{});

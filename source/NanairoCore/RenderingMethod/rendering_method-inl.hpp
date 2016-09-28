@@ -135,7 +135,8 @@ void RenderingMethod<kSampleSize>::initialize(const QJsonObject& settings) noexc
   russian_roulette_ = makeRussianRoulette<kSampleSize>(settings);
 
   // Ray cast epsilon
-  ray_cast_epsilon_ = floatValue<Float>(settings, keyword::rayCastEpsilon);
+  ray_cast_epsilon_ = SceneValue::toFloat<Float>(settings,
+                                                 keyword::rayCastEpsilon);
   ZISC_ASSERT(0.0 < ray_cast_epsilon_, "Ray cast epsilon is negative.");
 }
 
@@ -222,7 +223,7 @@ UniquePointer<RenderingMethod<kSampleSize>> makeRenderingMethod(
 
   RenderingMethod<kSampleSize>* method = nullptr;
 
-  const auto type = stringValue(settings, keyword::type);
+  const auto type = SceneValue::toString(settings, keyword::type);
 //  const bool glossy_photon_map = (type == keyword::probabilisticPpm)
 //    ? boolValue(settings, keyword::glossyPhotonMap)
 //    : false;

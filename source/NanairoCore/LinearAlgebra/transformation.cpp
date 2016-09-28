@@ -40,11 +40,12 @@ Matrix4x4 makeTransformationMatrix(const QJsonArray& settings) noexcept
 
   const int count = settings.count();
   for (int index = count - 1; 0 <= index; --index) {
-    const auto transformation_settings = objectValue(settings[index]);
-    const bool is_enabled = boolValue(transformation_settings, keyword::enabled);
+    const auto transformation_settings = SceneValue::toObject(settings[index]);
+    const bool is_enabled = SceneValue::toBool(transformation_settings,
+                                               keyword::enabled);
     if (!is_enabled)
       continue;
-    const auto type = stringValue(transformation_settings, keyword::type);
+    const auto type = SceneValue::toString(transformation_settings, keyword::type);
     switch (keyword::toHash32(type)) {
       case toHash32(keyword::translation): {
         matrix = makeTranslationMatrix(transformation_settings) * matrix;
@@ -73,10 +74,10 @@ Matrix4x4 makeTransformationMatrix(const QJsonArray& settings) noexcept
   */
 Matrix4x4 makeTranslationMatrix(const QJsonObject& settings) noexcept
 {
-  const auto value = arrayValue(settings, keyword::value);
-  const Float x = floatValue<Float>(value[0]); 
-  const Float y = floatValue<Float>(value[1]); 
-  const Float z = floatValue<Float>(value[2]); 
+  const auto value = SceneValue::toArray(settings, keyword::value);
+  const Float x = SceneValue::toFloat<Float>(value[0]); 
+  const Float y = SceneValue::toFloat<Float>(value[1]); 
+  const Float z = SceneValue::toFloat<Float>(value[2]); 
   return makeTranslationMatrix(x, y, z);
 }
 
@@ -86,10 +87,10 @@ Matrix4x4 makeTranslationMatrix(const QJsonObject& settings) noexcept
   */
 Matrix4x4 makeScalingMatrix(const QJsonObject& settings) noexcept
 {
-  const auto value = arrayValue(settings, keyword::value);
-  const Float x = floatValue<Float>(value[0]); 
-  const Float y = floatValue<Float>(value[1]); 
-  const Float z = floatValue<Float>(value[2]); 
+  const auto value = SceneValue::toArray(settings, keyword::value);
+  const Float x = SceneValue::toFloat<Float>(value[0]); 
+  const Float y = SceneValue::toFloat<Float>(value[1]); 
+  const Float z = SceneValue::toFloat<Float>(value[2]); 
   return makeScalingMatrix(x, y, z);
 }
 
@@ -101,14 +102,14 @@ Matrix4x4 makeRotationMatrix(const QJsonObject& settings) noexcept
 {
   using zisc::toHash32;
 
-  const auto angle = floatValue<Float>(settings, keyword::angle);
-  const auto unit = stringValue(settings, keyword::unit);
+  const auto angle = SceneValue::toFloat<Float>(settings, keyword::angle);
+  const auto unit = SceneValue::toString(settings, keyword::unit);
   const Float theta = (unit == keyword::degreeUnit)
       ? zisc::toRadian(angle)
       : angle;
 
   Matrix4x4 matrix;
-  const auto axis = stringValue(settings, keyword::axis);
+  const auto axis = SceneValue::toString(settings, keyword::axis);
   switch (keyword::toHash32(axis)) {
     case toHash32(keyword::xAxis): {
       matrix = makeXAxisRotationMatrix(theta);

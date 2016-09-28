@@ -65,17 +65,18 @@ void RoughDielectricSurface::initialize(
     const QJsonObject& settings,
     const std::vector<const Texture*>& texture_list) noexcept
 {
-  const auto texture_index = intValue<uint>(settings, keyword::roughnessIndex);
+  const auto texture_index = SceneValue::toInt<uint>(settings,
+                                                     keyword::roughnessIndex);
   roughness_ = texture_list[texture_index];
 
   const auto outer_refractive_index_settings =
-      stringValue(settings, keyword::outerRefractiveIndex);
+      SceneValue::toString(settings, keyword::outerRefractiveIndex);
   const auto n1 = makeSpectra(outer_refractive_index_settings);
   ZISC_ASSERT(!hasZeroFloat(n1), "The n1 contains zero value.");
   ZISC_ASSERT(!hasNegativeFloat(n1), "The n1 contains negative value.");
 
   const auto inner_refractive_index_settings =
-      stringValue(settings, keyword::innerRefractiveIndex);
+      SceneValue::toString(settings, keyword::innerRefractiveIndex);
   const auto n2 = makeSpectra(inner_refractive_index_settings);
   ZISC_ASSERT(!hasNegativeFloat(n2), "The n2 contains negative value.");
 

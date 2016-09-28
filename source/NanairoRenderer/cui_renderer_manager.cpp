@@ -76,7 +76,7 @@ void CuiRendererManager::invokeRenderer() noexcept
   // Make output directory
 //  const auto current_dir = QDir::current();
 //  const auto key = QString{keyword::system} + "/" + keyword::sceneName;
-//  const auto scene_name = settings->stringValue(key);
+//  const auto scene_name = settings->SceneValue::toString(key);
 //  const auto current_time = getCurrentTime();
 //  const auto dir_name = scene_name + "_" + current_time;
 //  current_dir.mkdir(dir_name);
@@ -106,8 +106,8 @@ bool CuiRendererManager::isRunnable() const noexcept
 std::tuple<bool, QString> CuiRendererManager::generateOutputDir() const noexcept
 {
   const auto current_dir = QDir::current();
-  const auto scene_settings = objectValue(settings_, keyword::scene);
-  const auto scene_name = stringValue(scene_settings, keyword::sceneName);
+  const auto scene_settings = SceneValue::toObject(settings_, keyword::scene);
+  const auto scene_name = SceneValue::toString(scene_settings, keyword::sceneName);
   const auto current_time = getCurrentTime();
   const auto dir_name = scene_name + "_" + current_time;
   const bool result = current_dir.mkdir(dir_name);

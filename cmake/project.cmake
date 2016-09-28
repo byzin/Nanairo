@@ -96,14 +96,14 @@ endfunction(getNanairoWarningOption)
 #
 function(buildNanairo)
   ## Load Nanairo modules
-  include(${PROJECT_SOURCE_DIR}/cmake/keyword.cmake)
-  getNanairoKeywords(nanairo_keyword_list)
-  # NanairoCommon
-  include(${PROJECT_SOURCE_DIR}/source/NanairoCommon/config.cmake)
-  getNanairoCommon(common_source_files)
-  # NanairoCore
-  include(${PROJECT_SOURCE_DIR}/source/NanairoCore/config.cmake)
-  getNanairoCore(core_source_files core_definitions)
+#  include(${PROJECT_SOURCE_DIR}/cmake/keyword.cmake)
+#  getNanairoKeywords(nanairo_keyword_list)
+#  # NanairoCommon
+#  include(${PROJECT_SOURCE_DIR}/source/NanairoCommon/config.cmake)
+#  getNanairoCommon(common_source_files)
+#  # NanairoCore
+#  include(${PROJECT_SOURCE_DIR}/source/NanairoCore/config.cmake)
+#  getNanairoCore(core_source_files core_definitions)
   # NanairoRenderer
   include(${PROJECT_SOURCE_DIR}/source/NanairoRenderer/config.cmake)
   getNanairoRenderer(renderer_source_files renderer_definitions)

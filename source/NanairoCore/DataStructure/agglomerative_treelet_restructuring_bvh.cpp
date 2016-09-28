@@ -235,8 +235,9 @@ Float AgglomerativeTreeletRestructuringBvh::getNodeDistance(
 void AgglomerativeTreeletRestructuringBvh::initialize(
     const QJsonObject& settings) noexcept
 {
-  treelet_size_ = intValue<uint>(settings, keyword::treeletSize);
-  optimization_loop_count_ = intValue<uint>(settings, keyword::optimizationLoopCount);
+  treelet_size_ = SceneValue::toInt<uint>(settings, keyword::treeletSize);
+  optimization_loop_count_ =
+      SceneValue::toInt<uint>(settings, keyword::optimizationLoopCount);
   ZISC_ASSERT(4 <= treelet_size_, "Invalid treelet size is specified.");
 }
 

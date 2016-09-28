@@ -150,13 +150,13 @@
 !/source/zisc
 ## Test
 !/test/
-!/test/gtest/
-!/test/gtest/gtest-all.cc
-!/test/gtest/gtest/
-!/test/gtest/gtest/gtest.h
-!/test/UnitTest/
-!/test/UnitTest/*.cpp
-!/test/UnitTest/*.hpp
+!/test/config.cmake
+!/test/googletest
+!/test/unittest/*.cpp
+!/test/unittest/*.hpp
+!/test/resources
+!/test/resources/test_resource.qrc
+!/test/resources/*.json
 
 # Resources
 !resources/

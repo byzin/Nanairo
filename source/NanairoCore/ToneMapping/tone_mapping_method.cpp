@@ -121,7 +121,7 @@ UniquePointer<ToneMappingMethod> makeToneMappingMethod(const System& system,
 
   ToneMappingMethod* method = nullptr;
 
-  const auto type = stringValue(settings, keyword::toneMapping);
+  const auto type = SceneValue::toString(settings, keyword::toneMapping);
   switch (keyword::toHash32(type)) {
     case toHash32(keyword::reinhard): {
       method = new Reinhard{system, settings};

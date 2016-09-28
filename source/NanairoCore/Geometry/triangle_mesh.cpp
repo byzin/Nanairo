@@ -297,8 +297,9 @@ std::vector<UniquePointer<Geometry>> makeMeshesFromWavefront(
   */
 std::vector<UniquePointer<Geometry>> makeMeshes(const QJsonObject& settings) noexcept
 {
-  const auto object_file_path = stringValue(settings, keyword::objectFilePath);
-  const bool smoothing = boolValue(settings, keyword::smoothing);
+  const auto object_file_path = SceneValue::toString(settings,
+                                                     keyword::objectFilePath);
+  const bool smoothing = SceneValue::toBool(settings, keyword::smoothing);
   const auto mesh_type = smoothing ? MeshType::Smoothed : MeshType::Flat;
 
   std::vector<UniquePointer<Geometry>> mesh_list;

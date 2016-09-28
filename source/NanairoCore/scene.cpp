@@ -53,8 +53,8 @@ void Scene::initialize(System& system,
   using zisc::cast;
 
   // Create a camera
-  const auto object_settings_list = arrayValue(settings, keyword::object);
-  const auto camera_settings = objectValue(object_settings_list[0]);
+  const auto object_settings_list = SceneValue::toArray(settings, keyword::object);
+  const auto camera_settings = SceneValue::toObject(object_settings_list[0]);
   auto make_camera = [this, &system, &camera_settings, message_sender]()
   {
     // Film
@@ -63,14 +63,14 @@ void Scene::initialize(System& system,
     camera_ = makeCameraModel(camera_settings);
     camera_->setFilm(film_.get());
     // Transformation
-    const auto transformation_settings = arrayValue(camera_settings, 
-                                                    keyword::transformation);
+    const auto transformation_settings =
+        SceneValue::toArray(camera_settings, keyword::transformation);
     const auto transformation = makeTransformationMatrix(transformation_settings);
     camera_->transform(transformation);
-    
+
     const auto byte = zisc::toMegaByte(film().spectraBuffer().bufferMemorySize());
     const auto byte_string = QLocale{QLocale::English}.toString(byte, 'f', 3);
-    const auto message = 
+    const auto message =
         QStringLiteral("    Spectra image buffer size: %1 MB.").arg(byte_string);
     message_sender(message);
   };
@@ -79,7 +79,7 @@ void Scene::initialize(System& system,
 
   // Create a world
   world_ = new World{system, settings, message_sender};
-  
+
   // Wait for the initialization completion
   camera_result.get();
 }

@@ -71,7 +71,7 @@ UniquePointer<EmitterModel> makeEmitter(const System& system,
 
   EmitterModel* emitter = nullptr;
 
-  const auto type = stringValue(settings, keyword::type);
+  const auto type = SceneValue::toString(settings, keyword::type);
   switch (keyword::toHash32(type)) {
    case toHash32(keyword::nonDirectionalEmitter):
     emitter = new NonDirectionalEmitter{system, settings};

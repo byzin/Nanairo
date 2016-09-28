@@ -4,7 +4,7 @@
 
 **Nanairo** is a physically plausible spectral renderer.
 
-Version: 0.0.1
+Version: 0.0.2
 
 ## Description ##
 

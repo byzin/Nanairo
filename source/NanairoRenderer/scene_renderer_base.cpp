@@ -61,20 +61,22 @@ void SceneRendererBase::initialize(const QJsonObject& settings) noexcept
 
   outputMessage(QStringLiteral("Initialize the renderer."));
 
-  auto system_node = objectValue(settings, keyword::system);
+  auto system_node = SceneValue::toObject(settings, keyword::system);
 
-  termination_pass_ = intValue<qint64>(system_node, keyword::terminationCycle);
+  termination_pass_ = SceneValue::toInt<qint64>(system_node,
+                                                keyword::terminationCycle);
   termination_pass_ = (termination_pass_ == 0)
       ? std::numeric_limits<quint64>::max()
       : termination_pass_;
 
-  is_power2_saving_ = boolValue(system_node, keyword::power2CycleSaving);
-  const int interval_time = intValue<int>(system_node, keyword::savingInterval);
+  is_power2_saving_ = SceneValue::toBool(system_node, keyword::power2CycleSaving);
+  const int interval_time = SceneValue::toInt<int>(system_node, keyword::savingInterval);
   saving_interval_time_ = duration_cast<Clock::duration>(Millis{interval_time});
 
-  const auto image_resolution = arrayValue(system_node, keyword::imageResolution);
-  const int width = intValue<int>(image_resolution[0]);
-  const int height = intValue<int>(image_resolution[1]);
+  const auto image_resolution = SceneValue::toArray(system_node,
+                                                    keyword::imageResolution);
+  const int width = SceneValue::toInt<int>(image_resolution[0]);
+  const int height = SceneValue::toInt<int>(image_resolution[1]);
   ldr_image_ = QImage{QSize{width, height}, QImage::Format_RGB32};
   const QColor black{Qt::black};
   ldr_image_.fill(black);

@@ -95,16 +95,16 @@ void CheckerboardTexture::initialize(const System& system,
 {
   using zisc::cast;
 
-  const auto resolution = arrayValue(settings, keyword::imageResolution);
-  const auto width = intValue<int>(resolution[0]);
+  const auto resolution = SceneValue::toArray(settings, keyword::imageResolution);
+  const auto width = SceneValue::toInt<int>(resolution[0]);
   width_ = cast<Float>(width) - std::numeric_limits<Float>::epsilon();
 
-  const auto height = intValue<int>(resolution[1]);
+  const auto height = SceneValue::toInt<int>(resolution[1]);
   height_ = cast<Float>(height) - std::numeric_limits<Float>::epsilon();
 
-  const auto color1_settings = objectValue(settings, keyword::color1);
+  const auto color1_settings = SceneValue::toObject(settings, keyword::color1);
   spectra_value_[0] = makeReflectiveDistribution(system, color1_settings);
-  const auto color2_settings = objectValue(settings, keyword::color2);
+  const auto color2_settings = SceneValue::toObject(settings, keyword::color2);
   spectra_value_[1] = makeReflectiveDistribution(system, color2_settings);
 
   float_value_[0] = spectra_value_[0].toReflectiveXyz(system).y();

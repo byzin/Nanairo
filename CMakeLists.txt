@@ -9,7 +9,7 @@
 cmake_minimum_required(VERSION 3.4)
 
 ## Set project information
-project(Nanairo LANGUAGES CXX)
+project(Nanairo LANGUAGES C CXX)
 include(${PROJECT_SOURCE_DIR}/cmake/project.cmake)
 setNanairoProperties()
 message(STATUS "## Nanairo version: ${PROJECT_VERSION}")
@@ -51,6 +51,16 @@ file(COPY ${PROJECT_SOURCE_DIR}/resources/image
           ${PROJECT_SOURCE_DIR}/resources/spectrum
      DESTINATION ${PROJECT_BINARY_DIR}/resources)
 
+# Common
+## Load Nanairo modules
+include(${PROJECT_SOURCE_DIR}/cmake/keyword.cmake)
+getNanairoKeywords(nanairo_keyword_list)
+# NanairoCommon
+include(${PROJECT_SOURCE_DIR}/source/NanairoCommon/config.cmake)
+getNanairoCommon(common_source_files)
+# NanairoCore
+include(${PROJECT_SOURCE_DIR}/source/NanairoCore/config.cmake)
+getNanairoCore(core_source_files core_definitions)
 # Build
 buildNanairo()
 
@@ -60,11 +70,11 @@ if(${NANAIRO_BUILD_DOCUMENTS})
   buildDocuments()
 endif()
 
-# Unit test
-# if(${NANAIRO_BUILD_TEST})
-#   include(${PROJECT_SOURCE_DIR}/cmake/test.cmake)
-#   buildTest()
-# endif()
+# Unit tests
+if(${NANAIRO_BUILD_TESTS})
+  include(${PROJECT_SOURCE_DIR}/test/config.cmake)
+  buildUnitTest()
+endif()
 
 include(${PROJECT_SOURCE_DIR}/cmake/packaging.cmake)
 setupPackInfo()

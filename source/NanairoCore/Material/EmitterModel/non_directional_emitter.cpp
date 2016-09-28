@@ -48,11 +48,11 @@ EmitterType NonDirectionalEmitter::type() const noexcept
 void NonDirectionalEmitter::initialize(const System& system,
                                        const QJsonObject& settings) noexcept
 {
-  const Float radiant_exitance = floatValue<Float>(settings,
-                                                   keyword::radiantExitance);
+  const Float radiant_exitance =
+      SceneValue::toFloat<Float>(settings, keyword::radiantExitance);
   ZISC_ASSERT(0.0 < radiant_exitance, "Radiance exitance is negative.");
 
-  const auto color_setting = objectValue(settings, keyword::color);
+  const auto color_setting = SceneValue::toObject(settings, keyword::color);
   auto power_distribution = makeEmissiveDistribution(system, color_setting);
 
   const Float k = radiant_exitance / power_distribution.sum(); 

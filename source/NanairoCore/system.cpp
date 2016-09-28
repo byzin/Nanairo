@@ -56,39 +56,44 @@ void System::initialize(const QJsonObject& settings) noexcept
   auto initialize_system = [this](const QJsonObject& node)
   {
     // Threading
-    const auto num_of_threads = intValue<uint>(node, keyword::numOfThreads);
+    const auto num_of_threads = SceneValue::toInt<uint>(node,
+                                                        keyword::numOfThreads);
     thread_pool_ = new zisc::ThreadPool{num_of_threads};
-  
+
     // Random number generator
-    const auto random_seed = intValue<uint32>(node, keyword::randomSeed);
+    const auto random_seed = SceneValue::toInt<uint32>(node,
+                                                       keyword::randomSeed);
     sampler_list_.reserve(num_of_threads + 1);
     for (uint i = 0; i < (num_of_threads + 1); ++i)
       sampler_list_.emplace_back(random_seed + cast<uint32>(i));
-  
+
     // Memory pool
     memory_pool_list_.resize(num_of_threads + 1);
-  
+
     // Image resolution
-    const auto image_resolution = arrayValue(node, keyword::imageResolution);
-    image_width_resolution_ = intValue<uint>(image_resolution[0]);
-    image_height_resolution_ = intValue<uint>(image_resolution[1]);
+    const auto image_resolution = SceneValue::toArray(node,
+                                                      keyword::imageResolution);
+    image_width_resolution_ = SceneValue::toInt<uint>(image_resolution[0]);
+    image_height_resolution_ = SceneValue::toInt<uint>(image_resolution[1]);
   };
-  const auto system_settings = objectValue(settings, keyword::system);
+  const auto system_settings = SceneValue::toObject(settings, keyword::system);
   initialize_system(system_settings);
 
   // Color
   auto initialize_color_system = [this](const QJsonObject& node)
   {
     // RGB rendering
-    is_rgb_rendering_mode_ = (stringValue(node, keyword::colorMode) == keyword::rgb);
+    is_rgb_rendering_mode_ =
+        (SceneValue::toString(node, keyword::colorMode) == keyword::rgb);
     // Color space
-    color_space_ = keyword::toHash32(stringValue(node, keyword::colorSpace));
-    gamma_ = floatValue<Float>(node, keyword::gamma);
+    color_space_ = keyword::toHash32(SceneValue::toString(node,
+                                                          keyword::colorSpace));
+    gamma_ = SceneValue::toFloat<Float>(node, keyword::gamma);
     // Color matching function
     rgb_color_matching_function_ = new RgbColorMatchingFunction{};
     xyz_color_matching_function_ = new XyzColorMatchingFunction{node};
   };
-  const auto color_settings = objectValue(settings, keyword::color);
+  const auto color_settings = SceneValue::toObject(settings, keyword::color);
   initialize_color_system(color_settings);
 }
 

@@ -45,7 +45,7 @@ UniquePointer<Texture> makeTexture(const System& system,
 
   Texture* texture = nullptr;
 
-  const auto type = stringValue(settings, keyword::type);
+  const auto type = SceneValue::toString(settings, keyword::type);
   switch (keyword::toHash32(type)) {
     case toHash32(keyword::valueTexture): {
       texture = new ValueTexture{system, settings};

@@ -105,7 +105,8 @@ void ImageTexture::initialize(const System& system,
 {
   using zisc::cast;
 
-  const auto image_file_path = stringValue(settings, keyword::imageFilePath);
+  const auto image_file_path = SceneValue::toString(settings,
+                                                    keyword::imageFilePath);
   const QImage image{image_file_path};
 
   const int width = image.width();

@@ -51,8 +51,8 @@ void XyzColorMatchingFunction::setStandardIlluminant(const QJsonObject& settings
 {
   using zisc::toHash32;
 
-  const auto standard_illuminant = stringValue(settings,
-                                               keyword::standardIllumination);
+  const auto standard_illuminant =
+      SceneValue::toString(settings, keyword::standardIllumination);
   switch (keyword::toHash32(standard_illuminant)) {
     case toHash32(keyword::cieD65): {
       standard_illuminant_ = makeSpectra(":/spectrum/illuminant/cie_si_d65.csv");
@@ -78,8 +78,8 @@ void XyzColorMatchingFunction::setStandardObserver(const QJsonObject& settings) 
 {
   using zisc::toHash32;
 
-  const auto standard_observer = stringValue(settings,
-                                             keyword::standardObserver);
+  const auto standard_observer =
+      SceneValue::toString(settings, keyword::standardObserver);
   switch (keyword::toHash32(standard_observer)) {
     case toHash32(keyword::cie2Deg): {
       x_bar_ = makeSpectra(":/spectrum/observer/cie_sco_2degree_xbar.csv");

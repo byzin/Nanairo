@@ -150,10 +150,10 @@ RussianRouletteFunction<kSampleSize> makeRussianRoulette(
 
   RussianRouletteFunction<kSampleSize> russian_roulette;
 
-  const auto type = stringValue(settings, keyword::russianRoulette);
+  const auto type = SceneValue::toString(settings, keyword::russianRoulette);
   uint path_length = 0;
   if (type == keyword::roulettePathLength)
-    path_length = intValue<uint>(settings, keyword::pathLength);
+    path_length = SceneValue::toInt<uint>(settings, keyword::pathLength);
   switch (keyword::toHash32(type)) {
     case toHash32(keyword::rouletteMaxReflectance): {
       russian_roulette = playRussianRouletteWithMax<kSampleSize>;
