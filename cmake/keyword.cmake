@@ -63,6 +63,7 @@ function(getNanairoKeywords nanairo_keyword_list)
           adobeRgbD50 "Adobe RGB (D50)"
       gamma "Gamma"
       toneMapping "ToneMapping"
+          exposure "Exposure"
           reinhard "Reinhard"
           modifiedReinhard "Modified reinhard"
           filmic "Filmic"

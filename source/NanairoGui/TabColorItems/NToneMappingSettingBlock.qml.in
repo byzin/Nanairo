@@ -23,19 +23,31 @@ NSettingBlock {
     backgroundColor: tone_mapping_setting_block.color
 
     model: ["@reinhard@",
-            "@modifiedReinhard@",
             "@filmic@",
             "@uncharted2Filmic@"]
+  }
+
+  NSpinBox {
+    id: exposure_spinbox
+
+    width: 140
+    y: (tone_mapping_combobox.y + tone_mapping_combobox.height) + @item_offset@
+
+    suffix: " " + qsTr("exposure")
+    maximumValue: @integer32_max@
+    minimumValue: 0.0000001
   }
 
   function getSceneData() {
     var sceneData = {};
     sceneData["@toneMapping@"] = tone_mapping_combobox.currentText;
+    sceneData["@exposure@"] = exposure_spinbox.value;
     return sceneData;
   }
 
   function setSceneData(sceneData) {
     tone_mapping_combobox.currentIndex =
         tone_mapping_combobox.find(sceneData["@toneMapping@"]);
+    exposure_spinbox.value = sceneData["@exposure@"];
   }
 }

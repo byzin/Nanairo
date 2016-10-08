@@ -10,21 +10,16 @@
 #ifndef NANAIRO_UNCHARTED2_FILMIC_HPP
 #define NANAIRO_UNCHARTED2_FILMIC_HPP
 
-// Standard C++ library
-#include <vector>
 // Nanairo
-#include "tone_mapping_method.hpp"
+#include "tone_mapping_operator.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Color/yxy_color.hpp"
 
 // Forward declaration
-class QImage;
 class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
-class HdrImage;
 class System;
 
 //! \addtogroup Core
@@ -34,30 +29,18 @@ class System;
   \details
   No detailed.
   */
-class Uncharted2Filmic : public ToneMappingMethod
+class Uncharted2Filmic : public ToneMappingOperator
 {
  public:
   //! Initialize reinhard method
   Uncharted2Filmic(const System& system, const QJsonObject& settings) noexcept;
 
-
-  //! Apply tone mapping
-  void toneMap(System& system,
-               const HdrImage& hdr_image, 
-               QImage& ldr_image) noexcept override;
-
  private:
-  //! Initialize
-  void initialize(const System& system, const QJsonObject& settings) noexcept;
-
-  //! Apply uncharted2 tone map
-  Float uncharted2ToneMap(const Float x) const noexcept;
-
-
-  std::vector<YxyColor> pixel_luminance_;
+  //! Apply a uncharted2 tonemap curve
+  Float tonemap(const Float x) const noexcept override;
 };
 
-//! \} Core 
+//! \} Core
 
 } // namespace nanairo
 

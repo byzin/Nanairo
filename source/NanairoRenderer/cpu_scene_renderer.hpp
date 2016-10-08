@@ -29,7 +29,7 @@ class HdrImage;
 class Scene;
 class System;
 template <uint> class RenderingMethod;
-class ToneMappingMethod;
+class ToneMappingOperator;
 
 //! \addtogroup Renderer
 //! \{
@@ -67,7 +67,7 @@ class CpuSceneRenderer : public SceneRendererBase
   UniquePointer<RenderingMethod<kWavelengthSampleSize>> rendering_method_;
   UniquePointer<System> system_;
   UniquePointer<Scene> scene_;
-  UniquePointer<ToneMappingMethod> tone_mapping_method_;
+  UniquePointer<ToneMappingOperator> tone_mapping_operator_;
   UniquePointer<HdrImage> hdr_image_;
 };
 

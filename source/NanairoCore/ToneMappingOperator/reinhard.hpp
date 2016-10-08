@@ -11,17 +11,15 @@
 #define NANAIRO_REINHARD_HPP
 
 // Nanairo
-#include "tone_mapping_method.hpp"
+#include "tone_mapping_operator.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 
 // Forward declaration
-class QImage;
 class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
-class HdrImage;
 class System;
 
 //! \addtogroup Core
@@ -31,17 +29,15 @@ class System;
   \details
   No detailed.
   */
-class Reinhard : public ToneMappingMethod
+class Reinhard : public ToneMappingOperator
 {
  public:
   //! Initialize reinhard method
   Reinhard(const System& system, const QJsonObject& settings) noexcept;
 
-
-  //! Apply tone mapping
-  void toneMap(System& system,
-               const HdrImage& hdr_image, 
-               QImage& ldr_image) noexcept override;
+ private:
+  //! Apply a reinhard tonemap curve
+  Float tonemap(const Float x) const noexcept override;
 };
 
 //! \} Core 

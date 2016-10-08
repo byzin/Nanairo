@@ -12,16 +12,49 @@
 
 #include "system.hpp"
 // Standard C++ library
+#include <tuple>
+#include <type_traits>
 #include <vector>
 // Zisc
 #include "zisc/aligned_memory_pool.hpp"
+#include "zisc/error.hpp"
 #include "zisc/thread_pool.hpp"
+#include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "Sampling/sampler.hpp"
 #include "Utility/unique_pointer.hpp"
 
 namespace nanairo {
+
+//! Calculate the range of indices
+template <typename Integer> inline
+std::tuple<Integer, Integer> System::calcThreadRange(
+    const Integer length,
+    const Integer num_of_threads,
+    const int thread_id) noexcept
+{
+  static_assert(std::is_integral<Integer>::value,
+                "The Integer is not integer type.");
+  // Set the calculation range 
+  const uint id = zisc::cast<Integer>(thread_id);
+  ZISC_ASSERT(num_of_threads < length,
+              "The num of threads is more than the length.");
+  const uint begin = id * (length / num_of_threads);
+  const uint end = (id + 1) * (length / num_of_threads) +
+      (((id + 1) == num_of_threads) ? (length % num_of_threads) : 0);
+  return std::make_tuple(begin, end);
+}
+
+//! Calculate the range of indices
+template <typename Integer> inline
+std::tuple<Integer, Integer> System::calcThreadRange(
+    const Integer num_of_indices,
+    const int thread_id) const noexcept
+{
+  return calcThreadRange(num_of_indices, threadPool().numOfThreads(), thread_id);
+}
+
 
 /*!
   \details

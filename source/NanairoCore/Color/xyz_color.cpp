@@ -9,6 +9,7 @@
 
 #include "xyz_color.hpp"
 // Zisc
+#include "zisc/error.hpp"
 #include "zisc/matrix.hpp"
 // Nanairo
 #include "rgb_color.hpp"
@@ -33,6 +34,7 @@ RgbColor XyzColor::toRgb(const Matrix3x3& to_rgb_matrix) const noexcept
   */
 YxyColor XyzColor::toYxy() const noexcept
 {
+  ZISC_ASSERT(0.0 < y(), "The y is not positive.");
   const Float normalization = 1.0 / color_.sum();
   return YxyColor{y(), x() * normalization, y() * normalization};
 }

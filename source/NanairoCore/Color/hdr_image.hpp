@@ -47,6 +47,9 @@ class HdrImage
   //! Return the height resolution
   uint heightResolution() const noexcept;
 
+  //! Return the num of pixels
+  uint numOfPixels() const noexcept;
+
   //! Set pixel color
   void set(const uint x, const uint y, const XyzColor& color) noexcept;
 

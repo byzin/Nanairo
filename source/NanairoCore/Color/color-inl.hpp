@@ -70,10 +70,10 @@ const Float& Color<kN>::operator[](const uint index) const noexcept
   No detailed.
   */
 template <uint kN> inline
-void Color<kN>::clamp(const Float min, const Float max) noexcept
+void Color<kN>::clamp(const Float minimum, const Float maximum) noexcept
 {
   for (uint index = 0; index < kN; ++index)
-    color_[index] = zisc::clamp(color_[index], min, max);
+    color_[index] = zisc::clamp(color_[index], minimum, maximum);
 }
 
 /*!
@@ -104,6 +104,14 @@ template <uint kN> inline
 Float Color<kN>::max() const noexcept
 {
   return color_.max();
+}
+
+/*!
+  */
+template <uint kN> inline
+Float Color<kN>::min() const noexcept
+{
+  return color_.min();
 }
 
 /*!

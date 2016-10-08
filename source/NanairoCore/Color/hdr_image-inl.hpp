@@ -61,6 +61,14 @@ uint HdrImage::heightResolution() const noexcept
 }
 
 /*!
+  */
+inline
+uint HdrImage::numOfPixels() const noexcept
+{
+  return widthResolution() * heightResolution();
+}
+
+/*!
   \details
   No detailed.
   */

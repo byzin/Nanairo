@@ -59,6 +59,9 @@ class Color
   //! Return the max value
   Float max() const noexcept;
 
+  //! Return the min value
+  Float min() const noexcept;
+
   //! All elements are scaled by using the inverse max value
   void scale() noexcept;
 

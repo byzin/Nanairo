@@ -3,6 +3,7 @@
         "ColorMode": "%3",
         "ColorSpace": "sRGB (D65)",
         "Gamma": 2.2,
+        "Exposure": 1.0,
         "StandardIllumination": "CIE D65",
         "StandardObserver": "CIE 2deg color matching function",
         "ToneMapping": "Reinhard",

@@ -11,6 +11,7 @@
 #define NANAIRO_SYSTEM_HPP
 
 // Standard C++ library
+#include <tuple>
 #include <vector>
 // Zisc
 #include "zisc/aligned_memory_pool.hpp"
@@ -47,6 +48,17 @@ class System
 
 
   // System
+  //! Calculate the range of indices
+  template <typename Integer>
+  static std::tuple<Integer, Integer> calcThreadRange(const Integer num,
+                                                      const Integer num_of_threads,
+                                                      const int thread_id) noexcept;
+
+  //! Calculate the range of indices
+  template <typename Integer>
+  std::tuple<Integer, Integer> calcThreadRange(const Integer num,
+                                               const int thread_id) const noexcept;
+
   //! Return the global memory pool
   MemoryPool& globalMemoryPool() noexcept;
 

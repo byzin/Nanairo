@@ -49,8 +49,8 @@ Version: 0.0.2
 **Tone mappling**
 
 * Reinhard [[thesis](https://www.cs.utah.edu/~reinhard/cdrom/)]
-* Modified reinhard
 * Filmic
+* Uncharted2
 
 ## Requirement ##
 

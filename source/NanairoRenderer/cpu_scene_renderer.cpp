@@ -25,7 +25,7 @@
 #include "NanairoCore/Color/hdr_image.hpp"
 #include "NanairoCore/RenderingMethod/rendering_method.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
-#include "NanairoCore/ToneMapping/tone_mapping_method.hpp"
+#include "NanairoCore/ToneMappingOperator/tone_mapping_operator.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
@@ -115,7 +115,7 @@ void CpuSceneRenderer::initializeRenderer(const QJsonObject& settings) noexcept
       makeRenderingMethod<kWavelengthSampleSize>(*system_, rendering_method_settings);
 
   // ToneMapping
-  tone_mapping_method_ = makeToneMappingMethod(*system_, color_settings);
+  tone_mapping_operator_ = makeToneMappingOperator(*system_, color_settings);
 
   // Images
   outputMessage(QStringLiteral("Create a HDR image buffer."));
@@ -152,7 +152,7 @@ void CpuSceneRenderer::render(const quint64 /* cycle */) noexcept
 void CpuSceneRenderer::toneMap() noexcept
 {
   auto& ldr_image = renderedImage();
-  tone_mapping_method_->toneMap(*system_, *hdr_image_, ldr_image);
+  tone_mapping_operator_->map(*system_, *hdr_image_, &ldr_image);
 }
 
 } // namespace nanairo
