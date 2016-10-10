@@ -91,6 +91,12 @@ ApplicationWindow {
 
       MenuItem {
         enabled: !isRenderingMode
+        text: qsTr("VeachBdptTest")
+        onTriggered: loadPresetSceneData(text)
+      }
+
+      MenuItem {
+        enabled: !isRenderingMode
         text: qsTr("MaterialTest")
         onTriggered: loadPresetSceneData(text)
       }

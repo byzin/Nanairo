@@ -7,8 +7,8 @@
     "Color": {
         "ColorMode": "RGB",
         "ColorSpace": "sRGB (D65)",
+        "Exposure": 1,
         "Gamma": 2.2,
-        "Exposure": 1.0,
         "StandardIllumination": "CIE D65",
         "StandardObserver": "CIE 2deg color matching function",
         "ToneMapping": "Reinhard",
@@ -279,7 +279,7 @@
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Ring1",
-            "ObjectFilePath": "resources/models/ring.obj",
+            "ObjectFilePath": "resources/models/Ring.obj",
             "Smoothing": false,
             "SurfaceIndex": 1,
             "Transformation": [
@@ -302,7 +302,7 @@
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Ring2",
-            "ObjectFilePath": "resources/models/ring.obj",
+            "ObjectFilePath": "resources/models/Ring.obj",
             "Smoothing": false,
             "SurfaceIndex": 1,
             "Transformation": [
@@ -365,8 +365,8 @@
         }
     ],
     "RenderingMethod": {
-        "NumOfLightRaysIsSameAsImageResolution": true,
         "NumOfLightRays": 100000,
+        "NumOfLightRaysIsSameAsImageResolution": true,
         "PathLength": 3,
         "RayCastEpsilon": 1e-07,
         "RussianRoulette": "Reflectance (Max)",

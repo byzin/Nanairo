@@ -7,8 +7,8 @@
     "Color": {
         "ColorMode": "RGB",
         "ColorSpace": "sRGB (D65)",
+        "Exposure": 1,
         "Gamma": 2.2,
-        "Exposure": 1.0,
         "StandardIllumination": "CIE D65",
         "StandardObserver": "CIE 2deg color matching function",
         "ToneMapping": "Reinhard",
@@ -244,7 +244,7 @@
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Sphere1",
-            "ObjectFilePath": "resources/models/primitives/sphere.obj",
+            "ObjectFilePath": "resources/models/Primitives/Sphere.obj",
             "Smoothing": false,
             "SurfaceIndex": 3,
             "Transformation": [
@@ -267,7 +267,7 @@
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Sphere2",
-            "ObjectFilePath": "resources/models/primitives/sphere.obj",
+            "ObjectFilePath": "resources/models/Primitives/Sphere.obj",
             "Smoothing": false,
             "SurfaceIndex": 4,
             "Transformation": [

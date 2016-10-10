@@ -7,8 +7,8 @@
     "Color": {
         "ColorMode": "RGB",
         "ColorSpace": "sRGB (D65)",
+        "Exposure": 1,
         "Gamma": 2.2,
-        "Exposure": 1.0,
         "StandardIllumination": "CIE D65",
         "StandardObserver": "CIE 2deg color matching function",
         "ToneMapping": "Reinhard",
@@ -308,7 +308,7 @@
             "GroupLevel": 1,
             "IsEmissiveObject": true,
             "Name": "SphereLight1",
-            "ObjectFilePath": "resources/models/primitives/sphere_low_poly.obj",
+            "ObjectFilePath": "resources/models/Primitives/LowPolySphere.obj",
             "Smoothing": false,
             "SurfaceIndex": 4,
             "Transformation": [
@@ -340,7 +340,7 @@
             "GroupLevel": 1,
             "IsEmissiveObject": true,
             "Name": "SphereLight2",
-            "ObjectFilePath": "resources/models/primitives/sphere_low_poly.obj",
+            "ObjectFilePath": "resources/models/Primitives/LowPolySphere.obj",
             "Smoothing": false,
             "SurfaceIndex": 4,
             "Transformation": [
@@ -614,7 +614,7 @@
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "StanfordDragon",
-            "ObjectFilePath": "resources/models/stanford_models/stanford_dragon.obj",
+            "ObjectFilePath": "resources/models/StanfordModels/StanfordDragon.obj",
             "Smoothing": false,
             "SurfaceIndex": 7,
             "Transformation": [
@@ -653,7 +653,7 @@
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "RoughGlass",
-            "ObjectFilePath": "resources/models/primitives/cube.obj",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
             "Smoothing": false,
             "SurfaceIndex": 3,
             "Transformation": [
@@ -692,7 +692,7 @@
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "XyzDragon",
-            "ObjectFilePath": "resources/models/stanford_models/xyzrgb_dragon.obj",
+            "ObjectFilePath": "resources/models/StanfordModels/StanfordXyzDragon.obj",
             "Smoothing": false,
             "SurfaceIndex": 7,
             "Transformation": [

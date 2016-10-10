@@ -68,8 +68,16 @@ bool calculateBarycentricCoordinate(const Ray& ray,
                                     Float* barycentric,
                                     Float* t) noexcept;
 
-//! Make a polygon
+//! Make meshes
 std::vector<UniquePointer<Geometry>> makeMeshes(const QJsonObject& settings) noexcept;
+
+//! Make a smoothed mesh
+UniquePointer<Geometry> makeSmoothedMesh(const Point3& v0,
+                                         const Point3& v1, 
+                                         const Point3& v2,
+                                         const Vector3& n0, 
+                                         const Vector3& n1, 
+                                         const Vector3& n2) noexcept;
 
 //! \} Core 
 

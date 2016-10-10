@@ -5,8 +5,8 @@
     "Color": {
         "ColorMode": "RGB",
         "ColorSpace": "sRGB (D65)",
+        "Exposure": 1,
         "Gamma": 2.2,
-        "Exposure": 1.0,
         "StandardIllumination": "CIE D65",
         "StandardObserver": "CIE 2deg color matching function",
         "ToneMapping": "Reinhard",
@@ -242,7 +242,7 @@
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "TallBlock",
-            "ObjectFilePath": "resources/models/primitives/cube.obj",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -290,7 +290,7 @@
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "ShortBlock",
-            "ObjectFilePath": "resources/models/primitives/cube.obj",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [

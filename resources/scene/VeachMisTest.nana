@@ -7,8 +7,8 @@
     "Color": {
         "ColorMode": "RGB",
         "ColorSpace": "sRGB (D65)",
+        "Exposure": 1,
         "Gamma": 2.2,
-        "Exposure": 1.0,
         "StandardIllumination": "CIE D65",
         "StandardObserver": "CIE 2deg color matching function",
         "ToneMapping": "Reinhard",
@@ -128,7 +128,7 @@
             "GroupLevel": 2,
             "IsEmissiveObject": true,
             "Name": "Light1",
-            "ObjectFilePath": "resources/models/primitives/sphere_low_poly.obj",
+            "ObjectFilePath": "resources/models/Primitives/LowPolySphere.obj",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -160,7 +160,7 @@
             "GroupLevel": 2,
             "IsEmissiveObject": true,
             "Name": "Light2",
-            "ObjectFilePath": "resources/models/primitives/sphere_low_poly.obj",
+            "ObjectFilePath": "resources/models/Primitives/LowPolySphere.obj",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -192,7 +192,7 @@
             "GroupLevel": 2,
             "IsEmissiveObject": true,
             "Name": "Light3",
-            "ObjectFilePath": "resources/models/primitives/sphere_low_poly.obj",
+            "ObjectFilePath": "resources/models/Primitives/LowPolySphere.obj",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -224,7 +224,7 @@
             "GroupLevel": 2,
             "IsEmissiveObject": true,
             "Name": "Light4",
-            "ObjectFilePath": "resources/models/primitives/sphere_low_poly.obj",
+            "ObjectFilePath": "resources/models/Primitives/LowPolySphere.obj",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -295,7 +295,7 @@
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Board1",
-            "ObjectFilePath": "resources/models/primitives/cube.obj",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
             "Smoothing": false,
             "SurfaceIndex": 1,
             "Transformation": [
@@ -334,7 +334,7 @@
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Board2",
-            "ObjectFilePath": "resources/models/primitives/cube.obj",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
             "Smoothing": false,
             "SurfaceIndex": 2,
             "Transformation": [
@@ -373,7 +373,7 @@
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Board3",
-            "ObjectFilePath": "resources/models/primitives/cube.obj",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
             "Smoothing": false,
             "SurfaceIndex": 3,
             "Transformation": [
@@ -412,7 +412,7 @@
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Board4",
-            "ObjectFilePath": "resources/models/primitives/cube.obj",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
             "Smoothing": false,
             "SurfaceIndex": 4,
             "Transformation": [

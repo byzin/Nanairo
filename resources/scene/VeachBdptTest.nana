@@ -1,0 +1,561 @@
+{
+    "Bvh": {
+        "OptimizationLoopCount": 2,
+        "TreeletSize": 9,
+        "Type": "AgglomerativeTreeletRestructuringBvh"
+    },
+    "Color": {
+        "ColorMode": "RGB",
+        "ColorSpace": "sRGB (D65)",
+        "Exposure": 1,
+        "Gamma": 2.2,
+        "StandardIllumination": "CIE D65",
+        "StandardObserver": "CIE 2deg color matching function",
+        "ToneMapping": "Reinhard",
+        "WavelengthSampling": "Regular sampling"
+    },
+    "EmitterModel": [
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
+            },
+            "Name": "Emitter",
+            "RadiantExitance": 512,
+            "Type": "NonDirectionalEmitter"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
+            },
+            "Name": "StandEmitter",
+            "RadiantExitance": 512,
+            "Type": "NonDirectionalEmitter"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/illuminant/cie_si_a.csv"
+            },
+            "Name": "SpotEmitter",
+            "RadiantExitance": 5120,
+            "Type": "NonDirectionalEmitter"
+        }
+    ],
+    "Object": [
+        {
+            "AngleOfView": 45,
+            "CameraType": "PinholeCamera",
+            "Enabled": true,
+            "GroupLevel": 0,
+            "Jittering": true,
+            "Name": "Camera",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        -5
+                    ]
+                },
+                {
+                    "Enabled": false,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        -7.5
+                    ]
+                }
+            ],
+            "Type": "CameraObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 0,
+            "Name": "World",
+            "Transformation": [
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "Floor",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -1.5,
+                        0.75
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        3,
+                        1,
+                        4.5
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "LeftWall",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        1.5,
+                        0,
+                        0.75
+                    ]
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        3,
+                        1,
+                        4.5
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "RightWall",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -1.5,
+                        0,
+                        0.75
+                    ]
+                },
+                {
+                    "Angle": -90,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        3,
+                        1,
+                        4.5
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "BackWall",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        3
+                    ]
+                },
+                {
+                    "Angle": -90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        3,
+                        1,
+                        3
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "Ceiling",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        1.5,
+                        0.75
+                    ]
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        3,
+                        1,
+                        4.5
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "MeshObject",
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "Table",
+            "ObjectFilePath": "resources/models/VeachTable.obj",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.3,
+                        -1.5,
+                        2
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        2,
+                        2,
+                        2
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "MeshObject",
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "Egg",
+            "ObjectFilePath": "resources/models/VeachEgg.obj",
+            "Smoothing": false,
+            "SurfaceIndex": 2,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.1,
+                        -0.7,
+                        1.8
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.6,
+                        0.6,
+                        0.6
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "LightStand",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.95,
+                        -1.5,
+                        2.15
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "MeshObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Stand",
+            "ObjectFilePath": "resources/models/VeachStand.obj",
+            "Smoothing": false,
+            "SurfaceIndex": 1,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        2.2,
+                        2.2,
+                        2.2
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 1,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": true,
+            "Name": "Light",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        2.15,
+                        0
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.33,
+                        1,
+                        0.33
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "SpotLight",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -1.25,
+                        0.5,
+                        1.75
+                    ]
+                },
+                {
+                    "Angle": -115,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 2,
+            "Name": "Spot",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.3,
+                        0.45,
+                        0.3
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "MeshObject",
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "SpotSide",
+            "ObjectFilePath": "resources/models/Primitives/DirectionalCylinderHoleSide.obj",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GeometryType": "MeshObject",
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "SpotBottom",
+            "ObjectFilePath": "resources/models/Primitives/DirectionalCylinderHoleUpDownSide.obj",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 2,
+            "Enabled": true,
+            "GeometryType": "PlaneObject",
+            "GroupLevel": 2,
+            "IsEmissiveObject": true,
+            "Name": "Light",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0.2,
+                        0
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.1,
+                        1,
+                        0.1
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        }
+    ],
+    "RenderingMethod": {
+        "NumOfLightRays": 100000,
+        "NumOfLightRaysIsSameAsImageResolution": true,
+        "PathLength": 3,
+        "RayCastEpsilon": 1e-07,
+        "RussianRoulette": "Reflectance (Max)",
+        "Type": "LightTracing"
+    },
+    "Scene": {
+        "SceneName": "VeachBdptTest"
+    },
+    "SurfaceModel": [
+        {
+            "Name": "WhiteWallSurface",
+            "ReflectanceIndex": 0,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "InnerExtinction": "resources/spectrum/conductor/Cu extinction coefficient.csv",
+            "InnerRefractiveIndex": "resources/spectrum/conductor/Cu refractive index.csv",
+            "Name": "RoughCopper",
+            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "RoughnessIndex": 1,
+            "Type": "RoughConductorSurface"
+        },
+        {
+            "InnerRefractiveIndex": "resources/spectrum/dielectric/SiO2.csv",
+            "Name": "EggGlass",
+            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "Type": "SmoothDielectricSurface"
+        }
+    ],
+    "System": {
+        "ImageResolution": [
+            640,
+            480
+        ],
+        "NumOfThreads": 4,
+        "Power2CycleSaving": true,
+        "RandomSeed": 123456789,
+        "SavingInterval": 3600000,
+        "TerminationCycle": 0
+    },
+    "TextureModel": [
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/reflectance/cornell_box_white.csv"
+            },
+            "Name": "WhiteTexture",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Name": "CupperRoughness",
+            "Type": "ValueTexture",
+            "Value": 0.4
+        }
+    ]
+}

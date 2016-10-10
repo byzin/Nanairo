@@ -7,8 +7,8 @@
     "Color": {
         "ColorMode": "RGB",
         "ColorSpace": "sRGB (D65)",
+        "Exposure": 1,
         "Gamma": 2.2,
-        "Exposure": 1.0,
         "StandardIllumination": "CIE D65",
         "StandardObserver": "CIE 2deg color matching function",
         "ToneMapping": "Reinhard",
@@ -285,6 +285,13 @@
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
                 }
             ],
             "Type": "GroupObject"
@@ -296,7 +303,7 @@
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Base",
-            "ObjectFilePath": "resources/models/light_transport_equation_orb/lte_orb_base.obj",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
             "Smoothing": false,
             "SurfaceIndex": 3,
             "Transformation": [
@@ -310,7 +317,7 @@
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "InnerSphere",
-            "ObjectFilePath": "resources/models/light_transport_equation_orb/lte_orb_inner_sphere.obj",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
             "Smoothing": false,
             "SurfaceIndex": 2,
             "Transformation": [
@@ -324,7 +331,7 @@
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "OuterSphere",
-            "ObjectFilePath": "resources/models/light_transport_equation_orb/lte_orb_outer_sphere.obj",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
             "Smoothing": false,
             "SurfaceIndex": 3,
             "Transformation": [
@@ -338,7 +345,7 @@
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Equation",
-            "ObjectFilePath": "resources/models/light_transport_equation_orb/lte_orb_equation.obj",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
             "Smoothing": false,
             "SurfaceIndex": 3,
             "Transformation": [
