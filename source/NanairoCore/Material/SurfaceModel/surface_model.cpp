@@ -33,7 +33,7 @@
 namespace nanairo {
 
 // Forward declaration
-class Texture;
+class TextureModel;
 
 /*!
   */
@@ -47,7 +47,7 @@ SurfaceModel::~SurfaceModel() noexcept
   */
 UniquePointer<SurfaceModel> makeSurface(
     const QJsonObject& settings,
-    const std::vector<const Texture*>& texture_list) noexcept
+    const std::vector<const TextureModel*>& texture_list) noexcept
 {
   using zisc::toHash32;
 

@@ -5,8 +5,8 @@
     "Color": {
         "ColorMode": "RGB",
         "ColorSpace": "sRGB (D65)",
+        "Exposure": 1,
         "Gamma": 2.2,
-        "Exposure": 1.0,
         "StandardIllumination": "CIE D65",
         "StandardObserver": "CIE 2deg color matching function",
         "ToneMapping": "Reinhard",
@@ -14,14 +14,7 @@
     },
     "EmitterModel": [
         {
-            "Color": {
-                "ColorMode": "RGB",
-                "Value": [
-                    0.9861142900740063,
-                    0.9858396276798658,
-                    0.9858396276798658
-                ]
-            },
+            "EmissiveColorIndex": 0,
             "Name": "DefaultEmitter",
             "RadiantExitance": 128,
             "Type": "NonDirectionalEmitter"

@@ -16,53 +16,25 @@
     },
     "EmitterModel": [
         {
-            "Color": {
-                "ColorMode": "RGB",
-                "Value": [
-                    0.5019607843137255,
-                    0.25098039215686274,
-                    0.25098039215686274
-                ]
-            },
+            "EmissiveColorIndex": 5,
             "Name": "Emitter1",
             "RadiantExitance": 8e+06,
             "Type": "NonDirectionalEmitter"
         },
         {
-            "Color": {
-                "ColorMode": "RGB",
-                "Value": [
-                    0.25098039215686274,
-                    0.5019607843137255,
-                    0.25098039215686274
-                ]
-            },
+            "EmissiveColorIndex": 6,
             "Name": "Emitter2",
             "RadiantExitance": 63400,
             "Type": "NonDirectionalEmitter"
         },
         {
-            "Color": {
-                "ColorMode": "RGB",
-                "Value": [
-                    0.25098039215686274,
-                    0.25098039215686274,
-                    0.5019607843137255
-                ]
-            },
+            "EmissiveColorIndex": 7,
             "Name": "Emitter3",
             "RadiantExitance": 2370.3703704,
             "Type": "NonDirectionalEmitter"
         },
         {
-            "Color": {
-                "ColorMode": "RGB",
-                "Value": [
-                    1,
-                    1,
-                    1
-                ]
-            },
+            "EmissiveColorIndex": 8,
             "Name": "Emitter4",
             "RadiantExitance": 64,
             "Type": "NonDirectionalEmitter"
@@ -529,6 +501,54 @@
             "Name": "Roughness4",
             "Type": "ValueTexture",
             "Value": 0.3
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.5019607843137255,
+                    0.25098039215686274,
+                    0.25098039215686274
+                ]
+            },
+            "Name": "RedEmitterTexture",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.25098039215686274,
+                    0.5019607843137255,
+                    0.25098039215686274
+                ]
+            },
+            "Name": "GreenEmitterTexture",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.25098039215686274,
+                    0.25098039215686274,
+                    0.5019607843137255
+                ]
+            },
+            "Name": "BlueEmitterTexture",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.5019607843137255,
+                    0.5019607843137255,
+                    0.5019607843137255
+                ]
+            },
+            "Name": "WhiteEmitterTexture",
+            "Type": "UnicolorTexture"
         }
     ]
 }

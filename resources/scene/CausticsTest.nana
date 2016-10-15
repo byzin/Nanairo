@@ -16,10 +16,7 @@
     },
     "EmitterModel": [
         {
-            "Color": {
-                "ColorMode": "Spectra",
-                "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
-            },
+            "EmissiveColorIndex": 2,
             "Name": "Emitter",
             "RadiantExitance": 131072,
             "Type": "NonDirectionalEmitter"
@@ -453,6 +450,14 @@
             ],
             "Name": "CheckerboardTexture2",
             "Type": "CheckerboardTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
+            },
+            "Name": "EmitterTexture",
+            "Type": "UnicolorTexture"
         }
     ]
 }

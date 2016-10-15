@@ -14,10 +14,7 @@
     },
     "EmitterModel": [
         {
-            "Color": {
-                "ColorMode": "Spectra",
-                "Value": "resources/spectrum/illuminant/cornell_box_light.csv"
-            },
+            "EmissiveColorIndex": 3,
             "Name": "Emitter",
             "RadiantExitance": 512,
             "Type": "NonDirectionalEmitter"
@@ -421,6 +418,14 @@
                 "Value": "resources/spectrum/reflectance/cornell_box_red.csv"
             },
             "Name": "RedTexture",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/illuminant/cornell_box_light.csv"
+            },
+            "Name": "EmitterTexture",
             "Type": "UnicolorTexture"
         }
     ]

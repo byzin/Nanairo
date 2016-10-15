@@ -15,6 +15,8 @@ import "SettingBlockItems"
 NMaterialTabItem {
   id: emitter_model_tab_item
 
+  property var textureModel: null
+
   materialName: qsTr("Emitter")
   materialTypeList: ["@nonDirectionalEmitter@"]
   materialComponent: setting_view_component
@@ -29,6 +31,7 @@ NMaterialTabItem {
       id: emitter_item_setting_view
       color: emitter_model_tab_item.color
       currentTypeIndex: emitter_model_tab_item.currentMaterialTypeIndex
+      textureModel: emitter_model_tab_item.textureModel
     }
   }
 }

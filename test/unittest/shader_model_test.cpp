@@ -27,8 +27,8 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Material/SurfaceModel/surface_model.hpp"
-#include "NanairoCore/Material/Texture/texture.hpp"
-#include "NanairoCore/Material/Texture/value_texture.hpp"
+#include "NanairoCore/Material/TextureModel/texture_model.hpp"
+#include "NanairoCore/Material/TextureModel/value_texture.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
@@ -37,7 +37,7 @@
 
 /*!
   */
-nanairo::UniquePointer<nanairo::Texture> makeTestValueTexture(
+nanairo::UniquePointer<nanairo::TextureModel> makeTestValueTexture(
     const nanairo::System& system,
     const nanairo::Float value)
 {
@@ -55,7 +55,7 @@ nanairo::UniquePointer<nanairo::Texture> makeTestValueTexture(
     }
     settings = texture_document.object();
   }
-  return nanairo::UniquePointer<nanairo::Texture>{
+  return nanairo::UniquePointer<nanairo::TextureModel>{
       new nanairo::ValueTexture{system, settings}};
 }
 

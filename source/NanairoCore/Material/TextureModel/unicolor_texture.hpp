@@ -12,8 +12,9 @@
 
 // Standard C++ library
 #include <cstddef>
+#include <memory>
 // Nanairo
-#include "texture.hpp"
+#include "texture_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
 
@@ -27,14 +28,14 @@ template <uint> class SampledSpectra;
 class System;
 template <uint> class WavelengthSamples;
 
-//! \addtogroup Core 
+//! \addtogroup Core
 //! \{
 
 /*!
   \details
   No detailed.
   */
-class UnicolorTexture : public Texture
+class UnicolorTexture : public TextureModel
 {
  public:
   //! Create a unicolor texture
@@ -44,11 +45,21 @@ class UnicolorTexture : public Texture
   //! Evaluate a float value at the coordinate
   Float floatValue(const Point2& coordinate) const noexcept override;
 
-  //! Evaluate spectra at the coordinate
+  //! Evaluate a emissive spectra at the texture coordinate
   template <uint kSampleSize>
-  SampledSpectra<kSampleSize> unicolorSpectraValue(
+  SampledSpectra<kSampleSize> emissiveValue(
       const Point2& coordinate,
       const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
+
+  //! Evaluate a reflective spectra at the texture coordinate
+  template <uint kSampleSize>
+  SampledSpectra<kSampleSize> reflectiveValue(
+      const Point2& coordinate,
+      const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
+
+  //! Evaluate the reflective value by the wavelength at the texture coordinate
+  Float reflectiveValue(const Point2& coordinate,
+                        const uint16 wavelength) const noexcept override;
 
   //! Return the unicolor texture byte size
   std::size_t textureSize() const noexcept override;
@@ -56,15 +67,13 @@ class UnicolorTexture : public Texture
   //! Return the unicolor texture type
   TextureType type() const noexcept override;
 
-  //! Evaluate the value by the wavelength at the texture coordinate
-  Float wavelengthValue(const Point2& coordinate, 
-                        const uint16 wavelength) const noexcept override;
  private:
   //! Initialize
   void initialize(const System& system, const QJsonObject& settings) noexcept;
 
 
-  SpectralDistribution spectra_value_;
+  std::unique_ptr<SpectralDistribution> emissive_value_;
+  std::unique_ptr<SpectralDistribution> reflective_value_;
   Float float_value_;
 };
 

@@ -40,7 +40,7 @@
 #include "Material/material.hpp"
 #include "Material/EmitterModel/emitter_model.hpp"
 #include "Material/SurfaceModel/surface_model.hpp"
-#include "Material/Texture/texture.hpp"
+#include "Material/TextureModel/texture_model.hpp"
 #include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "Sampling/light_source_sampler.hpp"
@@ -99,9 +99,9 @@ World::~World() noexcept
   \details
   No detailed.
   */
-std::vector<const Texture*> World::textureList() const noexcept
+std::vector<const TextureModel*> World::textureList() const noexcept
 {
-  std::vector<const Texture*> texture_list;
+  std::vector<const TextureModel*> texture_list;
   texture_list.reserve(texture_list_.size());
   for (const auto& texture : texture_list_)
     texture_list.emplace_back(texture.get());
@@ -245,13 +245,15 @@ void World::initializeEmitter(System& system, const QJsonArray& settings) noexce
 {
   using zisc::cast;
 
+  auto texture_list = textureList();
+
   const auto count = cast<uint>(settings.count());
   emitter_list_.resize(count);
 
-  auto make_emitter = [this, &system, &settings](const uint index)
+  auto make_emitter = [this, &system, &settings, &texture_list](const uint index)
   {
     const auto emitter_settings = SceneValue::toObject(settings[index]);
-    emitter_list_[index] = makeEmitter(system, emitter_settings);
+    emitter_list_[index] = makeEmitter(emitter_settings, texture_list);
   };
 
   auto& thread_pool = system.threadPool();
@@ -266,7 +268,7 @@ void World::initializeEmitter(System& system, const QJsonArray& settings) noexce
   \details
   No detailed.
   */
-std::vector<Object> World::initializeObject(System& system, 
+std::vector<Object> World::initializeObject(System& system,
                                             const QJsonArray& settings) noexcept
 {
   auto results = makeObjects(system, settings);
@@ -352,7 +354,7 @@ void World::initializeTexture(System& system, const QJsonArray& settings) noexce
   auto make_texture = [this, &system, &settings](const uint index)
   {
     const auto texture_settings = SceneValue::toObject(settings[index]);
-    texture_list_[index] = makeTexture(system, texture_settings);
+    texture_list_[index] = TextureModel::makeTexture(system, texture_settings);
   };
 
   auto& thread_pool = system.threadPool();

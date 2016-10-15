@@ -14,13 +14,13 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Material/SurfaceModel/surface_model.hpp"
-#include "NanairoCore/Material/Texture/texture.hpp"
+#include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 //! Make a test value texture
-nanairo::UniquePointer<nanairo::Texture> makeTestValueTexture(
+nanairo::UniquePointer<nanairo::TextureModel> makeTestValueTexture(
     const nanairo::System& system,
     const nanairo::Float value);
 

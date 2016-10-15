@@ -29,7 +29,7 @@ namespace nanairo {
   */
 template <uint kSampleSize> inline
 auto EmitterModel::makeLight(
-    const Point2& /* texture_coordinate */,
+    const Point2& texture_coordinate,
     const WavelengthSamples<kSampleSize>& wavelengths,
     MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
@@ -40,7 +40,10 @@ auto EmitterModel::makeLight(
   const auto emitter_type = type();
   switch (emitter_type) {
    case EmitterType::NonDirectional:
-    light = makeNonDirectionalLight(this, wavelengths, memory_pool);
+    light = makeNonDirectionalLight(this,
+                                    texture_coordinate,
+                                    wavelengths,
+                                    memory_pool);
     break;
    default:
     zisc::raiseError("EmitterModelError: (type=", cast<int>(emitter_type),
@@ -54,11 +57,11 @@ auto EmitterModel::makeLight(
   \details
   No detailed.
   */
-inline
-const SpectralDistribution& EmitterModel::powerDistribution() const noexcept
-{
-  return power_distribution_;
-}
+//inline
+//const SpectralDistribution& EmitterModel::powerDistribution() const noexcept
+//{
+//  return power_distribution_;
+//}
 
 /*!
   \details

@@ -21,7 +21,7 @@
 #include "NanairoCore/Data/wavelength_samples.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Material/Bxdf/ggx_conductor_brdf.hpp"
-#include "NanairoCore/Material/Texture/texture.hpp"
+#include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 

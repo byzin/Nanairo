@@ -27,7 +27,7 @@
 #include "NanairoCore/LinearAlgebra/vector.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Material/Bxdf/ggx_dielectric_bsdf.hpp"
-#include "NanairoCore/Material/Texture/texture.hpp"
+#include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Utility/floating_point.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
@@ -48,13 +48,13 @@ auto RoughDielectricSurface::makeGgxDielectricBsdf(
   // Get the roughness
   constexpr Float threshold = 0.001;
   Float roughness = roughness_->floatValue(texture_coordinate);
-  roughness = (threshold < roughness) 
+  roughness = (threshold < roughness)
       ? roughness * roughness
-      : threshold * threshold; 
+      : threshold * threshold;
 
   // Evaluate the refractive index
   const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];
-  const Float n = (is_reverse_face) 
+  const Float n = (is_reverse_face)
       ? 1.0 / eta_.getByWavelength(wavelength)
       : eta_.getByWavelength(wavelength);
 

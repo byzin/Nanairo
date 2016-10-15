@@ -20,7 +20,7 @@
 #include "NanairoCore/Data/wavelength_samples.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Material/Bxdf/lambert_brdf.hpp"
-#include "NanairoCore/Material/Texture/texture.hpp"
+#include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Utility/floating_point.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
@@ -37,9 +37,9 @@ auto SmoothDiffuseSurface::makeLambertBrdf(
     const WavelengthSamples<kSampleSize>& wavelengths,
     MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
-  const auto reflectance = 
-      reflectance_->spectraValue(texture_coordinate, wavelengths);
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(reflectance), 
+  const auto reflectance =
+      reflectance_->reflectiveValue(texture_coordinate, wavelengths);
+  ZISC_ASSERT(isBetweenZeroAndOneFloat(reflectance),
               "Reflectance must be [0, 1].");
 
   using Brdf = LambertBrdf<kSampleSize>;

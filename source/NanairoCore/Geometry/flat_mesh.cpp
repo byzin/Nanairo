@@ -109,7 +109,7 @@ bool FlatMesh::testIntersection(const Ray& ray, IntersectionInfo* intersection) 
   \details
   No detailed.
   */
-std::tuple<SampledPoint, Vector3> FlatMesh::samplePoint(Sampler& sampler) const noexcept
+std::tuple<SampledPoint, Vector3, Point2> FlatMesh::samplePoint(Sampler& sampler) const noexcept
 {
   Float u = sampler.sample(0.0, 1.0);
   Float v = sampler.sample(0.0, 1.0);
@@ -119,7 +119,10 @@ std::tuple<SampledPoint, Vector3> FlatMesh::samplePoint(Sampler& sampler) const 
   }
 
   const auto point = vertex_ + u * edge_[0] + v * edge_[1];
-  return std::make_tuple(SampledPoint{point, surfaceArea()}, normal_);
+  const Float barycentric[3] = {u, v, 1.0 - (u + v)};
+  return std::make_tuple(SampledPoint{point, surfaceArea()},
+                         normal_,
+                         textureCoordinate(barycentric));
 }
 
 /*!

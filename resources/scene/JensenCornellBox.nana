@@ -16,10 +16,7 @@
     },
     "EmitterModel": [
         {
-            "Color": {
-                "ColorMode": "Spectra",
-                "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
-            },
+            "EmissiveColorIndex": 3,
             "Name": "Emitter",
             "RadiantExitance": 1024,
             "Type": "NonDirectionalEmitter"
@@ -245,7 +242,7 @@
             "IsEmissiveObject": false,
             "Name": "Sphere1",
             "ObjectFilePath": "resources/models/Primitives/Sphere.obj",
-            "Smoothing": false,
+            "Smoothing": true,
             "SurfaceIndex": 3,
             "Transformation": [
                 {
@@ -268,7 +265,7 @@
             "IsEmissiveObject": false,
             "Name": "Sphere2",
             "ObjectFilePath": "resources/models/Primitives/Sphere.obj",
-            "Smoothing": false,
+            "Smoothing": true,
             "SurfaceIndex": 4,
             "Transformation": [
                 {
@@ -407,6 +404,14 @@
                 ]
             },
             "Name": "RedTexture",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
+            },
+            "Name": "EmitterTexture",
             "Type": "UnicolorTexture"
         }
     ]

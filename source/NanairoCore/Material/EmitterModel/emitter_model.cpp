@@ -8,6 +8,8 @@
   */
 
 #include "emitter_model.hpp"
+// Standard C++ library
+#include <vector>
 // Qt
 #include <QJsonObject>
 #include <QString>
@@ -24,6 +26,9 @@
 
 namespace nanairo {
 
+// Forward declaration
+class TextureModel;
+
 /*!
   */
 EmitterModel::~EmitterModel() noexcept
@@ -34,18 +39,16 @@ EmitterModel::~EmitterModel() noexcept
   \details
   No detailed.
   */
-EmitterModel::EmitterModel(const System& system,
-                           const QJsonObject& settings) noexcept
+EmitterModel::EmitterModel(const QJsonObject& settings) noexcept
 {
-  initialize(system, settings);
+  initialize(settings);
 }
 
 /*!
   \details
   No detailed.
   */
-void EmitterModel::initialize(const System& /* system */,
-                              const QJsonObject& /* settings */) noexcept
+void EmitterModel::initialize(const QJsonObject& /* settings */) noexcept
 {
 }
 
@@ -53,19 +56,26 @@ void EmitterModel::initialize(const System& /* system */,
   \details
   No detailed.
   */
-void EmitterModel::setPowerDistribution(
-    const SpectralDistribution& distribution) noexcept
+//void EmitterModel::setPowerDistribution(
+//    const SpectralDistribution& distribution) noexcept
+//{
+//  power_distribution_ = distribution;
+//}
+
+/*!
+  */
+void EmitterModel::setRadiantExitance(const Float radiant_exitance) noexcept
 {
-  radiant_exitance_ = distribution.sum();
-  power_distribution_ = distribution;
+  radiant_exitance_ = radiant_exitance;
 }
 
 /*!
   \details
   No detailed.
   */
-UniquePointer<EmitterModel> makeEmitter(const System& system,
-                                        const QJsonObject& settings) noexcept
+UniquePointer<EmitterModel> makeEmitter(
+    const QJsonObject& settings,
+    const std::vector<const TextureModel*>& texture_list) noexcept
 {
   using zisc::toHash32;
 
@@ -74,7 +84,7 @@ UniquePointer<EmitterModel> makeEmitter(const System& system,
   const auto type = SceneValue::toString(settings, keyword::type);
   switch (keyword::toHash32(type)) {
    case toHash32(keyword::nonDirectionalEmitter):
-    emitter = new NonDirectionalEmitter{system, settings};
+    emitter = new NonDirectionalEmitter{settings, texture_list};
     break;
    default:
     zisc::raiseError("EmitterError: Unsupported type is specified.");

@@ -33,7 +33,7 @@
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Material/SurfaceModel/rough_conductor_surface.hpp"
 #include "NanairoCore/Material/SurfaceModel/smooth_diffuse_surface.hpp"
-#include "NanairoCore/Material/Texture/texture.hpp"
+#include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 // Test
@@ -45,7 +45,7 @@ namespace {
 template <typename SurfaceType>
 nanairo::UniquePointer<nanairo::SurfaceModel> makeTestSurface(
     const QString& json_path,
-    const std::vector<const nanairo::Texture*> texture_list)
+    const std::vector<const nanairo::TextureModel*> texture_list)
 {
   // Open surface json
   QFile json_file{json_path};
@@ -82,7 +82,7 @@ TEST(SurfaceModelTest, SmoothDiffuseSurfaceTest)
 
   // Texture
   auto texture = makeTestValueTexture(*system, 1.0);
-  std::vector<const Texture*> texture_list;
+  std::vector<const TextureModel*> texture_list;
   texture_list.push_back(texture.get());
 
   // Diffuse surface
@@ -127,7 +127,7 @@ TEST(SurfaceModelTest, RoughConductorSurfaceTest)
 
     // Roughness texture
     auto texture = makeTestValueTexture(*system, 1.0);
-    std::vector<const Texture*> texture_list;
+    std::vector<const TextureModel*> texture_list;
     texture_list.push_back(texture.get());
 
     // Rough conductor surface

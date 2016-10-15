@@ -17,7 +17,7 @@
 #include "surface_model.hpp"
 #include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Material/Texture/texture.hpp"
+#include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
@@ -31,7 +31,7 @@ class SpectralDistribution;
   */
 SmoothDiffuseSurface::SmoothDiffuseSurface(
     const QJsonObject& settings,
-    const std::vector<const Texture*>& texture_list) noexcept
+    const std::vector<const TextureModel*>& texture_list) noexcept
 {
   initialize(settings, texture_list);
 }
@@ -60,7 +60,7 @@ SurfaceType SmoothDiffuseSurface::type() const noexcept
   */
 void SmoothDiffuseSurface::initialize(
     const QJsonObject& settings,
-    const std::vector<const Texture*>& texture_list) noexcept
+    const std::vector<const TextureModel*>& texture_list) noexcept
 {
   const auto texture_index = SceneValue::toInt<uint>(settings,
                                                      keyword::reflectanceIndex);

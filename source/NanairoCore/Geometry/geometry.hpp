@@ -17,6 +17,7 @@
 #include <utility>
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/LinearAlgebra/point.hpp"
 #include "NanairoCore/LinearAlgebra/vector.hpp"
 #include "NanairoCore/Sampling/sampled_point.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
@@ -63,7 +64,8 @@ class Geometry
                                 IntersectionInfo* intersection) const noexcept = 0;
 
   //! Sample a point randomly on the surface of the geometry
-  virtual std::tuple<SampledPoint, Vector3> samplePoint(Sampler& sampler) const noexcept = 0;
+  virtual std::tuple<SampledPoint, Vector3, Point2> samplePoint(
+      Sampler& sampler) const noexcept = 0;
 
   //! Set surface area of geometry
   void setSurfaceArea(const Float surface_area) noexcept;

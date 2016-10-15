@@ -57,7 +57,8 @@ class Plane : public Geometry
                         IntersectionInfo* intersection) const noexcept override;
 
   //! Sample a point randomly on the surface of the plane 
-  std::tuple<SampledPoint, Vector3> samplePoint(Sampler& sampler) const noexcept override;
+  std::tuple<SampledPoint, Vector3, Point2> samplePoint(
+      Sampler& sampler) const noexcept override;
 
   //! Apply affine transformation
   void transform(const Matrix4x4& matrix) noexcept override;

@@ -21,7 +21,7 @@
 #include "Data/object.hpp"
 #include "Material/EmitterModel/emitter_model.hpp"
 #include "Material/SurfaceModel/surface_model.hpp"
-#include "Material/Texture/texture.hpp"
+#include "Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "Sampling/light_source_sampler.hpp"
 #include "Utility/unique_pointer.hpp"
@@ -68,7 +68,7 @@ class World
 //  std::vector<const SurfaceModel*> surfaceList() const;
 
   //! Make texture list
-  std::vector<const Texture*> textureList() const noexcept;
+  std::vector<const TextureModel*> textureList() const noexcept;
 
   //! Return the world object list
 //  const std::vector<Object>& objectList() const;
@@ -126,7 +126,7 @@ class World
   UniquePointer<LightSourceSampler> light_source_sampler_;
   std::vector<UniquePointer<EmitterModel>> emitter_list_;
   std::vector<UniquePointer<SurfaceModel>> surface_list_;
-  std::vector<UniquePointer<Texture>> texture_list_;
+  std::vector<UniquePointer<TextureModel>> texture_list_;
   std::vector<LightSourceReference> light_source_list_;
 };
 

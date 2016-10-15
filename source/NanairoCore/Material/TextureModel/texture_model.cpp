@@ -1,5 +1,5 @@
 /*!
-  \file texture.cpp
+  \file texture_model.cpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
@@ -7,7 +7,7 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#include "texture.hpp"
+#include "texture_model.hpp"
 // Qt
 #include <QJsonObject>
 #include <QString>
@@ -30,7 +30,7 @@ namespace nanairo {
 
 /*!
   */
-Texture::~Texture() noexcept
+TextureModel::~TextureModel() noexcept
 {
 }
 
@@ -38,12 +38,13 @@ Texture::~Texture() noexcept
   \details
   No detailed.
   */
-UniquePointer<Texture> makeTexture(const System& system,
-                                   const QJsonObject& settings) noexcept
+UniquePointer<TextureModel> TextureModel::makeTexture(
+    const System& system,
+    const QJsonObject& settings) noexcept
 {
   using zisc::toHash32;
 
-  Texture* texture = nullptr;
+  TextureModel* texture = nullptr;
 
   const auto type = SceneValue::toString(settings, keyword::type);
   switch (keyword::toHash32(type)) {
@@ -69,7 +70,7 @@ UniquePointer<Texture> makeTexture(const System& system,
     }
   }
 
-  return UniquePointer<Texture>{texture};
+  return UniquePointer<TextureModel>{texture};
 }
 
 } // namespace nanairo

@@ -34,7 +34,7 @@ namespace nanairo {
   */
 RoughConductorSurface::RoughConductorSurface(
     const QJsonObject& settings,
-    const std::vector<const Texture*>& texture_list) noexcept
+    const std::vector<const TextureModel*>& texture_list) noexcept
 {
   initialize(settings, texture_list);
 }
@@ -63,7 +63,7 @@ SurfaceType RoughConductorSurface::type() const noexcept
   */
 void RoughConductorSurface::initialize(
     const QJsonObject& settings,
-    const std::vector<const Texture*>& texture_list) noexcept
+    const std::vector<const TextureModel*>& texture_list) noexcept
 {
   const auto texture_index = SceneValue::toInt<uint>(settings,
                                                      keyword::roughnessIndex);

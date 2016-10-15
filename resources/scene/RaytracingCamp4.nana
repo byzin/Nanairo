@@ -16,36 +16,19 @@
     },
     "EmitterModel": [
         {
-            "Color": {
-                "ColorMode": "Spectra",
-                "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
-            },
+            "EmissiveColorIndex": 8,
             "Name": "Emitter",
             "RadiantExitance": 2048,
             "Type": "NonDirectionalEmitter"
         },
         {
-            "Color": {
-                "ColorMode": "RGB",
-                "Value": [
-                    1,
-                    0.9280384527351797,
-                    0.28038452735179675
-                ]
-            },
+            "EmissiveColorIndex": 9,
             "Name": "WeakEmitter1",
             "RadiantExitance": 256,
             "Type": "NonDirectionalEmitter"
         },
         {
-            "Color": {
-                "ColorMode": "RGB",
-                "Value": [
-                    0.14596780346379798,
-                    0.6817578393224994,
-                    0.9973296711680781
-                ]
-            },
+            "EmissiveColorIndex": 10,
             "Name": "WeakEmitter2",
             "RadiantExitance": 128,
             "Type": "NonDirectionalEmitter"
@@ -894,6 +877,38 @@
             "Name": "LabelTexture",
             "Type": "ValueTexture",
             "Value": 0.2
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
+            },
+            "Name": "EmittterTexture",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    1,
+                    1,
+                    0.2500038147554742
+                ]
+            },
+            "Name": "WeakEmitterTexture1",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.25,
+                    1,
+                    1
+                ]
+            },
+            "Name": "WeakEmitterTexture2",
+            "Type": "UnicolorTexture"
         }
     ]
 }

@@ -16,9 +16,10 @@
 // Zisc
 #include "zisc/error.hpp"
 // Nanairo
-#include "texture.hpp"
+#include "texture_model.hpp"
 #include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/system.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Utility/floating_point.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
@@ -41,7 +42,17 @@ ValueTexture::ValueTexture(const System& system,
   */
 Float ValueTexture::floatValue(const Point2& /* coordinate */) const noexcept
 {
-  return value_;
+  return reflective_value_;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+Float ValueTexture::reflectiveValue(const Point2& /* coordinate */,
+                                    const uint16 /* wavelength */) const noexcept
+{
+  return reflective_value_;
 }
 
 /*!
@@ -50,7 +61,7 @@ Float ValueTexture::floatValue(const Point2& /* coordinate */) const noexcept
   */
 std::size_t ValueTexture::textureSize() const noexcept
 {
-  return sizeof(value_);
+  return 0;
 }
 
 /*!
@@ -62,26 +73,21 @@ TextureType ValueTexture::type() const noexcept
   return TextureType::Value;
 }
 
-
 /*!
   \details
   No detailed.
   */
-Float ValueTexture::wavelengthValue(const Point2& /* coordinate */, 
-                                    const uint16 /* wavelength */) const noexcept
-{
-  return value_;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-void ValueTexture::initialize(const System& /* system */,
+void ValueTexture::initialize(const System& system,
                               const QJsonObject& settings) noexcept
 {
-  value_ = SceneValue::toFloat<Float>(settings, keyword::value);
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(value_), "Texture value isn't [0, 1].");
+  // Emissive value
+  emissive_value_ = system.isRgbRenderingMode()
+      ? 1.0 / 3.0
+      : 1.0 / kSpectraSize;
+  // Reflective value and float value
+  reflective_value_ = SceneValue::toFloat<Float>(settings, keyword::value);
+  ZISC_ASSERT(isBetweenZeroAndOneFloat(reflective_value_),
+              "Texture value isn't [0, 1].");
 }
 
 } // namespace nanairo

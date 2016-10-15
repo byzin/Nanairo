@@ -262,7 +262,7 @@ inline
 SpectralDistribution SpectralDistribution::normalized() const noexcept
 {
   const Float k = 1.0 / sum();
-  return *this * k;
+  return (*this) * k;
 }
 
 /*!

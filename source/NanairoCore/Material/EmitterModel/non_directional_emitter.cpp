@@ -8,6 +8,8 @@
   */
 
 #include "non_directional_emitter.hpp"
+// Standard C++ library
+#include <vector>
 // Qt
 #include <QJsonObject>
 #include <QString>
@@ -17,6 +19,7 @@
 #include "emitter_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
@@ -25,11 +28,12 @@ namespace nanairo {
   \details
   No detailed.
   */
-NonDirectionalEmitter::NonDirectionalEmitter(const System& system,
-                                             const QJsonObject& settings) noexcept
-    : EmitterModel(system, settings)
+NonDirectionalEmitter::NonDirectionalEmitter(
+    const QJsonObject& settings,
+    const std::vector<const TextureModel*>& texture_list) noexcept
+        : EmitterModel(settings)
 {
-  initialize(system, settings);
+  initialize(settings, texture_list);
 }
 
 /*!
@@ -45,19 +49,18 @@ EmitterType NonDirectionalEmitter::type() const noexcept
   \details
   No detailed.
   */
-void NonDirectionalEmitter::initialize(const System& system,
-                                       const QJsonObject& settings) noexcept
+void NonDirectionalEmitter::initialize(
+    const QJsonObject& settings,
+    const std::vector<const TextureModel*>& texture_list) noexcept
 {
   const Float radiant_exitance =
       SceneValue::toFloat<Float>(settings, keyword::radiantExitance);
   ZISC_ASSERT(0.0 < radiant_exitance, "Radiance exitance is negative.");
+  setRadiantExitance(radiant_exitance);
 
-  const auto color_setting = SceneValue::toObject(settings, keyword::color);
-  auto power_distribution = makeEmissiveDistribution(system, color_setting);
-
-  const Float k = radiant_exitance / power_distribution.sum(); 
-  power_distribution = power_distribution * k;
-  setPowerDistribution(power_distribution);
+  const uint color_index =
+      SceneValue::toInt<uint>(settings, keyword::emissiveColorIndex);
+  color_ = texture_list[color_index];
 }
 
 } // namespace nanairo

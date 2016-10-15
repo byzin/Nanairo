@@ -12,6 +12,7 @@
 
 // Standard C++ library
 #include <cstddef>
+#include <vector>
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
@@ -26,6 +27,7 @@ namespace nanairo {
 class Sampler;
 template <uint> class ShaderModel;
 class System;
+class TextureModel;
 template <uint> class WavelengthSamples;
 
 //! \addtogroup Core
@@ -52,7 +54,7 @@ class EmitterModel
 
 
   //! Create a emitter model
-  EmitterModel(const System& system, const QJsonObject& settings) noexcept;
+  EmitterModel(const QJsonObject& settings) noexcept;
 
   //! Finalize the emitter model
   virtual ~EmitterModel() noexcept;
@@ -68,7 +70,7 @@ class EmitterModel
       MemoryPool& memory_pool) const noexcept;
 
   //! Return the spectral power distribution
-  const SpectralDistribution& powerDistribution() const noexcept;
+//  const SpectralDistribution& powerDistribution() const noexcept;
 
   //! Return the radiant exitance 
   Float radiantExitance() const noexcept;
@@ -78,14 +80,17 @@ class EmitterModel
  
  protected:
   //! Set the spectral power distribution
-  void setPowerDistribution(const SpectralDistribution& distribution) noexcept;
+//  void setPowerDistribution(const SpectralDistribution& distribution) noexcept;
+
+  //! Set the radiant exitance
+  void setRadiantExitance(const Float radiant_exitance) noexcept;
 
  private:
   //! Initialize
-  void initialize(const System& system, const QJsonObject& settings) noexcept;
+  void initialize(const QJsonObject& settings) noexcept;
 
 
-  SpectralDistribution power_distribution_;
+//  SpectralDistribution power_distribution_;
   Float radiant_exitance_;
 };
 
@@ -98,8 +103,9 @@ EmitterModel::ShaderPointer<kSampleSize> makeNonDirectionalLight(
     MemoryPool& memory_pool) noexcept;
 
 //! Make a emitter model
-UniquePointer<EmitterModel> makeEmitter(const System& system,
-                                        const QJsonObject& settings) noexcept;
+UniquePointer<EmitterModel> makeEmitter(
+    const QJsonObject& settings,
+    const std::vector<const TextureModel*>& texture_list) noexcept;
 
 //! \} Core
 

@@ -16,28 +16,13 @@
     },
     "EmitterModel": [
         {
-            "Color": {
-                "ColorMode": "Spectra",
-                "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
-            },
-            "Name": "Emitter",
-            "RadiantExitance": 512,
-            "Type": "NonDirectionalEmitter"
-        },
-        {
-            "Color": {
-                "ColorMode": "Spectra",
-                "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
-            },
+            "EmissiveColorIndex": 2,
             "Name": "StandEmitter",
             "RadiantExitance": 512,
             "Type": "NonDirectionalEmitter"
         },
         {
-            "Color": {
-                "ColorMode": "Spectra",
-                "Value": "resources/spectrum/illuminant/cie_si_a.csv"
-            },
+            "EmissiveColorIndex": 3,
             "Name": "SpotEmitter",
             "RadiantExitance": 5120,
             "Type": "NonDirectionalEmitter"
@@ -369,7 +354,7 @@
             "Type": "SingleObject"
         },
         {
-            "EmitterIndex": 1,
+            "EmitterIndex": 0,
             "Enabled": true,
             "GeometryType": "PlaneObject",
             "GroupLevel": 2,
@@ -469,7 +454,7 @@
             "Type": "SingleObject"
         },
         {
-            "EmitterIndex": 2,
+            "EmitterIndex": 1,
             "Enabled": true,
             "GeometryType": "PlaneObject",
             "GroupLevel": 2,
@@ -556,6 +541,22 @@
             "Name": "CupperRoughness",
             "Type": "ValueTexture",
             "Value": 0.4
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
+            },
+            "Name": "EmitterTexture1",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/illuminant/cornell_box_light.csv"
+            },
+            "Name": "EmitterTexture2",
+            "Type": "UnicolorTexture"
         }
     ]
 }

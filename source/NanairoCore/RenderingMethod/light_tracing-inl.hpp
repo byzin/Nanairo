@@ -178,11 +178,16 @@ Ray LightTracing<kSampleSize>::generateRay(const World& world,
   const auto light_point = light_source->geometry().samplePoint(sampler);
   const auto& point = std::get<0>(light_point);
   const auto& normal = std::get<1>(light_point);
+  const auto& texture_coordinate = std::get<2>(light_point);
   ZISC_ASSERT(0.0 < point.pdf(), "Invalid point pdf.");
 
   // Sample a direction
   const auto& emitter = light_source->material().emitter();
-  IntersectionInfo intersection{point.point(), normal, light_source, false};
+  const IntersectionInfo intersection{point.point(),
+                                      normal,
+                                      texture_coordinate,
+                                      light_source,
+                                      false};
   const auto light = emitter.makeLight(intersection.textureCoordinate(),
                                        wavelengths,
                                        memory_pool);

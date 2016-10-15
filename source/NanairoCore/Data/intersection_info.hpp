@@ -36,7 +36,14 @@ class IntersectionInfo
   //! Create a intersection data
   IntersectionInfo(const Point3& point,
                    const Vector3& normal,
-                   const Object* object, 
+                   const Object* object,
+                   const bool is_reverse_face) noexcept;
+
+  //! Create a intersection data
+  IntersectionInfo(const Point3& point,
+                   const Vector3& normal,
+                   const Point2& texture_coordinate,
+                   const Object* object,
                    const bool is_reverse_face) noexcept;
 
 

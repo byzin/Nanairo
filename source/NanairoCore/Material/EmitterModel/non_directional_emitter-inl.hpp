@@ -20,6 +20,7 @@
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Material/Light/non_directional_light.hpp"
+#include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 
 namespace nanairo {
@@ -30,13 +31,15 @@ namespace nanairo {
   */
 template <uint kSampleSize> inline
 auto NonDirectionalEmitter::makeNonDirectionalLight(
+    const Point2& texture_coordinate,
     const WavelengthSamples<kSampleSize>& wavelengths,
     MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
-  const auto radiant_emittance = sample(powerDistribution(), wavelengths);
+  const auto color = color_->emissiveValue(texture_coordinate, wavelengths);
+  const auto radiant_exitance = color * radiantExitance();
 
   using Light = NonDirectionalLight<kSampleSize>;
-  auto light = memory_pool.allocate<Light>(radiant_emittance);
+  auto light = memory_pool.allocate<Light>(radiant_exitance);
   return ShaderPointer<kSampleSize>{light};
 }
 
@@ -47,13 +50,14 @@ auto NonDirectionalEmitter::makeNonDirectionalLight(
 template <uint kSampleSize> inline
 EmitterModel::ShaderPointer<kSampleSize> makeNonDirectionalLight(
     const EmitterModel* emitter,
+    const Point2& texture_coordinate,
     const WavelengthSamples<kSampleSize>& wavelengths,
     MemoryPool& memory_pool) noexcept
 {
   using zisc::cast;
 
   auto e = cast<const NonDirectionalEmitter*>(emitter);
-  return e->makeNonDirectionalLight(wavelengths, memory_pool);
+  return e->makeNonDirectionalLight(texture_coordinate, wavelengths, memory_pool);
 }
 
 } // namespace nanairo

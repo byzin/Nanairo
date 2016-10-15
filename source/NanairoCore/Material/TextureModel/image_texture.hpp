@@ -14,7 +14,7 @@
 #include <cstddef>
 #include <vector>
 // Nanairo
-#include "texture.hpp"
+#include "texture_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
 
@@ -36,7 +36,7 @@ template <uint> class WavelengthSamples;
   \details
   No detailed.
   */
-class ImageTexture : public Texture
+class ImageTexture : public TextureModel
 {
  public:
   //! Create a image texture
@@ -46,9 +46,19 @@ class ImageTexture : public Texture
   //! Evaluate a float value at the coordinate
   Float floatValue(const Point2& coordinate) const noexcept override;
 
-  //! Evaluate spectra at the coordinate
+  //! Evaluate the reflective spectra at the coordinate
   template <uint kSampleSize>
-  SampledSpectra<kSampleSize> imageSpectraValue(
+  SampledSpectra<kSampleSize> emissiveValue(
+      const Point2& coordinate,
+      const WavelengthSamples<kSampleSize>& wavelength) const noexcept;
+
+  //! Evaluate the reflective value by the wavelength at the texture coordinate
+  Float reflectiveValue(const Point2& coordinate, 
+                        const uint16 wavelength) const noexcept override;
+
+  //! Evaluate the reflective spectra at the coordinate
+  template <uint kSampleSize>
+  SampledSpectra<kSampleSize> reflectiveValue(
       const Point2& coordinate,
       const WavelengthSamples<kSampleSize>& wavelength) const noexcept;
 
@@ -58,20 +68,21 @@ class ImageTexture : public Texture
   //! Return the image texture type
   TextureType type() const noexcept override;
 
-  //! Evaluate the value by the wavelength at the texture coordinate
-  Float wavelengthValue(const Point2& coordinate, 
-                        const uint16 wavelength) const noexcept override;
  private:
   //! Initialize
   void initialize(const System& system, const QJsonObject& settings) noexcept;
 
+  //! Initialize the emissive value table
+  void initializeEmissiveValueTable() noexcept;
+
   //! Set color
-  void setColor(const System& system,
-                const QImage& image, 
-                const Float gamma) noexcept;
+  void initializeReflectiveValueTable(const System& system,
+                                      const QImage& image,
+                                      const Float gamma) noexcept;
 
 
-  std::vector<SpectralDistribution> spectra_table_;
+  std::vector<SpectralDistribution> emissive_value_table_;
+  std::vector<SpectralDistribution> reflective_value_table_;
   std::vector<Float> float_table_;
   std::vector<uint> color_index_;
   Float width_,

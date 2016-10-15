@@ -26,10 +26,10 @@ namespace nanairo {
 // Forward declaration
 template <uint> class ShaderModel;
 class SpectralDistribution;
-class Texture;
+class TextureModel;
 template <uint> class WavelengthSamples;
 
-//! \addtogroup Core 
+//! \addtogroup Core
 //! \{
 
 /*!
@@ -44,8 +44,9 @@ class SmoothDiffuseSurface : public SurfaceModel
 
 
   //! Create a smooth diffuse surface
-  SmoothDiffuseSurface(const QJsonObject& settings, 
-                       const std::vector<const Texture*>& texture_list) noexcept;
+  SmoothDiffuseSurface(
+      const QJsonObject& settings,
+      const std::vector<const TextureModel*>& texture_list) noexcept;
 
 
   //! Make Lambert BRDF
@@ -63,11 +64,11 @@ class SmoothDiffuseSurface : public SurfaceModel
 
  private:
   //! Initialize
-  void initialize(const QJsonObject& settings, 
-                  const std::vector<const Texture*>& texture_list) noexcept;
+  void initialize(const QJsonObject& settings,
+                  const std::vector<const TextureModel*>& texture_list) noexcept;
 
 
-  const Texture* reflectance_;
+  const TextureModel* reflectance_;
 };
 
 //! \} Core

@@ -127,6 +127,7 @@ function(getNanairoKeywords nanairo_keyword_list)
       # EmitterModel
       emitterModel "EmitterModel"
           nonDirectionalEmitter "NonDirectionalEmitter"
+              emissiveColorIndex "EmissiveColorIndex"
               radiantExitance "RadiantExitance"
 
       # Object

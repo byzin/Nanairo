@@ -10,6 +10,8 @@
 #ifndef NANAIRO_SPECTRAL_DISTRIBUTION_HPP
 #define NANAIRO_SPECTRAL_DISTRIBUTION_HPP
 
+// Standard C++ library
+#include <memory>
 // Zisc
 #include "zisc/arithmetic_array.hpp"
 // Nanairo
@@ -135,17 +137,18 @@ class SpectralDistribution
   XyzColor toReflectiveXyz(const System& system) const noexcept;
 
  private:
-
   zisc::ArithmeticArray<Float, kSpectraSize> distribution_;
 };
 
 //! Make a emissive spectra
-SpectralDistribution makeEmissiveDistribution(const System& system,
-                                              const QJsonObject& settings) noexcept;
+std::unique_ptr<SpectralDistribution> makeEmissiveDistribution(
+    const System& system,
+    const QJsonObject& settings) noexcept;
 
 //! Make a nanairoive spectra
-SpectralDistribution makeReflectiveDistribution(const System& system,
-                                                const QJsonObject& settings) noexcept;
+std::unique_ptr<SpectralDistribution> makeReflectiveDistribution(
+    const System& system,
+    const QJsonObject& settings) noexcept;
 
 //!
 SpectralDistribution makeEmissiveSpectra(const QJsonObject& settings) noexcept;

@@ -16,10 +16,7 @@
     },
     "EmitterModel": [
         {
-            "Color": {
-                "ColorMode": "Spectra",
-                "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
-            },
+            "EmissiveColorIndex": 4,
             "Name": "Emitter",
             "RadiantExitance": 256,
             "Type": "NonDirectionalEmitter"
@@ -530,6 +527,14 @@
             "Name": "Roughness",
             "Type": "ValueTexture",
             "Value": 0.3
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
+            },
+            "Name": "EmitterTexture",
+            "Type": "UnicolorTexture"
         }
     ]
 }

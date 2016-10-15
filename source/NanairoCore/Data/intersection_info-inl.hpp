@@ -49,6 +49,24 @@ IntersectionInfo::IntersectionInfo(const Point3& point,
   No detailed.
   */
 inline
+IntersectionInfo::IntersectionInfo(const Point3& point,
+                                   const Vector3& normal,
+                                   const Point2& texture_coordinate,
+                                   const Object* object,
+                                   const bool is_reverse_face) noexcept :
+    point_{point},
+    normal_{is_reverse_face ? -normal : normal},
+    texture_coordinate_{texture_coordinate},
+    object_{object},
+    is_reverse_face_{is_reverse_face}
+{
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
 bool IntersectionInfo::isIntersected() const noexcept
 {
   return object_ != nullptr;

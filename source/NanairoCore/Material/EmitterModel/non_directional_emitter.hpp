@@ -10,6 +10,8 @@
 #ifndef NANAIRO_NON_DIRECTIONAL_EMITTER_HPP
 #define NANAIRO_NON_DIRECTIONAL_EMITTER_HPP
 
+// Standard C++ library
+#include <vector>
 // Nanairo
 #include "emitter_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -21,7 +23,7 @@ namespace nanairo {
 
 // Forward declaration
 class Sampler;
-class System;
+class TextureModel;
 template <uint> class WavelengthSamples;
 
 //! \addtogroup Core
@@ -35,12 +37,15 @@ class NonDirectionalEmitter : public EmitterModel
 {
  public:
   //! Create a non directional emitter
-  NonDirectionalEmitter(const System& system, const QJsonObject& settings) noexcept;
+  NonDirectionalEmitter(
+      const QJsonObject& settings,
+      const std::vector<const TextureModel*>& texture_list) noexcept;
 
 
   //! Make non-directional light
   template <uint kSampleSize>
   ShaderPointer<kSampleSize> makeNonDirectionalLight(
+      const Point2& texture_coordinate,
       const WavelengthSamples<kSampleSize>& wavelengths,
       MemoryPool& memory_pool) const noexcept;
 
@@ -49,7 +54,11 @@ class NonDirectionalEmitter : public EmitterModel
 
  private:
   //! Initialize the emitter
-  void initialize(const System& system, const QJsonObject& settings) noexcept;
+  void initialize(const QJsonObject& settings,
+                  const std::vector<const TextureModel*>& texture_list) noexcept;
+
+
+  const TextureModel* color_;
 };
 
 //! \} Core

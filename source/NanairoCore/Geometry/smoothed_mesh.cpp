@@ -228,7 +228,8 @@ bool SmoothedMesh::testIntersection(const Ray& ray,
   \details
   No detailed.
   */
-std::tuple<SampledPoint, Vector3> SmoothedMesh::samplePoint(Sampler& sampler) const noexcept
+std::tuple<SampledPoint, Vector3, Point2> SmoothedMesh::samplePoint(
+    Sampler& sampler) const noexcept
 {
   Float u = sampler.sample(0.0, 1.0);
   Float v = sampler.sample(0.0, 1.0);
@@ -238,9 +239,12 @@ std::tuple<SampledPoint, Vector3> SmoothedMesh::samplePoint(Sampler& sampler) co
   }
   const Float xi = v;
   const Float eta = u + v;
+  const Float barycentric[3] = {u, v, 1.0 - (u + v)};
   //! \todo Calculate the surface area of the smoothed mesh
   zisc::raiseError("Todo: calculate the surface area.");
-  return std::make_tuple(SampledPoint{point(eta, xi), 0.0}, normal(eta, xi));
+  return std::make_tuple(SampledPoint{point(eta, xi), 0.0},
+                         normal(eta, xi),
+                         textureCoordinate(barycentric));
 }
 
 /*!

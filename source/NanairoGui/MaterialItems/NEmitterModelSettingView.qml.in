@@ -18,6 +18,7 @@ Rectangle {
   property int currentTypeIndex: 0
   property var currentItem: null
   property bool isItemChangeMode: false
+  property var textureModel: null
 
   width: @material_setting_view_width@
   height: @material_setting_view_height@
@@ -35,6 +36,7 @@ Rectangle {
       active: true
 
       NNonDirectionalEmitterItem {
+        textureModel: emitter_model_setting_view.textureModel
         color: emitter_model_setting_view.color
       }
     }

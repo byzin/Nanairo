@@ -10,6 +10,7 @@
 #include "spectral_distribution.hpp"
 // Standard C++ library
 #include <cmath>
+#include <memory>
 #include <utility>
 // Qt
 #include <QColor>
@@ -151,44 +152,49 @@ zisc::LinearInterp<Float> loadSpectraData(const QString& file_path) noexcept
   \details
   No detailed.
   */
-SpectralDistribution makeEmissiveDistribution(
+std::unique_ptr<SpectralDistribution> makeEmissiveDistribution(
     const System& system,
     const QJsonObject& settings) noexcept
 {
+  auto distribution = std::make_unique<SpectralDistribution>();
   if (isRgbData(settings)) {
     const auto rgb = makeRgb(system, settings);
-    return (system.isRgbRenderingMode())
+    *distribution = (system.isRgbRenderingMode())
         ? toRgbSpectra(rgb)
         : toSpectra(system, rgb);
   }
   else {
     auto spectra = makeEmissiveSpectra(settings);
-    return (system.isRgbRenderingMode())
+    *distribution = (system.isRgbRenderingMode())
         ? toEmissiveRgbSpectra(system, spectra)
         : spectra;
   }
+  *distribution = distribution->normalized();
+  return distribution;
 }
 
 /*!
   \details
   No detailed.
   */
-SpectralDistribution makeReflectiveDistribution(
+std::unique_ptr<SpectralDistribution> makeReflectiveDistribution(
     const System& system,
     const QJsonObject& settings) noexcept
 {
+  auto distribution = std::make_unique<SpectralDistribution>();
   if (isRgbData(settings)) {
     const auto rgb = makeRgb(system, settings);
-    return (system.isRgbRenderingMode())
+    *distribution = (system.isRgbRenderingMode())
         ? toRgbSpectra(rgb)
         : toSpectra(system, rgb);
   }
   else {
     auto spectra = makeReflectiveSpectra(settings);
-    return (system.isRgbRenderingMode())
+    *distribution = (system.isRgbRenderingMode())
         ? toReflectiveRgbSpectra(system, spectra)
         : spectra;
   }
+  return distribution;
 }
 
 /*!

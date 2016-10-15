@@ -26,7 +26,7 @@ namespace nanairo {
 class Sampler;
 template <uint> class ShaderModel;
 class SpectralDistribution;
-class Texture;
+class TextureModel;
 template <uint> class WavelengthSamples;
 
 //! \addtogroup Core
@@ -119,7 +119,7 @@ SurfaceModel::ShaderPointer<kSampleSize> makeGgxConductorBrdf(
 //! Make a surface scattering model
 UniquePointer<SurfaceModel> makeSurface(
     const QJsonObject& settings,
-    const std::vector<const Texture*>& weight_list) noexcept;
+    const std::vector<const TextureModel*>& texture_list) noexcept;
 
 //! \} Core 
 

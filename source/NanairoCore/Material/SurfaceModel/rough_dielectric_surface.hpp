@@ -27,7 +27,7 @@ namespace nanairo {
 // Forward declaration
 class Sampler;
 template <uint> class ShaderModel;
-class Texture;
+class TextureModel;
 template <uint> class WavelengthSamples;
 
 //! \addtogroup Core
@@ -45,8 +45,9 @@ class RoughDielectricSurface : public SurfaceModel
 
 
   //! Create a rough dielectric surface
-  RoughDielectricSurface(const QJsonObject& settings, 
-                         const std::vector<const Texture*>& texture_list) noexcept;
+  RoughDielectricSurface(
+      const QJsonObject& settings,
+      const std::vector<const TextureModel*>& texture_list) noexcept;
 
 
   //! Make a GGX BSDF
@@ -66,10 +67,10 @@ class RoughDielectricSurface : public SurfaceModel
  private:
   //! Initialize
   void initialize(const QJsonObject& settings,
-                  const std::vector<const Texture*>& texture_list) noexcept;
+                  const std::vector<const TextureModel*>& texture_list) noexcept;
   
 
-  const Texture* roughness_;
+  const TextureModel* roughness_;
   SpectralDistribution eta_;
 };
 

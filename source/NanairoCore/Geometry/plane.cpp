@@ -123,11 +123,13 @@ bool Plane::testIntersection(const Ray& ray, IntersectionInfo* intersection) con
   \details
   No detailed.
   */
-std::tuple<SampledPoint, Vector3> Plane::samplePoint(Sampler& sampler) const noexcept
+std::tuple<SampledPoint, Vector3, Point2> Plane::samplePoint(
+    Sampler& sampler) const noexcept
 {
-  const auto point = top_left_ + axis1_ * sampler.sample(0.0, 1.0) +
-                                 axis2_ * sampler.sample(0.0, 1.0);
-  return std::make_tuple(SampledPoint{point, surfaceArea()}, normal_);
+  const Float u = sampler.sample(0.0, 1.0);
+  const Float v = sampler.sample(0.0, 1.0);
+  const auto point = top_left_ + u * axis1_ + v * axis2_;
+  return std::make_tuple(SampledPoint{point, surfaceArea()}, normal_, Point2{u, v});
 }
 
 /*!

@@ -107,7 +107,12 @@ Rectangle {
         var surfaceTab = getSettingTab(surfaceTabIndex);
         surfaceTab.textureModel = textureTab.materialModel.model;
       }
-      var emitterTabIndex = 6
+      var emitterTabIndex = 6;
+      if ((count - 1) == emitterTabIndex) {
+        var textureTab = getSettingTab(textureTabIndex);
+        var emitterTab = getSettingTab(emitterTabIndex);
+        emitterTab.textureModel = textureTab.materialModel.model;
+      }
       var objectTabIndex = 7
       if ((count - 1) == objectTabIndex) {
         var surfaceTab = getSettingTab(surfaceTabIndex);
