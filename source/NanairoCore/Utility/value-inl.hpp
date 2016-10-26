@@ -26,7 +26,8 @@ inline
 constexpr uint getIndex(const uint16 wavelength) noexcept
 {
   using zisc::cast;
-  return cast<uint>(wavelength - kShortestWavelength) / kWavelengthResolution;
+  return cast<uint>(wavelength - CoreConfig::shortestWavelength()) /
+         CoreConfig::wavelengthResolution();
 }
 
 /*!
@@ -37,7 +38,8 @@ inline
 constexpr uint16 getWavelength(const uint index) noexcept
 {
   using zisc::cast;
-  return kShortestWavelength + cast<uint16>(index * kWavelengthResolution);
+  return CoreConfig::shortestWavelength() +
+         cast<uint16>(index * CoreConfig::wavelengthResolution());
 }
 
 } // namespace nanairo

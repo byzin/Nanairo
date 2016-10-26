@@ -35,10 +35,12 @@ endfunction(getCoreSamplerType)
 
 
 # Make Nanairo Core config file
-function(makeCoreConfigFile config_file_path)
+function(makeCoreConfigFile config_file_path config_file_inl_path)
   getCoreSamplerType(nanairo_core_sampler_header_path nanairo_core_sampler_type)
   configure_file(${__nanairo_core_root__}/nanairo_core_config.hpp.in
                  ${config_file_path})
+  configure_file(${__nanairo_core_root__}/nanairo_core_config-inl.hpp.in
+                 ${config_file_inl_path})
   source_group(NanairoCore FILES ${config_file_path})
 endfunction(makeCoreConfigFile)
 
@@ -85,7 +87,9 @@ function(getNanairoCore core_source_files core_definitions)
   # Config file
   set(config_file_path
       ${PROJECT_BINARY_DIR}/include/NanairoCore/nanairo_core_config.hpp)
-  makeCoreConfigFile(${config_file_path})
+  set(config_file_inl_path
+      ${PROJECT_BINARY_DIR}/include/NanairoCore/nanairo_core_config-inl.hpp)
+  makeCoreConfigFile(${config_file_path} ${config_file_inl_path})
   list(APPEND source_files ${config_file_path})
   # Resource
   set(resource_file ${PROJECT_BINARY_DIR}/resource_code/core_resource.qrc)

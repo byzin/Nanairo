@@ -1,0 +1,139 @@
+/*!
+  \file nanairo_core_config-inl.hpp
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+#ifndef NANAIRO_NANAIRO_CORE_CONFIG_INL_HPP
+#define NANAIRO_NANAIRO_CORE_CONFIG_INL_HPP
+
+#include "NanairoCore/nanairo_core_config.hpp"
+// Standard C++ library
+#include <cstdint>
+#include <type_traits>
+
+namespace nanairo {
+
+/*!
+  */
+inline
+constexpr uint16 CoreConfig::blueWavelength() noexcept
+{
+  constexpr uint16 blue_wavelength = 440;
+  return blue_wavelength;
+}
+
+/*!
+  */
+inline
+constexpr uint16 CoreConfig::greenWavelength() noexcept
+{
+  constexpr uint16 green_wavelength = 540;
+  return green_wavelength;
+}
+
+/*!
+  */
+inline
+constexpr uint16 CoreConfig::redWavelength() noexcept
+{
+  constexpr uint16 red_wavelength = 700;
+  return red_wavelength;
+}
+
+/*!
+  */
+inline
+constexpr uint16 CoreConfig::shortestWavelength() noexcept
+{
+  constexpr uint16 shortest_wavelength = @NANAIRO_SHORTEST_WAVELENGTH@;
+  static_assert(360 <= shortest_wavelength,
+                "The shortest wavelength is less than 360nm.");
+  return shortest_wavelength;
+}
+
+/*!
+  */
+inline
+constexpr uint16 CoreConfig::longestWavelength() noexcept
+{
+  constexpr uint16 longest_wavelength = @NANAIRO_LONGEST_WAVELENGTH@;
+  static_assert(longest_wavelength <= 830,
+                "The longest wavelength is greater than 830nm.");
+  return longest_wavelength;
+}
+
+/*!
+  */
+inline
+constexpr uint CoreConfig::wavelengthRange() noexcept
+{
+  constexpr uint w_s = static_cast<uint>(shortestWavelength());
+  constexpr uint w_l = static_cast<uint>(longestWavelength());
+  static_assert(w_s < w_l, "The shortest wavelength is greater than the longest.");
+  return w_l - w_s;
+}
+
+/*!
+  */
+inline
+constexpr uint CoreConfig::wavelengthResolution() noexcept
+{
+  constexpr uint wavelength_resolution = @NANAIRO_WAVELENGTH_RESOLUTION@;
+  static_assert(
+      wavelengthRange() % wavelength_resolution == 0,
+      "Invalid wavelength resolution is specified.");
+  static_assert(
+      (blueWavelength() - shortestWavelength()) % wavelength_resolution == 0,
+      "Invalid wavelength resolution is specified.");
+  static_assert(
+      (greenWavelength() - shortestWavelength()) % wavelength_resolution == 0,
+      "Invalid wavelength resolution is specified.");
+  static_assert(
+      (redWavelength() - shortestWavelength()) % wavelength_resolution == 0,
+      "Invalid wavelength resolution is specified.");
+  return wavelength_resolution;
+}
+
+/*!
+  */
+inline
+constexpr uint CoreConfig::spectraSize() noexcept
+{
+  constexpr uint spectra_size = wavelengthRange() / wavelengthResolution();
+  return spectra_size;
+}
+
+/*!
+  */
+inline
+constexpr uint CoreConfig::maxNumOfNodeObjects() noexcept
+{
+  constexpr uint max_num_of_node_objects = @NANAIRO_MAX_NUM_OF_OBJECTS@;
+  return max_num_of_node_objects;
+}
+
+/*!
+  */
+inline
+constexpr uint CoreConfig::wavelengthSampleSize() noexcept
+{
+  constexpr uint wavelength_sample_size = @NANAIRO_WAVELENGTH_SAMPLE_SIZE@;
+  return wavelength_sample_size;
+}
+
+/*!
+  */
+inline
+constexpr uint CoreConfig::misHeuristicBeta() noexcept
+{
+  constexpr uint mis_heuristic_beta = @NANAIRO_MIS_HEURISTIC_BETA@;
+  return mis_heuristic_beta;
+}
+
+} // namespace nanairo
+
+#endif // NANAIRO_NANAIRO_CORE_CONFIG_INL_HPP

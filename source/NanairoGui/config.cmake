@@ -161,7 +161,7 @@ endfunction(copyGuiResourceFiles)
 
 # Make Nanairo GUI config file
 function(makeGuiConfigFile config_file_path)
-  configure_file(${__nanairo_gui_root__}/nanairo_gui_config.hpp.in
+  configure_file(${__nanairo_gui_root__}/nanairo_gui_config-inl.hpp.in
                  ${config_file_path})
   source_group(NanairoGui FILES ${config_file_path})
 endfunction(makeGuiConfigFile)
@@ -201,7 +201,7 @@ function(getNanairoGui gui_source_files gui_definitions)
   findNanairoSourceFiles(${__nanairo_gui_root__} source_files)
   # Config file
   set(config_file_path
-      ${PROJECT_BINARY_DIR}/include/NanairoGui/nanairo_gui_config.hpp)
+      ${PROJECT_BINARY_DIR}/include/NanairoGui/nanairo_gui_config-inl.hpp)
   makeGuiConfigFile(${config_file_path})
   list(APPEND source_files ${config_file_path})
   # Resource

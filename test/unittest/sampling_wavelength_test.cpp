@@ -19,7 +19,7 @@
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 
-constexpr nanairo::uint kSampleSize = nanairo::kWavelengthSampleSize;
+constexpr nanairo::uint kSampleSize = nanairo::CoreConfig::wavelengthSampleSize();
 
 namespace {
 
@@ -28,14 +28,15 @@ namespace {
   No detailed.
   */
 template <nanairo::uint N>
-std::array<nanairo::uint, nanairo::kSpectraSize> testWavelengthDistribution(
+std::array<nanairo::uint, nanairo::CoreConfig::spectraSize()>
+testWavelengthDistribution(
     const nanairo::WavelengthSampler<kSampleSize>& wavelength_sampler,
     nanairo::Sampler& sampler)
 {
   using namespace nanairo;
   using zisc::cast;
 
-  std::array<uint, kSpectraSize> wavelength_distribution;
+  std::array<uint, CoreConfig::spectraSize()> wavelength_distribution;
   wavelength_distribution.fill(0);
 
   for (uint i = 0; i < N; ++i) {
@@ -65,12 +66,12 @@ void testUniformWavelengthSampler(
 
   // Distribution test
   constexpr uint n = 1'000'000'0;
-  constexpr uint loop_count = kSpectraSize * n;
+  constexpr uint loop_count = CoreConfig::spectraSize() * n;
   constexpr uint expectation = kSampleSize * n;
   constexpr uint error = kSampleSize * 1'000;
   const auto wavelength_distribution =
       testWavelengthDistribution<loop_count>(wavelength_sampler, sampler);
-  for (uint i = 0; i < kSpectraSize; ++i) {
+  for (uint i = 0; i < CoreConfig::spectraSize(); ++i) {
     const auto w = getWavelength(i);
     const auto w_count = wavelength_distribution[i];
     EXPECT_GT(w_count, expectation - error)

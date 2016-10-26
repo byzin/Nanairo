@@ -15,10 +15,19 @@ namespace nanairo {
 //! \addtogroup Renderer
 //! \{
 
-constexpr int kMaxFps = @NANAIRO_MAX_FPS@;
+/*!
+  */
+class RendererConfig
+{
+ public:
+  //! Return the max FPS
+  static constexpr int maxFps() noexcept;
+};
 
 //! \} Renderer
 
 } // namespace nanairo
+
+#include "NanairoRenderer/nanairo_renderer_config-inl.hpp"
 
 #endif // NANAIRO_NANAIRO_RENDERER_CONFIG_HPP

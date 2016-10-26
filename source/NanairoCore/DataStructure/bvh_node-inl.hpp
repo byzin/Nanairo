@@ -110,7 +110,7 @@ uint BvhNode::numOfObjects() const noexcept
  */
 inline
 auto BvhNode::objectList() const noexcept
-    -> const std::array<const Object*, kMaxNumOfObjectsPerNode>& 
+    -> const std::array<const Object*, CoreConfig::maxNumOfNodeObjects()>&
 {
   return object_list_;
 }

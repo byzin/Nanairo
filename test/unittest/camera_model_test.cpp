@@ -83,7 +83,7 @@ TEST(CameraModelTest, PinholeTest)
 
   // Wavelength
   nanairo::WavelengthSamples<1> wavelengths;
-  wavelengths[0] = nanairo::kShortestWavelength;
+  wavelengths[0] = nanairo::CoreConfig::shortestWavelength();
   wavelengths.setPrimaryWavelength(0);
 
   const char* sensor_name = "PinholeCamera";

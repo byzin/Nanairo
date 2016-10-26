@@ -11,7 +11,7 @@ set(__nanairo_renderer_root__ ${CMAKE_CURRENT_LIST_DIR})
 
 # Make Nanairo Renderer config file
 function(makeRendererConfigFile config_file_path)
-  configure_file(${__nanairo_renderer_root__}/nanairo_renderer_config.hpp.in
+  configure_file(${__nanairo_renderer_root__}/nanairo_renderer_config-inl.hpp.in
                  ${config_file_path})
   source_group(NanairoRenderer FILES ${config_file_path})
 endfunction(makeRendererConfigFile)
@@ -23,7 +23,7 @@ function(getNanairoRenderer renderer_source_files renderer_definitions)
   findNanairoSourceFiles(${__nanairo_renderer_root__} source_files)
   # Config file
   set(config_file_path ${PROJECT_BINARY_DIR}/include/NanairoRenderer)
-  makeRendererConfigFile(${config_file_path}/nanairo_renderer_config.hpp)
+  makeRendererConfigFile(${config_file_path}/nanairo_renderer_config-inl.hpp)
   list(APPEND source_files ${config_file_path})
 
 

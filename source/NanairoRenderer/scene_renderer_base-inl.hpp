@@ -177,7 +177,8 @@ bool SceneRendererBase::waitForNextFrame(const Clock::duration& delta_time) cons
 {
   using std::chrono::duration_cast;
 
-  constexpr auto time_per_frame = std::chrono::milliseconds{1000 / kMaxFps};
+  constexpr auto time_per_frame =
+      std::chrono::milliseconds{1000 / RendererConfig::maxFps()};
   constexpr auto wait_time = duration_cast<Clock::duration>(time_per_frame);
 
   if (wait_time > delta_time) {

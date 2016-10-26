@@ -10,15 +10,27 @@
 #ifndef NANAIRO_NANAIRO_GUI_CONFIG_HPP
 #define NANAIRO_NANAIRO_GUI_CONFIG_HPP
 
+// Standard C++ library
+#include <string>
+
 namespace nanairo {
 
 //! \addtogroup Gui
 //! \{
 
-constexpr char kRandomSeedKey[] = "@NANAIRO_RANDOM_SEED_KEY@";
+/*!
+  */
+class GuiConfig
+{
+ public:
+  //! Return the seed key
+  static std::string randomSeedKey() noexcept;
+};
 
 //! \} Gui
 
 } // namespace nanairo
+
+#include "NanairoGui/nanairo_gui_config-inl.hpp"
 
 #endif // NANAIRO_NANAIRO_GUI_CONFIG_HPP

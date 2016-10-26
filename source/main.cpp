@@ -19,6 +19,7 @@
 #include <QDir>
 #include <QFont>
 #include <QGuiApplication>
+#include <QScopedPointer>
 #include <QString>
 #include <QStringList>
 #include <QtGlobal>
@@ -34,6 +35,8 @@
 #include "NanairoRenderer/renderer_parameter.hpp"
 #include "NanairoRenderer/scene_document.hpp"
 
+namespace {
+
 //! Make a renderer runner
 std::function<int ()> makeRendererRunner(
     const QCoreApplication& application,
@@ -46,24 +49,30 @@ std::shared_ptr<nanairo::RendererParameter> processCommandLineOptions(
 //! Initialize Qt random seed
 void initializeQtRandomSeed() noexcept;
 
+} // namespace
+
 /*!
   \details
   No detailed.
   */
 int main(int argc, char** argv)
 {
+  using nanairo::CommonConfig;
+
   // Initialize application
-  QGuiApplication application{argc, argv};
-  QCoreApplication::setApplicationName(nanairo::kApplicationName);
-  QCoreApplication::setApplicationVersion(nanairo::kVersionString);
-  const auto options = processCommandLineOptions(application);
+  QScopedPointer<QGuiApplication> application{new QGuiApplication{argc, argv}};
+  QCoreApplication::setApplicationName(CommonConfig::applicationName().c_str());
+  QCoreApplication::setApplicationVersion(CommonConfig::versionString().c_str());
+  const auto options = processCommandLineOptions(*application);
 
   // Initialize Qt
   initializeQtRandomSeed();
 
-  auto renderer_runner = makeRendererRunner(application, options);
+  auto renderer_runner = makeRendererRunner(*application, options);
   return renderer_runner();
 }
+
+namespace {
 
 /*!
   */
@@ -187,3 +196,5 @@ void initializeQtRandomSeed() noexcept
   const qint32 seed = std::abs(array[0] ^ array[1]);
   qsrand(cast<uint>(seed));
 }
+
+} // namespace

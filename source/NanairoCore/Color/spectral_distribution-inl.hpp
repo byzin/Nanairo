@@ -34,7 +34,7 @@ SpectralDistribution::SpectralDistribution() noexcept
   */
 inline
 SpectralDistribution::SpectralDistribution(
-    const zisc::ArithmeticArray<Float, kSpectraSize>& distribution) noexcept
+    const zisc::ArithmeticArray<Float, CoreConfig::spectraSize()>& distribution) noexcept
         : distribution_{distribution}
 {
 }
@@ -271,7 +271,7 @@ SpectralDistribution SpectralDistribution::normalized() const noexcept
   */
 inline
 auto SpectralDistribution::distribution() const noexcept
-    -> const zisc::ArithmeticArray<Float, kSpectraSize>&
+    -> const zisc::ArithmeticArray<Float, CoreConfig::spectraSize()>&
 {
   return distribution_;
 }
@@ -304,7 +304,7 @@ void SpectralDistribution::setByWavelength(const uint16 wavelength,
 inline
 constexpr uint SpectralDistribution::size() noexcept
 {
-  return kSpectraSize;
+  return CoreConfig::spectraSize();
 }
 
 /*!

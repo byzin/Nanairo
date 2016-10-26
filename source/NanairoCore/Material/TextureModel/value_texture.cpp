@@ -83,7 +83,7 @@ void ValueTexture::initialize(const System& system,
   // Emissive value
   emissive_value_ = system.isRgbRenderingMode()
       ? 1.0 / 3.0
-      : 1.0 / kSpectraSize;
+      : 1.0 / CoreConfig::spectraSize();
   // Reflective value and float value
   reflective_value_ = SceneValue::toFloat<Float>(settings, keyword::value);
   ZISC_ASSERT(isBetweenZeroAndOneFloat(reflective_value_),

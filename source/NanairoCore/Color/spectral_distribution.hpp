@@ -38,11 +38,11 @@ class System;
 class SpectralDistribution
 {
  public:
-  //! Create empty distribution 
+  //! Create empty distribution
   SpectralDistribution() noexcept;
 
   //! Create a distribution
-  SpectralDistribution(const zisc::ArithmeticArray<Float, kSpectraSize>& property) noexcept;
+  SpectralDistribution(const zisc::ArithmeticArray<Float, CoreConfig::spectraSize()>& property) noexcept;
 
 
   //! Apply addition operation to each element
@@ -115,8 +115,8 @@ class SpectralDistribution
   //! Return the normalized distribution
   SpectralDistribution normalized() const noexcept;
 
-  //! Return the spectral distribution 
-  const zisc::ArithmeticArray<Float, kSpectraSize>& distribution() const noexcept;
+  //! Return the spectral distribution
+  const zisc::ArithmeticArray<Float, CoreConfig::spectraSize()>& distribution() const noexcept;
 
   //! Set value by the index
   void set(const uint index, const Float intensity) noexcept;
@@ -137,7 +137,7 @@ class SpectralDistribution
   XyzColor toReflectiveXyz(const System& system) const noexcept;
 
  private:
-  zisc::ArithmeticArray<Float, kSpectraSize> distribution_;
+  zisc::ArithmeticArray<Float, CoreConfig::spectraSize()> distribution_;
 };
 
 //! Make a emissive spectra

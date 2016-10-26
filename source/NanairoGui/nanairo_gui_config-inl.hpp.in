@@ -1,0 +1,29 @@
+/*!
+  \file nanairo_gui_config-inl.hpp
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+#ifndef NANAIRO_NANAIRO_GUI_CONFIG_INL_HPP
+#define NANAIRO_NANAIRO_GUI_CONFIG_INL_HPP
+
+#include "NanairoGui/nanairo_gui_config.hpp"
+// Standard C++ library
+#include <string>
+
+namespace nanairo {
+
+/*!
+  */
+inline
+std::string GuiConfig::randomSeedKey() noexcept
+{
+  return std::string{"@NANAIRO_RANDOM_SEED_KEY@"};
+}
+
+} // namespace nanairo
+
+#endif // NANAIRO_NANAIRO_GUI_CONFIG_INL_HPP

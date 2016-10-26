@@ -39,7 +39,7 @@ endfunction(makeCommonKeywordFile)
 
 #
 function(makeCommonConfigFile config_file_path)
-  configure_file(${__nanairo_common_root__}/nanairo_common_config.hpp.in
+  configure_file(${__nanairo_common_root__}/nanairo_common_config-inl.hpp.in
                  ${config_file_path})
   source_group(NanairoCommon FILES ${config_file_path})
 endfunction(makeCommonConfigFile)
@@ -53,7 +53,7 @@ function(getNanairoCommon common_source_files)
   makeCommonKeywordFile(${keyword_file_path} ${nanairo_keyword_list})
   list(APPEND source_files ${keyword_file_path})
   # nanairo_common_config.hpp
-  set(config_file_path ${common_config_dir}/nanairo_common_config.hpp)
+  set(config_file_path ${common_config_dir}/nanairo_common_config-inl.hpp)
   makeCommonConfigFile(${config_file_path})
   list(APPEND source_files ${config_file_path})
 

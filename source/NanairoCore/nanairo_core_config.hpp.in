@@ -30,7 +30,7 @@ namespace nanairo {
 //! \addtogroup Core
 //! \{
 
-// General
+// General types
 using int8 = std::int8_t;
 using int16 = std::int16_t;
 using int32 = std::int32_t;
@@ -41,33 +41,12 @@ using uint16 = std::uint16_t;
 using uint32 = std::uint32_t;
 using uint64 = std::uint64_t;
 using Float = @NANAIRO_FLOATING_POINT_TYPE@;
+
 // System
-constexpr uint kMemoryPoolSize = @NANAIRO_MEMORY_POOL_SIZE@;
-constexpr uint kMemoryAlignment = std::alignment_of<void*>::value;
-using SamplerType = @nanairo_core_sampler_type@;
-using MemoryPool = zisc::AlignedMemoryPool<kMemoryPoolSize, kMemoryAlignment>;
-// Color
-constexpr uint16 kBlueWavelength = 440;
-constexpr uint16 kGreenWavelength = 540;
-constexpr uint16 kRedWavelength = 700;
-constexpr uint16 kShortestWavelength = @NANAIRO_SHORTEST_WAVELENGTH@;
-constexpr uint16 kLongestWavelength = @NANAIRO_LONGEST_WAVELENGTH@;
-static_assert(360 <= kShortestWavelength,
-              "The shortest wavelength is less than 360nm.");
-static_assert(kLongestWavelength <= 830,
-              "The longest wavelength is greater than 830nm.");
-static_assert(kShortestWavelength < kLongestWavelength,
-              "The shortest wavelength is greater than the longest.");
-constexpr uint kWavelengthRange = kLongestWavelength - kShortestWavelength;
-constexpr uint kWavelengthResolution = @NANAIRO_WAVELENGTH_RESOLUTION@;
-static_assert((kWavelengthRange % kWavelengthResolution == 0) &&
-              ((kBlueWavelength-kShortestWavelength) % kWavelengthResolution == 0) &&
-              ((kGreenWavelength-kShortestWavelength) % kWavelengthResolution == 0) &&
-              ((kRedWavelength-kShortestWavelength) % kWavelengthResolution == 0),
-              "Invalid wavelength resolution is specified.");
-constexpr uint kSpectraSize = kWavelengthRange / kWavelengthResolution;
-// DataStructure
-constexpr uint kMaxNumOfObjectsPerNode = @NANAIRO_MAX_NUM_OF_OBJECTS@;
+using MemoryPool = zisc::AlignedMemoryPool<
+    @NANAIRO_MEMORY_POOL_SIZE@, // The memory pool size
+    std::alignment_of<void*>::value>; // The memory alignment
+
 // LinearAlgebra
 using Vector3 = zisc::Vector<Float, 3>;
 using Vector2 = zisc::Vector<Float, 2>;
@@ -75,15 +54,56 @@ using Point3 = zisc::Point<Float, 3>;
 using Point2 = zisc::Point<Float, 2>;
 using Matrix4x4 = zisc::Matrix<Float, 4, 4>;
 using Matrix3x3 = zisc::Matrix<Float, 3, 3>;
+
 // Sampling
+using SamplerType = @nanairo_core_sampler_type@;
 template <uint kSampleSize>
 using IntensitySamples = zisc::ArithmeticArray<Float, kSampleSize>;
-constexpr uint kWavelengthSampleSize = @NANAIRO_WAVELENGTH_SAMPLE_SIZE@;
-// RenderingMethod
-constexpr uint kMisHeuristicBeta = @NANAIRO_MIS_HEURISTIC_BETA@;
+
+/*!
+  \brief This class contains properties used in Core module
+  */
+class CoreConfig
+{
+ public:
+  //! Return the blue wavelength
+  static constexpr uint16 blueWavelength() noexcept;
+
+  //! Return the green wavelength
+  static constexpr uint16 greenWavelength() noexcept;
+
+  //! Retun the red wavelength
+  static constexpr uint16 redWavelength() noexcept;
+
+  //! Return the shortest wavelength
+  static constexpr uint16 shortestWavelength() noexcept;
+
+  //! Return the longest wavelength
+  static constexpr uint16 longestWavelength() noexcept;
+
+  //! Return the wavelength range
+  static constexpr uint wavelengthRange() noexcept;
+
+  //! Return the wavelength resolution
+  static constexpr uint wavelengthResolution() noexcept;
+
+  //! Return the spectra size
+  static constexpr uint spectraSize() noexcept;
+
+  //! Return the max num of objects contained in a BVH node
+  static constexpr uint maxNumOfNodeObjects() noexcept;
+
+  //! Return the size of wavelength sample
+  static constexpr uint wavelengthSampleSize() noexcept;
+
+  //! Return the exponent of MIS heuristic
+  static constexpr uint misHeuristicBeta() noexcept;
+};
 
 //! \} Core
 
 } // namespace nanairo
+
+#include "NanairoCore/nanairo_core_config-inl.hpp"
 
 #endif // NANAIRO_NANAIRO_CORE_CONFIG_HPP

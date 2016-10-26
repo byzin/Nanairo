@@ -196,9 +196,9 @@ template <uint kSampleSize> inline
 SampledWavelengths<kSampleSize> sampleRgbWavelengths(Sampler& sampler) noexcept
 {
   SampledWavelengths<kSampleSize> sampled_wavelengths;
-  sampled_wavelengths.set(0, kBlueWavelength, 1.0);
-  sampled_wavelengths.set(1, kGreenWavelength, 1.0);
-  sampled_wavelengths.set(2, kRedWavelength, 1.0);
+  sampled_wavelengths.set(0, CoreConfig::blueWavelength(), 1.0);
+  sampled_wavelengths.set(1, CoreConfig::greenWavelength(), 1.0);
+  sampled_wavelengths.set(2, CoreConfig::redWavelength(), 1.0);
 
   sampled_wavelengths.template selectPrimaryWavelength<kSampleSize>(sampler);
   return sampled_wavelengths;
@@ -213,7 +213,8 @@ SampledWavelengths<kSampleSize> sampleStratifiedWavelengths(Sampler& sampler) no
 {
   using zisc::cast;
 
-  constexpr Float interval = cast<Float>(kSpectraSize) / cast<Float>(kSampleSize);
+  constexpr Float interval = cast<Float>(CoreConfig::spectraSize()) /
+                             cast<Float>(kSampleSize);
   constexpr Float inverse_probability = interval;
 
   SampledWavelengths<kSampleSize> sampled_wavelengths;
@@ -236,12 +237,13 @@ SampledWavelengths<kSampleSize> sampleWavelengthsRandomly(Sampler& sampler) noex
 {
   using zisc::cast;
 
-  constexpr Float inverse_probability = cast<Float>(kSpectraSize) / 
+  constexpr Float inverse_probability = cast<Float>(CoreConfig::spectraSize()) /
                                         cast<Float>(kSampleSize);
 
   std::array<uint16, kSampleSize> wavelengths;
   for (uint i = 0; i < SampledWavelengths<kSampleSize>::size(); ++i) {
-    const Float position = cast<Float>(kSpectraSize) * sampler.sample(0.0, 1.0);
+    const Float position = cast<Float>(CoreConfig::spectraSize()) *
+                           sampler.sample(0.0, 1.0);
     const uint index = cast<uint>(position);
     const uint16 wavelength = getWavelength(index);
     wavelengths[i] = wavelength;
@@ -264,7 +266,8 @@ SampledWavelengths<kSampleSize> sampleWavelengthsRegularly(Sampler& sampler) noe
 {
   using zisc::cast;
 
-  constexpr Float interval = cast<Float>(kSpectraSize) / cast<Float>(kSampleSize);
+  constexpr Float interval = cast<Float>(CoreConfig::spectraSize()) /
+                             cast<Float>(kSampleSize);
   constexpr Float inverse_probability = interval;
 
   SampledWavelengths<kSampleSize> sampled_wavelengths;

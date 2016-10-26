@@ -78,16 +78,17 @@ void SpectraImage::save(const quint64 cycle, const QString& file_path) const noe
   const uint32 width = widthResolution();
   const uint32 height = heightResolution();
   // Spectra information
-  constexpr uint16 lambda_min = kShortestWavelength;
-  constexpr uint16 delta_lambda = kWavelengthResolution;
-  constexpr uint16 n = kSpectraSize;
+  constexpr uint16 lambda_min = CoreConfig::shortestWavelength();
+  constexpr uint16 delta_lambda = CoreConfig::wavelengthResolution();
+  constexpr uint16 n = CoreConfig::spectraSize();
   // Floating point information
   constexpr uint8 float_type = 0;
 
   // Calculate image byte size
   constexpr uint header_byte_size = 4 * 2 + 2 * 3 + 1;
-  const uint byte_size = 
-      cast<uint>(header_byte_size + buffer_.size() * kSpectraSize * sizeof(float));
+  const uint byte_size =
+      cast<uint>(header_byte_size +
+                 buffer_.size() * CoreConfig::spectraSize() * sizeof(float));
 
   // Create spectra row data
   QByteArray spectra_row_data;

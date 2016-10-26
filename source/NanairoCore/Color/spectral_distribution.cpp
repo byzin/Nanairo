@@ -83,9 +83,9 @@ void SpectralDistribution::correctGamma(const Float gamma) noexcept
 XyzColor SpectralDistribution::toEmissiveXyz(const System& system) const noexcept
 {
   if (system.isRgbRenderingMode()) {
-    const RgbColor rgb{getByWavelength(kRedWavelength),
-                       getByWavelength(kGreenWavelength),
-                       getByWavelength(kBlueWavelength)};
+    const RgbColor rgb{getByWavelength(CoreConfig::redWavelength()),
+                       getByWavelength(CoreConfig::greenWavelength()),
+                       getByWavelength(CoreConfig::blueWavelength())};
     return rgb.toXyz(getRgbToXyzMatrix(system.colorSpace()));
   }
   else {
@@ -101,9 +101,9 @@ XyzColor SpectralDistribution::toEmissiveXyz(const System& system) const noexcep
 XyzColor SpectralDistribution::toReflectiveXyz(const System& system) const noexcept
 {
   if (system.isRgbRenderingMode()) {
-    const RgbColor rgb{getByWavelength(kRedWavelength),
-                       getByWavelength(kGreenWavelength),
-                       getByWavelength(kBlueWavelength)};
+    const RgbColor rgb{getByWavelength(CoreConfig::redWavelength()),
+                       getByWavelength(CoreConfig::greenWavelength()),
+                       getByWavelength(CoreConfig::blueWavelength())};
     return rgb.toXyz(getRgbToXyzMatrix(system.colorSpace()));
   }
   else {
@@ -255,7 +255,7 @@ SpectralDistribution makeSpectra(const QString& file_path) noexcept
 
   auto spectra_data = loadSpectraData(file_path);
   SpectralDistribution spectra;
-  for (uint index = 0; index < kSpectraSize; ++index) {
+  for (uint index = 0; index < CoreConfig::spectraSize(); ++index) {
     const Float lambda = cast<Float>(getWavelength(index));
     spectra.set(index, spectra_data(lambda));
   }
@@ -297,9 +297,9 @@ SpectralDistribution toReflectiveRgbSpectra(const System& system,
 SpectralDistribution toRgbSpectra(const RgbColor& rgb) noexcept
 {
   SpectralDistribution rgb_spectra;
-  rgb_spectra.setByWavelength(kBlueWavelength, rgb.blue());
-  rgb_spectra.setByWavelength(kGreenWavelength, rgb.green());
-  rgb_spectra.setByWavelength(kRedWavelength, rgb.red());
+  rgb_spectra.setByWavelength(CoreConfig::blueWavelength(), rgb.blue());
+  rgb_spectra.setByWavelength(CoreConfig::greenWavelength(), rgb.green());
+  rgb_spectra.setByWavelength(CoreConfig::redWavelength(), rgb.red());
   return rgb_spectra;
 }
 
@@ -332,19 +332,21 @@ SpectralDistribution toSpectra(const System& system, const RgbColor& color) noex
   const auto f = [&tmp1, &tmp2](const uint i, const uint16 lambda)
   {
 //    constexpr uint16 rgb[] = {641, 508, 426};
-    constexpr uint16 rgb[] = {kRedWavelength,kGreenWavelength,kBlueWavelength};
+    constexpr uint16 rgb[] = {CoreConfig::redWavelength(),
+                              CoreConfig::greenWavelength(),
+                              CoreConfig::blueWavelength()};
     const int diff_lambda = cast<int>(lambda - rgb[i]);
     return zisc::exp(-cast<Float>(diff_lambda * diff_lambda) * tmp1[i]) * tmp2[i];
   };
 
   SpectralDistribution f_bar[3];
   for (uint i = 0; i < 3; ++i) {
-    for (uint index = 0; index < kSpectraSize; ++index) {
+    for (uint index = 0; index < CoreConfig::spectraSize(); ++index) {
       f_bar[i].set(index, f(i, getWavelength(index)));
     }
   }
 
-  constexpr Float k = cast<Float>(kWavelengthResolution) / 19.15;
+  constexpr Float k = cast<Float>(CoreConfig::wavelengthResolution()) / 19.15;
   const auto& cmf = system.rgbColorMatchingFunction();
   const SpectralDistribution* bar[] = {&cmf.redBar(), &cmf.greenBar(), &cmf.blueBar()};
   zisc::Matrix<Float, 3, 3> t;

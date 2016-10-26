@@ -48,7 +48,7 @@ class PathTracing : public RenderingMethod<kSampleSize>
   using Wavelengths = typename Method::Wavelengths;
   using Shader = ShaderModel<kSampleSize>;
   using ShaderPointer = UniquePointer<Shader>;
-  
+
 
   //! Initialize path tracing method
   PathTracing(const QJsonObject& settings) noexcept;

@@ -62,9 +62,9 @@ class CpuSceneRenderer : public SceneRendererBase
 
 
   WavelengthSampler<3> rgb_sampler_;
-  WavelengthSampler<kWavelengthSampleSize> wavelength_sampler_;
+  WavelengthSampler<CoreConfig::wavelengthSampleSize()> wavelength_sampler_;
   UniquePointer<RenderingMethod<3>> rgb_rendering_method_;
-  UniquePointer<RenderingMethod<kWavelengthSampleSize>> rendering_method_;
+  UniquePointer<RenderingMethod<CoreConfig::wavelengthSampleSize()>> rendering_method_;
   UniquePointer<System> system_;
   UniquePointer<Scene> scene_;
   UniquePointer<ToneMappingOperator> tone_mapping_operator_;

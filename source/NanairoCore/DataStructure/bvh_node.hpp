@@ -67,7 +67,7 @@ class BvhNode
   uint32 rightChildIndex() const noexcept;
 
   //! Return the object list
-  const std::array<const Object*, kMaxNumOfObjectsPerNode>& objectList() const noexcept;
+  const std::array<const Object*, CoreConfig::maxNumOfNodeObjects()>& objectList() const noexcept;
 
   //! Return the SAH cost
   Float sahCost() const noexcept;
@@ -89,7 +89,7 @@ class BvhNode
 
  private:
   Aabb bounding_box_;
-  std::array<const Object*, kMaxNumOfObjectsPerNode> object_list_;
+  std::array<const Object*, CoreConfig::maxNumOfNodeObjects()> object_list_;
   uint32 parent_index_,
          left_child_index_,
          right_child_index_;

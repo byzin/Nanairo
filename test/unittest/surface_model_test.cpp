@@ -97,7 +97,7 @@ TEST(SurfaceModelTest, SmoothDiffuseSurfaceTest)
 
   // Wavelengths
   WavelengthSamples<1> wavelengths;
-  wavelengths[0] = kShortestWavelength;
+  wavelengths[0] = CoreConfig::shortestWavelength();
   wavelengths.setPrimaryWavelength(0);
 
   constexpr char brdf_name[] = "Lambert BRDF";
@@ -142,7 +142,7 @@ TEST(SurfaceModelTest, RoughConductorSurfaceTest)
 
     // Wavelengths
     WavelengthSamples<1> wavelengths;
-    wavelengths[0] = kShortestWavelength;
+    wavelengths[0] = CoreConfig::shortestWavelength();
     wavelengths.setPrimaryWavelength(0);
 
     constexpr char brdf_name[] = "GGX conductor";

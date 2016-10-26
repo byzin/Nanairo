@@ -128,10 +128,10 @@ uint AgglomerativeCluster::numOfPrimitives() const noexcept
   */
 inline
 auto AgglomerativeCluster::objectList() const noexcept -> 
-    std::array<ObjectPointer, kMaxNumOfObjectsPerNode>
+    std::array<ObjectPointer, CoreConfig::maxNumOfNodeObjects()>
 {
-  ZISC_ASSERT(numOfPrimitives() <= kMaxNumOfObjectsPerNode, "Primitives overflow.");
-  std::array<ObjectPointer, kMaxNumOfObjectsPerNode> object_list; 
+  ZISC_ASSERT(numOfPrimitives() <= CoreConfig::maxNumOfNodeObjects(), "Primitives overflow.");
+  std::array<ObjectPointer, CoreConfig::maxNumOfNodeObjects()> object_list; 
   if (isLeaf()) {
     object_list.fill(nullptr);
     const auto& leaf = data_.leaf_;
@@ -222,7 +222,7 @@ void AgglomerativeCluster::initializeInnerCluster(
 
   // Check the flatting cost of this cluster
   Float flatting_cost = std::numeric_limits<Float>::max();
-  if (numOfPrimitives() <= kMaxNumOfObjectsPerNode) {
+  if (numOfPrimitives() <= CoreConfig::maxNumOfNodeObjects()) {
     // The objects of the left child cluster
     const auto object_list_l = left_child_cluster->objectList();
     for (uint i = 0; i < num_of_objects_l; ++i) {

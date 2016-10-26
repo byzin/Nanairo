@@ -60,7 +60,7 @@ class AgglomerativeCluster
   uint numOfPrimitives() const noexcept;
 
   //! Return the object list
-  std::array<ObjectPointer, kMaxNumOfObjectsPerNode> objectList() const noexcept;
+  std::array<ObjectPointer, CoreConfig::maxNumOfNodeObjects()> objectList() const noexcept;
 
   //! Return the right child cluster
   const AgglomerativeCluster& rightChildCluster() const noexcept;

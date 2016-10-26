@@ -76,6 +76,9 @@ endfunction(checkCompilerHasCxx14Features)
 function(setCompilerOption)
   set(option_description "Clang uses libc++ instead of libstdc++.")
   setBooleanOption(Z_CLANG_USES_LIBCXX OFF ${option_description})
+
+  set(option_description "Enable C++ sanitizer (Address).")
+  setBooleanOption(Z_ENABLE_SANITIZER OFF ${option_description})
 endfunction(setCompilerOption)
 
 
@@ -85,13 +88,26 @@ function(getCompilerOption cxx_compile_flags cxx_linker_flags cxx_definitions)
   set(linker_flags "")
   set(definitions "")
   # libc++
-  if(Z_IS_CLANG AND Z_CLANG_USES_LIBCXX)
-    list(APPEND compile_flags -stdlib=libc++)
-    list(APPEND linker_flags -stdlib=libc++)
+  if(Z_CLANG_USES_LIBCXX)
+    if(Z_IS_CLANG)
+      list(APPEND compile_flags -stdlib=libc++)
+      list(APPEND linker_flags -stdlib=libc++)
+    else()
+      message(WARNING "The compiler doesn't support libc++.")
+    endif()
   endif()
-  # Debug info
-  if(NANAIRO_DEBUG)
-    list(APPEND definitions NANAIRO_DEBUG ZISC_ASSERTION)
+  # Sanitizer
+  if(Z_ENABLE_SANITIZER)
+    if(Z_IS_CLANG OR Z_IS_GCC)
+      list(APPEND compile_flags -fsanitize=address -fno-omit-frame-pointer)
+      list(APPEND linker_flags -fsanitize=address)
+    else()
+      message(WARNING "The compiler doesn't support sanitizer.")
+    endif()
+  endif()
+  # Assertion setting
+  if(NANAIRO_ENABLE_ASSERTION)
+    list(APPEND definitions NANAIRO_ENABLE_ASSERTION)
   endif()
 
   # Output variables
@@ -106,8 +122,10 @@ function(getCxxWarningOption compiler_warning_flags)
   set(environment "${CMAKE_SYSTEM_NAME} ${CMAKE_CXX_COMPILER_ID} ${compiler_version}")
 
   # Clang
-  if(Z_IS_VISUAL_STUDIO)
+  if(Z_IS_VISUAL_STUDIO AND Z_IS_CLANG)
     set(warning_flags /W4
+                      -Wno-microsoft-enum-value
+                      -Qunused-arguments
                       )
   elseif(Z_IS_CLANG)
     set(warning_flags -Werror
@@ -143,7 +161,7 @@ function(getCxxWarningOption compiler_warning_flags)
                       -Wno-unused
                       )
   else()
-    message(WARNING "${environment}: Warning option is not set.")
+    message(WARNING "${environment}: Warning option isn't supported.")
   endif()
   set(${compiler_warning_flags} ${warning_flags} PARENT_SCOPE)
 endfunction(getCxxWarningOption)

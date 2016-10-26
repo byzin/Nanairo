@@ -110,12 +110,6 @@ class Bvh
   uint32 end_index_;
 
  protected:
-  //! Return the max number of objects per node
-  static constexpr uint maxNumOfObjectsPerNode() noexcept
-  {
-    return kMaxNumOfObjectsPerNode;
-  }
-
   //! Check if multi-threading is enabled
   static constexpr bool multithreadingIsEnabled() noexcept
   {
