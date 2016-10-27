@@ -34,7 +34,6 @@
 #include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
-#include "NanairoCore/Utility/floating_point.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 #include "NanairoCore/Utility/value.hpp"
 
@@ -61,9 +60,9 @@ SpectralDistribution toReflectiveRgbSpectra(const System& system,
   \details
   No detailed.
   */
-void SpectralDistribution::clamp(const Float min, const Float max) noexcept
+void SpectralDistribution::clampAll(const Float min, const Float max) noexcept
 {
-  distribution_.clamp(min, max);
+  distribution_.clampAll(min, max);
 }
 
 /*!
@@ -208,7 +207,7 @@ RgbColor makeRgb(const System& system, const QJsonObject& settings) noexcept
                       SceneValue::toFloat<Float>(color[1]),
                       SceneValue::toFloat<Float>(color[2])};
   rgb.correctGamma(system.gamma());
-  rgb.clamp(0.0, 1.0);
+  rgb.clampAll(0.0, 1.0);
   return rgb;
 }
 
@@ -219,7 +218,7 @@ RgbColor makeRgb(const System& system, const QJsonObject& settings) noexcept
 SpectralDistribution makeEmissiveSpectra(const QJsonObject& settings) noexcept
 {
   auto spectra = makeSpectra(settings);
-  spectra.clamp(0.0, spectra.max());
+  spectra.clampAll(0.0, spectra.max());
   spectra = spectra.normalized();
   return spectra;
 }
@@ -231,7 +230,7 @@ SpectralDistribution makeEmissiveSpectra(const QJsonObject& settings) noexcept
 SpectralDistribution makeReflectiveSpectra(const QJsonObject& settings) noexcept
 {
   auto spectra = makeSpectra(settings);
-  spectra.clamp(0.0, 1.0);
+  spectra.clampAll(0.0, 1.0);
   return spectra;
 }
 
@@ -272,7 +271,7 @@ SpectralDistribution toEmissiveRgbSpectra(const System& system,
   const auto& cmf = system.xyzColorMatchingFunction();
   const auto xyz = cmf.toXyzInEmissiveCase(spectra);
   auto rgb = xyz.toRgb(getXyzToRgbMatrix(system.colorSpace()));
-  rgb.clamp(0.0, 1.0);
+  rgb.clampAll(0.0, 1.0);
   return toRgbSpectra(rgb);
 }
 
@@ -286,7 +285,7 @@ SpectralDistribution toReflectiveRgbSpectra(const System& system,
   const auto& cmf = system.xyzColorMatchingFunction();
   const auto xyz = cmf.toXyzInReflectiveCase(spectra);
   auto rgb = xyz.toRgb(getXyzToRgbMatrix(system.colorSpace()));
-  rgb.clamp(0.0, 1.0);
+  rgb.clampAll(0.0, 1.0);
   return toRgbSpectra(rgb);
 }
 
@@ -360,7 +359,7 @@ SpectralDistribution toSpectra(const System& system, const RgbColor& color) noex
 
 
   auto spectra = f_bar[0] * x[0] + f_bar[1] * x[1] + f_bar[2] * x[2];
-  spectra.clamp(0.0, 1.0);
+  spectra.clampAll(0.0, 1.0);
 
   return spectra;
 }

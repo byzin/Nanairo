@@ -20,7 +20,6 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/LinearAlgebra/transformation.hpp"
 #include "NanairoCore/LinearAlgebra/vector.hpp"
-#include "NanairoCore/Utility/floating_point.hpp"
 
 namespace nanairo {
 
@@ -153,7 +152,7 @@ template <uint kCosineWeight> inline
 SampledDirection sampleDirectionOnHemisphere(const Vector3& normal, 
                                              Sampler& sampler) noexcept
 {
-  auto sampled_direction = 
+  auto sampled_direction =
       sampleDirectionOnHemisphere<kCosineWeight>(sampler);
   const auto basis_matrix = makeChangeOfBasisMatrixFromLocal(normal);
   const auto& direction = sampled_direction.direction();

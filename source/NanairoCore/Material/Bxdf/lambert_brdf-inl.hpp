@@ -16,11 +16,11 @@
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
+#include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
-#include "NanairoCore/Utility/floating_point.hpp"
 
 
 namespace nanairo {
@@ -84,8 +84,8 @@ auto LambertBrdf<kSampleSize>::evaluateRadianceAndPdf(
 {
   constexpr Float k = 1.0 / zisc::kPi<Float>;
   const Float cos_theta_no = zisc::dot(normal, *vout);
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(cos_theta_no),
-              "The cos theta_{n, o} must be [0, 1].");
+  ZISC_ASSERT(zisc::isInBounds(cos_theta_no, 0.0, 1.0),
+              "The cos theta_{n, o} isn't [0, 1].");
   return std::make_tuple(k * reflectance_, k * cos_theta_no);;
 }
 

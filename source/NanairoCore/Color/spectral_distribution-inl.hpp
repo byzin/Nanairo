@@ -225,13 +225,54 @@ Float SpectralDistribution::getByWavelength(const uint16 wavelength) const noexc
 }
 
 /*!
+  */
+inline
+bool SpectralDistribution::hasInf() const noexcept
+{
+  return ::nanairo::hasInf(distribution_);
+}
+
+/*!
+  */
+inline
+bool SpectralDistribution::hasNan() const noexcept
+{
+  return ::nanairo::hasNan(distribution_);
+}
+
+/*!
+  */
+inline
+bool SpectralDistribution::hasNegative() const noexcept
+{
+  return ::nanairo::hasNegative(distribution_);
+}
+
+/*!
+  */
+inline
+bool SpectralDistribution::hasValue(const Float value) const noexcept
+{
+  return distribution_.hasValue(value);
+}
+
+/*!
+  */
+inline
+bool SpectralDistribution::isAllInBounds(const Float lower,
+                                         const Float upper) const noexcept
+{
+  return distribution_.isAllInBounds(lower, upper);
+}
+
+/*!
   \details
   No detailed.
   */
 inline
-bool SpectralDistribution::isZero() const noexcept
+bool SpectralDistribution::isAllZero() const noexcept
 {
-  return distribution_.isZeroArray();
+  return distribution_.isAllZero();
 }
 
 /*!

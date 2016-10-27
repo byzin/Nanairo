@@ -184,7 +184,7 @@ void ImageTexture::initializeReflectiveValueTable(const System& system,
     reflective_value_table_[i] = system.isRgbRenderingMode()
         ? toRgbSpectra(rgb)
         : toSpectra(system, rgb);
-    ZISC_ASSERT(isBetweenZeroAndOneFloat(reflective_value_table_[i]),
+    ZISC_ASSERT(reflective_value_table_[i].isAllInBounds(0.0, 1.0),
                 "Texture value must be [0, 1].");
   }
 }

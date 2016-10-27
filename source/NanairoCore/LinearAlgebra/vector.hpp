@@ -22,6 +22,15 @@ namespace nanairo {
 
 using Vector3 = zisc::Vector<Float, 3>;
 
+//! Check if the vector contains the specified value
+bool hasValue(const Vector3& vector, const Float value) noexcept;
+
+//! Check if the vector is unit vector
+bool isUnitVector(const Vector3& vector) noexcept;
+
+//! Check if the vector is zero vector
+bool isZeroVector(const Vector3& vector) noexcept;
+
 //! \} Core
 
 } // namespace nanairo

@@ -50,7 +50,6 @@
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
-#include "NanairoCore/Utility/floating_point.hpp"
 
 namespace nanairo {
 
@@ -140,7 +139,7 @@ void PathTracing<kSampleSize>::evaluateExplicitConnection(
                                                    wavelengths);
   const auto& f = std::get<0>(result);
   const auto& direction_pdf = std::get<1>(result);
-  ZISC_ASSERT(!hasNegativeFloat(f), "The f of BxDF has negative values.");
+  ZISC_ASSERT(!f.hasNegative(), "The f of BxDF has negative values.");
   ZISC_ASSERT(0.0 <= direction_pdf, "Pdf must be positive.");
 
   // Evaluate the light radiance
@@ -176,7 +175,7 @@ void PathTracing<kSampleSize>::evaluateExplicitConnection(
   // Calculate the contribution
   const auto c = ray_weight * f * radiance * 
                  (geometry_term * inverse_selection_pdf * mis_weight);
-  ZISC_ASSERT(!hasNegativeFloat(c), 
+  ZISC_ASSERT(!c.hasNegative(), 
               "The contribution has negative values.");
   *contribution += c; 
 }
@@ -232,7 +231,7 @@ void PathTracing<kSampleSize>::evaluateImplicitConnection(
 
   // Calculate the contribution
   const auto c = radiance * ray_weight * mis_weight;
-  ZISC_ASSERT(!hasNegativeFloat(c), 
+  ZISC_ASSERT(!c.hasNegative(),
               "The contribution has negative values.");
   *contribution += c;
 }

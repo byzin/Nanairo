@@ -22,11 +22,10 @@
 #include "NanairoCore/Material/Bxdf/lambert_brdf.hpp"
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
-#include "NanairoCore/Utility/floating_point.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
-  
+
 /*!
   \details
   No detailed.
@@ -39,8 +38,8 @@ auto SmoothDiffuseSurface::makeLambertBrdf(
 {
   const auto reflectance =
       reflectance_->reflectiveValue(texture_coordinate, wavelengths);
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(reflectance),
-              "Reflectance must be [0, 1].");
+  ZISC_ASSERT(reflectance.isAllInBounds(0.0, 1.0),
+              "Reflectances aren't [0, 1].");
 
   using Brdf = LambertBrdf<kSampleSize>;
   auto brdf = memory_pool.allocate<Brdf>(reflectance);

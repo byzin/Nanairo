@@ -70,10 +70,9 @@ const Float& Color<kN>::operator[](const uint index) const noexcept
   No detailed.
   */
 template <uint kN> inline
-void Color<kN>::clamp(const Float minimum, const Float maximum) noexcept
+void Color<kN>::clampAll(const Float minimum, const Float maximum) noexcept
 {
-  for (uint index = 0; index < kN; ++index)
-    color_[index] = zisc::clamp(color_[index], minimum, maximum);
+  color_.clampAll(minimum, maximum);
 }
 
 /*!
@@ -91,9 +90,19 @@ const zisc::ArithmeticArray<Float, kN>& Color<kN>::data() const noexcept
   No detailed.
   */
 template <uint kN> inline
-bool Color<kN>::isZero() const noexcept
+bool Color<kN>::isAllInBounds(const Float lower, const Float upper) const noexcept
 {
-  return color_.isZero();
+  return color_.isAllInBounds(lower, upper);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <uint kN> inline
+bool Color<kN>::isAllZero() const noexcept
+{
+  return color_.isAllZero();
 }
 
 /*!

@@ -28,7 +28,6 @@
 #include "NanairoCore/LinearAlgebra/vector.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
-#include "NanairoCore/Utility/floating_point.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
@@ -102,9 +101,9 @@ bool PinholeCamera::getPixelLocation(const Vector3& ray_direction,
       (0.0 <= dot_axis2_am) && (dot_axis2_am <= square_axis2_)) {
     const Float pixel_x = (1.0 - dot_axis1_am * inverse_square_axis1_);
     const Float pixel_y = (1.0 - dot_axis2_am * inverse_square_axis2_);
-    ZISC_ASSERT(isBetweenZeroAndOneFloat(pixel_x),
+    ZISC_ASSERT(zisc::isInBounds(pixel_x, 0.0, 1.0),
                 "Pixel x is out of film range");
-    ZISC_ASSERT(isBetweenZeroAndOneFloat(pixel_y),
+    ZISC_ASSERT(zisc::isInBounds(pixel_y, 0.0, 1.0),
                 "Pixel y is out of film range");
     const auto width = cast<Float>(widthResolution());
     const auto height = cast<Float>(heightResolution());
@@ -143,7 +142,7 @@ SampledDirection PinholeCamera::sampleDirection(const uint x, const uint y) cons
   const auto direction = (pinhole_point - film_point).normalized();
 
   const Float cos_theta = zisc::dot(normal(), direction);
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(cos_theta),
+  ZISC_ASSERT(zisc::isInBounds(cos_theta, 0.0, 1.0),
               "Invalid direction is sampled.");
   return SampledDirection{direction, calcInversePdf(cos_theta)};
 }
@@ -194,8 +193,8 @@ void PinholeCamera::initialize(const QJsonObject& settings) noexcept
 {
   const Float angle = SceneValue::toFloat<Float>(settings, keyword::angleOfView);
   angle_of_view_ = zisc::toRadian(angle);
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(angle_of_view_ / zisc::kPi<Float>),
-              "The angle of view must be [0, pi].");
+  ZISC_ASSERT(zisc::isInBounds(angle_of_view_ / zisc::kPi<Float>, 0.0, 1.0),
+              "The angle of view isn't [0, pi].");
   setNormal((pinhole_position_ - film_position_).normalized());
 }
 

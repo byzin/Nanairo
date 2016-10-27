@@ -67,9 +67,6 @@ function(setCommandOptions)
   set(option_description "The hash key which is used as the default random seed")
   setStringOption(NANAIRO_RANDOM_SEED_KEY "NanairoRenderer" ${option_description})
 
-  set(option_description "Enable assertion code")
-  setBooleanOption(NANAIRO_ENABLE_ASSERTION OFF ${option_description})
-
   set(option_description "Build unit tests")
   setBooleanOption(NANAIRO_BUILD_TESTS OFF ${option_description})
 

@@ -21,7 +21,6 @@
 #include "NanairoCore/LinearAlgebra/vector.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
-#include "NanairoCore/Utility/floating_point.hpp"
 
 namespace nanairo {
 
@@ -51,9 +50,9 @@ Float evaluateGgxReflectance(const Float roughness,
   const Float cos_theta_mi = -zisc::dot(m_normal, vin);
   const Float cos_theta_mo = cos_theta_mi;
   const Float cos_theta_nm = zisc::dot(normal, m_normal);
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(cos_theta_ni),
+  ZISC_ASSERT(zisc::isInBounds(cos_theta_ni, 0.0, 1.0),
                "Cos theta_{ni} must be [0, 1].");
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(cos_theta_nm),
+  ZISC_ASSERT(zisc::isInBounds(cos_theta_nm, 0.0, 1.0),
                "Cos theta_{nm} must be [0, 1].");
   ZISC_ASSERT(0.0 <= cos_theta_ni * cos_theta_mi, 
               "Microfacet normal must be in the same hemisphere as normal.");
@@ -76,7 +75,7 @@ Float evaluateGgxReflectance(const Float roughness,
   const Float fresnel = (is_not_perfect_reflection)
       ? solveFresnelDielectricEquation(cos_theta_mi, g)
       : 1.0; // Perfect reflection
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(fresnel),
+  ZISC_ASSERT(zisc::isInClosedBounds(fresnel, 0.0, 1.0),
               "Fresnel reflectance must be [0, 1].");
   if (fresnel == 0.0)
     return 0.0;
@@ -90,7 +89,7 @@ Float evaluateGgxReflectance(const Float roughness,
 
   // Calculate reflectance
   const Float f = (fresnel * g2 * d) / (4.0 * cos_theta_ni * cos_theta_no);
-  ZISC_ASSERT(!isNegativeFloat(f), "Reflectance must be positive.");
+  ZISC_ASSERT(0.0 <= f, "Reflectance must be positive.");
   return f;
 }
 
@@ -113,9 +112,9 @@ Float evaluateGgxTransmittance(const Float roughness,
   const Float cos_theta_mi = -zisc::dot(m_normal, vin);
   const Float cos_theta_mo = zisc::dot(m_normal, vout);
   const Float cos_theta_nm = zisc::dot(normal, m_normal);
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(cos_theta_ni),
+  ZISC_ASSERT(zisc::isInBounds(cos_theta_ni, 0.0, 1.0),
                "Cos theta_{ni} must be [0, 1].");
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(cos_theta_nm),
+  ZISC_ASSERT(zisc::isInBounds(cos_theta_nm, 0.0, 1.0),
                "Cos theta_{nm} must be [0, 1].");
   ZISC_ASSERT(0.0 <= cos_theta_ni * cos_theta_mi,
               "Microfacet normal must be in the same hemisphere as normal.");
@@ -138,7 +137,7 @@ Float evaluateGgxTransmittance(const Float roughness,
   const Float fresnel = (is_not_perfect_reflection)
       ? solveFresnelDielectricEquation(cos_theta_mi, g)
       : 1.0; // Perfect reflection
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(fresnel),
+  ZISC_ASSERT(zisc::isInBounds(fresnel, 0.0, 1.0),
               "Fresnel reflectance must be [0, 1].");
   if (fresnel == 1.0)
     return 0.0;
@@ -155,11 +154,11 @@ Float evaluateGgxTransmittance(const Float roughness,
   // Calculate transmittance
   const Float k1 = (cos_theta_mi * cos_theta_mo) / 
                    (cos_theta_ni * cos_theta_no);
-  ZISC_ASSERT(!isNegativeFloat(k1), "The k1 must be positive.");
+  ZISC_ASSERT(0.0 < k1, "The k1 must be positive.");
   const Float k2 = (n * n) / zisc::power<2>(cos_theta_mi + n * cos_theta_mo);
   const Float k = k1 * k2;
   const Float f = (1.0 - fresnel) * k * g2 * d;
-  ZISC_ASSERT(!isNegativeFloat(f), "Transmittance must be positive.");
+  ZISC_ASSERT(0.0 < f, "Transmittance must be positive.");
   return f;
 }
 
@@ -181,7 +180,7 @@ SampledDirection sampleGgxMicrofacetNormal(const Float roughness,
   ZISC_ASSERT(isUnitVector(incident_vector), 
               "Incident vector is not unit vector.");
 
-  auto m_normal = 
+  auto m_normal =
 #if defined(NANAIRO_GGX_V_CAVITY)
       ggx_v_cavity::sampleGgxMicrofacetNormal(roughness, 
                                               incident_vector, 
@@ -197,11 +196,11 @@ SampledDirection sampleGgxMicrofacetNormal(const Float roughness,
   *cos_ni = incident_vector[2];
   *cos_mi = zisc::dot(m_normal, incident_vector);
   *cos_nm = m_normal[2];
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(*cos_ni),
+  ZISC_ASSERT(zisc::isInClosedBounds(*cos_ni, 0.0, 1.0),
               "Cos theta_{ni} must be [0, 1].");
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(*cos_mi),
+  ZISC_ASSERT(zisc::isInClosedBounds(*cos_mi, 0.0, 1.0),
               "Cos theta_{mi} must be [0, 1].");
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(*cos_nm),
+  ZISC_ASSERT(zisc::isInClosedBounds(*cos_nm, 0.0, 1.0),
               "Cos theta_{nm} must be [0, 1].");
 
   // Calculate the pdf of the microfacet normal

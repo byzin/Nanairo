@@ -18,7 +18,7 @@
 
 namespace nanairo {
 
-//! \addtogroup Core 
+//! \addtogroup Core
 //! \{
 
 /*!
@@ -48,13 +48,16 @@ class Color
 
 
   //! Clamp the elements of the color to a range [0, 1]
-  void clamp(const Float min, const Float max) noexcept;
+  void clampAll(const Float min, const Float max) noexcept;
 
   //! Return the raw array
   const zisc::ArithmeticArray<Float, kN>& data() const noexcept;
 
-  //! Check whether all elements is zero
-  bool isZero() const noexcept;
+  //! Check whether all elements are between \p lower and \p upper
+  bool isAllInBounds(const Float lower, const Float upper) const noexcept;
+
+  //! Check whether all elements are zero
+  bool isAllZero() const noexcept;
 
   //! Return the max value
   Float max() const noexcept;

@@ -18,8 +18,7 @@
 #include "zisc/matrix.hpp"
 // Nanairo
 #include "vector.hpp"
-#include "NanairoCore/nanairo_core_config.hpp"  
-#include "NanairoCore/Utility/floating_point.hpp"
+#include "NanairoCore/nanairo_core_config.hpp"
 
 namespace nanairo {
 

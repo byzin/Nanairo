@@ -89,7 +89,7 @@ class SpectralDistribution
 
 
   //! Clamp all elements to the range [min, max]
-  void clamp(const Float min, const Float max) noexcept;
+  void clampAll(const Float min, const Float max) noexcept;
 
   //! Apply gamma correction
   void correctGamma(const Float gamma) noexcept;
@@ -103,8 +103,23 @@ class SpectralDistribution
   //! Return the element by the wavelength
   Float getByWavelength(const uint16 wavelength) const noexcept;
 
+  //! Check if the distribution has inf value
+  bool hasInf() const noexcept;
+
+  //! Check if the distribution has nan value
+  bool hasNan() const noexcept;
+
+  //! Check if the distribution has negative value
+  bool hasNegative() const noexcept;
+
+  //! Check if the distribution has the specified value
+  bool hasValue(const Float value) const noexcept;
+
+  //! Check if all components are betwenn \p lower and \p upper
+  bool isAllInBounds(const Float lower, const Float upper) const noexcept;
+
   //! Check if all components are zero
-  bool isZero() const noexcept;
+  bool isAllZero() const noexcept;
 
   //! Return the largest element
   Float max() const noexcept;

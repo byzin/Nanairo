@@ -79,7 +79,7 @@ void ToneMappingOperator::map(System& system,
         const auto xyz = yxy.toXyz();
         // Convert XYZ to RGB
         auto rgb = xyz.toRgb(getXyzToRgbMatrix(system.colorSpace()));
-        rgb.clamp(0.0, 1.0);
+        rgb.clampAll(0.0, 1.0);
         rgb.correctGamma(inverseGamma());
         // Set RGB to the pixel
         pixel_array[index] = rgb.toQRgb();

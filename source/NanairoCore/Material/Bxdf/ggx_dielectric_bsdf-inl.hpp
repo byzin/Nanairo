@@ -15,6 +15,7 @@
 #include <tuple>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/LinearAlgebra/vector.hpp"
@@ -22,7 +23,6 @@
 #include "NanairoCore/Material/SurfaceModel/microfacet_ggx.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
-#include "NanairoCore/Utility/floating_point.hpp"
 
 namespace nanairo {
 
@@ -121,7 +121,7 @@ auto GgxDielectricBsdf<kSampleSize>::sample(
       sampleGgxMicrofacetNormal(roughness_, *vin, normal, sampler,
                                 &cos_theta_ni, &cos_theta_mi, &cos_theta_nm);
   ZISC_ASSERT(0.0 <= cos_theta_ni * cos_theta_mi,
-              "Microfacet normal must be in the same hemisphere as normal.");
+              "Microfacet normal isn't in the same hemisphere as normal.");
 
   // Evaluate the fresnel term
   const auto result = evaluateFresnelG(n_, cos_theta_mi);
@@ -130,8 +130,8 @@ auto GgxDielectricBsdf<kSampleSize>::sample(
   const Float fresnel = (is_not_perfect_reflection)
       ? solveFresnelDielectricEquation(cos_theta_mi, g)
       : 1.0; // Perfect reflection
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(fresnel),
-              "Fresnel reflectance must be [0, 1].");
+  ZISC_ASSERT(zisc::isInClosedBounds(fresnel, 0.0, 1.0),
+              "Fresnel reflectance isn't [0, 1].");
 
   // Determine a reflection or a refraction
   const bool is_reflection = (sampler.sample(0.0, 1.0) < fresnel);
@@ -147,7 +147,7 @@ auto GgxDielectricBsdf<kSampleSize>::sample(
   const Float cos_theta_mo = zisc::dot(m_normal.direction(), vout.direction());
   const Float w = evaluateGgxWeight(roughness_, cos_theta_ni, cos_theta_no,
                                     cos_theta_mi, cos_theta_mo, cos_theta_nm);
-  ZISC_ASSERT(!isNegativeFloat(w), "Weight must not contain negative.");
+  ZISC_ASSERT(0.0 <= w, "The weight is negative.");
   Spectra weight{wavelengths};
   weight.setIntensity(wavelengths.primaryWavelengthIndex(), w);
 

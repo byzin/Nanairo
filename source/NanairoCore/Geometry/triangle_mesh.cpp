@@ -34,7 +34,6 @@
 #include "NanairoCore/LinearAlgebra/point.hpp"
 #include "NanairoCore/LinearAlgebra/vector.hpp"
 #include "NanairoCore/LinearAlgebra/transformation.hpp"
-#include "NanairoCore/Utility/floating_point.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 

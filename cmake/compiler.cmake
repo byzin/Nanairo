@@ -105,10 +105,6 @@ function(getCompilerOption cxx_compile_flags cxx_linker_flags cxx_definitions)
       message(WARNING "The compiler doesn't support sanitizer.")
     endif()
   endif()
-  # Assertion setting
-  if(NANAIRO_ENABLE_ASSERTION)
-    list(APPEND definitions NANAIRO_ENABLE_ASSERTION)
-  endif()
 
   # Output variables
   set(${cxx_compile_flags} ${compile_flags} PARENT_SCOPE)

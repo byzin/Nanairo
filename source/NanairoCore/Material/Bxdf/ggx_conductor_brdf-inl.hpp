@@ -22,7 +22,6 @@
 #include "NanairoCore/Material/SurfaceModel/microfacet_ggx.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
-#include "NanairoCore/Utility/floating_point.hpp"
 
 namespace nanairo {
 
@@ -107,7 +106,7 @@ auto GgxConductorBrdf<kSampleSize>::sample(
       sampleGgxMicrofacetNormal(roughness_, *vin, normal, sampler,
                                 &cos_theta_ni, &cos_theta_mi, &cos_theta_nm);
   ZISC_ASSERT(0.0 <= cos_theta_ni * cos_theta_mi,
-              "Microfacet normal must be in the same hemisphere as normal.");
+              "Microfacet normal isn't in the same hemisphere as normal.");
 
   // Evaluate fresnel term
   const auto& r0 = reflectance_0deg_;
@@ -121,10 +120,10 @@ auto GgxConductorBrdf<kSampleSize>::sample(
   const Float cos_theta_no = zisc::dot(normal, vout.direction());
   const Float cos_theta_mo = cos_theta_mi;
   const auto weight =
-      fresnel * 
+      fresnel *
       evaluateGgxWeight(roughness_, cos_theta_ni, cos_theta_no,
                         cos_theta_mi, cos_theta_mo, cos_theta_nm);
-  ZISC_ASSERT(!hasNegativeFloat(weight), "Weight must not contain negative.");
+  ZISC_ASSERT(!weight.hasNegative(), "Weight contains negative.");
 
   return std::make_tuple(std::move(vout), std::move(weight));
 }

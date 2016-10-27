@@ -29,6 +29,7 @@
 // Nanairo
 #include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/LinearAlgebra/transformation.hpp"
+#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 

@@ -55,7 +55,6 @@
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
-#include "NanairoCore/Utility/floating_point.hpp"
 
 namespace nanairo {
 
@@ -135,7 +134,7 @@ void LightTracing<kSampleSize>::evaluateExplicitConnection(
   // Evaluate the surface reflectance
   const auto f = 
       bxdf->evaluateRadiance(vin, &ray_direction, normal, wavelengths);
-  ZISC_ASSERT(!hasNegativeFloat(f), 
+  ZISC_ASSERT(!f.hasNegative(), 
               "The f of sensor has negative values.");
 
   // Evaluate the camera importance
@@ -154,7 +153,7 @@ void LightTracing<kSampleSize>::evaluateExplicitConnection(
 
   // Calculate the contribution
   const auto contribution = ray_weight * f * importance * geometry_term;
-  ZISC_ASSERT(!hasNegativeFloat(contribution), 
+  ZISC_ASSERT(!contribution.hasNegative(), 
               "The contribution has negative values.");
   addLightContribution(camera, thread_id, x, y, contribution);
 }

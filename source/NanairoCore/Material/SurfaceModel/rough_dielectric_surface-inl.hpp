@@ -29,7 +29,6 @@
 #include "NanairoCore/Material/Bxdf/ggx_dielectric_bsdf.hpp"
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
-#include "NanairoCore/Utility/floating_point.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {

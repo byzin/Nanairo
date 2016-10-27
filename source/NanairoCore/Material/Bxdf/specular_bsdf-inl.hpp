@@ -16,6 +16,7 @@
 #include <utility>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/LinearAlgebra/vector.hpp"
@@ -23,7 +24,6 @@
 #include "NanairoCore/Material/SurfaceModel/fresnel.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
-#include "NanairoCore/Utility/floating_point.hpp"
 
 namespace nanairo {
 
@@ -54,15 +54,15 @@ auto SpecularBsdf<kSampleSize>::sample(
   // Evaluate the fresnel term
   const Float cos_theta_ni = -zisc::dot(normal, *vin);
   ZISC_ASSERT((0.0 <= cos_theta_ni) && (cos_theta_ni <= 1.0),
-              "The cos theta_{ni} must be [0, 1].");
+              "The cos theta_{ni} isn't [0, 1].");
   const auto result = evaluateFresnelG(n_, cos_theta_ni);
   const bool is_not_perfect_reflection = std::get<0>(result);
   const Float g = std::get<1>(result);
   const Float fresnel = (is_not_perfect_reflection)
       ? solveFresnelDielectricEquation(cos_theta_ni, g)
       : 1.0; // Perfect reflection
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(fresnel), 
-              "Fresnel reflectance must be [0, 1].");
+  ZISC_ASSERT(zisc::isInClosedBounds(fresnel, 0.0, 1.0),
+              "Fresnel reflectance isn't [0, 1].");
 
   // Determine a reflection or a refraction
   const bool is_reflection = (sampler.sample(0.0, 1.0) < fresnel);

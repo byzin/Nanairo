@@ -15,13 +15,13 @@
 #include <QString>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/utility.hpp"
 // Nanairo
 #include "texture_model.hpp"
 #include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
-#include "NanairoCore/Utility/floating_point.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
@@ -86,7 +86,7 @@ void ValueTexture::initialize(const System& system,
       : 1.0 / CoreConfig::spectraSize();
   // Reflective value and float value
   reflective_value_ = SceneValue::toFloat<Float>(settings, keyword::value);
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(reflective_value_),
+  ZISC_ASSERT(zisc::isInClosedBounds(reflective_value_, 0.0, 1.0),
               "Texture value isn't [0, 1].");
 }
 

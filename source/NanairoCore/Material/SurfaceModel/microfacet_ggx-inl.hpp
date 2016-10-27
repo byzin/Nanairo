@@ -183,14 +183,14 @@ SampledSpectra<kSampleSize> evaluateGgxReflectance(
   const Float cos_theta_mi = -zisc::dot(m_normal, vin);
   const Float cos_theta_mo = cos_theta_mi;
   const Float cos_theta_nm = zisc::dot(normal, m_normal);
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(cos_theta_ni),
-              "Cos theta_{ni} must be [0, 1].");
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(cos_theta_no),
-              "Cos theta_{no} must be [0, 1].");
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(cos_theta_nm),
-              "Cos theta_{nm} must be [0, 1].");
+  ZISC_ASSERT(zisc::isInBounds(cos_theta_ni, 0.0, 1.0),
+              "Cos theta_{ni} isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInBounds(cos_theta_no, 0.0, 1.0),
+              "Cos theta_{no} isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInBounds(cos_theta_nm, 0.0, 1.0),
+              "Cos theta_{nm} isn't [0, 1].");
   ZISC_ASSERT(0.0 <= cos_theta_ni * cos_theta_mi,
-              "Microfacet normal must be in the same hemisphere as normal.");
+              "Microfacet normal isn't in the same hemisphere as normal.");
 
   // Evaluate D
   const Float d = evaluateGgxD(roughness, cos_theta_nm);
@@ -214,7 +214,7 @@ SampledSpectra<kSampleSize> evaluateGgxReflectance(
 
   // Calculate reflectance
   const auto f = fresnel * (g2 * d / (4.0 * cos_theta_ni * cos_theta_no));
-  ZISC_ASSERT(!hasNegativeFloat(f), "Reflectance must be positive.");
+  ZISC_ASSERT(!f.hasNegative(), "Reflectance isn't positive.");
   return f;
 }
 
@@ -234,12 +234,12 @@ Float evaluateGgxReflectionPdf(const Float roughness,
   const Float cos_theta_ni = -zisc::dot(normal, vin);
   const Float cos_theta_mi = -zisc::dot(m_normal, vin);
   const Float cos_theta_nm = zisc::dot(normal, m_normal);
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(cos_theta_ni),
-              "Cos theta_{ni} must be [0, 1].");
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(cos_theta_nm),
-              "Cos theta_{nm} must be [0, 1].");
-  ZISC_ASSERT(0.0 <= cos_theta_ni * cos_theta_mi, 
-              "Microfacet normal must be in the same hemisphere as normal.");
+  ZISC_ASSERT(zisc::isInBounds(cos_theta_ni, 0.0, 1.0),
+              "Cos theta_{ni} isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInBounds(cos_theta_nm, 0.0, 1.0),
+              "Cos theta_{nm} isn't [0, 1].");
+  ZISC_ASSERT(0.0 <= cos_theta_ni * cos_theta_mi,
+              "Microfacet normal isn't in the same hemisphere as normal.");
 
   const Float d = evaluateGgxD(roughness, cos_theta_nm);
   if (d == 0.0)
@@ -266,12 +266,12 @@ Float evaluateGgxDielectricReflectionPdf(const Float roughness,
   const Float cos_theta_ni = -zisc::dot(normal, vin);
   const Float cos_theta_mi = -zisc::dot(m_normal, vin);
   const Float cos_theta_nm = zisc::dot(normal, m_normal);
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(cos_theta_ni),
-              "Cos theta_{ni} must be [0, 1].");
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(cos_theta_nm),
-              "Cos theta_{nm} must be [0, 1].");
-  ZISC_ASSERT(0.0 <= cos_theta_ni * cos_theta_mi, 
-              "Microfacet normal must be in the same hemisphere as normal.");
+  ZISC_ASSERT(zisc::isInBounds(cos_theta_ni, 0.0, 1.0),
+              "Cos theta_{ni} isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInBounds(cos_theta_nm, 0.0, 1.0),
+              "Cos theta_{nm} isn't [0, 1].");
+  ZISC_ASSERT(0.0 <= cos_theta_ni * cos_theta_mi,
+              "Microfacet normal isn't in the same hemisphere as normal.");
 
   const Float d = evaluateGgxD(roughness, cos_theta_nm);
   if (d == 0.0)
@@ -284,8 +284,8 @@ Float evaluateGgxDielectricReflectionPdf(const Float roughness,
   const Float fresnel = (is_not_perfect_reflection)
       ? solveFresnelDielectricEquation(cos_theta_mi, g)
       : 1.0; // Perfect reflection
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(fresnel),
-              "Fresnel reflectance must be [0, 1].");
+  ZISC_ASSERT(zisc::isInBounds(fresnel, 0.0, 1.0),
+              "Fresnel reflectance isn't [0, 1].");
   if (fresnel == 0.0)
     return 0.0;
 
@@ -312,12 +312,12 @@ Float evaluateGgxDielectricRefractionPdf(const Float roughness,
   const Float cos_theta_mi = -zisc::dot(m_normal, vin);
   const Float cos_theta_mo = zisc::dot(m_normal, vout);
   const Float cos_theta_nm = zisc::dot(normal, m_normal);
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(cos_theta_ni),
-              "Cos theta_{ni} must be [0, 1].");
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(cos_theta_nm),
-              "Cos theta_{nm} must be [0, 1].");
+  ZISC_ASSERT(zisc::isInBounds(cos_theta_ni, 0.0, 1.0),
+              "Cos theta_{ni} isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInBounds(cos_theta_nm, 0.0, 1.0),
+              "Cos theta_{nm} isn't [0, 1].");
   ZISC_ASSERT(0.0 <= cos_theta_ni * cos_theta_mi, 
-              "Microfacet normal must be in the same hemisphere as normal.");
+              "Microfacet normal isn't in the same hemisphere as normal.");
 
   const Float d = evaluateGgxD(roughness, cos_theta_nm);
   if (d == 0.0)
@@ -330,8 +330,8 @@ Float evaluateGgxDielectricRefractionPdf(const Float roughness,
   const Float fresnel = (is_not_perfect_reflection)
       ? solveFresnelDielectricEquation(cos_theta_mi, g)
       : 1.0; // Perfect reflection
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(fresnel),
-              "Fresnel reflectance must be [0, 1].");
+  ZISC_ASSERT(zisc::isInBounds(fresnel, 0.0, 1.0),
+              "Fresnel reflectance isn't [0, 1].");
   if (fresnel == 1.0)
     return 0.0;
 
@@ -448,7 +448,7 @@ Float evaluateGgxG1(const Float roughness,
   const Float t = roughness2 + (1.0 - roughness2) * cos2_theta_n;
   const Float cos_n = zisc::abs(cos_theta_n);
   const Float g1 = 2.0 * cos_n / (cos_n + zisc::sqrt(t));
-  ZISC_ASSERT(isBetweenZeroAndOneFloat(g1), "GGX G1 must be [0, 1].");
+  ZISC_ASSERT(zisc::isInClosedBounds(g1, 0.0, 1.0), "GGX G1 isn't [0, 1].");
   return g1;
 }
 
@@ -467,7 +467,7 @@ Float evaluateGgxG2(const Float roughness,
   const Float g2 = 
       evaluateGgxG1(roughness, cos_theta_ni, cos_theta_mi, cos_theta_nm) *
       evaluateGgxG1(roughness, cos_theta_no, cos_theta_mo, cos_theta_nm);
-  ZISC_ASSERT( isBetweenZeroAndOneFloat(g2), "GGX G2 must be [0, 1].");
+  ZISC_ASSERT( zisc::isInClosedBounds(g2, 0.0, 1.0), "GGX G2 isn't [0, 1].");
 
   return g2;
 }

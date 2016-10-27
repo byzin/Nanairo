@@ -87,11 +87,26 @@ class SampledSpectra
   // Get the average of intensities
   Float average() const noexcept;
 
+  //! Check if the samples contain inf value
+  bool hasInf() const noexcept;
+
+  //! Check if the samples contain nan value
+  bool hasNan() const noexcept;
+
+  //! Check if the samples contain negative value
+  bool hasNegative() const noexcept;
+
+  //! Check if the samples contain the specified value
+  bool hasValue(const Float value) const noexcept;
+
   //! Get the intensity of wavelength by the index.
   Float intensity(const uint index) const noexcept;
 
+  //! Check if the each sample is between \p lower and \p upper
+  bool isAllInBounds(const Float lower, const Float upper) const noexcept;
+
   //! Check whether intensities of all elements are zero
-  bool isZero() const noexcept;
+  bool isAllZero() const noexcept;
 
   //! Get max intensity
   Float max() const noexcept;

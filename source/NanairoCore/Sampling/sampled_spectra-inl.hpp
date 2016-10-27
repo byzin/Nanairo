@@ -11,6 +11,8 @@
 #define NANAIRO_SAMPLED_SPECTRA_INL_HPP
 
 #include "sampled_spectra.hpp"
+// Standard C++ library
+#include <cmath>
 // Zisc
 #include "zisc/arithmetic_array.hpp"
 #include "zisc/math.hpp"
@@ -20,6 +22,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
+#include "NanairoCore/Utility/value.hpp"
 
 namespace nanairo {
 
@@ -193,6 +196,38 @@ Float SampledSpectra<kSampleSize>::average() const noexcept
 }
 
 /*!
+  */
+template <uint kSampleSize> inline
+bool SampledSpectra<kSampleSize>::hasInf() const noexcept
+{
+  return ::nanairo::hasInf(intensities_);
+}
+
+/*!
+  */
+template <uint kSampleSize> inline
+bool SampledSpectra<kSampleSize>::hasNan() const noexcept
+{
+  return ::nanairo::hasNan(intensities_);
+}
+
+/*!
+  */
+template <uint kSampleSize> inline
+bool SampledSpectra<kSampleSize>::hasNegative() const noexcept
+{
+  return ::nanairo::hasNegative(intensities_);
+}
+
+/*!
+  */
+template <uint kSampleSize> inline
+bool SampledSpectra<kSampleSize>::hasValue(const Float value) const noexcept
+{
+  return intensities_.hasValue(value);
+}
+
+/*!
   \details
   No detailed.
   */
@@ -203,13 +238,22 @@ Float SampledSpectra<kSampleSize>::intensity(const uint index) const noexcept
 }
 
 /*!
+  */
+template <uint kSampleSize> inline
+bool SampledSpectra<kSampleSize>::isAllInBounds(const Float lower,
+                                                const Float upper) const noexcept
+{
+  return intensities_.isAllInBounds(lower, upper);
+}
+
+/*!
   \details
   No detailed.
   */
 template <uint kSampleSize> inline
-bool SampledSpectra<kSampleSize>::isZero() const noexcept
+bool SampledSpectra<kSampleSize>::isAllZero() const noexcept
 {
-  return intensities_.isZero();
+  return intensities_.isAllZero();
 }
 
 /*!
@@ -275,19 +319,6 @@ SampledSpectra<kSampleSize> makeSampledSpectra(
   return SampledSpectra<kSampleSize>{sampled_wavelengths.wavelengths(),
                                      sampled_wavelengths.inverseProbabilities()};
 }
-
-/*!
-  \details
-  No detailed.
-  */
-//inline
-//SampledSpectra sqrt(const SampledSpectra& samples)
-//{
-//  SampledSpectra spectra{samples.wavelengths()};
-//  for (uint index = 0; index < kNumOfSpectraSamples; ++index)
-//    spectra.setIntensity(index, zisc::sqrt(samples.intensity(index)));
-//  return spectra;
-//}
 
 /*!
   \details
