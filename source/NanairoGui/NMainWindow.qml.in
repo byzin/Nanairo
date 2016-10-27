@@ -103,6 +103,36 @@ ApplicationWindow {
 
       MenuItem {
         enabled: !isRenderingMode
+        text: qsTr("SurfaceTest-SmoothDiffuse")
+        onTriggered: loadPresetSceneData(text)
+      }
+
+      MenuItem {
+        enabled: !isRenderingMode
+        text: qsTr("SurfaceTest-SmoothDielectric")
+        onTriggered: loadPresetSceneData(text)
+      }
+
+      MenuItem {
+        enabled: !isRenderingMode
+        text: qsTr("SurfaceTest-SmoothConductor")
+        onTriggered: loadPresetSceneData(text)
+      }
+
+      MenuItem {
+        enabled: !isRenderingMode
+        text: qsTr("SurfaceTest-RoughDielectric")
+        onTriggered: loadPresetSceneData(text)
+      }
+
+      MenuItem {
+        enabled: !isRenderingMode
+        text: qsTr("SurfaceTest-RoughConductor")
+        onTriggered: loadPresetSceneData(text)
+      }
+
+      MenuItem {
+        enabled: !isRenderingMode
         text: qsTr("RaytracingCamp4")
         onTriggered: loadPresetSceneData(text)
       }
