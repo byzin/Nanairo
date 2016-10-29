@@ -47,7 +47,7 @@ using MemoryPool = zisc::AlignedMemoryPool<
     @NANAIRO_MEMORY_POOL_SIZE@, // The memory pool size
     std::alignment_of<void*>::value>; // The memory alignment
 
-// LinearAlgebra
+// Geometry
 using Vector3 = zisc::Vector<Float, 3>;
 using Vector2 = zisc::Vector<Float, 2>;
 using Point3 = zisc::Point<Float, 3>;
@@ -98,6 +98,12 @@ class CoreConfig
 
   //! Return the exponent of MIS heuristic
   static constexpr uint misHeuristicBeta() noexcept;
+
+  //! Check if the explicit conenction of path tracing is enabled
+  static constexpr bool pathTracingExplicitConnectionIsEnabled() noexcept;
+
+  //! Check if the implicit conenction of path tracing is enabled
+  static constexpr bool pathTracingImplicitConnectionIsEnabled() noexcept;
 };
 
 //! \} Core

@@ -18,43 +18,26 @@
 // Nanairo
 #include "microfacet.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 
 namespace nanairo {
-
-namespace ggx_v_cavity {
-Float evaluateGgxG1(const Float, const Float, const Float, const Float) noexcept;
-Float evaluateGgxG2(const Float, const Float, const Float, 
-                    const Float, const Float, const Float) noexcept;
-Float evaluateGgxWeight(const Float, const Float, const Float,
-                        const Float, const Float, const Float) noexcept;
-} // namespace ggx_v_cavity
-
-namespace ggx_smith {
-Float evaluateGgxG1(const Float, const Float, const Float, const Float) noexcept;
-Float evaluateGgxG2(const Float, const Float, const Float, 
-                    const Float, const Float, const Float) noexcept;
-Float evaluateGgxWeight(const Float, const Float, const Float,
-                        const Float, const Float, const Float) noexcept;
-} // namespace ggx_v_cavity
 
 /*!
   \details
   No detailed.
   */
 inline
-Float evaluateGgxD(const Float roughness, const Float cos_theta_nm) noexcept
+Float MicrofacetGgx::evalD(const Float roughness, const Float cos_nm) noexcept
 {
-  ZISC_ASSERT(0.0 <= cos_theta_nm, 
-              "Microfacet normal must be in the same hemisphere as normal.");
-
-  const Float a2 = roughness * roughness;
-  const Float cos2_theta_nm = cos_theta_nm * cos_theta_nm;
-  const Float tmp = (a2 - 1.0) * cos2_theta_nm + 1.0;
-  const Float d = a2 / (zisc::kPi<Float> * tmp * tmp);
-  ZISC_ASSERT(0.0 <= d, "GGX D must be positive.");
+  ZISC_ASSERT(0.0 <= cos_nm,
+              "Microfacet normal isn't in the same hemisphere as normal.");
+  const Float a2 = zisc::power<2>(roughness);
+  const Float cos2_nm = zisc::power<2>(cos_nm);
+  const Float tmp = (a2 - 1.0) * cos2_nm + 1.0;
+  const Float d = a2 / (zisc::kPi<Float> * zisc::power<2>(tmp));
+  ZISC_ASSERT(0.0 <= d, "GGX D is negative.");
   return d;
 }
 
@@ -62,110 +45,8 @@ Float evaluateGgxD(const Float roughness, const Float cos_theta_nm) noexcept
   \details
   No detailed.
   */
-inline
-Float evaluateGgxG1(const Float roughness,
-                    const Float cos_theta_n,
-                    const Float cos_theta_m,
-                    const Float cos_theta_nm) noexcept
-{
-#if defined(NANAIRO_GGX_V_CAVITY)
-  return ggx_v_cavity::
-      evaluateGgxG1(roughness, cos_theta_n, cos_theta_m, cos_theta_nm);
-#elif defined(NANAIRO_GGX_SMITH)
-  return ggx_smith::
-      evaluateGgxG1(roughness, cos_theta_n, cos_theta_m, cos_theta_nm);
-#else
-  static_assert(false, "\"evaluateGgxG1\" isn't implemented.");
-  return 0.0;
-#endif
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-Float evaluateGgxG2(const Float roughness,
-                    const Float cos_theta_ni,
-                    const Float cos_theta_no,
-                    const Float cos_theta_mi,
-                    const Float cos_theta_mo,
-                    const Float cos_theta_nm) noexcept
-{
-#if defined(NANAIRO_GGX_V_CAVITY)
-  return ggx_v_cavity::
-      evaluateGgxG2(roughness, cos_theta_ni, cos_theta_no, 
-                    cos_theta_mi, cos_theta_mo, cos_theta_nm);
-#elif defined(NANAIRO_GGX_SMITH)
-  return ggx_smith::
-      evaluateGgxG2(roughness, cos_theta_ni, cos_theta_no, 
-                    cos_theta_mi, cos_theta_mo, cos_theta_nm);
-#else
-  static_assert(false, "\"evaluateGgxG2\" isn't implemented.");
-  return 0.0;
-#endif
-}
-
-namespace inner {
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-Float evaluateGgxReflectionPdf(const Float roughness,
-                               const Float d,
-                               const Float cos_theta_ni,
-                               const Float cos_theta_mi,
-                               const Float cos_theta_nm) noexcept
-{
-  const Float g1 = 
-      evaluateGgxG1(roughness, cos_theta_ni, cos_theta_mi, cos_theta_nm);
-  if (g1 == 0.0)
-    return 0.0;
-
-  const Float inverse_jacobian =
-      getMicrofacetReflectionInverseJacobian(cos_theta_mi);
-
-  const Float pdf = (g1 * cos_theta_mi * d) / (cos_theta_ni * inverse_jacobian);
-  ZISC_ASSERT(0.0 < pdf, "PDF must be positive.");
-  return pdf;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-Float evaluateGgxRefractionPdf(const Float roughness,
-                               const Float d,
-                               const Float cos_theta_ni,
-                               const Float cos_theta_mi,
-                               const Float cos_theta_mo,
-                               const Float cos_theta_nm,
-                               const Float n) noexcept
-{
-  const Float g1 = 
-      evaluateGgxG1(roughness, cos_theta_ni, cos_theta_mi, cos_theta_nm);
-  if (g1 == 0.0)
-    return 0.0;
-
-  const Float inverse_jacobian =
-      getMicrofacetRefractionInverseJacobian(cos_theta_mi, cos_theta_mo, n);
-
-  const Float pdf = (g1 * cos_theta_mi * d) / (cos_theta_ni * inverse_jacobian);
-  ZISC_ASSERT(0.0 < pdf, "PDF must be positive.");
-  return pdf;
-}
-
-} // namespace inner
-
-/*!
-  \details
-  No detailed.
-  */
 template <uint kSampleSize>
-SampledSpectra<kSampleSize> evaluateGgxReflectance(
+SampledSpectra<kSampleSize> MicrofacetGgx::evalReflectance(
     const Float roughness,
     const Vector3& vin,
     const Vector3& vout,
@@ -176,44 +57,38 @@ SampledSpectra<kSampleSize> evaluateGgxReflectance(
   const auto& wavelengths = r0.wavelengths();
 
   // Calculate reflection half vector
-  const auto m_normal = getMicrofacetReflectionHalfVector(vin, vout);
+  const auto m_normal = calcReflectionHalfVector(vin, vout);
 
-  const Float cos_theta_ni = -zisc::dot(normal, vin);
-  const Float cos_theta_no = zisc::dot(normal, vout);
-  const Float cos_theta_mi = -zisc::dot(m_normal, vin);
-  const Float cos_theta_mo = cos_theta_mi;
-  const Float cos_theta_nm = zisc::dot(normal, m_normal);
-  ZISC_ASSERT(zisc::isInBounds(cos_theta_ni, 0.0, 1.0),
-              "Cos theta_{ni} isn't [0, 1].");
-  ZISC_ASSERT(zisc::isInBounds(cos_theta_no, 0.0, 1.0),
-              "Cos theta_{no} isn't [0, 1].");
-  ZISC_ASSERT(zisc::isInBounds(cos_theta_nm, 0.0, 1.0),
-              "Cos theta_{nm} isn't [0, 1].");
-  ZISC_ASSERT(0.0 <= cos_theta_ni * cos_theta_mi,
+  const Float cos_ni = -zisc::dot(normal, vin);
+  const Float cos_no = zisc::dot(normal, vout);
+  const Float cos_mi = -zisc::dot(m_normal, vin);
+  const Float cos_mo = cos_mi;
+  const Float cos_nm = zisc::dot(normal, m_normal);
+  ZISC_ASSERT(zisc::isInBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInBounds(cos_no, 0.0, 1.0), "cos_no isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInBounds(cos_nm, 0.0, 1.0), "cos_nm isn't [0, 1].");
+  ZISC_ASSERT(0.0 <= cos_ni * cos_mi,
               "Microfacet normal isn't in the same hemisphere as normal.");
 
   // Evaluate D
-  const Float d = evaluateGgxD(roughness, cos_theta_nm);
+  const Float d = evalD(roughness, cos_nm);
   if (d == 0.0)
     return SampledSpectra<kSampleSize>{wavelengths};
 
   // Evaluate G2(i, o, m)
-  const Float g2 = evaluateGgxG2(roughness, cos_theta_ni, cos_theta_no,
-                                 cos_theta_mi, cos_theta_mo, cos_theta_nm);
+  const Float g2 = evalG2(roughness, cos_ni, cos_no, cos_mi, cos_mo, cos_nm);
   if (g2 == 0.0)
     return SampledSpectra<kSampleSize>{wavelengths};
 
   // Evaluate the fresnel reflectance
-  const auto fresnel = solveFresnelConductorEquation(cos_theta_mi, r0);
+  const auto fresnel = Fresnel::evalConductorEquation(cos_mi, r0);
 
   // Calculate the pdf
-  if (pdf != nullptr) {
-    *pdf = inner::evaluateGgxReflectionPdf(roughness, d, cos_theta_ni, 
-                                           cos_theta_mi, cos_theta_nm);
-  }
+  if (pdf != nullptr)
+    *pdf = calcReflectionPdf(roughness, d, cos_ni, cos_mi, cos_nm);
 
   // Calculate reflectance
-  const auto f = fresnel * (g2 * d / (4.0 * cos_theta_ni * cos_theta_no));
+  const auto f = fresnel * (g2 * d / (4.0 * cos_ni * cos_no));
   ZISC_ASSERT(!f.hasNegative(), "Reflectance isn't positive.");
   return f;
 }
@@ -223,30 +98,27 @@ SampledSpectra<kSampleSize> evaluateGgxReflectance(
   No detailed.
   */
 inline
-Float evaluateGgxReflectionPdf(const Float roughness,
-                               const Vector3& vin,
-                               const Vector3& vout,
-                               const Vector3& normal) noexcept
+Float MicrofacetGgx::evalReflectionPdf(const Float roughness,
+                                       const Vector3& vin,
+                                       const Vector3& vout,
+                                       const Vector3& normal) noexcept
 {
   // Calculate reflection half vector
-  const auto m_normal = getMicrofacetReflectionHalfVector(vin, vout);
+  const auto m_normal = calcReflectionHalfVector(vin, vout);
 
-  const Float cos_theta_ni = -zisc::dot(normal, vin);
-  const Float cos_theta_mi = -zisc::dot(m_normal, vin);
-  const Float cos_theta_nm = zisc::dot(normal, m_normal);
-  ZISC_ASSERT(zisc::isInBounds(cos_theta_ni, 0.0, 1.0),
-              "Cos theta_{ni} isn't [0, 1].");
-  ZISC_ASSERT(zisc::isInBounds(cos_theta_nm, 0.0, 1.0),
-              "Cos theta_{nm} isn't [0, 1].");
-  ZISC_ASSERT(0.0 <= cos_theta_ni * cos_theta_mi,
+  const Float cos_ni = -zisc::dot(normal, vin);
+  const Float cos_mi = -zisc::dot(m_normal, vin);
+  const Float cos_nm = zisc::dot(normal, m_normal);
+  ZISC_ASSERT(zisc::isInBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInBounds(cos_nm, 0.0, 1.0), "cos_nm isn't [0, 1].");
+  ZISC_ASSERT(0.0 <= cos_ni * cos_mi,
               "Microfacet normal isn't in the same hemisphere as normal.");
 
-  const Float d = evaluateGgxD(roughness, cos_theta_nm);
+  const Float d = evalD(roughness, cos_nm);
   if (d == 0.0)
     return 0.0;
 
-  return inner::evaluateGgxReflectionPdf(roughness, d, cos_theta_ni,
-                                         cos_theta_mi, cos_theta_nm);
+  return calcReflectionPdf(roughness, d, cos_ni, cos_mi, cos_nm);
 }
 
 /*!
@@ -254,44 +126,40 @@ Float evaluateGgxReflectionPdf(const Float roughness,
   No detailed.
   */
 inline
-Float evaluateGgxDielectricReflectionPdf(const Float roughness,
-                                         const Vector3& vin,
-                                         const Vector3& vout,
-                                         const Vector3& normal,
-                                         const Float n) noexcept
+Float MicrofacetGgx::evalReflectionPdf(const Float roughness,
+                                       const Vector3& vin,
+                                       const Vector3& vout,
+                                       const Vector3& normal,
+                                       const Float n) noexcept
 {
   // Calculate reflection half vector
-  const auto m_normal = getMicrofacetReflectionHalfVector(vin, vout);
+  const auto m_normal = calcReflectionHalfVector(vin, vout);
 
-  const Float cos_theta_ni = -zisc::dot(normal, vin);
-  const Float cos_theta_mi = -zisc::dot(m_normal, vin);
-  const Float cos_theta_nm = zisc::dot(normal, m_normal);
-  ZISC_ASSERT(zisc::isInBounds(cos_theta_ni, 0.0, 1.0),
-              "Cos theta_{ni} isn't [0, 1].");
-  ZISC_ASSERT(zisc::isInBounds(cos_theta_nm, 0.0, 1.0),
-              "Cos theta_{nm} isn't [0, 1].");
-  ZISC_ASSERT(0.0 <= cos_theta_ni * cos_theta_mi,
+  const Float cos_ni = -zisc::dot(normal, vin);
+  const Float cos_mi = -zisc::dot(m_normal, vin);
+  const Float cos_nm = zisc::dot(normal, m_normal);
+  ZISC_ASSERT(zisc::isInBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInBounds(cos_nm, 0.0, 1.0), "cos_nm isn't [0, 1].");
+  ZISC_ASSERT(0.0 <= cos_ni * cos_mi,
               "Microfacet normal isn't in the same hemisphere as normal.");
 
-  const Float d = evaluateGgxD(roughness, cos_theta_nm);
+  const Float d = evalD(roughness, cos_nm);
   if (d == 0.0)
     return 0.0;
 
   // Evaluate the fresnel term
-  const auto result = evaluateFresnelG(n, cos_theta_mi);
-  const bool is_not_perfect_reflection = std::get<0>(result);
+  const auto result = Fresnel::evalG(n, cos_mi);
+  const bool is_perfect_reflection = !std::get<0>(result);
   const Float g = std::get<1>(result);
-  const Float fresnel = (is_not_perfect_reflection)
-      ? solveFresnelDielectricEquation(cos_theta_mi, g)
+  const Float fresnel = (!is_perfect_reflection)
+      ? Fresnel::evalDielectricEquation(cos_mi, g)
       : 1.0; // Perfect reflection
   ZISC_ASSERT(zisc::isInBounds(fresnel, 0.0, 1.0),
               "Fresnel reflectance isn't [0, 1].");
   if (fresnel == 0.0)
     return 0.0;
 
-  return fresnel * 
-         inner::evaluateGgxReflectionPdf(roughness, d, cos_theta_ni,
-                                         cos_theta_mi, cos_theta_nm);
+  return fresnel * calcReflectionPdf(roughness, d, cos_ni, cos_mi, cos_nm);
 }
 
 /*!
@@ -299,155 +167,62 @@ Float evaluateGgxDielectricReflectionPdf(const Float roughness,
   No detailed.
   */
 inline
-Float evaluateGgxDielectricRefractionPdf(const Float roughness,
-                                         const Vector3& vin,
-                                         const Vector3& vout,
-                                         const Vector3& normal,
-                                         const Float n) noexcept
+Float MicrofacetGgx::evalRefractionPdf(const Float roughness,
+                                       const Vector3& vin,
+                                       const Vector3& vout,
+                                       const Vector3& normal,
+                                       const Float n) noexcept
 {
   // Calculate refraction half vector
-  const auto m_normal = getMicrofacetRefractionHalfVector(vin, vout, n);
+  const auto m_normal = calcRefractionHalfVector(vin, vout, n);
 
-  const Float cos_theta_ni = -zisc::dot(normal, vin);
-  const Float cos_theta_mi = -zisc::dot(m_normal, vin);
-  const Float cos_theta_mo = zisc::dot(m_normal, vout);
-  const Float cos_theta_nm = zisc::dot(normal, m_normal);
-  ZISC_ASSERT(zisc::isInBounds(cos_theta_ni, 0.0, 1.0),
-              "Cos theta_{ni} isn't [0, 1].");
-  ZISC_ASSERT(zisc::isInBounds(cos_theta_nm, 0.0, 1.0),
-              "Cos theta_{nm} isn't [0, 1].");
-  ZISC_ASSERT(0.0 <= cos_theta_ni * cos_theta_mi, 
+  const Float cos_ni = -zisc::dot(normal, vin);
+  const Float cos_mi = -zisc::dot(m_normal, vin);
+  const Float cos_mo = zisc::dot(m_normal, vout);
+  const Float cos_nm = zisc::dot(normal, m_normal);
+  ZISC_ASSERT(zisc::isInBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInBounds(cos_nm, 0.0, 1.0), "cos_nm isn't [0, 1].");
+  ZISC_ASSERT(0.0 <= cos_ni * cos_mi,
               "Microfacet normal isn't in the same hemisphere as normal.");
 
-  const Float d = evaluateGgxD(roughness, cos_theta_nm);
+  const Float d = evalD(roughness, cos_nm);
   if (d == 0.0)
     return 0.0;
 
   // Evaluate the fresnel term
-  const auto result = evaluateFresnelG(n, cos_theta_mi);
-  const bool is_not_perfect_reflection = std::get<0>(result);
+  const auto result = Fresnel::evalG(n, cos_mi);
+  const bool is_perfect_reflection = !std::get<0>(result);
   const Float g = std::get<1>(result);
-  const Float fresnel = (is_not_perfect_reflection)
-      ? solveFresnelDielectricEquation(cos_theta_mi, g)
+  const Float fresnel = (!is_perfect_reflection)
+      ? Fresnel::evalDielectricEquation(cos_mi, g)
       : 1.0; // Perfect reflection
   ZISC_ASSERT(zisc::isInBounds(fresnel, 0.0, 1.0),
               "Fresnel reflectance isn't [0, 1].");
   if (fresnel == 1.0)
     return 0.0;
 
-  return (1.0 - fresnel) * 
-         inner::evaluateGgxRefractionPdf(roughness, d, cos_theta_ni,
-                                         cos_theta_mi, cos_theta_mo,
-                                         cos_theta_nm, n);
+  return (1.0 - fresnel) *
+         calcRefractionPdf(roughness, d, cos_ni, cos_mi, cos_mo, cos_nm, n);
 }
 
 /*!
   \details
   No detailed.
   */
-inline
-Float evaluateGgxWeight(const Float roughness,
-                        const Float cos_theta_ni,
-                        const Float cos_theta_no,
-                        const Float cos_theta_mi,
-                        const Float cos_theta_mo,
-                        const Float cos_theta_nm) noexcept
+template <> inline
+Float MicrofacetGgx::Smith::evalG1(const Float roughness,
+                                   const Float cos_n,
+                                   const Float cos_m,
+                                   const Float /* cos_nm */) noexcept
 {
-#if defined(NANAIRO_GGX_V_CAVITY)
-  return ggx_v_cavity::
-    evaluateGgxWeight(roughness, cos_theta_ni, cos_theta_no,
-                      cos_theta_mi, cos_theta_mo, cos_theta_nm);
-#elif defined(NANAIRO_GGX_SMITH)
-  return ggx_smith::
-    evaluateGgxWeight(roughness, cos_theta_ni, cos_theta_no,
-                      cos_theta_mi, cos_theta_mo, cos_theta_nm);
-#else
-  static_assert(false, \"evaluateGgxWeight\" isn't implemented.");
-  return 0.0;
-#endif
-}
-
-namespace ggx_v_cavity {
-
-///*!
-//  \details
-//  No detailed.
-//  */
-//inline
-//Float evaluateGgxG1(const Float /* roughness */,
-//                    const Float cos_theta_omega,
-//                    const Float cos_theta_m,
-//                    const Float cos_theta_momega)
-//{
-//  if (cos_theta_momega * cos_theta_omega <= 0.0)
-//    return 0.0;
-//
-//  const Float g = zisc::abs(2.0 * cos_theta_m * cos_theta_omega / cos_theta_momega);
-//  return zisc::min(g, 1.0);
-//}
-//
-///*!
-//  \details
-//  No detailed.
-//  */
-//inline
-//Float evaluateGgxG2(const Float roughness,
-//                    const Float cos_theta_i,
-//                    const Float cos_theta_o,
-//                    const Float cos_theta_m,
-//                    const Float cos_theta_mi,
-//                    const Float cos_theta_mo)
-//{
-//  const Float g1i = evaluateGgxG1(roughness, cos_theta_i, cos_theta_m, cos_theta_mi);
-//  const Float g1o = evaluateGgxG1(roughness, cos_theta_o, cos_theta_m, cos_theta_mo);
-//  return (0.0 < cos_theta_o)
-//      ? zisc::min(g1i, g1o)
-//      : zisc::max(g1i + g1o - 1.0, 0.0);
-//}
-//
-///*!
-//  \details
-//  No detailed.
-//  */
-//inline
-//Float evaluateGgxWeight(const Float roughness,
-//                        const Float cos_theta_i,
-//                        const Float cos_theta_o,
-//                        const Float cos_theta_m,
-//                        const Float cos_theta_mi,
-//                        const Float cos_theta_mo)
-//{
-//  const Float weight =  evaluateGgxG2(roughness, cos_theta_i, cos_theta_o,
-//                                      cos_theta_m, cos_theta_mi, cos_theta_mo) /
-//                        evaluateGgxG1(roughness, cos_theta_i, 
-//                                      cos_theta_m, cos_theta_mi);
-//  return zisc::clamp(weight, 0.0, 1.0);
-//}
-
-} // namespace ggx_v_cavity
-
-namespace ggx_smith {
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-Float evaluateGgxG1(const Float roughness, 
-                    const Float cos_theta_n, 
-                    const Float cos_theta_m,
-                    const Float /* cos_theta_nm */) noexcept
-{
-//  ZISC_ASSERT(0.0 <= cos_theta_n * cos_theta_m,
-//              "Microfacet normal must be same direction as normal.");
-  if (cos_theta_n * cos_theta_m < 0.0)
+  if (cos_n * cos_m < 0.0)
     return 0.0;
 
-  const Float roughness2 = roughness * roughness;
-  const Float cos2_theta_n = cos_theta_n * cos_theta_n;
-  const Float t = roughness2 + (1.0 - roughness2) * cos2_theta_n;
-  const Float cos_n = zisc::abs(cos_theta_n);
-  const Float g1 = 2.0 * cos_n / (cos_n + zisc::sqrt(t));
+  const Float roughness2 = zisc::power<2>(roughness);
+  const Float cos2_n = zisc::power<2>(cos_n);
+  const Float t = roughness2 + (1.0 - roughness2) * cos2_n;
+  const Float cos_theta_n = zisc::abs(cos_n);
+  const Float g1 = 2.0 * cos_theta_n / (cos_theta_n + zisc::sqrt(t));
   ZISC_ASSERT(zisc::isInClosedBounds(g1, 0.0, 1.0), "GGX G1 isn't [0, 1].");
   return g1;
 }
@@ -456,19 +231,17 @@ Float evaluateGgxG1(const Float roughness,
   \details
   No detailed.
   */
-inline
-Float evaluateGgxG2(const Float roughness,
-                    const Float cos_theta_ni,
-                    const Float cos_theta_no,
-                    const Float cos_theta_mi,
-                    const Float cos_theta_mo,
-                    const Float cos_theta_nm) noexcept
+template <> inline
+Float MicrofacetGgx::Smith::evalG2(const Float roughness,
+                                   const Float cos_ni,
+                                   const Float cos_no,
+                                   const Float cos_mi,
+                                   const Float cos_mo,
+                                   const Float cos_nm) noexcept
 {
-  const Float g2 = 
-      evaluateGgxG1(roughness, cos_theta_ni, cos_theta_mi, cos_theta_nm) *
-      evaluateGgxG1(roughness, cos_theta_no, cos_theta_mo, cos_theta_nm);
-  ZISC_ASSERT( zisc::isInClosedBounds(g2, 0.0, 1.0), "GGX G2 isn't [0, 1].");
-
+  const Float g2 = evalG1(roughness, cos_ni, cos_mi, cos_nm) *
+                   evalG1(roughness, cos_no, cos_mo, cos_nm);
+  ZISC_ASSERT(zisc::isInClosedBounds(g2, 0.0, 1.0), "GGX G2 isn't [0, 1].");
   return g2;
 }
 
@@ -476,15 +249,15 @@ Float evaluateGgxG2(const Float roughness,
   \details
   No detailed.
   */
-inline
-Float evaluateGgxWeight(const Float roughness,
-                        const Float /* cos_theta_ni */,
-                        const Float cos_theta_no,
-                        const Float /* cos_theta_mi */,
-                        const Float cos_theta_mo,
-                        const Float cos_theta_nm) noexcept
+template <> inline
+Float MicrofacetGgx::Smith::evalWeight(const Float roughness,
+                                       const Float /* cos_ni */,
+                                       const Float cos_no,
+                                       const Float /* cos_mi */,
+                                       const Float cos_mo,
+                                       const Float cos_nm) noexcept
 {
-  return evaluateGgxG1(roughness, cos_theta_no, cos_theta_mo, cos_theta_nm);
+  return evalG1(roughness, cos_no, cos_mo, cos_nm);
 }
 
 /*!
@@ -492,13 +265,138 @@ Float evaluateGgxWeight(const Float roughness,
   No detailed.
   */
 inline
-Vector3 stretchGgxMicrosurface(const Float roughness, const Vector3& vin) noexcept
+Float MicrofacetGgx::evalG1(const Float roughness,
+                            const Float cos_n,
+                            const Float cos_m,
+                            const Float cos_nm) noexcept
 {
-  const Vector3 vin_dash{roughness * vin[0], roughness * vin[1], vin[2]};
-  return vin_dash.normalized();
+  using Method = GgxMethod<kUsedType>;
+  return Method::evalG1(roughness, cos_n, cos_m, cos_nm);
 }
 
-} // namespace ggx_smith
+/*!
+  \details
+  No detailed.
+  */
+inline
+Float MicrofacetGgx::evalG2(const Float roughness,
+                            const Float cos_ni,
+                            const Float cos_no,
+                            const Float cos_mi,
+                            const Float cos_mo,
+                            const Float cos_nm) noexcept
+{
+  using Method = GgxMethod<kUsedType>;
+  return Method::evalG2(roughness, cos_ni, cos_no, cos_mi, cos_mo, cos_nm);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+Float MicrofacetGgx::evalWeight(const Float roughness,
+                                const Float cos_ni,
+                                const Float cos_no,
+                                const Float cos_mi,
+                                const Float cos_mo,
+                                const Float cos_nm) noexcept
+{
+  using Method = GgxMethod<kUsedType>;
+  return Method::evalWeight(roughness, cos_ni, cos_no, cos_mi, cos_mo, cos_nm);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+Float MicrofacetGgx::calcReflectionPdf(const Float roughness,
+                                       const Float d,
+                                       const Float cos_ni,
+                                       const Float cos_mi,
+                                       const Float cos_nm) noexcept
+{
+  const Float g1 = evalG1(roughness, cos_ni, cos_mi, cos_nm);
+  if (g1 == 0.0)
+    return 0.0;
+
+  const Float inverse_jacobian = calcReflectionInverseJacobian(cos_mi);
+
+  const Float pdf = (g1 * cos_mi * d) / (cos_ni * inverse_jacobian);
+  ZISC_ASSERT(0.0 < pdf, "PDF isn't positive.");
+  return pdf;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+Float MicrofacetGgx::calcRefractionPdf(const Float roughness,
+                                       const Float d,
+                                       const Float cos_ni,
+                                       const Float cos_mi,
+                                       const Float cos_mo,
+                                       const Float cos_nm,
+                                       const Float n) noexcept
+{
+  const Float g1 = evalG1(roughness, cos_ni, cos_mi, cos_nm);
+  if (g1 == 0.0)
+    return 0.0;
+
+  const Float inverse_jacobian = calcRefractionInverseJacobian(cos_mi, cos_mo, n);
+
+  const Float pdf = (g1 * cos_mi * d) / (cos_ni * inverse_jacobian);
+  ZISC_ASSERT(0.0 < pdf, "PDF isn't positive.");
+  return pdf;
+}
+
+/*!
+  */
+inline
+SampledGgxNormal::SampledGgxNormal(const SampledDirection& microfacet_normal,
+                                   const Float cos_ni,
+                                   const Float cos_mi,
+                                   const Float cos_nm) noexcept :
+    microfacet_normal_{microfacet_normal},
+    cos_ni_{cos_ni},
+    cos_mi_{cos_mi},
+    cos_nm_{cos_nm}
+{
+}
+
+/*!
+  */
+inline
+Float SampledGgxNormal::cosNi() const noexcept
+{
+  return cos_ni_;
+}
+
+/*!
+  */
+inline
+Float SampledGgxNormal::cosMi() const noexcept
+{
+  return cos_mi_;
+}
+
+/*!
+  */
+inline
+Float SampledGgxNormal::cosNm() const noexcept
+{
+  return cos_nm_;
+}
+
+/*!
+  */
+inline
+const SampledDirection& SampledGgxNormal::microfacetNormal() const noexcept
+{
+  return microfacet_normal_;
+}
 
 } // namespace nanairo
 

@@ -17,8 +17,8 @@
 // Nanairo 
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectra_image_interface.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 
 namespace nanairo {
 
@@ -43,10 +43,10 @@ Point2 Film::coordinate(const uint x, const uint y, const Vector2& jittering) co
   using zisc::cast;
   const Float u = 0.5 - (cast<Float>(x) + jittering[0]) * inverse_width_;
   const Float v = 0.5 - (cast<Float>(y) + jittering[1]) * inverse_height_;
-  ZISC_ASSERT((-0.5 <= u) && (u <= 0.5), 
-              "The coordinate u must be [0, 1].");
-  ZISC_ASSERT((-0.5 <= v) && (v <= 0.5), 
-              "The coordinate v must be [0, 1].");
+  ZISC_ASSERT(zisc::isInClosedBounds(u, -0.5, 0.5),
+              "The coordinate u is out of the range [-0.5, 0.5].");
+  ZISC_ASSERT(zisc::isInClosedBounds(v, -0.5, 0.5),
+              "The coordinate v is out of the range [-0.5, 0.5].");
   return Point2{u, v};
 }
 

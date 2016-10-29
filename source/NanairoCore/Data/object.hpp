@@ -13,7 +13,7 @@
 // Standard C++ library
 #include <vector>
 // Nanairo
-#include "NanairoCore/Geometry/geometry.hpp"
+#include "NanairoCore/Shape/shape.hpp"
 #include "NanairoCore/Material/material.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
@@ -30,21 +30,21 @@ class Object
 {
  public:
   //! Create object
-  Object(const Material& material, UniquePointer<Geometry>&& geometry) noexcept;
+  Object(const Material& material, UniquePointer<Shape>&& shape) noexcept;
 
   //! Move object
   Object(Object&& object) noexcept;
 
 
-  //! Get geometry 
-  const Geometry& geometry() const noexcept;
+  //! Get shape
+  const Shape& shape() const noexcept;
 
   //! Get material
   const Material& material() const noexcept;
 
  private:
   Material material_;
-  UniquePointer<Geometry> geometry_;
+  UniquePointer<Shape> shape_;
 };
 
 //! Check two objects are same

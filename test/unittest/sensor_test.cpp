@@ -52,21 +52,21 @@ void testSensorSampling(
   const auto& normal = camera.normal();
   CompensatedSummation<Float> p{0.0};
   for (uint i = 0; i < vec_loop; ++i) {
-    const auto sampled_vout = sampleDirectionOnHemisphere<0>(normal, sampler);
+    const auto sampled_vout = SampledDirection::sampleOnHemisphere<0>(normal, sampler);
     const auto& vout = sampled_vout.direction();
     uint x = 0,
          y = 0;
     const bool is_hit = camera.getPixelLocation(-vout, &x, &y);
     if (is_hit) {
       const auto sensor = camera.makeSensor(x, y, wavelengths, memory_pool);
-      const auto result = sensor->evaluateRadianceAndPdf(nullptr, &vout,
+      const auto result = sensor->evalRadianceAndPdf(nullptr, &vout,
                                                          normal, wavelengths);
       const auto& f1 = std::get<0>(result);
       const auto& pdf1 = std::get<1>(result);
       const auto f2 =
-          sensor->evaluateRadiance(nullptr, &vout, normal, wavelengths);
+          sensor->evalRadiance(nullptr, &vout, normal, wavelengths);
       const auto pdf2 =
-          sensor->evaluatePdf(nullptr, &vout, normal, wavelengths);
+          sensor->evalPdf(nullptr, &vout, normal, wavelengths);
       ASSERT_NEAR(f1.intensity(0), f2.intensity(0), error)
           << sensor_name << ": Radiance evaluation test failed.";
       ASSERT_NEAR(pdf1, pdf2, error)
@@ -103,7 +103,7 @@ void testSensorEnergyConservation(
   const auto& normal = camera.normal();
   CompensatedSummation<Float> e{0.0};
   for (uint i = 0; i < vec_loop; ++i) {
-    const auto sampled_vout = sampleDirectionOnHemisphere<0>(normal, sampler);
+    const auto sampled_vout = SampledDirection::sampleOnHemisphere<0>(normal, sampler);
     const auto& vout = sampled_vout.direction();
     uint x = 0,
          y = 0;
@@ -112,7 +112,7 @@ void testSensorEnergyConservation(
       const auto sensor =
           camera.makeSensor(x, y, wavelengths, memory_pool);
       const auto f =
-          sensor->evaluateRadiance(nullptr, &vout, normal, wavelengths);
+          sensor->evalRadiance(nullptr, &vout, normal, wavelengths);
       // Positive intensity test
       ASSERT_TRUE(0.0 <= f.intensity(0))
           << sensor_name << ": Positive intensity test failed.";
@@ -160,7 +160,7 @@ void testSensorImportanceSampling(
       const auto& sampled_vout = std::get<0>(result1);
       const auto& weight = std::get<1>(result1);
       const auto& vout = sampled_vout.direction();
-      const auto result2 = sensor->evaluateRadianceAndPdf(nullptr, &vout, 
+      const auto result2 = sensor->evalRadianceAndPdf(nullptr, &vout, 
                                                           normal, wavelengths);
       const auto& f = std::get<0>(result2);
       const auto& pdf = std::get<1>(result2);

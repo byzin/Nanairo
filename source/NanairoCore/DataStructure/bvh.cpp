@@ -60,12 +60,13 @@ Bvh::Bvh(const QJsonObject& /* settings */) noexcept
   \details
   No detailed.
   */
-IntersectionInfo Bvh::castRay(const Ray& ray, const Float max_distance2) const noexcept 
+IntersectionInfo Bvh::castRay(const Ray& ray,
+                              const Float max_distance2) const noexcept 
 {
   IntersectionInfo intersection;
   Float shortest_distance2 = max_distance2;
   uint32 index = 0;
-  while (true) {
+  while (index != endIndex()) {
     const auto& node = tree_[index];
     const auto result = node.boundingBox().testIntersection(ray);
     // If the ray hits the bounding box of the node, enter the node
@@ -80,8 +81,6 @@ IntersectionInfo Bvh::castRay(const Ray& ray, const Float max_distance2) const n
     else {
       index = node.failureNextIndex();
     }
-    if (index == endIndex())
-      break;
   }
   return intersection;
 }
@@ -96,7 +95,6 @@ void Bvh::construct(System& system, std::vector<Object>&& object_list) noexcept
               "The size of objects is over.");
   // Allocate memory
   object_list_.reserve(object_list.size());
-
   if (object_list.size() == 1) {
     end_index_ = 1;
     setUniqueObject(object_list);
@@ -108,7 +106,7 @@ void Bvh::construct(System& system, std::vector<Object>&& object_list) noexcept
     sortTreeNode(tree);
     tree_.resize(tree.size());
     end_index_ = zisc::cast<uint32>(tree_.size());
-    setTreeInfo(tree, object_list, endIndex());
+    setTreeInfo(tree, object_list, endIndex(), 0);
   }
   ZISC_ASSERT(object_list_.size() == object_list.size(), "Object data is collapsed.");
 }
@@ -117,10 +115,59 @@ void Bvh::construct(System& system, std::vector<Object>&& object_list) noexcept
   \details
   No detailed.
   */
-std::size_t Bvh::getBvhSize() const noexcept
+UniquePointer<Bvh> Bvh::makeBvh(const QJsonObject& settings) noexcept
 {
-  return tree_.size() * sizeof(tree_[0]) +
-         object_list_.size() * sizeof(object_list_[0]);
+  using zisc::toHash32;
+
+  Bvh* bvh = nullptr;
+
+  const auto type = SceneValue::toString(settings, keyword::type);
+  switch (keyword::toHash32(type)) {
+   case toHash32(keyword::binaryRadixTreeBvh): {
+    bvh = new BinaryRadixTreeBvh{settings};
+    break;
+   }
+   case zisc::toHash32(keyword::approximateAgglomerativeClusteringBvh): {
+    bvh = new ApproximateAgglomerativeClusteringBvh{settings};
+    break;
+   }
+   case toHash32(keyword::agglomerativeTreeletRestructuringBvh): {
+    bvh = new AgglomerativeTreeletRestructuringBvh{settings};
+    break;
+   }
+   default: {
+    zisc::raiseError("BvhError: Unsupported type is specified.");
+    break;
+   }
+  }
+  return UniquePointer<Bvh>{bvh};
+}
+
+/*!
+  */
+void Bvh::setBoundingBox(std::vector<BvhNode>& tree,
+                         const uint32 index) noexcept
+{
+  auto& node = tree[index];
+  // Leaf node
+  if (node.isLeafNode()) {
+    ZISC_ASSERT(0 < node.numOfObjects(), "Node has no object.");
+    const auto& object_list = node.objectList();
+    auto bounding_box = object_list[0]->shape().boundingBox();
+    for (uint i = 1; i < node.numOfObjects(); ++i) {
+      const auto object = object_list[i];
+      bounding_box = combine(bounding_box, object->shape().boundingBox());
+    }
+    node.setBoundingBox(bounding_box);
+  }
+  // Inernal node
+  else {
+    const auto& left_node = tree[node.leftChildIndex()];
+    const auto& right_node = tree[node.rightChildIndex()];
+    const auto combined_box = combine(left_node.boundingBox(),
+                                      right_node.boundingBox());
+    node.setBoundingBox(combined_box);
+  }
 }
 
 /*!
@@ -132,24 +179,24 @@ void Bvh::setTreeInfo(const std::vector<BvhNode>& tree,
                       const uint32 failure_next_index,
                       const uint32 index) noexcept
 {
-  using zisc::cast;
-
   // Set a node
   const auto& old_node = tree[index];
   auto& node = tree_[index];
   node.setBoundingBox(old_node.boundingBox());
-  node.setObjectIndex(cast<uint32>(object_list_.size()));
+  node.setObjectIndex(zisc::cast<uint32>(object_list_.size()));
   node.setNumOfObjects(old_node.numOfObjects());
   node.setFailureNextIndex(failure_next_index);
   // Set objects
   const auto& node_object_list = old_node.objectList();
   for (uint i = 0; i < node.numOfObjects(); ++i) {
     ZISC_ASSERT(node_object_list[i] != nullptr, "Object is null.");
-    const uint object_index = cast<uint>(node_object_list[i] - object_list.data());
+    const uint object_index = zisc::cast<uint>(node_object_list[i] -
+                                               object_list.data());
     ZISC_ASSERT(object_index < object_list.size(), "invalid index is specified.");
     object_list_.emplace_back(std::move(object_list[object_index]));
   }
   if (!node.isLeafNode()) {
+    // Child nodes
     const uint32 left_child_index = old_node.leftChildIndex();
     const uint32 right_child_index = old_node.rightChildIndex();
     setTreeInfo(tree, object_list, right_child_index, left_child_index);
@@ -215,7 +262,7 @@ void Bvh::setUniqueObject(std::vector<Object>& object_list) noexcept
   // Node
   tree_.resize(1);
   auto& node = tree_[0];
-  node.setBoundingBox(object_list_[0].geometry().boundingBox());
+  node.setBoundingBox(object_list_[0].shape().boundingBox());
   node.setObjectIndex(0);
   node.setNumOfObjects(1);
   node.setFailureNextIndex(endIndex());
@@ -225,32 +272,26 @@ void Bvh::setUniqueObject(std::vector<Object>& object_list) noexcept
   \details
   No detailed.
   */
-UniquePointer<Bvh> makeBvh(const QJsonObject& settings) noexcept
+void Bvh::testRayObjectsIntersection(const Ray& ray,
+                                     const BvhTreeNode& leaf_node,
+                                     IntersectionInfo* intersection,
+                                     Float* shortest_distance2) const noexcept
 {
-  using zisc::toHash32;
-
-  Bvh* bvh = nullptr;
-
-  const auto type = SceneValue::toString(settings, keyword::type);
-  switch (keyword::toHash32(type)) {
-    case toHash32(keyword::binaryRadixTreeBvh): {
-      bvh = new BinaryRadixTreeBvh{settings};
-      break;
-    }
-    case zisc::toHash32(keyword::approximateAgglomerativeClusteringBvh): {
-      bvh = new ApproximateAgglomerativeClusteringBvh{settings};
-      break;
-    }
-    case toHash32(keyword::agglomerativeTreeletRestructuringBvh): {
-      bvh = new AgglomerativeTreeletRestructuringBvh{settings};
-      break;
-    }
-    default: {
-      zisc::raiseError("BvhError: Unsupported type is specified.");
-      break;
+  IntersectionInfo current;
+  const auto& object_list = objectList();
+  for (uint i = 0; i < leaf_node.numOfObjects(); ++i) {
+    const auto object_index = leaf_node.objectIndex() + i;
+    const auto& object = object_list[object_index];
+    const bool ray_hits_object = object.shape().testIntersection(ray, &current);
+    if (ray_hits_object) {
+      const Float distance2 = (current.point() - ray.origin()).squareNorm();
+      if (distance2 < *shortest_distance2) {
+        current.setObject(&object);
+        *intersection = current;
+        *shortest_distance2 = distance2;
+      }
     }
   }
-  return UniquePointer<Bvh>{bvh};
 }
 
 } // namespace nanairo

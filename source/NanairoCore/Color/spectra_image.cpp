@@ -46,18 +46,6 @@ SpectraImage::SpectraImage(const uint width, const uint height) noexcept :
   \details
   No detailed.
   */
-std::size_t SpectraImage::bufferMemorySize() const noexcept
-{
-  constexpr std::size_t pixel_memory_size = sizeof(SpectralDistribution);
-  const std::size_t pixels = widthResolution() * heightResolution();
-  const std::size_t byte = pixels * pixel_memory_size * 2;
-  return byte;
-}
-
-/*!
-  \details
-  No detailed.
-  */
 void SpectraImage::clear() noexcept
 {
   for (auto& pixel : buffer_)
@@ -123,24 +111,28 @@ void SpectraImage::save(const quint64 cycle, const QString& file_path) const noe
   No detailed.
   */
 void SpectraImage::toHdrImage(System& system,
-                              const quint64 cycle, 
+                              const quint64 cycle,
                               HdrImage* hdr_image) const noexcept
 {
   using zisc::cast;
 
   const Float averager = 1.0 / cast<Float>(cycle);
 
-  auto to_hdr_image = [this, &system, hdr_image, averager](const uint y)
+  auto to_hdr_image = [this, &system, hdr_image, averager](const int thread_id)
   {
+    // Set the calculation range
+    const auto range = system.calcThreadRange(hdr_image->numOfPixels(), thread_id);
+    const auto begin = std::get<0>(range);
+    const auto end = std::get<1>(range);
+    // Write to HDR image buffer
     const auto& cmf = system.xyzColorMatchingFunction();
-    const uint width = widthResolution();
-    for (uint index = y * width; index < (y + 1) * width; ++index)
+    for (uint index = begin; index < end; ++index)
       (*hdr_image)[index] = cmf.toXyzInEmissiveCase(buffer_[index]) * averager;
   };
-
   auto& thread_pool = system.threadPool();
   constexpr uint start = 0;
-  auto result = thread_pool.enqueueLoop(to_hdr_image, start, heightResolution()); 
+  const uint end = thread_pool.numOfThreads();
+  auto result = thread_pool.enqueueLoop(to_hdr_image, start, end);
   result.get();
 }
 

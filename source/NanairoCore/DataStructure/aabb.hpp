@@ -15,7 +15,7 @@
 #include <utility>
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
+#include "NanairoCore/Geometry/point.hpp"
 
 namespace nanairo {
 

@@ -15,7 +15,7 @@
 // Nanairo
 #include "object.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Geometry/geometry.hpp"
+#include "NanairoCore/Shape/shape.hpp"
 #include "NanairoCore/Material/material.hpp"
 #include "NanairoCore/Material/EmitterModel/emitter_model.hpp"
 
@@ -38,7 +38,7 @@ LightSourceReference::LightSourceReference(const Float total_flux,
   */
 void LightSourceReference::initialize(const Float total_flux) noexcept
 {
-  const Float flux = light_source_->geometry().surfaceArea() *
+  const Float flux = light_source_->shape().surfaceArea() *
                      light_source_->material().emitter().radiantExitance();
   weight_ = flux / total_flux;
   inverse_weight_ = 1.0 / weight_;

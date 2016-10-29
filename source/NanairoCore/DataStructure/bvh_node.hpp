@@ -12,7 +12,6 @@
 
 // Standard C++ library
 #include <array>
-#include <limits>
 #include <tuple>
 #include <vector>
 // Nanairo
@@ -57,6 +56,15 @@ class BvhNode
   //! Return the left child index
   uint32 leftChildIndex() const noexcept;
 
+  //! Return the max num of objects
+  static constexpr uint32 maxNumOfObjects() noexcept;
+
+  //! Return the max node index
+  static constexpr uint32 maxNodeIndex() noexcept;
+
+  //! Return the non object index
+  static constexpr uint32 nonObjectIndex() noexcept;
+
   //! Return the number of objects
   uint numOfObjects() const noexcept;
 
@@ -67,7 +75,8 @@ class BvhNode
   uint32 rightChildIndex() const noexcept;
 
   //! Return the object list
-  const std::array<const Object*, CoreConfig::maxNumOfNodeObjects()>& objectList() const noexcept;
+  const std::array<const Object*, CoreConfig::maxNumOfNodeObjects()>&
+      objectList() const noexcept;
 
   //! Return the SAH cost
   Float sahCost() const noexcept;
@@ -94,25 +103,6 @@ class BvhNode
          left_child_index_,
          right_child_index_;
   float cost_;
-
- public:
-  //! Return the max num of objects
-  static constexpr uint32 maxNumOfObjects() noexcept
-  {
-    return std::numeric_limits<uint32>::max() >> 1;
-  }
-
-  //! Return the max node index
-  static constexpr uint32 maxNodeIndex() noexcept
-  {
-    return std::numeric_limits<uint32>::max() - 1;
-  }
-
-  //! Return the non object index
-  static constexpr uint32 nonObjectIndex() noexcept
-  {
-    return std::numeric_limits<uint32>::max();
-  }
 };
 
 using MortonCode = std::tuple<BvhNode*, uint64>;

@@ -28,7 +28,7 @@
 #include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCommon/keyword.hpp"
-#include "NanairoCore/LinearAlgebra/transformation.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
@@ -60,29 +60,43 @@ void SceneRendererBase::initialize(const QJsonObject& settings) noexcept
   using Clock = zisc::Stopwatch::Clock;
   using Millis = std::chrono::milliseconds;
 
-  outputMessage(QStringLiteral("Initialize the renderer."));
+  qInfo("Initialize the renderer.");
 
-  auto system_node = SceneValue::toObject(settings, keyword::system);
+  auto system_settings = SceneValue::toObject(settings, keyword::system);
 
-  termination_pass_ = SceneValue::toInt<qint64>(system_node,
-                                                keyword::terminationCycle);
-  termination_pass_ = (termination_pass_ == 0)
-      ? std::numeric_limits<quint64>::max()
-      : termination_pass_;
+  // Termination cycle
+  {
+    termination_cycle_ = SceneValue::toInt<qint64>(system_settings,
+                                                   keyword::terminationCycle);
+    termination_cycle_ = (termination_cycle_ == 0)
+        ? std::numeric_limits<quint64>::max()
+        : termination_cycle_;
+    qInfo("  Termination cycle: %llu", termination_cycle_);
+  }
 
-  is_power2_saving_ = SceneValue::toBool(system_node, keyword::power2CycleSaving);
-  const int interval_time = SceneValue::toInt<int>(system_node, keyword::savingInterval);
-  saving_interval_time_ = duration_cast<Clock::duration>(Millis{interval_time});
+  // Power2 cycle saving
+  {
+    is_power2_cycle_saving_ = SceneValue::toBool(system_settings,
+                                                 keyword::power2CycleSaving);
+    const int interval_time = SceneValue::toInt<int>(system_settings,
+                                                     keyword::savingInterval);
+    saving_interval_time_ = duration_cast<Clock::duration>(Millis{interval_time});
+    qInfo("  Saving2 cycle mode: %d", is_power2_cycle_saving_);
+  }
 
-  const auto image_resolution = SceneValue::toArray(system_node,
-                                                    keyword::imageResolution);
-  const int width = SceneValue::toInt<int>(image_resolution[0]);
-  const int height = SceneValue::toInt<int>(image_resolution[1]);
-  ldr_image_ = QImage{QSize{width, height}, QImage::Format_RGB32};
-  const QColor black{Qt::black};
-  ldr_image_.fill(black);
+  // LDR image
+  {
+    const auto image_resolution = SceneValue::toArray(system_settings,
+                                                      keyword::imageResolution);
+    const int width = SceneValue::toInt<int>(image_resolution[0]);
+    const int height = SceneValue::toInt<int>(image_resolution[1]);
+    ldr_image_ = QImage{QSize{width, height}, QImage::Format_RGB32};
+    const QColor black{Qt::black};
+    ldr_image_.fill(black);
+    qInfo("  Image resolution: %d x %d", width, height);
+  }
 
-  cameraMatrix() = makeIdentityMatrix();
+  cameraMatrix() = Transformation::makeIdentity();
 
   initializeRenderer(settings);
 }
@@ -96,41 +110,39 @@ void SceneRendererBase::previewImage() noexcept
   using zisc::cast;
 
   // Initialize
-  outputMessage(QStringLiteral("Start preview."));
+  qInfo("Start preview rendering.");
   // Renderer stopwatch
   zisc::Stopwatch stopwatch;
   quint64 cycle = 0;
   auto previous_time = Clock::duration::zero();
   // Rendering flag
-  bool rendering_flag = true;
-  auto stop_rendering = [&rendering_flag]() noexcept {rendering_flag = false;};
-  auto connection = connect(this, &SceneRendererBase::stop, stop_rendering);
+  bool is_runnable = true;
+  auto stop_rendering = [&is_runnable]() noexcept {is_runnable = false;};
+  auto connection = connect(this, &SceneRendererBase::stopping, stop_rendering);
 
   // Main process
   stopwatch.start();
-  while (rendering_flag) {
+  while (is_runnable && !isLastCycle(cycle)) {
     // Camera event
     handleCameraEvent(&cycle, &stopwatch);
 
-    ++cycle;
-
     // Rendering
+    ++cycle;
     render(cycle);
     // Buffer to image
     convertSpectraToHdr(cycle);
     toneMap();
 
     // Update time
-    auto elapsed_time = stopwatch.elapsedTime();
+    const auto elapsed_time = stopwatch.elapsedTime();
     emit updated(cycle, cast<qint64>(elapsed_time.count()));
-    if (waitForNextFrame(elapsed_time - previous_time))
-      elapsed_time = stopwatch.elapsedTime();
-    previous_time = elapsed_time;
+    previous_time = waitForNextFrame(elapsed_time - previous_time)
+        ? stopwatch.elapsedTime()
+        : elapsed_time;
   }
   disconnect(connection);
-  outputMessage(QStringLiteral("Finish preview."));
-  outputMessage(QStringLiteral("----------------------------------------"));
-  if (cameraMatrix() != makeIdentityMatrix())
+  qInfo("Finish preview rendering.");
+  if (cameraMatrix() != Transformation::makeIdentity())
     outputCameraEvent();
   emit finished();
 }
@@ -144,40 +156,39 @@ void SceneRendererBase::renderImage(const QString& output_dir) noexcept
   using zisc::cast;
 
   // Initialize
-  outputMessage(QStringLiteral("Start rendering."));
+  qInfo("Start rendering.");
   // Renderer stopwatch
   zisc::Stopwatch stopwatch;
   quint64 cycle = 0;
   Clock::rep interval_count = 1;
   auto previous_time = Clock::duration::zero();
   // Rendering flag
-  bool rendering_flag = true;
-  auto stop_rendering = [&rendering_flag]() noexcept {rendering_flag = false;};
-  auto connection = connect(this, &SceneRendererBase::stop, stop_rendering);
+  bool is_runnable = true;
+  auto stop_rendering = [&is_runnable]() noexcept {is_runnable = false;};
+  auto connection = connect(this, &SceneRendererBase::stopping, stop_rendering);
 
   // Main process
   stopwatch.start();
-  while (rendering_flag && !isLastCycle(cycle)) {
-    ++cycle;
+  while (is_runnable && !isLastCycle(cycle)) {
     // Rendering
+    ++cycle;
     render(cycle);
     // Save image
-    if (isCycleToSaveImage(cycle) || 
+    if (isCycleToSaveImage(cycle) ||
         isTimeToSaveImage(previous_time, &interval_count)) {
       convertSpectraToHdr(cycle);
       toneMap();
       saveLdrImage(cycle, output_dir);
     }
     // Update time
-    auto elapsed_time = stopwatch.elapsedTime();
+    const auto elapsed_time = stopwatch.elapsedTime();
     emit updated(cycle, cast<qint64>(elapsed_time.count()));
-    if (waitForNextFrame(elapsed_time - previous_time))
-      elapsed_time = stopwatch.elapsedTime();
-    previous_time = elapsed_time;
+    previous_time = waitForNextFrame(elapsed_time - previous_time)
+        ? stopwatch.elapsedTime()
+        : elapsed_time;
   }
   disconnect(connection);
-  outputMessage(QStringLiteral("Finish rendering."));
-  outputMessage(QStringLiteral("----------------------------------------"));
+  qInfo("Finish rendering.");
   emit finished();
 }
 

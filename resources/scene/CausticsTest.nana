@@ -68,7 +68,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Floor",
@@ -99,7 +99,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "LeftWall",
@@ -144,7 +144,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "RightWall",
@@ -189,7 +189,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "BackWall",
@@ -227,7 +227,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Ceiling",
@@ -272,7 +272,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "MeshObject",
+            "ShapeType": "MeshObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Ring1",
@@ -295,7 +295,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "MeshObject",
+            "ShapeType": "MeshObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Ring2",
@@ -325,7 +325,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": true,
             "Name": "Light",
@@ -362,8 +362,6 @@
         }
     ],
     "RenderingMethod": {
-        "NumOfLightRays": 100000,
-        "NumOfLightRaysIsSameAsImageResolution": true,
         "PathLength": 3,
         "RayCastEpsilon": 1e-07,
         "RussianRoulette": "Reflectance (Max)",

@@ -37,8 +37,7 @@ auto SmoothDielectricSurface::makeSpecularBsdf(
     const WavelengthSamples<kSampleSize>& wavelengths,
     MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
-  const auto wavelength = 
-      wavelengths[wavelengths.primaryWavelengthIndex()];
+  const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];
   const Float n = (is_reverse_face)
       ? 1.0 / eta_.getByWavelength(wavelength)
       : eta_.getByWavelength(wavelength);
@@ -53,15 +52,12 @@ auto SmoothDielectricSurface::makeSpecularBsdf(
   No detailed.
   */
 template <uint kSampleSize> inline
-SurfaceModel::ShaderPointer<kSampleSize> makeSpecularBsdf(
-    const SurfaceModel* surface,
+auto SurfaceModel::makeSpecularBsdf(
     const bool is_reverse_face,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) noexcept
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
-  using zisc::cast;
-
-  auto s = cast<const SmoothDielectricSurface*>(surface);
+  auto s = zisc::cast<const SmoothDielectricSurface*>(this);
   return s->makeSpecularBsdf(is_reverse_face, wavelengths, memory_pool);
 }
 

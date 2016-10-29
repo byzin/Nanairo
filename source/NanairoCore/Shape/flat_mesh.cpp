@@ -16,15 +16,15 @@
 #include "zisc/math.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
-#include "geometry.hpp"
+#include "shape.hpp"
 #include "triangle_mesh.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/DataStructure/aabb.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
-#include "NanairoCore/LinearAlgebra/transformation.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Sampling/sampled_point.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
 
@@ -64,15 +64,6 @@ Aabb FlatMesh::boundingBox() const noexcept
   \details
   No detailed.
   */
-std::size_t FlatMesh::geometrySize() const noexcept
-{
-  return sizeof(FlatMesh);
-}
-
-/*!
-  \details
-  No detailed.
-  */
 Float FlatMesh::getTraversalCost() const noexcept
 {
   return 1.0;
@@ -87,21 +78,18 @@ bool FlatMesh::testIntersection(const Ray& ray, IntersectionInfo* intersection) 
 {
   Float t;
   Float barycentric[3];
-  if (!calculateBarycentricCoordinate(ray, vertex_, edge_, barycentric, &t))
-    return false;
-
-  // Set point
-  intersection->setPoint(ray.origin() + t * ray.direction());
-
-  // Set normal
-  const Float cos_theta = zisc::dot(normal_, ray.direction());
-  intersection->setReverseFace(cos_theta > 0.0);
-  intersection->setNormal(normal_);
-
-  // Set texture coordinate
-  intersection->setTextureCoordinate(textureCoordinate(barycentric));
-
-  return true;
+  const bool is_hit = calcBarycentricCoordinate(ray, vertex_, edge_, barycentric, &t);
+  if (is_hit) {
+    // Set point
+    intersection->setPoint(ray.origin() + t * ray.direction());
+    // Set normal
+    const Float cos_theta = zisc::dot(normal_, ray.direction());
+    intersection->setReverseFace(0.0 < cos_theta);
+    intersection->setNormal(normal_);
+    // Set texture coordinate
+    intersection->setTextureCoordinate(textureCoordinate(barycentric));
+  }
+  return is_hit;
 }
 
 /*!
@@ -112,11 +100,10 @@ std::tuple<SampledPoint, Vector3, Point2> FlatMesh::samplePoint(Sampler& sampler
 {
   Float u = sampler.sample(0.0, 1.0);
   Float v = sampler.sample(0.0, 1.0);
-  if (u + v > 1.0) {
+  if (1.0 < (u + v)) {
     u = 1.0 - u;
     v = 1.0 - v;
   }
-
   const auto point = vertex_ + u * edge_[0] + v * edge_[1];
   const Float barycentric[3] = {u, v, 1.0 - (u + v)};
   return std::make_tuple(SampledPoint{point, surfaceArea()},
@@ -130,10 +117,10 @@ std::tuple<SampledPoint, Vector3, Point2> FlatMesh::samplePoint(Sampler& sampler
   */
 void FlatMesh::transform(const Matrix4x4& matrix) noexcept
 {
-  affineTransform(matrix, &vertex_);
-  affineTransform(matrix, &edge_[0]);
-  affineTransform(matrix, &edge_[1]);
-  affineTransform(matrix, &normal_);
+  Transformation::affineTransform(matrix, &vertex_);
+  Transformation::affineTransform(matrix, &edge_[0]);
+  Transformation::affineTransform(matrix, &edge_[1]);
+  Transformation::affineTransform(matrix, &normal_);
   normal_ = normal_.normalized();
 
   const auto area = 0.5 * zisc::cross(edge_[0], edge_[1]).norm();
@@ -160,7 +147,7 @@ void FlatMesh::initialize(const Point3& vertex1, const Point3& vertex2) noexcept
 void FlatMesh::setNormal() noexcept
 {
   normal_ = (zisc::cross(edge_[0], edge_[1])).normalized();
-  ZISC_ASSERT(isUnitVector(normal_), "Normal must be unit vector.");
+  ZISC_ASSERT(isUnitVector(normal_), "Normal isn't unit vector.");
 }
 
 } // namespace nanairo

@@ -12,6 +12,7 @@
 #include <vector>
 // Qt
 #include <QJsonObject>
+#include <QtGlobal>
 // Zisc
 #include "zisc/aligned_memory_pool.hpp"
 #include "zisc/thread_pool.hpp"
@@ -59,6 +60,7 @@ void System::initialize(const QJsonObject& settings) noexcept
     const auto num_of_threads = SceneValue::toInt<uint>(node,
                                                         keyword::numOfThreads);
     thread_pool_ = new zisc::ThreadPool{num_of_threads};
+    qInfo("  Threads: %d", num_of_threads);
 
     // Random number generator
     const auto random_seed = SceneValue::toInt<uint32>(node,
@@ -85,10 +87,12 @@ void System::initialize(const QJsonObject& settings) noexcept
     // RGB rendering
     is_rgb_rendering_mode_ =
         (SceneValue::toString(node, keyword::colorMode) == keyword::rgb);
+    qInfo("  RGB rendering mode: %d", is_rgb_rendering_mode_);
     // Color space
     color_space_ = keyword::toHash32(SceneValue::toString(node,
                                                           keyword::colorSpace));
     gamma_ = SceneValue::toFloat<Float>(node, keyword::gamma);
+    qInfo("  Gamma: %f", zisc::cast<float>(gamma_));
     // Color matching function
     rgb_color_matching_function_ = new RgbColorMatchingFunction{};
     xyz_color_matching_function_ = new XyzColorMatchingFunction{node};

@@ -61,13 +61,13 @@ void* ShaderModel<kSampleSize>::operator new(std::size_t, void* memory) noexcept
   No detailed.
   */
 template <uint kSampleSize>
-Float ShaderModel<kSampleSize>::evaluatePdf(
+Float ShaderModel<kSampleSize>::evalPdf(
     const Vector3* /* vin */, 
     const Vector3* /* vout */,
     const Vector3& /* normal */,
     const Wavelengths& /* wavelengths */) const noexcept
 {
-  zisc::raiseError("The evaluatePdf function is not implemented.");
+  zisc::raiseError("The evalPdf function is not implemented.");
   return 0.0;
 }
 
@@ -76,13 +76,13 @@ Float ShaderModel<kSampleSize>::evaluatePdf(
   No detailed.
   */
 template <uint kSampleSize>
-auto ShaderModel<kSampleSize>::evaluateRadiance(
+auto ShaderModel<kSampleSize>::evalRadiance(
     const Vector3* /* vin */, 
     const Vector3* /* vout */,
     const Vector3& /* normal */,
     const Wavelengths& wavelengths) const noexcept -> Spectra
 {
-  zisc::raiseError("The evaluatePdf function is not implemented.");
+  zisc::raiseError("The evalPdf function is not implemented.");
   return Spectra{wavelengths};
 }
 
@@ -91,13 +91,13 @@ auto ShaderModel<kSampleSize>::evaluateRadiance(
   No detailed.
   */
 template <uint kSampleSize>
-auto ShaderModel<kSampleSize>::evaluateRadianceAndPdf(
+auto ShaderModel<kSampleSize>::evalRadianceAndPdf(
     const Vector3* /* vin */,
     const Vector3* /* vout */,
     const Vector3& /* normal */,
     const Wavelengths& wavelengths) const noexcept -> std::tuple<Spectra, Float>
 {
-  zisc::raiseError("The evaluateRadianceAndPdf function is not implemented.");
+  zisc::raiseError("The evalRadianceAndPdf function is not implemented.");
   return std::make_tuple(Spectra{wavelengths}, 0.0);
 }
 

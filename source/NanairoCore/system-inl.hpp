@@ -55,7 +55,6 @@ std::tuple<Integer, Integer> System::calcThreadRange(
   return calcThreadRange(num_of_indices, threadPool().numOfThreads(), thread_id);
 }
 
-
 /*!
   \details
   No detailed.

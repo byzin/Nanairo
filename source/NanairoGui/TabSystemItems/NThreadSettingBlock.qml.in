@@ -21,7 +21,7 @@ NSettingBlock {
 
     y: thread_setting_block.labelHeight + @item_offset@
 
-    maximumValue: 1024
+    maximumValue: 128
     minimumValue: 1
   }
 

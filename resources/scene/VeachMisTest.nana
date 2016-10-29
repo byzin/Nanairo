@@ -96,7 +96,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "MeshObject",
+            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": true,
             "Name": "Light1",
@@ -128,7 +128,7 @@
         {
             "EmitterIndex": 1,
             "Enabled": true,
-            "GeometryType": "MeshObject",
+            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": true,
             "Name": "Light2",
@@ -160,7 +160,7 @@
         {
             "EmitterIndex": 2,
             "Enabled": true,
-            "GeometryType": "MeshObject",
+            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": true,
             "Name": "Light3",
@@ -192,7 +192,7 @@
         {
             "EmitterIndex": 3,
             "Enabled": true,
-            "GeometryType": "MeshObject",
+            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": true,
             "Name": "Light4",
@@ -215,7 +215,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Floor",
@@ -263,7 +263,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "MeshObject",
+            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Board1",
@@ -302,7 +302,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "MeshObject",
+            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Board2",
@@ -341,7 +341,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "MeshObject",
+            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Board3",
@@ -380,7 +380,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "MeshObject",
+            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Board4",

@@ -50,9 +50,6 @@ class SmoothConductorSurface : public SurfaceModel
       const WavelengthSamples<kSampleSize>& wavelengths,
       MemoryPool& memory_pool) const noexcept;
 
-  //! Return the surface model size
-  std::size_t surfaceSize() const noexcept override;
-
   //! Return the smooth conductor surface type
   SurfaceType type() const noexcept override;
 
@@ -66,7 +63,7 @@ class SmoothConductorSurface : public SurfaceModel
   SpectralDistribution reflectance_0deg_;
 };
 
-//! \} Core 
+//! \} Core
 
 } // namespace nanairo
 

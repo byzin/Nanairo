@@ -14,7 +14,7 @@
 #include <tuple>
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
@@ -45,19 +45,19 @@ class GgxDielectricBsdf : public GlossyShaderModel<kSampleSize>
 
 
   //! Evaluate the pdf
-  Float evaluatePdf(const Vector3* vin,
+  Float evalPdf(const Vector3* vin,
                     const Vector3* vout,
                     const Vector3& normal,
                     const Wavelengths& wavelengths) const noexcept override;
 
   //! Evaluate the radiance of the area sampling
-  Spectra evaluateRadiance(const Vector3* vin,
+  Spectra evalRadiance(const Vector3* vin,
                            const Vector3* vout,
                            const Vector3& normal,
                            const Wavelengths& wavelengths) const noexcept override;
 
   //! Evaluate the radiance of the area sampling
-  std::tuple<Spectra, Float> evaluateRadianceAndPdf(
+  std::tuple<Spectra, Float> evalRadianceAndPdf(
       const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,

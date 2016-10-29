@@ -36,32 +36,20 @@ auto EmitterModel::makeLight(
   using zisc::cast;
 
   ShaderPointer<kSampleSize> light;
-
   const auto emitter_type = type();
   switch (emitter_type) {
-   case EmitterType::NonDirectional:
-    light = makeNonDirectionalLight(this,
-                                    texture_coordinate,
-                                    wavelengths,
-                                    memory_pool);
+   case EmitterType::NonDirectional: {
+    light = makeNonDirectionalLight(texture_coordinate, wavelengths, memory_pool);
     break;
-   default:
+   }
+   default: {
     zisc::raiseError("EmitterModelError: (type=", cast<int>(emitter_type),
                      ") makeLight method is not implemented.");
     break;
+   }
   }
   return light;
 }
-
-/*!
-  \details
-  No detailed.
-  */
-//inline
-//const SpectralDistribution& EmitterModel::powerDistribution() const noexcept
-//{
-//  return power_distribution_;
-//}
 
 /*!
   \details

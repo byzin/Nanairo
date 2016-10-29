@@ -26,7 +26,7 @@
 #include "spectra_image_interface.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
-#include "NanairoCore/LinearAlgebra/transformation.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 
 namespace nanairo {
 
@@ -38,18 +38,6 @@ RgbSpectraImage::RgbSpectraImage(const uint width, const uint height) noexcept :
     SpectraImageInterface(width, height)
 {
   initialize();
-}
-
-/*!
-  \details
-  No detailed.
-  */
-std::size_t RgbSpectraImage::bufferMemorySize() const noexcept
-{
-  constexpr std::size_t pixel_memory_size = sizeof(RgbColor);
-  const std::size_t pixels = widthResolution() * heightResolution();
-  const std::size_t byte = pixels * pixel_memory_size * 2;
-  return byte;
 }
 
 /*!
@@ -74,7 +62,7 @@ void RgbSpectraImage::clear() noexcept
   \details
   No detailed.
   */
-void RgbSpectraImage::save(const quint64 /* cycle */, 
+void RgbSpectraImage::save(const quint64 /* cycle */,
                            const QString& /* file_path */) const noexcept
 {
 }
@@ -90,20 +78,23 @@ void RgbSpectraImage::toHdrImage(System& system,
   using zisc::cast;
 
   const Float averager = 1.0 / cast<Float>(cycle);
-
-  auto to_hdr_image = [this, &system, hdr_image, averager](const uint y)
+  auto to_hdr_image = [this, &system, hdr_image, averager](const int thread_id)
   {
+    // Set the calculation range
+    const auto range = system.calcThreadRange(hdr_image->numOfPixels(), thread_id);
+    const auto begin = std::get<0>(range);
+    const auto end = std::get<1>(range);
+    // Write to HDR image buffer
     const auto to_xyz_matrix = getRgbToXyzMatrix(system.colorSpace());
-    const uint width = widthResolution();
-    for (uint index = y * width; index < (y + 1) * width; ++index) {
+    for (uint index = begin; index < end; ++index) {
       const RgbColor rgb{averager * buffer_[index].data()};
       (*hdr_image)[index] = rgb.toXyz(to_xyz_matrix);
     }
   };
-
   auto& thread_pool = system.threadPool();
   constexpr uint start = 0;
-  auto result = thread_pool.enqueueLoop(to_hdr_image, start, heightResolution());
+  const uint end = thread_pool.numOfThreads();
+  auto result = thread_pool.enqueueLoop(to_hdr_image, start, end);
   result.get();
 }
 

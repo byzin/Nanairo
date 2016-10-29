@@ -35,7 +35,7 @@
 // Nanairo
 #include "rendered_image_provider.hpp"
 #include "NanairoCommon/keyword.hpp"
-#include "NanairoCore/LinearAlgebra/transformation.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoGui/nanairo_gui_config.hpp"
 #include "NanairoRenderer/cpu_scene_renderer.hpp"
 #include "NanairoRenderer/renderer_utility.hpp"
@@ -243,19 +243,17 @@ void GuiRendererManager::setRenderedImageProvider(
   */
 void GuiRendererManager::setRenderer(const SceneRendererBase* renderer) noexcept
 {
-  connect(renderer, SIGNAL(updated(quint64, qint64)),
-          this, SLOT(setRenderingInfo(quint64, qint64)));
-  connect(renderer, SIGNAL(finished()), 
-          this, SLOT(finishRendering()));
-  connect(renderer, SIGNAL(outputMessage(const QString&)),
-          this, SLOT(setMessage(const QString&)));
+  connect(renderer, &SceneRendererBase::updated,
+          this, &GuiRendererManager::setRenderingInfo);
+  connect(renderer, &SceneRendererBase::finished,
+          this, &GuiRendererManager::finishRendering);
   connect(renderer, &SceneRendererBase::cameraEventHandled,
           this, &GuiRendererManager::outputCameraEvent);
-  connect(this, SIGNAL(stopRendering()),
-          renderer, SLOT(stopRendering()));
-  connect(this, SIGNAL(previewEvent(int, int, int)),
-          renderer, SLOT(handlePreviewEvent(int, int, int)));
-          
+  connect(this, &GuiRendererManager::stopping,
+          renderer, &SceneRendererBase::stopRendering);
+  connect(this, &GuiRendererManager::previewEvent,
+          renderer, &SceneRendererBase::handlePreviewEvent);
+
   image_provider_->setImage(&renderer->renderedImage());
 }
 

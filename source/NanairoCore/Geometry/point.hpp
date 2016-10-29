@@ -17,7 +17,7 @@
 
 namespace nanairo {
 
-//! \addtogroup Core 
+//! \addtogroup Core
 //! \{
 
 using Point2 = zisc::Point<Float, 2>;

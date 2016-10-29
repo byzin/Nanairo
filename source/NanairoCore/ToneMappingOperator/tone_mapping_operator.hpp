@@ -50,6 +50,11 @@ class ToneMappingOperator
   //! Return the inverse gamma value
   Float inverseGamma() const noexcept;
 
+  //! Make tonemapping method
+  static UniquePointer<ToneMappingOperator> makeOperator(
+      const System& system,
+      const QJsonObject& settings) noexcept;
+
   //! Apply a tonemapping operator
   void map(System& system,
            const HdrImage& hdr_image,
@@ -70,11 +75,6 @@ class ToneMappingOperator
   Float inverse_gamma_;
   Float exposure_;
 };
-
-//! Make tonemapping method
-UniquePointer<ToneMappingOperator> makeToneMappingOperator(
-    const System& system,
-    const QJsonObject& settings) noexcept;
 
 //! \} Core
 

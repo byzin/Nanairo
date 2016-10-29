@@ -37,15 +37,6 @@ SmoothConductorSurface::SmoothConductorSurface(const QJsonObject& settings) noex
   \details
   No detailed.
   */
-std::size_t SmoothConductorSurface::surfaceSize() const noexcept
-{
-  return sizeof(reflectance_0deg_);
-}
-
-/*!
-  \details
-  No detailed.
-  */
 SurfaceType SmoothConductorSurface::type() const noexcept
 {
   return SurfaceType::SmoothConductor;
@@ -59,23 +50,23 @@ void SmoothConductorSurface::initialize(const QJsonObject& settings) noexcept
 {
   const auto outer_refractive_index_settings =
       SceneValue::toString(settings, keyword::outerRefractiveIndex);
-  const auto n1 = makeSpectra(outer_refractive_index_settings);
+  const auto n1 = SpectralDistribution::makeSpectra(outer_refractive_index_settings);
   ZISC_ASSERT(!n1.hasValue(0.0), "The n1 contains zero value.");
   ZISC_ASSERT(!n1.hasNegative(), "The n1 contains negative value.");
 
   const auto inner_refractive_index_settings =
       SceneValue::toString(settings, keyword::innerRefractiveIndex);
-  const auto n2 = makeSpectra(inner_refractive_index_settings);
+  const auto n2 = SpectralDistribution::makeSpectra(inner_refractive_index_settings);
   ZISC_ASSERT(!n2.hasNegative(), "The n2 contains negative value.");
 
   const auto inner_extinction_settings =
       SceneValue::toString(settings, keyword::innerExtinction);
-  const auto k2 = makeSpectra(inner_extinction_settings);
+  const auto k2 = SpectralDistribution::makeSpectra(inner_extinction_settings);
   ZISC_ASSERT(!k2.hasNegative(), "The k2 contains negative value.");
 
   const auto eta = n2 / n1;
   const auto eta_k = k2 / n1;
-  reflectance_0deg_ = calculateFresnelConductorReflectance0(eta, eta_k);
+  reflectance_0deg_ = Fresnel::calcConductorReflectance0(eta, eta_k);
 }
 
 } // namespace nanairo

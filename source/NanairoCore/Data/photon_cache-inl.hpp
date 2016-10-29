@@ -7,14 +7,14 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_PHOTON_CACHE_INL_HPP_
-#define _NANAIRO_PHOTON_CACHE_INL_HPP_
+#ifndef NANAIRO_PHOTON_CACHE_INL_HPP
+#define NANAIRO_PHOTON_CACHE_INL_HPP
 
 #include "photon_cache.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 
 namespace nanairo {
@@ -77,4 +77,4 @@ bool PhotonCache<kSampleSize>::wavelengthIsSelected() const
 
 } // namespace nanairo
 
-#endif // _NANAIRO_PHOTON_CACHE_INL_HPP_
+#endif // NANAIRO_PHOTON_CACHE_INL_HPP

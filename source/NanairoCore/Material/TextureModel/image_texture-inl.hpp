@@ -18,7 +18,7 @@
 // Nanairo
 #include "texture_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
+#include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 
 namespace nanairo {

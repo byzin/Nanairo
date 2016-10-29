@@ -68,27 +68,22 @@ class ShaderModel
   static void* operator new(std::size_t, void* memory) noexcept;
 
 
-  //! Evaluate the weight (Fs(i, o, n) * cos(theta_o) / pdf)
-//  virtual Spectra evaluateWeight(const Vector3* vin,
-//                                 const SampledDirection* vout,
-//                                 const Wavelengths& wavelengths) const = 0;
-
   //! Evaluate the pdf
-  virtual Float evaluatePdf(
-      const Vector3* vin, 
+  virtual Float evalPdf(
+      const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,
       const Wavelengths& wavelengths) const noexcept;
 
   //! Evaluate the radiance
-  virtual Spectra evaluateRadiance(
-      const Vector3* vin, 
+  virtual Spectra evalRadiance(
+      const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,
       const Wavelengths& wavelengths) const noexcept;
 
   //! Evaluate the radiance and pdf
-  virtual std::tuple<Spectra, Float> evaluateRadianceAndPdf(
+  virtual std::tuple<Spectra, Float> evalRadianceAndPdf(
       const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,

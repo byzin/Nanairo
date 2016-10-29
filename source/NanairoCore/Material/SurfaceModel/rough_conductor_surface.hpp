@@ -57,9 +57,6 @@ class RoughConductorSurface : public SurfaceModel
       const WavelengthSamples<kSampleSize>& wavelengths,
       MemoryPool& memory_pool) const noexcept;
 
-  //! Return the surface model size
-  std::size_t surfaceSize() const noexcept override;
-
   //! Return the rough conductor surface type
   SurfaceType type() const noexcept override;
 

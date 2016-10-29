@@ -18,7 +18,7 @@
 #include "zisc/error.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Material/SurfaceModel/fresnel.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
@@ -47,13 +47,10 @@ auto SpecularBrdf<kSampleSize>::sample(
     const Wavelengths& /* wavelengths */,
     Sampler& /* sampler */) const noexcept -> std::tuple<SampledDirection, Spectra>
 {
-  const Float cos_theta_ni = -zisc::dot(normal, *vin);
-  ZISC_ASSERT((0.0 <= cos_theta_ni) && (cos_theta_ni <= 1.0),
-              "cos theta_{ni} must be [0, 1].");
-  const auto vout = 
-      getFresnelReflectionDirection(*vin, normal, cos_theta_ni);
-  const auto weight = 
-      solveFresnelConductorEquation(cos_theta_ni, reflectance_0deg_);
+  const Float cos_ni = -zisc::dot(normal, *vin);
+  ZISC_ASSERT(zisc::isInClosedBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
+  const auto vout = Fresnel::calcReflectionDirection(*vin, normal, cos_ni);
+  const auto weight = Fresnel::evalConductorEquation(cos_ni, reflectance_0deg_);
   return std::make_tuple(SampledDirection{vout, 1.0}, std::move(weight));
 }
 

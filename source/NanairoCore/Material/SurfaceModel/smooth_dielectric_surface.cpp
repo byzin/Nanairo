@@ -34,15 +34,6 @@ SmoothDielectricSurface::SmoothDielectricSurface(const QJsonObject& settings) no
   \details
   No detailed.
   */
-std::size_t SmoothDielectricSurface::surfaceSize() const noexcept
-{
-  return sizeof(eta_);
-}
-
-/*!
-  \details
-  No detailed.
-  */
 SurfaceType SmoothDielectricSurface::type() const noexcept
 {
   return SurfaceType::SmoothDielectric;
@@ -56,13 +47,13 @@ void SmoothDielectricSurface::initialize(const QJsonObject& settings) noexcept
 {
   const auto outer_refractive_index_settings =
       SceneValue::toString(settings, keyword::outerRefractiveIndex);
-  const auto n1 = makeSpectra(outer_refractive_index_settings);
+  const auto n1 = SpectralDistribution::makeSpectra(outer_refractive_index_settings);
   ZISC_ASSERT(!n1.hasValue(0.0), "The n1 contains zero value.");
   ZISC_ASSERT(!n1.hasNegative(), "The n1 contains negative value.");
 
   const auto inner_refractive_index_settings =
       SceneValue::toString(settings, keyword::innerRefractiveIndex);
-  const auto n2 = makeSpectra(inner_refractive_index_settings);
+  const auto n2 = SpectralDistribution::makeSpectra(inner_refractive_index_settings);
   ZISC_ASSERT(!n2.hasNegative(), "The n2 contains negative value.");
 
   eta_ = n2 / n1;

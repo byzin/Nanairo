@@ -48,15 +48,12 @@ auto NonDirectionalEmitter::makeNonDirectionalLight(
   No detailed.
   */
 template <uint kSampleSize> inline
-EmitterModel::ShaderPointer<kSampleSize> makeNonDirectionalLight(
-    const EmitterModel* emitter,
+auto EmitterModel::makeNonDirectionalLight(
     const Point2& texture_coordinate,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) noexcept
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
-  using zisc::cast;
-
-  auto e = cast<const NonDirectionalEmitter*>(emitter);
+  auto e = zisc::cast<const NonDirectionalEmitter*>(this);
   return e->makeNonDirectionalLight(texture_coordinate, wavelengths, memory_pool);
 }
 

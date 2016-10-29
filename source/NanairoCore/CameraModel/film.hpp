@@ -13,7 +13,7 @@
 // Nanairo 
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectra_image_interface.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
+#include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 // Forward declaration

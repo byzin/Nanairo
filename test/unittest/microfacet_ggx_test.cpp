@@ -37,11 +37,11 @@ void testGgxDEvaluation(const nanairo::Float roughness, nanairo::Sampler& sample
   CompensatedSummation<Float> p{0.0};
   for (uint i = 0; i < m_vec_loop; ++i) {
     // Sample a microfacet normal direction
-    auto sampled_m_normal = sampleDirectionOnHemisphere<0>(normal, sampler);
+    auto sampled_m_normal = SampledDirection::sampleOnHemisphere<0>(normal, sampler);
     const auto& m_normal = sampled_m_normal.direction();
     // Evaluate GGX D
     const auto cos_theta_nm = dot(normal, m_normal);
-    const auto d = evaluateGgxD(roughness, cos_theta_nm);
+    const auto d = MicrofacetGgx::evalD(roughness, cos_theta_nm);
     const auto weight = (cos_theta_nm * d) * sampled_m_normal.inversePdf();
     p.add(weight);
   }

@@ -45,36 +45,40 @@ SurfaceModel::~SurfaceModel() noexcept
   \details
   No detailed.
   */
-UniquePointer<SurfaceModel> makeSurface(
+UniquePointer<SurfaceModel> SurfaceModel::makeSurface(
     const QJsonObject& settings,
     const std::vector<const TextureModel*>& texture_list) noexcept
 {
   using zisc::toHash32;
 
   SurfaceModel* surface_scattering = nullptr;
-
   const auto type = SceneValue::toString(settings, keyword::type);
   switch (keyword::toHash32(type)) {
-   case toHash32(keyword::smoothDiffuseSurface):
+   case toHash32(keyword::smoothDiffuseSurface): {
     surface_scattering = new SmoothDiffuseSurface{settings, texture_list};
     break;
-   case toHash32(keyword::smoothDielectricSurface):
+   }
+   case toHash32(keyword::smoothDielectricSurface): {
     surface_scattering = new SmoothDielectricSurface{settings};
     break;
-   case toHash32(keyword::smoothConductorSurface):
+   }
+   case toHash32(keyword::smoothConductorSurface): {
     surface_scattering = new SmoothConductorSurface{settings};
     break;
-   case toHash32(keyword::roughDielectricSurface):
+   }
+   case toHash32(keyword::roughDielectricSurface): {
     surface_scattering = new RoughDielectricSurface{settings, texture_list};
     break;
-   case toHash32(keyword::roughConductorSurface):
+   }
+   case toHash32(keyword::roughConductorSurface): {
     surface_scattering = new RoughConductorSurface{settings, texture_list};
     break;
-   default:
+   }
+   default: {
     zisc::raiseError("SurfaceError: Unsupported type is specified.");
     break;
+   }
   }
-
   return UniquePointer<SurfaceModel>{surface_scattering};
 }
 

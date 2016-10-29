@@ -52,14 +52,14 @@ ApproximateAgglomerativeClusteringBvh::ApproximateAgglomerativeClusteringBvh(
   \details
   No detailed.
   */
-template <bool multithreading>
+template <bool threading>
 auto ApproximateAgglomerativeClusteringBvh::buildTree(
     System& system,
     const uint64 bit,
     MortonCodeIterator begin,
     MortonCodeIterator end,
     std::vector<Float>& distance_matrix) const noexcept
-    -> std::vector<ClusterPointer> 
+        -> std::vector<ClusterPointer> 
 {
   using zisc::cast;
 
@@ -76,7 +76,7 @@ auto ApproximateAgglomerativeClusteringBvh::buildTree(
   auto split_position = findSplitPosition(bit, begin, end);
   if ((split_position == begin) || (split_position == end)) {
     if (bit != 1) {
-      return buildTree<multithreading>(system, bit - 1, begin, end, distance_matrix);
+      return buildTree<threading>(system, bit - 1, begin, end, distance_matrix);
     }
     else {
       const uint length = num_of_primitives;
@@ -87,32 +87,36 @@ auto ApproximateAgglomerativeClusteringBvh::buildTree(
   const uint64 next_bit = (bit != 1) ? bit - 1 : bit;
   std::vector<ClusterPointer> left_cluster_list,
                               right_cluster_list;
-  if (multithreading) {
-    auto build_left_tree =
-    [this, &system, next_bit, begin, split_position, &distance_matrix]()
-    {
+  auto build_left_tree =
+  [this, &system, next_bit, begin, split_position, &distance_matrix]()
+  {
+    if (threading) {
       auto matrix = distance_matrix;
       return buildTree<false>(system, next_bit, begin, split_position, matrix);
-    };
-    auto build_right_tree =
-    [this, &system, next_bit, split_position, end, &distance_matrix]()
-    {
+    }
+    else {
       auto& matrix = distance_matrix;
-      return buildTree<false>(system, next_bit, split_position, end, matrix);
-    };
+      return buildTree<false>(system, next_bit, begin, split_position, matrix);
+    }
+  };
+  auto build_right_tree =
+  [this, &system, next_bit, split_position, end, &distance_matrix]()
+  {
+    auto& matrix = distance_matrix;
+    return buildTree<false>(system, next_bit, split_position, end, matrix);
+  };
+  if (threading) {
     auto& thread_pool = system.threadPool();
-    auto left_result = 
+    auto left_result =
         thread_pool.enqueue<std::vector<ClusterPointer>>(build_left_tree);
-    auto right_result = 
+    auto right_result =
         thread_pool.enqueue<std::vector<ClusterPointer>>(build_right_tree);
     left_cluster_list = left_result.get();
     right_cluster_list = right_result.get();
   }
   else {
-    left_cluster_list = buildTree<false>(system, next_bit, begin, 
-                                         split_position, distance_matrix);
-    right_cluster_list = buildTree<false>(system, next_bit, split_position, 
-                                          end, distance_matrix);
+    left_cluster_list = build_left_tree();
+    right_cluster_list = build_right_tree();
   }
   cluster_list.reserve(left_cluster_list.size() + right_cluster_list.size());
   for (auto& cluster : left_cluster_list)
@@ -170,7 +174,7 @@ void ApproximateAgglomerativeClusteringBvh::combineClusters(
   No detailed.
   */
 void ApproximateAgglomerativeClusteringBvh::constructBvh(
-    System& system ,
+    System& system,
     const std::vector<Object>& object_list,
     std::vector<BvhNode>& tree) const noexcept
 {
@@ -179,7 +183,7 @@ void ApproximateAgglomerativeClusteringBvh::constructBvh(
   // Allocate memory
   const uint num_of_objects = cast<uint>(object_list.size());
   tree.resize((num_of_objects << 1) - 1);
-  
+
   // Sort leaf nodes by the morton code
   std::vector<BvhNode> leaf_node_list;
   leaf_node_list.reserve(num_of_objects);
@@ -191,12 +195,12 @@ void ApproximateAgglomerativeClusteringBvh::constructBvh(
   std::vector<Float> distance_matrix;
   distance_matrix.resize((n * (n - 1)) / 2 , 0.0);
 
-  constexpr bool multithreading = multithreadingIsEnabled();
 
   // Build tree
   constexpr uint bit = 63;
-  auto cluster_list = buildTree<multithreading>(system, bit, code_list.begin(), 
-                                                code_list.end(), distance_matrix);
+  constexpr bool threading = threadingIsEnabled();
+  auto cluster_list = buildTree<threading>(system, bit, code_list.begin(), 
+                                           code_list.end(), distance_matrix);
   combineClusters(1, cluster_list, distance_matrix);
   uint number = 0;
   setNode(*cluster_list[0], tree, number); 

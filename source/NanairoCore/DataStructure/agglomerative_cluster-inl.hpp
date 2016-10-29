@@ -24,7 +24,7 @@
 #include "bvh_node.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/object.hpp"
-#include "NanairoCore/Geometry/geometry.hpp"
+#include "NanairoCore/Shape/shape.hpp"
 
 namespace nanairo {
 
@@ -186,7 +186,7 @@ void AgglomerativeCluster::initializeLeafCluster(const BvhNode* leaf_node) noexc
   Float cost = 0.0;
   for (uint i = 0; i < numOfPrimitives(); ++i) {
     const auto* object = leaf.object_list_[i];
-    cost += object->geometry().getTraversalCost();
+    cost += object->shape().getTraversalCost();
   }
   cost_ = cast<float>(cost);
 }
@@ -227,13 +227,13 @@ void AgglomerativeCluster::initializeInnerCluster(
     const auto object_list_l = left_child_cluster->objectList();
     for (uint i = 0; i < num_of_objects_l; ++i) {
       const auto object = object_list_l[i];
-      flatting_cost += object->geometry().getTraversalCost();
+      flatting_cost += object->shape().getTraversalCost();
     }
     // The objects of the right child cluster
     const auto object_list_r = right_child_cluster->objectList();
     for (uint i = 0; i < num_of_objects_r; ++i) {
       const auto object = object_list_r[i];
-      flatting_cost += object->geometry().getTraversalCost();
+      flatting_cost += object->shape().getTraversalCost();
     }
     if (flatting_cost < cost) {
       auto& leaf = data_.leaf_;

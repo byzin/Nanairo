@@ -247,6 +247,15 @@ bool SampledSpectra<kSampleSize>::isAllInBounds(const Float lower,
 }
 
 /*!
+  */
+template <uint kSampleSize> inline
+bool SampledSpectra<kSampleSize>::isAllInClosedBounds(const Float lower,
+                                                      const Float upper) const noexcept
+{
+  return intensities_.isAllInClosedBounds(lower, upper);
+}
+
+/*!
   \details
   No detailed.
   */
@@ -302,7 +311,7 @@ void SampledSpectra<kSampleSize>::setIntensity(const uint index,
   No detailed.
   */
 template <uint kSampleSize> inline
-SampledSpectra<kSampleSize> operator*(const Float scalar, 
+SampledSpectra<kSampleSize> operator*(const Float scalar,
                                       const SampledSpectra<kSampleSize>& samples) noexcept
 {
   return samples * scalar;

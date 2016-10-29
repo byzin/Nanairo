@@ -134,6 +134,24 @@ constexpr uint CoreConfig::misHeuristicBeta() noexcept
   return mis_heuristic_beta;
 }
 
+/*!
+  */
+inline
+constexpr bool CoreConfig::pathTracingExplicitConnectionIsEnabled() noexcept
+{
+  constexpr bool explicit_connection_is_enabled = @NANAIRO_PATH_TRACING_EXPLICIT_CONNECTION_IS_ENABLED@;
+  return explicit_connection_is_enabled;
+}
+
+/*!
+  */
+inline
+constexpr bool CoreConfig::pathTracingImplicitConnectionIsEnabled() noexcept
+{
+  constexpr bool implicit_connection_is_enabled = @NANAIRO_PATH_TRACING_IMPLICIT_CONNECTION_IS_ENABLED@;
+  return implicit_connection_is_enabled;
+}
+
 } // namespace nanairo
 
 #endif // NANAIRO_NANAIRO_CORE_CONFIG_INL_HPP

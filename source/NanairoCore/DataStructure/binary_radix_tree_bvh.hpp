@@ -55,7 +55,7 @@ class BinaryRadixTreeBvh : public Bvh
                     std::vector<BvhNode>& tree) const noexcept override;
 
   //! Split leaf node list in the morton code
-  template <bool multithreading>
+  template <bool threading>
   static void splitInMortonCode(System& system,
                                 const uint64 bit,
                                 const uint32 index,

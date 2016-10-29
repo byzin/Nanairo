@@ -36,9 +36,9 @@ auto SmoothDiffuseSurface::makeLambertBrdf(
     const WavelengthSamples<kSampleSize>& wavelengths,
     MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
-  const auto reflectance =
-      reflectance_->reflectiveValue(texture_coordinate, wavelengths);
-  ZISC_ASSERT(reflectance.isAllInBounds(0.0, 1.0),
+  const auto reflectance = reflectance_->reflectiveValue(texture_coordinate,
+                                                         wavelengths);
+  ZISC_ASSERT(reflectance.isAllInClosedBounds(0.0, 1.0),
               "Reflectances aren't [0, 1].");
 
   using Brdf = LambertBrdf<kSampleSize>;
@@ -51,15 +51,12 @@ auto SmoothDiffuseSurface::makeLambertBrdf(
   No detailed.
   */
 template <uint kSampleSize> inline
-SurfaceModel::ShaderPointer<kSampleSize> makeLambertBrdf(
-    const SurfaceModel* surface,
+auto SurfaceModel::makeLambertBrdf(
     const Point2& texture_coordinate,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) noexcept
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
-  using zisc::cast;
-
-  auto s = cast<const SmoothDiffuseSurface*>(surface);
+  auto s = zisc::cast<const SmoothDiffuseSurface*>(this);
   return s->makeLambertBrdf(texture_coordinate, wavelengths, memory_pool);
 }
 

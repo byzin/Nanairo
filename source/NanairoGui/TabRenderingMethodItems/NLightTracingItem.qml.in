@@ -17,24 +17,12 @@ Rectangle {
   width: @rendering_tab_item_width@
   height: @rendering_tab_item_height@
 
-  NLightRaySettingBlock {
-    id: light_ray_setting_block
-    x: @block_offset@
-    y: @block_offset@
-    color: light_tracing_item.color
-  }
-
   function initialize() {
-    light_ray_setting_block.initialize();
   }
 
   function getSceneData() {
-    var dataList = [];
-    dataList.push(light_ray_setting_block.getSceneData());
-    return Nanairo.mergeDataList(dataList);
   }
 
   function setSceneData(sceneData) {
-    light_ray_setting_block.setSceneData(sceneData);
   }
 }

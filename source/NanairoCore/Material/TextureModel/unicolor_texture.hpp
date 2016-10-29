@@ -61,9 +61,6 @@ class UnicolorTexture : public TextureModel
   Float reflectiveValue(const Point2& coordinate,
                         const uint16 wavelength) const noexcept override;
 
-  //! Return the unicolor texture byte size
-  std::size_t textureSize() const noexcept override;
-
   //! Return the unicolor texture type
   TextureType type() const noexcept override;
 

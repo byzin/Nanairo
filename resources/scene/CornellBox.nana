@@ -52,7 +52,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Floor",
@@ -83,7 +83,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "LeftWall",
@@ -121,7 +121,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "RightWall",
@@ -159,7 +159,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "BackWall",
@@ -197,7 +197,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Ceiling",
@@ -235,7 +235,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "MeshObject",
+            "ShapeType": "MeshObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "TallBlock",
@@ -283,7 +283,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "MeshObject",
+            "ShapeType": "MeshObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "ShortBlock",
@@ -322,7 +322,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": true,
             "Name": "Light",

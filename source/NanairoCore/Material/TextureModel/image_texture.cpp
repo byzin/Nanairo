@@ -31,8 +31,8 @@
 #include "NanairoCore/Color/color_space.hpp"
 #include "NanairoCore/Color/rgb_color.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
-#include "NanairoCore/LinearAlgebra/transformation.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
@@ -69,15 +69,6 @@ Float ImageTexture::reflectiveValue(const Point2& coordinate,
   const auto y = zisc::cast<uint>(coordinate[1] * height_);
   const uint index = width_resolution_ * y + x;
   return reflective_value_table_[color_index_[index]].getByWavelength(wavelength);
-}
-
-/*!
-  \details
-  No detailed.
-  */
-std::size_t ImageTexture::textureSize() const noexcept
-{
-  return 0;
 }
 
 /*!
@@ -182,8 +173,8 @@ void ImageTexture::initializeReflectiveValueTable(const System& system,
     const Float y = rgb.toXyz(to_xyz_matrix).y();
     float_table_[i] = zisc::clamp(y, 0.0, 1.0);
     reflective_value_table_[i] = system.isRgbRenderingMode()
-        ? toRgbSpectra(rgb)
-        : toSpectra(system, rgb);
+        ? SpectralDistribution::toRgbSpectra(rgb)
+        : SpectralDistribution::toSpectra(system, rgb);
     ZISC_ASSERT(reflective_value_table_[i].isAllInBounds(0.0, 1.0),
                 "Texture value must be [0, 1].");
   }

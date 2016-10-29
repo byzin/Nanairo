@@ -60,9 +60,7 @@ void addSpectraContribution(
     const uint y,
     const SampledSpectra<kSampleSize>& contribution) noexcept
 {
-  using zisc::cast; 
-
-  auto spectra_image = cast<SpectraImage*>(image);
+  auto spectra_image = zisc::cast<SpectraImage*>(image);
   spectra_image->addSpectraContribution(x, y, contribution);
 }
 

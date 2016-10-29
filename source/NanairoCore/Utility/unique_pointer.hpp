@@ -77,7 +77,7 @@ class UniquePointer
 //! Compare the pointer address
 template <typename Type>
 bool operator<(const UniquePointer<Type>& a, const UniquePointer<Type>& b) noexcept;
-  
+
 //! \} Core
 
 } // namespace nanairo

@@ -7,12 +7,12 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_KNN_PHOTON_LIST_HPP_
-#define _NANAIRO_KNN_PHOTON_LIST_HPP_
+#ifndef NANAIRO_KNN_PHOTON_LIST_HPP
+#define NANAIRO_KNN_PHOTON_LIST_HPP
 
 // Standard C++ library
-#include <utility>
 #include <tuple>
+#include <utility>
 #include <vector>
 // Nanairo
 #include "NanairoCore/Data/photon_cache.hpp"
@@ -33,37 +33,36 @@ class KnnPhotonList
  public:
   using Cache = PhotonCache<kSampleSize>;
   using PhotonPoint = std::tuple<Float, const Cache*>;
-  using PhotonList = std::vector<PhotonPoint>;
 
 
   //! Create knn photon list
-  KnnPhotonList();
+  KnnPhotonList() noexcept;
 
 
   //! Return the photon cache and distance by the index
-  const PhotonPoint& operator[](const uint index) const;
+  const PhotonPoint& operator[](const uint index) const noexcept;
 
 
   //! Clear the contents
-  void clear();
+  void clear() noexcept;
 
   //! Insert a photon point if the distance is included in knn
-  void insert(const Float distance2, const Cache* photon);
+  void insert(const Float distance2, const Cache* photon) noexcept;
 
   //! Return the inverse longest distance of contents
-  Float inverseLongestDistance() const;
+  Float inverseLongestDistance() const noexcept;
 
-  //! Return the k
-  uint k() const;
+  //! Return the k value
+  uint k() const noexcept;
 
-  //! Set k
-  void setK(const uint k);
+  //! Set the k value
+  void setK(const uint k) noexcept;
 
-  //! Return the size of list
-  uint size() const;
+  //! Return the size of the knn list
+  uint size() const noexcept;
 
  private:
-  PhotonList photon_list_;
+  std::vector<PhotonPoint> photon_list_;
   uint k_;
 };
 
@@ -73,4 +72,4 @@ class KnnPhotonList
 
 #include "knn_photon_list-inl.hpp"
 
-#endif // _NANAIRO_KNN_PHOTON_LIST_HPP_
+#endif // NANAIRO_KNN_PHOTON_LIST_HPP

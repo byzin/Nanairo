@@ -15,6 +15,7 @@
 #include <tuple>
 // Zisc
 #include "zisc/aligned_memory_pool.hpp"
+#include "zisc/error.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "fresnel.hpp"
@@ -24,7 +25,7 @@
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Material/Bxdf/ggx_dielectric_bsdf.hpp"
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
@@ -50,6 +51,8 @@ auto RoughDielectricSurface::makeGgxDielectricBsdf(
   roughness = (threshold < roughness)
       ? roughness * roughness
       : threshold * threshold;
+  ZISC_ASSERT(zisc::isInClosedBounds(roughness, 0.0, 1.0),
+              "The roughness is out of the range [0, 1].");
 
   // Evaluate the refractive index
   const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];
@@ -68,20 +71,17 @@ auto RoughDielectricSurface::makeGgxDielectricBsdf(
   No detailed.
   */
 template <uint kSampleSize> inline
-SurfaceModel::ShaderPointer<kSampleSize> makeGgxDielectricBsdf(
-    const SurfaceModel* surface,
+auto SurfaceModel::makeGgxDielectricBsdf(
     const Point2& texture_coordinate,
     const bool is_reverse_face,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) noexcept
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
-  using zisc::cast;
-
-  auto dielectric_surface = cast<const RoughDielectricSurface*>(surface);
-  return dielectric_surface->makeGgxDielectricBsdf(texture_coordinate,
-                                                   is_reverse_face,
-                                                   wavelengths,
-                                                   memory_pool);
+  auto s = zisc::cast<const RoughDielectricSurface*>(this);
+  return s->makeGgxDielectricBsdf(texture_coordinate,
+                                  is_reverse_face,
+                                  wavelengths,
+                                  memory_pool);
 }
 
 } // namespace nanairo

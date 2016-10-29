@@ -13,6 +13,7 @@
 #include "bvh_node.hpp"
 // Standard C++ library
 #include <array>
+#include <limits>
 #include <vector>
 #include <utility>
 // Zisc
@@ -40,9 +41,9 @@ void BvhNode::addObject(const Object* object) noexcept
   object_list_[index] = object;
   const auto num_of_objects = index + 1;
   if (num_of_objects == 1)
-    setBoundingBox(object->geometry().boundingBox());
+    setBoundingBox(object->shape().boundingBox());
   else
-    setBoundingBox(combine(boundingBox(), object->geometry().boundingBox()));
+    setBoundingBox(combine(boundingBox(), object->shape().boundingBox()));
 }
 
 /*!
@@ -87,6 +88,30 @@ inline
 uint32 BvhNode::leftChildIndex() const noexcept
 {
   return left_child_index_;
+}
+
+/*!
+  */
+inline
+constexpr uint32 BvhNode::maxNumOfObjects() noexcept
+{
+  return std::numeric_limits<uint32>::max() >> 1;
+}
+
+/*!
+  */
+inline
+constexpr uint32 BvhNode::maxNodeIndex() noexcept
+{
+  return std::numeric_limits<uint32>::max() - 1;
+}
+
+/*!
+  */
+inline
+constexpr uint32 BvhNode::nonObjectIndex() noexcept
+{
+  return std::numeric_limits<uint32>::max();
 }
 
 /*!

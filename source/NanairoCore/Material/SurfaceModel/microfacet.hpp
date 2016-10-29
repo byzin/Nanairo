@@ -1,7 +1,7 @@
 /*!
   \file microfacet.hpp
   \author Sho Ikeda
-  
+
   Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
@@ -12,7 +12,7 @@
 
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 
 namespace nanairo {
 
@@ -20,36 +20,42 @@ namespace nanairo {
 class Sampler;
 class SampledDirection;
 
-//! Calculate microfacet reflection direction
-SampledDirection getMicrofacetReflectionDirection(
-    const Vector3& vin,
-    const SampledDirection& microfacet_normal,
-    const Float cos_theta_mi) noexcept;
+/*!
+  */
+class Microfacet
+{
+ public:
+  //! Calculate microfacet reflection direction
+  static SampledDirection calcReflectionDirection(
+      const Vector3& vin,
+      const SampledDirection& microfacet_normal,
+      const Float cos_mi) noexcept;
 
-//! Get microfacet reflection half-vector
-Vector3 getMicrofacetReflectionHalfVector(const Vector3& vin, 
+  //! Calculate microfacet reflection half-vector
+  static Vector3 calcReflectionHalfVector(const Vector3& vin,
                                           const Vector3& vout) noexcept;
 
-//! Get microfacet reflection inverse jacobian
-Float getMicrofacetReflectionInverseJacobian(const Float cos_theta_mi) noexcept;
+  //! Calculate microfacet reflection inverse jacobian
+  static Float calcReflectionInverseJacobian(const Float cos_mi) noexcept;
 
-//! Calculate microfacet refraction direction
-SampledDirection getMicrofacetRefractionDirection(
-    const Vector3& vin,
-    const SampledDirection& microfacet_normal,
-    const Float cos_theta_mi,
-    const Float n,
-    const Float g) noexcept;
+  //! Calculate microfacet refraction direction
+  static SampledDirection calcRefractionDirection(
+      const Vector3& vin,
+      const SampledDirection& microfacet_normal,
+      const Float cos_mi,
+      const Float n,
+      const Float g) noexcept;
 
-//! Get microfacet reflection half-vector
-Vector3 getMicrofacetRefractionHalfVector(const Vector3& vin, 
+  //! Calculate microfacet reflection half-vector
+  static Vector3 calcRefractionHalfVector(const Vector3& vin,
                                           const Vector3& vout,
                                           const Float n) noexcept;
 
-//! Get microfacet reflection inverse jacobian
-Float getMicrofacetRefractionInverseJacobian(const Float cos_theta_mi,
+  //! Calculate microfacet reflection inverse jacobian
+  static Float calcRefractionInverseJacobian(const Float cos_theta_mi,
                                              const Float cos_theta_mo,
                                              const Float n) noexcept;
+};
 
 } // namespace nanairo
 

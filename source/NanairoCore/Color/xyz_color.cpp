@@ -15,7 +15,7 @@
 #include "rgb_color.hpp"
 #include "yxy_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/transformation.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 
 namespace nanairo {
 

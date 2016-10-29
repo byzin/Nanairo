@@ -1,5 +1,5 @@
 /*!
-  \file geometry.cpp
+  \file shape.cpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
@@ -7,7 +7,7 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#include "geometry.hpp"
+#include "shape.hpp"
 // Standard C++ library
 #include <cstddef>
 #include <vector>
@@ -30,7 +30,7 @@ namespace nanairo {
 
 /*!
   */
-Geometry::~Geometry() noexcept
+Shape::~Shape() noexcept
 {
 }
 
@@ -38,9 +38,9 @@ Geometry::~Geometry() noexcept
   \details
   No detailed.
   */
-void Geometry::setSurfaceArea(const Float surface_area) noexcept
+void Shape::setSurfaceArea(const Float surface_area) noexcept
 {
-  ZISC_ASSERT(0.0 < surface_area, "The surface area of the geometry is minus.");
+  ZISC_ASSERT(0.0 < surface_area, "The surface area of the shape is minus.");
   surface_area_ = surface_area;
 }
 
@@ -48,27 +48,28 @@ void Geometry::setSurfaceArea(const Float surface_area) noexcept
   \details
   No detailed.
   */
-std::vector<UniquePointer<Geometry>> makeGeometry(
+std::vector<UniquePointer<Shape>> Shape::makeShape(
     const QJsonObject& settings) noexcept
 {
   using zisc::toHash32;
 
-  std::vector<UniquePointer<Geometry>> geometry_list;
-
-  const auto type = SceneValue::toString(settings, keyword::geometryType);
+  std::vector<UniquePointer<Shape>> shape_list;
+  const auto type = SceneValue::toString(settings, keyword::shapeType);
   switch (keyword::toHash32(type)) {
-    case toHash32(keyword::planeObject): {
-      geometry_list.emplace_back(new Plane{});
-      break;
-    }
-    case toHash32(keyword::meshObject): {
-      geometry_list = makeMeshes(settings);
-      break;
-    }
-    default:
-      zisc::raiseError("GeometryError: Unsupported type is specified.");
+   case toHash32(keyword::planeObject): {
+    shape_list.emplace_back(new Plane{});
+    break;
+   }
+   case toHash32(keyword::meshObject): {
+    shape_list = TriangleMesh::makeMeshes(settings);
+    break;
+   }
+   default: {
+    zisc::raiseError("ShapeError: Unsupported type is specified.");
+    break;
+   }
   }
-  return geometry_list;
+  return shape_list;
 }
 
 } // namespace nanairo

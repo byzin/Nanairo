@@ -11,8 +11,8 @@
 //#include <string>
 //// Reflect
 //#include "camera.hpp"
-//#include "LinearAlgebra/point.hpp"
-//#include "LinearAlgebra/vector.hpp"
+//#include "Geometry/point.hpp"
+//#include "Geometry/vector.hpp"
 //
 //namespace reflect {
 //

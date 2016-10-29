@@ -42,7 +42,7 @@ class CuiRendererManager
 
   //! Check if the renderer is runnable
   bool isRunnable() const noexcept;
-  
+
  private:
   //! Generate a output dir
   std::tuple<bool, QString> generateOutputDir() const noexcept;

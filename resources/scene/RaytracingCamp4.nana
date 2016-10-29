@@ -73,7 +73,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Floor",
@@ -104,7 +104,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "FarWall",
@@ -142,7 +142,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "LeftWall",
@@ -180,7 +180,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "RightWall",
@@ -218,7 +218,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "NearWall",
@@ -256,7 +256,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Ceiling",
@@ -287,7 +287,7 @@
         {
             "EmitterIndex": 1,
             "Enabled": true,
-            "GeometryType": "MeshObject",
+            "ShapeType": "MeshObject",
             "GroupLevel": 1,
             "IsEmissiveObject": true,
             "Name": "SphereLight1",
@@ -319,7 +319,7 @@
         {
             "EmitterIndex": 2,
             "Enabled": true,
-            "GeometryType": "MeshObject",
+            "ShapeType": "MeshObject",
             "GroupLevel": 1,
             "IsEmissiveObject": true,
             "Name": "SphereLight2",
@@ -395,7 +395,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Label",
@@ -422,7 +422,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "LabelPlane",
@@ -451,7 +451,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "LabelPlane",
@@ -473,7 +473,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "LabelPlane",
@@ -502,7 +502,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "LabelPlane",
@@ -531,7 +531,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "LabelPlane",
@@ -593,7 +593,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "MeshObject",
+            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "StanfordDragon",
@@ -632,7 +632,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "MeshObject",
+            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "RoughGlass",
@@ -671,7 +671,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "MeshObject",
+            "ShapeType": "MeshObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "XyzDragon",
@@ -710,7 +710,7 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "GeometryType": "PlaneObject",
+            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": true,
             "Name": "Light",

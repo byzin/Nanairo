@@ -40,9 +40,11 @@ auto RoughConductorSurface::makeGgxConductorBrdf(
   // Get the roughness
   constexpr Float threshold = 0.001;
   Float roughness = roughness_->floatValue(texture_coordinate);
-  roughness = (threshold < roughness) 
+  roughness = (threshold < roughness)
       ? roughness * roughness
-      : threshold * threshold; 
+      : threshold * threshold;
+  ZISC_ASSERT(zisc::isInClosedBounds(roughness, 0.0, 1.0),
+              "The roughness is out of the range [0, 1].");
 
   const auto reflectance_0deg = sample(reflectance_0deg_, wavelengths);
 
@@ -57,18 +59,13 @@ auto RoughConductorSurface::makeGgxConductorBrdf(
   No detailed.
   */
 template <uint kSampleSize> inline
-SurfaceModel::ShaderPointer<kSampleSize> makeGgxConductorBrdf(
-    const SurfaceModel* surface,
+auto SurfaceModel::makeGgxConductorBrdf(
     const Point2& texture_coordinate,
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) noexcept
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
-  using zisc::cast;
-
-  auto conductor_surface = cast<const RoughConductorSurface*>(surface);
-  return conductor_surface->makeGgxConductorBrdf(texture_coordinate,
-                                                 wavelengths,
-                                                 memory_pool);
+  auto s = zisc::cast<const RoughConductorSurface*>(this);
+  return s->makeGgxConductorBrdf(texture_coordinate, wavelengths, memory_pool);
 }
 
 } // namespace nanairo

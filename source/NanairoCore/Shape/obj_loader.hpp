@@ -15,9 +15,9 @@
 #include <vector>
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Geometry/triangle_mesh.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Shape/triangle_mesh.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 // Forward declaration
@@ -26,7 +26,7 @@ class QTextStream;
 namespace nanairo {
 
 // Forward declaration
-class Geometry;
+class Shape;
 
 //! \addtogroup Core
 //! \{
@@ -37,7 +37,7 @@ class ObjLoader
 {
  public:
   //! Parse a obj text and make a obj model
-  static std::vector<UniquePointer<Geometry>> parse(
+  static std::vector<UniquePointer<Shape>> parse(
       QTextStream& obj_stream,
       const MeshType type) noexcept;
 
@@ -53,7 +53,7 @@ class ObjLoader
       QTextStream& obj_stream) noexcept;
 
   //! Make a triangle mesh
-  static UniquePointer<Geometry> makeMesh(
+  static UniquePointer<Shape> makeMesh(
       QTextStream& face_line,
       const std::vector<Point3>& vertices,
       const std::vector<Vector3>& vnormals,
@@ -62,7 +62,7 @@ class ObjLoader
       const bool smoothing) noexcept;
 
   //! Make triangle meshes
-  static std::vector<UniquePointer<Geometry>> makeMeshes(
+  static std::vector<UniquePointer<Shape>> makeMeshes(
       QTextStream& obj_stream,
       const std::tuple<uint, uint, uint, uint>& mesh_info,
       const MeshType type) noexcept;

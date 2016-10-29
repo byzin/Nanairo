@@ -60,9 +60,6 @@ class SpectraImageInterface
                        const uint y,
                        const SampledSpectra<kSampleSize>& contribution) noexcept;
 
-  //! Return the buffer memory size
-  virtual std::size_t bufferMemorySize() const noexcept = 0;
-
   //! Clear the buffer value to 0
   virtual void clear() noexcept = 0;
 

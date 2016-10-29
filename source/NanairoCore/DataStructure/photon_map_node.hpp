@@ -7,12 +7,15 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_PHOTON_MAP_NODE_HPP_
-#define _NANAIRO_PHOTON_MAP_NODE_HPP_
+#ifndef NANAIRO_PHOTON_MAP_NODE_HPP
+#define NANAIRO_PHOTON_MAP_NODE_HPP
 
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
+#include "NanairoCore/Data/photon_cache.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
+#include "NanairoCore/Sampling/sampled_spectra.hpp"
 
 namespace nanairo {
 
@@ -30,35 +33,49 @@ template <uint kSampleSize>
 class PhotonMapNode
 {
  public:
+  enum class NodeType : uint
+  {
+    kXAxisSplit = 0,
+    kYAxisSplit,
+    kZAxisSplit,
+    kLeaf
+  };
+
+
+  using Spectra = SampledSpectra<kSampleSize>;
   using Cache = PhotonCache<kSampleSize>;
 
+  //! Create a photon map node
+  PhotonMapNode(const Spectra& energy,
+                const Point3& point,
+                const Vector3& vin,
+                const bool wavelength_is_selected) noexcept;
 
   //! Create a photon map node
-  PhotonMapNode(const Cache* cache);
+  PhotonMapNode(const Cache& cache) noexcept;
+
+  //! Create a photon map node
+  PhotonMapNode(PhotonMapNode&& other) noexcept;
 
 
-  //! Return the flag
-  uint flag() const;
+  //! Return the photon cache of the node
+  const Cache& cache() const noexcept;
 
-  //! Return the photon cache
-  const Cache* photonCache() const;
+  //! Return the type of node
+  NodeType nodeType() const noexcept;
 
-  //! Return the point
-  const Point3& point() const;
+  //! Return the point of node
+  const Point3& point() const noexcept;
 
-  //! Set the node information
-  void setFlag(const uint flag);
+  //! Set the type of the node
+  void setNodeType(const NodeType type) noexcept;
 
-
-  static constexpr uint kXAxisFlag = 0;
-  static constexpr uint kYAxisFlag = 1;
-  static constexpr uint kZAxisFlag = 2;
-  static constexpr uint kLeafNodeFlag = 3;
+  //! Set the type of the node
+  void setNodeType(const uint type) noexcept;
 
  private:
-  const Point3* point_;
-  const Cache* cache_;
-  uint flag_;
+  Cache cache_;
+  NodeType type_;
 };
 
 //! \} Core
@@ -67,4 +84,4 @@ class PhotonMapNode
 
 #include "photon_map_node-inl.hpp"
 
-#endif // _NANAIRO_PHOTON_MAP_NODE_HPP_
+#endif // NANAIRO_PHOTON_MAP_NODE_HPP

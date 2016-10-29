@@ -7,13 +7,13 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef _NANAIRO_PHOTON_CACHE_HPP_
-#define _NANAIRO_PHOTON_CACHE_HPP_
+#ifndef NANAIRO_PHOTON_CACHE_HPP
+#define NANAIRO_PHOTON_CACHE_HPP
 
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 
 namespace nanairo {
@@ -34,8 +34,8 @@ class PhotonCache
 
   //! Create a photon cache
   PhotonCache(const Spectra& energy,
-              const Point3& point, 
-              const Vector3& vin, 
+              const Point3& point,
+              const Vector3& vin,
               const bool wavelength_is_selected);
 
 
@@ -64,4 +64,4 @@ class PhotonCache
 
 #include "photon_cache-inl.hpp"
 
-#endif // _NANAIRO_PHOTON_CACHE_HPP_
+#endif // NANAIRO_PHOTON_CACHE_HPP

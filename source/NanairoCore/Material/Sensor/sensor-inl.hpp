@@ -51,7 +51,7 @@ Sensor<kSampleSize>::Sensor(const CameraModel* camera,
   No detailed.
   */
 template <uint kSampleSize>
-Float Sensor<kSampleSize>::evaluatePdf(
+Float Sensor<kSampleSize>::evalPdf(
     const Vector3* /* vin */,
     const Vector3* vout,
     const Vector3& /* normal */,
@@ -67,7 +67,7 @@ Float Sensor<kSampleSize>::evaluatePdf(
   No detailed.
   */
 template <uint kSampleSize>
-auto Sensor<kSampleSize>::evaluateRadiance(
+auto Sensor<kSampleSize>::evalRadiance(
     const Vector3* /* vin */,
     const Vector3* vout,
     const Vector3& /* normal */,
@@ -83,7 +83,7 @@ auto Sensor<kSampleSize>::evaluateRadiance(
   No detailed.
   */
 template <uint kSampleSize>
-auto Sensor<kSampleSize>::evaluateRadianceAndPdf(
+auto Sensor<kSampleSize>::evalRadianceAndPdf(
     const Vector3* /* vin */,
     const Vector3* vout,
     const Vector3& /* normal */,

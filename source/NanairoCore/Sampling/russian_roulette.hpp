@@ -10,8 +10,6 @@
 #ifndef NANAIRO_RUSSIAN_ROULETTE_HPP
 #define NANAIRO_RUSSIAN_ROULETTE_HPP
 
-// Standard C++ library
-#include <functional>
 // Zisc
 #include "zisc/algorithm.hpp"
 // Nanairo
@@ -60,38 +58,58 @@ class RouletteResult
   bool result_;
 };
 
-//! Play russian roulette
-template <uint kSampleSize>
-RouletteResult playRussianRouletteWithAverage(
-    const uint path,
-    const SampledSpectra<kSampleSize>& weight,
-    Sampler& sampler) noexcept;
+/*!
+  */
+class RussianRoulette
+{
+ public:
+  //! Initialize
+  RussianRoulette(const QJsonObject& settings) noexcept;
 
-//! Play russian roulette
-template <uint kSampleSize>
-RouletteResult playRussianRouletteWithMax(
-    const uint path,
-    const SampledSpectra<kSampleSize>& weight,
-    Sampler& sampler) noexcept;
+  //! Play russian roulette
+  template <uint kSampleSize>
+  RouletteResult operator()(const uint path,
+                            const SampledSpectra<kSampleSize>& weight,
+                            Sampler& sampler) const noexcept;
 
-//! Play russian roulette
-template <uint kSampleSize>
-RouletteResult playRussianRouletteWithPath(
-    const uint max_path,
-    const uint path,
-    const SampledSpectra<kSampleSize>& weight,
-    Sampler& sampler) noexcept;
 
-template <uint kSampleSize>
-using RussianRouletteFunction = 
-    std::function<RouletteResult (const uint,
-                                  const SampledSpectra<kSampleSize>&,
-                                  Sampler&)>;
+  //! Play russian roulette
+  template <uint kSampleSize>
+  RouletteResult play(const uint path,
+                      const SampledSpectra<kSampleSize>& weight,
+                      Sampler& sampler) const noexcept;
 
-//! Make a russian roulette function
-template <uint kSampleSize>
-RussianRouletteFunction<kSampleSize> makeRussianRoulette(
-    const QJsonObject& settings) noexcept;
+ private:
+  /*!
+    */
+  enum class RouletteType : int
+  {
+    kAverage,
+    kMax,
+    kPath
+  };
+
+
+  //! Initialize
+  void initialize(const QJsonObject& settings) noexcept;
+
+  //! Play russian roulette
+  template <uint kSampleSize>
+  RouletteResult playWithAverage(const SampledSpectra<kSampleSize>& weight,
+                                 Sampler& sampler) const noexcept;
+
+  //! Play russian roulette
+  template <uint kSampleSize>
+  RouletteResult playWithMax(const SampledSpectra<kSampleSize>& weight,
+                             Sampler& sampler) const noexcept;
+
+  //! Play russian roulette
+  RouletteResult playWithPath(const uint path) const noexcept;
+
+
+  RouletteType type_;
+  uint max_path_;
+};
 
 //! \} Core
 

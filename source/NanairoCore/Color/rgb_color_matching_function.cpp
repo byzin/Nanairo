@@ -58,14 +58,12 @@ const SpectralDistribution& RgbColorMatchingFunction::redBar() const noexcept
   */
 void RgbColorMatchingFunction::initialize() noexcept
 {
-  red_bar_ = makeSpectra(":/spectrum/observer/cie_1931_red.csv");
-  green_bar_ = makeSpectra(":/spectrum/observer/cie_1931_green.csv");
-  blue_bar_ = makeSpectra(":/spectrum/observer/cie_1931_blue.csv");
-
-//  constexpr Float k = 3.782;
-//  red_bar_ = red_bar_.normalized() * k;
-//  green_bar_ = green_bar_.normalized() * k;
-//  blue_bar_ = blue_bar_.normalized() * k;
+  red_bar_ =
+      SpectralDistribution::makeSpectra(":/spectrum/observer/cie_1931_red.csv");
+  green_bar_ =
+      SpectralDistribution::makeSpectra(":/spectrum/observer/cie_1931_green.csv");
+  blue_bar_ =
+      SpectralDistribution::makeSpectra(":/spectrum/observer/cie_1931_blue.csv");
 }
 
 } // namespace nanairo

@@ -17,8 +17,8 @@
 // Nanairo
 #include "camera_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 
 // Forward declaration
 class QJsonObject;
@@ -29,7 +29,7 @@ namespace nanairo {
 class SampledDirection;
 class Sampler;
 
-//! \addtogroup Core 
+//! \addtogroup Core
 //! \{
 
 /*!
@@ -104,7 +104,7 @@ class PinholeCamera : public CameraModel
   Float angle_of_view_;
 };
 
-//! \} Core 
+//! \} Core
 
 } // namespace nanairo
 

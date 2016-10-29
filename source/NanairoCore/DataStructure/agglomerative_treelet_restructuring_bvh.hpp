@@ -62,7 +62,7 @@ class AgglomerativeTreeletRestructuringBvh : public Bvh
 
   //! Return the row column of the minimum distance
   std::tuple<uint, uint> findBestMatch(
-      const uint n, 
+      const uint n,
       const std::vector<Float>& distance_matrix) const noexcept;
 
   //! Form a treelet from the root
@@ -87,9 +87,9 @@ class AgglomerativeTreeletRestructuringBvh : public Bvh
   uint optimizationLoopCount() const noexcept;
 
   //! Restructure a treelet
-  template <bool multithreading>
+  template <bool threading>
   uint restructureTreelet(System& system,
-                          const uint32 index, 
+                          const uint32 index,
                           std::vector<uint>& inner_index_list,
                           std::vector<uint>& leaf_index_list,
                           std::vector<Float>& distance_matrix,

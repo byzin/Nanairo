@@ -1,5 +1,5 @@
 /*!
-  \file NGeometryTypeSettingBlock.qml
+  \file NShapeTypeSettingBlock.qml
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
@@ -12,24 +12,24 @@ import QtQuick.Controls @qt_quick_controls_version@
 import "../../SettingBlockItems"
 
 NSettingBlock {
-  id: geometry_type_setting_block
+  id: shape_type_setting_block
 
   property url objectFilePath: Qt.resolvedUrl("")
   property var currentItem: null
   property bool isItemChangeMode: false
 
-  labelText: qsTr("GeometryType")
+  labelText: qsTr("ShapeType")
 
   NComboBox {
-    id: geometry_type_combobox
+    id: shape_type_combobox
 
-    y: geometry_type_setting_block.labelHeight + @item_offset@
-    backgroundColor: geometry_type_setting_block.color
+    y: shape_type_setting_block.labelHeight + @item_offset@
+    backgroundColor: shape_type_setting_block.color
 
     model: ["@planeObject@",
             "@meshObject@"]
 
-    onCurrentIndexChanged: setCurrentItemValue("@geometryType@", currentText)
+    onCurrentIndexChanged: setCurrentItemValue("@shapeType@", currentText)
   }
 
   NButton {
@@ -37,10 +37,10 @@ NSettingBlock {
 
     property string objectFileName: ""
 
-    y: (geometry_type_combobox.y + geometry_type_combobox.height) + @item_offset@
+    y: (shape_type_combobox.y + shape_type_combobox.height) + @item_offset@
     width: 120
-    enabled: geometry_type_combobox.currentText == "@meshObject@"
-    backgroundColor: geometry_type_setting_block.color
+    enabled: shape_type_combobox.currentText == "@meshObject@"
+    backgroundColor: shape_type_setting_block.color
 
     text: (objectFileName == "") ? qsTr("Open object file") : objectFileName
 
@@ -48,7 +48,7 @@ NSettingBlock {
       id: open_object_dialog
       title: qsTr("Open object file")
       nameFilters: ["Wavefront file (*.obj)"]
-      onAccepted: geometry_type_setting_block.objectFilePath = fileUrl
+      onAccepted: shape_type_setting_block.objectFilePath = fileUrl
     }
 
     onEnabledChanged: {
@@ -71,17 +71,17 @@ NSettingBlock {
   }
 
   function initializeItem(item) {
-    item["@geometryType@"] = geometry_type_combobox.textAt(0);
+    item["@shapeType@"] = shape_type_combobox.textAt(0);
     item["@objectFilePath@"] = "";
   }
 
   function reflectItem() {
     var item = currentItem;
-    // Geometry type
-    var type = item["@geometryType@"];
-    var typeIndex = geometry_type_combobox.find(type);
-    console.assert(typeIndex != -1, "Geometry type isn't found: ", type);
-    geometry_type_combobox.currentIndex = typeIndex;
+    // Shape type
+    var type = item["@shapeType@"];
+    var typeIndex = shape_type_combobox.find(type);
+    console.assert(typeIndex != -1, "Shape type isn't found: ", type);
+    shape_type_combobox.currentIndex = typeIndex;
     // Object button
     if (type == "@meshObject@") {
       objectFilePath = Qt.resolvedUrl(item["@objectFilePath@"]);
@@ -101,8 +101,8 @@ NSettingBlock {
 
   function getItemData(item) {
     var itemData = {};
-    var type = item["@geometryType@"];
-    itemData["@geometryType@"] = type;
+    var type = item["@shapeType@"];
+    itemData["@shapeType@"] = type;
     if (type == "@meshObject@") {
       var filePath = Qt.resolvedUrl(item["@objectFilePath@"]);
       itemData["@objectFilePath@"] = nanairoManager.toRelativeFilePath(filePath);
@@ -112,8 +112,8 @@ NSettingBlock {
 
   function makeItem(itemData) {
     var item = {};
-    var type = itemData["@geometryType@"];
-    item["@geometryType@"] = type;
+    var type = itemData["@shapeType@"];
+    item["@shapeType@"] = type;
     if (type == "@meshObject@") {
       var filePath = nanairoManager.toAbsoluteFileUrl(itemData["@objectFilePath@"]);
       item["@objectFilePath@"] = filePath.toString();

@@ -60,8 +60,10 @@ class EmitterModel
   virtual ~EmitterModel() noexcept;
 
 
-  //! Return the emitter model size
-  std::size_t emitterSize() const noexcept {return sizeof(*this);}
+  //! Make a emitter model
+  static UniquePointer<EmitterModel> makeEmitter(
+      const QJsonObject& settings,
+      const std::vector<const TextureModel*>& texture_list) noexcept;
 
   template <uint kSampleSize>
   ShaderPointer<kSampleSize> makeLight(
@@ -69,19 +71,13 @@ class EmitterModel
       const WavelengthSamples<kSampleSize>& wavelengths,
       MemoryPool& memory_pool) const noexcept;
 
-  //! Return the spectral power distribution
-//  const SpectralDistribution& powerDistribution() const noexcept;
-
-  //! Return the radiant exitance 
+  //! Return the radiant exitance
   Float radiantExitance() const noexcept;
 
   //! Return the emitter type
   virtual EmitterType type() const noexcept = 0;
- 
- protected:
-  //! Set the spectral power distribution
-//  void setPowerDistribution(const SpectralDistribution& distribution) noexcept;
 
+ protected:
   //! Set the radiant exitance
   void setRadiantExitance(const Float radiant_exitance) noexcept;
 
@@ -89,23 +85,16 @@ class EmitterModel
   //! Initialize
   void initialize(const QJsonObject& settings) noexcept;
 
+  //! Make a non directional emitter
+  template <uint kSampleSize>
+  EmitterModel::ShaderPointer<kSampleSize> makeNonDirectionalLight(
+      const Point2& texture_coordinate,
+      const WavelengthSamples<kSampleSize>& wavelengths,
+      MemoryPool& memory_pool) const noexcept;
 
-//  SpectralDistribution power_distribution_;
+
   Float radiant_exitance_;
 };
-
-//! Make a non directional emitter
-template <uint kSampleSize>
-EmitterModel::ShaderPointer<kSampleSize> makeNonDirectionalLight(
-    const EmitterModel* emitter,
-    const Point2& texture_coordinate,
-    const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) noexcept;
-
-//! Make a emitter model
-UniquePointer<EmitterModel> makeEmitter(
-    const QJsonObject& settings,
-    const std::vector<const TextureModel*>& texture_list) noexcept;
 
 //! \} Core
 

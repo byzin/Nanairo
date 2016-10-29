@@ -58,9 +58,6 @@ class RoughDielectricSurface : public SurfaceModel
       const WavelengthSamples<kSampleSize>& wavelengths,
       MemoryPool& memory_pool) const noexcept;
 
-  //! Return the surface model size
-  std::size_t surfaceSize() const noexcept override;
-
   //! Return the rough dielectric surface type
   SurfaceType type() const noexcept override;
 
@@ -68,7 +65,7 @@ class RoughDielectricSurface : public SurfaceModel
   //! Initialize
   void initialize(const QJsonObject& settings,
                   const std::vector<const TextureModel*>& texture_list) noexcept;
-  
+
 
   const TextureModel* roughness_;
   SpectralDistribution eta_;

@@ -14,7 +14,7 @@
 #include <tuple>
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
+#include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
@@ -107,6 +107,9 @@ class CameraModel
   //! Return the jittering
   const Vector2& jittering() const noexcept;
 
+  //! Make a camera
+  static UniquePointer<CameraModel> makeModel(const QJsonObject& settings) noexcept;
+
   //! Return the camera position
   virtual const Point3& position() const noexcept = 0;
 
@@ -167,9 +170,6 @@ class CameraModel
   Vector2 jittering_;
   bool is_jittering_enabled_;
 };
-
-//! Make a camera
-UniquePointer<CameraModel> makeCameraModel(const QJsonObject& settings) noexcept;
 
 //! \} Core
 

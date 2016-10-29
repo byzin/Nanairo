@@ -69,6 +69,14 @@ Rectangle {
       }
     }
 
+    Tab {
+      title: "@probabilisticPpm@"
+      active: true
+      NProbabilisticPpmItem {
+        color: rendering_method_tab_item.color
+      }
+    }
+
     currentIndex: rendering_method_setting_block.currentMethodIndex
 
     onCurrentIndexChanged: {

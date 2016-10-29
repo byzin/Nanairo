@@ -51,7 +51,7 @@ class ApproximateAgglomerativeClusteringBvh : public Bvh
 
 
   //! Build the tree
-  template <bool multithreading>
+  template <bool threading>
   std::vector<ClusterPointer> buildTree(System& system,
                                         const uint64 bit,
                                         MortonCodeIterator begin,

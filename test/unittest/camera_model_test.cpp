@@ -30,7 +30,7 @@
 #include "NanairoCore/CameraModel/film.hpp"
 #include "NanairoCore/CameraModel/pinhole_camera.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
-#include "NanairoCore/LinearAlgebra/transformation.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 // Test
 #include "sensor_test.hpp"
 #include "test.hpp"
@@ -79,7 +79,7 @@ TEST(CameraModelTest, PinholeTest)
   auto& camera = *std::get<0>(camera_set);
   auto& film = *std::get<1>(camera_set);
   camera.setFilm(&film);
-  camera.transform(nanairo::makeIdentityMatrix());
+  camera.transform(nanairo::Transformation::makeIdentity());
 
   // Wavelength
   nanairo::WavelengthSamples<1> wavelengths;

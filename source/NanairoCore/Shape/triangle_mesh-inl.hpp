@@ -11,9 +11,12 @@
 #define NANAIRO_TRIANGLE_MESH_INL_HPP
 
 #include "triangle_mesh.hpp"
+// Zisc
+#include "zisc/error.hpp"
+#include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
+#include "NanairoCore/Geometry/point.hpp"
 
 namespace nanairo {
 
@@ -44,6 +47,10 @@ Point2 TriangleMesh::textureCoordinate(const Float* barycentric) const noexcept
                                 barycentric[0] * texture_coordinate_[1][index] +
                                 barycentric[1] * texture_coordinate_[2][index];
   }
+  ZISC_ASSERT(zisc::isInClosedBounds(texture_coordinate[0], 0.0, 1.0),
+              "The texture_coordinate[0] is out of the range [0.0, 1.0].");
+  ZISC_ASSERT(zisc::isInClosedBounds(texture_coordinate[1], 0.0, 1.0),
+              "The texture_coordinate[1] is out of the range [0.0, 1.0].");
   return texture_coordinate;
 }
 

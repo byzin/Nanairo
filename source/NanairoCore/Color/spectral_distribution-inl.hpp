@@ -266,6 +266,14 @@ bool SpectralDistribution::isAllInBounds(const Float lower,
 }
 
 /*!
+  */
+inline
+bool SpectralDistribution::isAllInClosedBounds(const Float lower,
+                                               const Float upper) const noexcept
+{
+  return distribution_.isAllInClosedBounds(lower, upper);
+}
+/*!
   \details
   No detailed.
   */

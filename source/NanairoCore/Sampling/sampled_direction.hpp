@@ -12,7 +12,7 @@
 
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 
 namespace nanairo {
 
@@ -48,6 +48,11 @@ class SampledDirection
   //! Return the pdf (probability density function) of the sampled direction
   Float pdf() const noexcept;
 
+  //! Sample direction on hemisphere following cos theta pdf
+  template <uint kN>
+  static SampledDirection sampleOnHemisphere(const Vector3& normal,
+                                             Sampler& sampler) noexcept;
+
   //! Set direction
   void setDirection(const Vector3& direction) noexcept;
 
@@ -58,17 +63,14 @@ class SampledDirection
   void setPdf(const Float pdf) noexcept;
 
  private:
+  //! Sample direction on hemisphere following cos(theta)^kN pdf
+  template <uint kN>
+  static SampledDirection sampleOnHemisphere(Sampler& sampler) noexcept;
+
+
   Vector3 direction_;
   Float inverse_pdf_;
 };
-
-//! Sample direction on hemisphere following cos theta pdf
-template <uint kN>
-SampledDirection sampleDirectionOnHemisphere(Sampler& sampler) noexcept;
-
-//! Sample direction on hemisphere following cos theta pdf
-template <uint kN>
-SampledDirection sampleDirectionOnHemisphere(const Vector3& normal, Sampler& sampler) noexcept;
 
 //! \} Core
 

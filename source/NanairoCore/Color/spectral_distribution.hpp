@@ -14,6 +14,7 @@
 #include <memory>
 // Zisc
 #include "zisc/arithmetic_array.hpp"
+#include "zisc/linear_interp.hpp"
 // Nanairo
 #include "xyz_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -115,8 +116,11 @@ class SpectralDistribution
   //! Check if the distribution has the specified value
   bool hasValue(const Float value) const noexcept;
 
-  //! Check if all components are betwenn \p lower and \p upper
+  //! Check if all components are betwenn [ \p lower , \p upper )
   bool isAllInBounds(const Float lower, const Float upper) const noexcept;
+
+  //! Check if all components are betwenn [ \p lower , \p upper ]
+  bool isAllInClosedBounds(const Float lower, const Float upper) const noexcept;
 
   //! Check if all components are zero
   bool isAllZero() const noexcept;
@@ -126,6 +130,40 @@ class SpectralDistribution
 
   //! Return the smallest element
   Float min() const noexcept;
+
+  //! Make a emissive spectra
+  static std::unique_ptr<SpectralDistribution> makeEmissive(
+      const System& system,
+      const QJsonObject& settings) noexcept;
+
+  //! Make a reflectance spectra
+  static std::unique_ptr<SpectralDistribution> makeReflective(
+      const System& system,
+      const QJsonObject& settings) noexcept;
+
+  //!
+  static SpectralDistribution makeEmissiveSpectra(
+      const QJsonObject& settings) noexcept;
+
+  //!
+  static SpectralDistribution makeReflectiveSpectra(
+      const QJsonObject& settings) noexcept;
+
+  //! Make a spectral property
+  static SpectralDistribution makeSpectra(
+      const QJsonObject& settings) noexcept;
+
+  //! Make a spectral property
+  static SpectralDistribution makeSpectra(
+      const QString& file_path) noexcept;
+
+  //! Convert RGB to RGB spectra
+  static SpectralDistribution toRgbSpectra(
+      const RgbColor& color) noexcept;
+
+  //! Convert RGB to spectra
+  static SpectralDistribution toSpectra(const System& system,
+                                        const RgbColor& color) noexcept;
 
   //! Return the normalized distribution
   SpectralDistribution normalized() const noexcept;
@@ -152,36 +190,28 @@ class SpectralDistribution
   XyzColor toReflectiveXyz(const System& system) const noexcept;
 
  private:
+  //!
+  static bool isRgbData(const QJsonObject& settings) noexcept;
+
+  //!
+  static zisc::LinearInterp<Float> loadSpectraData(const QString& file_path) noexcept;
+
+  //!
+  static RgbColor makeRgb(const System& system,
+                          const QJsonObject& settings) noexcept;
+
+  //!
+  static SpectralDistribution toEmissiveRgbSpectra(
+      const System& system,
+      const SpectralDistribution& spectra) noexcept;
+
+  static SpectralDistribution toReflectiveRgbSpectra(
+      const System& system,
+      const SpectralDistribution& spectra) noexcept;
+
+
   zisc::ArithmeticArray<Float, CoreConfig::spectraSize()> distribution_;
 };
-
-//! Make a emissive spectra
-std::unique_ptr<SpectralDistribution> makeEmissiveDistribution(
-    const System& system,
-    const QJsonObject& settings) noexcept;
-
-//! Make a nanairoive spectra
-std::unique_ptr<SpectralDistribution> makeReflectiveDistribution(
-    const System& system,
-    const QJsonObject& settings) noexcept;
-
-//!
-SpectralDistribution makeEmissiveSpectra(const QJsonObject& settings) noexcept;
-
-//!
-SpectralDistribution makeReflectiveSpectra(const QJsonObject& settings) noexcept;
-
-//! Make a spectral property
-SpectralDistribution makeSpectra(const QJsonObject& settings) noexcept;
-
-//! Make a spectral property
-SpectralDistribution makeSpectra(const QString& file_path) noexcept;
-
-//! Convert RGB to RGB spectra
-SpectralDistribution toRgbSpectra(const RgbColor& color) noexcept;
-
-//! Convert RGB to spectra
-SpectralDistribution toSpectra(const System& system, const RgbColor& color) noexcept;
 
 //! \} Core
 

@@ -11,8 +11,8 @@
 #define NANAIRO_INTERSECTION_INFO_HPP
 
 // Nanairo
-#include "NanairoCore/LinearAlgebra/point.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 
 namespace nanairo {
 
@@ -64,7 +64,7 @@ class IntersectionInfo
 
   //! Set reverse face
   void setReverseFace(const bool is_reverse_face) noexcept;
-  
+
   //! Set normal direction
   void setNormal(const Vector3& normal) noexcept;
 

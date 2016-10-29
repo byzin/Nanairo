@@ -119,7 +119,7 @@ Window {
     }
   }
 
-  onClosing: nanairoManager.stopRendering()
+  onClosing: nanairoManager.stopping()
 
   Connections {
     target: nanairoManager

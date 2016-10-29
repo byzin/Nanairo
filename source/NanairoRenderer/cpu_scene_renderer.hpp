@@ -16,7 +16,6 @@
 #include <QtGlobal>
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 // Forward declaration
@@ -30,6 +29,7 @@ class Scene;
 class System;
 template <uint> class RenderingMethod;
 class ToneMappingOperator;
+template <uint> class WavelengthSampler;
 
 //! \addtogroup Renderer
 //! \{
@@ -44,7 +44,16 @@ class CpuSceneRenderer : public SceneRendererBase
   //! Initialize
   CpuSceneRenderer() noexcept;
 
+  //! Free buffers
+  ~CpuSceneRenderer() noexcept override;
+
  private:
+  using RgbRenderingMethod = RenderingMethod<3>;
+  using RgbWavelengthSampler = WavelengthSampler<3>;
+  using SpectraRenderingMethod = RenderingMethod<CoreConfig::wavelengthSampleSize()>;
+  using SpectraWavelengthSampler = WavelengthSampler<CoreConfig::wavelengthSampleSize()>;
+
+
   //! Convert the spectra buffer to HDR XYZ buffer
   void convertSpectraToHdr(const quint64 cycle) noexcept override;
 
@@ -57,18 +66,40 @@ class CpuSceneRenderer : public SceneRendererBase
   //! Render image
   void render(const quint64 cycle) noexcept override;
 
+  //! Return the RGB rendering method
+  const RgbRenderingMethod& rgbRenderingMethod() const noexcept;
+
+  //! Return the RGB rendering method
+  RgbRenderingMethod& rgbRenderingMethod() noexcept;
+
+  //! Return the RGB wavelength sampler
+  const RgbWavelengthSampler& rgbSampler() const noexcept;
+
+  //! Return the RGB wavelength sampler
+  RgbWavelengthSampler& rgbSampler() noexcept;
+
   //! Tonemap
   void toneMap() noexcept override;
 
+  //! Return the spectra rendering method
+  const SpectraRenderingMethod& renderingMethod() const noexcept;
 
-  WavelengthSampler<3> rgb_sampler_;
-  WavelengthSampler<CoreConfig::wavelengthSampleSize()> wavelength_sampler_;
-  UniquePointer<RenderingMethod<3>> rgb_rendering_method_;
-  UniquePointer<RenderingMethod<CoreConfig::wavelengthSampleSize()>> rendering_method_;
+  //! Return the spectra rendering method
+  SpectraRenderingMethod& renderingMethod() noexcept;
+
+  //! Return the wavelength sampler
+  const SpectraWavelengthSampler& wavelengthSampler() const noexcept;
+
+  //! Return the wavelength sampler
+  SpectraWavelengthSampler& wavelengthSampler() noexcept;
+
+
   UniquePointer<System> system_;
   UniquePointer<Scene> scene_;
   UniquePointer<ToneMappingOperator> tone_mapping_operator_;
   UniquePointer<HdrImage> hdr_image_;
+  void* wavelength_sampler_;
+  void* rendering_method_;
 };
 
 //! \} Renderer

@@ -18,8 +18,8 @@
 // Nanairo
 #include "sampler.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/transformation.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 
 namespace nanairo {
 
@@ -89,6 +89,22 @@ Float SampledDirection::pdf() const noexcept
   \details
   No detailed.
   */
+template <uint kCosineWeight> inline
+SampledDirection SampledDirection::sampleOnHemisphere(
+    const Vector3& normal,
+    Sampler& sampler) noexcept
+{
+  auto sampled_direction = sampleOnHemisphere<kCosineWeight>(sampler);
+  const auto basis_matrix = Transformation::makeChangeOfBasisFromLocal(normal);
+  const auto& direction = sampled_direction.direction();
+  sampled_direction.direction() = basis_matrix * direction;
+  return sampled_direction;
+}
+
+/*!
+  \details
+  No detailed.
+  */
 inline
 void SampledDirection::setDirection(const Vector3& direction) noexcept
 {
@@ -120,7 +136,8 @@ void SampledDirection::setPdf(const Float pdf) noexcept
   No detailed.
   */
 template <uint kCosineWeight> inline
-SampledDirection sampleDirectionOnHemisphere(Sampler& sampler) noexcept
+SampledDirection SampledDirection::SampledDirection::sampleOnHemisphere(
+    Sampler& sampler) noexcept
 {
   using zisc::cast;
 
@@ -133,8 +150,8 @@ SampledDirection sampleDirectionOnHemisphere(Sampler& sampler) noexcept
   const Float cos_theta = zisc::pow(1.0 - u2, exponent);
   const Float sin_theta = zisc::sqrt(1.0 - cos_theta * cos_theta);
 
-  const Vector3 direction{sin_theta * zisc::cos(phi), 
-                          sin_theta * zisc::sin(phi), 
+  const Vector3 direction{sin_theta * zisc::cos(phi),
+                          sin_theta * zisc::sin(phi),
                           cos_theta};
   ZISC_ASSERT(isUnitVector(direction), "The direction must be unit vector.");
 
@@ -142,22 +159,6 @@ SampledDirection sampleDirectionOnHemisphere(Sampler& sampler) noexcept
   const Float inverse_pdf = t / zisc::power<kCosineWeight>(cos_theta);
 
   return SampledDirection{direction, inverse_pdf};
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <uint kCosineWeight> inline
-SampledDirection sampleDirectionOnHemisphere(const Vector3& normal, 
-                                             Sampler& sampler) noexcept
-{
-  auto sampled_direction =
-      sampleDirectionOnHemisphere<kCosineWeight>(sampler);
-  const auto basis_matrix = makeChangeOfBasisMatrixFromLocal(normal);
-  const auto& direction = sampled_direction.direction();
-  sampled_direction.direction() = basis_matrix * direction;
-  return sampled_direction;
 }
 
 } // namespace nanairo

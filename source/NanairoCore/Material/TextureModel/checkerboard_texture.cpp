@@ -25,7 +25,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Color/xyz_color.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
+#include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Utility/value.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 
@@ -66,16 +66,6 @@ Float CheckerboardTexture::reflectiveValue(const Point2& coordinate,
   return reflective_value_[index]->getByWavelength(wavelength);
 }
 
-
-/*!
-  \details
-  No detailed.
-  */
-std::size_t CheckerboardTexture::textureSize() const noexcept
-{
-  return sizeof(SpectralDistribution) * 2 + sizeof(Float) * 4;
-}
-
 /*!
   \details
   No detailed.
@@ -103,11 +93,13 @@ void CheckerboardTexture::initialize(const System& system,
   const auto color1_settings = SceneValue::toObject(settings, keyword::color1);
   const auto color2_settings = SceneValue::toObject(settings, keyword::color2);
   // Emissive values
-  emissive_value_[0] = makeEmissiveDistribution(system, color1_settings);
-  emissive_value_[1] = makeEmissiveDistribution(system, color2_settings);
+  emissive_value_[0] = SpectralDistribution::makeEmissive(system, color1_settings);
+  emissive_value_[1] = SpectralDistribution::makeEmissive(system, color2_settings);
   // Reflective values
-  reflective_value_[0] = makeReflectiveDistribution(system, color1_settings);
-  reflective_value_[1] = makeReflectiveDistribution(system, color2_settings);
+  reflective_value_[0] = SpectralDistribution::makeReflective(system,
+                                                              color1_settings);
+  reflective_value_[1] = SpectralDistribution::makeReflective(system,
+                                                              color2_settings);
   // Float values
   float_value_[0] = reflective_value_[0]->toReflectiveXyz(system).y();
   float_value_[0] = zisc::clamp(float_value_[0], 0.0, 1.0);

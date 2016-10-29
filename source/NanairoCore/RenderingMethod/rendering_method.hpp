@@ -34,7 +34,7 @@ class System;
 template <uint> class ShaderModel;
 class World;
 
-//! \addtogroup Core 
+//! \addtogroup Core
 //! \{
 
 /*!
@@ -52,35 +52,50 @@ class RenderingMethod
 
 
   //! Initialize the rendering method
-  RenderingMethod(const QJsonObject& settings) noexcept;
+  RenderingMethod(const System& system, const QJsonObject& settings) noexcept;
 
   //! Finalize the rendering method
   virtual ~RenderingMethod() noexcept {}
 
 
   //! Render the scene
-  void operator()(System& system, 
-                  Scene& scene, 
+  void operator()(System& system,
+                  Scene& scene,
                   const Wavelengths& sampled_wavelengths) noexcept;
 
 
   //! Initialize the method
   void clear() noexcept;
 
+  //! Make rendering method
+  static RenderingMethod* makeMethod(System& system,
+                                     const QJsonObject& settings) noexcept;
+
   //! Return the ray cast epsilon
   Float rayCastEpsilon() const noexcept;
 
   //! Render the scene
-  virtual void render(System& system, 
+  virtual void render(System& system,
                       Scene& scene,
                       const Wavelengths& sampled_wavelengths) noexcept = 0;
 
  protected:
+  //! Calculate the num of pixel blocks
+  uint calcPixelBlockSize(const uint width, const uint height) const noexcept;
+
+  //! Calculate the max distance of the shadow ray
+  Float calcShadowRayDistance(const Float diff) const noexcept;
+
   //! Find and return the closest intersection of the ray
   IntersectionInfo castRay(
       const World& world,
       const Ray& ray,
       const Float max_distance2 = std::numeric_limits<Float>::max()) const noexcept;
+
+  //! Make a shadow ray
+  Ray makeShadowRay(const Point3& source,
+                    const Point3& dest,
+                    const Vector3& normal) const noexcept;
 
   //! Play russian roulette
   RouletteResult playRussianRoulette(const uint path,
@@ -95,7 +110,7 @@ class RenderingMethod
                     const Ray& ray,
                     const ShaderPointer& bxdf,
                     const IntersectionInfo& intersection,
-                    const Spectra* ray_weight,
+                    Spectra* ray_weight,
                     Spectra* next_ray_weight,
                     Sampler& sampler,
                     Float* inverse_direction_pdf = nullptr) const noexcept;
@@ -104,7 +119,7 @@ class RenderingMethod
   void updateSelectedWavelengthInfo(const ShaderPointer& bxdf,
                                     Spectra* weight,
                                     bool* wavelength_is_selected) const noexcept;
-        
+
 
  private:
   //! Initialize the rendering method
@@ -112,17 +127,11 @@ class RenderingMethod
 
 
   std::function<void ()> clear_function_;
-  RussianRouletteFunction<kSampleSize> russian_roulette_;
+  RussianRoulette russian_roulette_;
   Float ray_cast_epsilon_;
 };
 
-//! Make rendering method
-template <uint kSampleSize>
-UniquePointer<RenderingMethod<kSampleSize>> makeRenderingMethod(
-    System& system,
-    const QJsonObject& settings) noexcept;
-
-//! \} Core 
+//! \} Core
 
 } // namespace nanairo
 

@@ -56,12 +56,12 @@ void BinaryRadixTreeBvh::constructBinaryRadixTreeBvh(
 
   auto morton_code_list = makeMortonCodeList(leaf_node_list);
 
-  constexpr bool multithreading = multithreadingIsEnabled();
+  constexpr bool threading = threadingIsEnabled();
   auto first = morton_code_list.begin();
   auto begin = first;
   auto end = morton_code_list.end();
-  splitInMortonCode<multithreading>(system, 63, 0, tree, first, begin, end);
-  setBoundingBox<multithreading>(system, tree);
+  splitInMortonCode<threading>(system, 63, 0, tree, first, begin, end);
+  setBoundingBox<threading>(system, tree, 0);
 }
 
 /*!
@@ -72,9 +72,8 @@ void BinaryRadixTreeBvh::constructBvh(System& system,
                                       const std::vector<Object>& object_list,
                                       std::vector<BvhNode>& tree) const noexcept
 {
-  // Allocate memory
-  tree.resize((object_list.size() * 2) - 1);
-
+  const auto num_of_nodes = object_list.size() * 2 - 1;
+  tree.resize(num_of_nodes);
   constructBinaryRadixTreeBvh(system, object_list, tree);
 }
 
@@ -82,7 +81,7 @@ void BinaryRadixTreeBvh::constructBvh(System& system,
   \details
   No detailed.
   */
-template <bool multithreading>
+template <bool threading>
 void BinaryRadixTreeBvh::splitInMortonCode(System& system,
                                            const uint64 bit,
                                            const uint32 index,
@@ -104,8 +103,7 @@ void BinaryRadixTreeBvh::splitInMortonCode(System& system,
   if (split_position == begin || split_position == end) {
     if (bit != 1) {
       const auto next_bit = bit - 1;
-      splitInMortonCode<multithreading>(system, next_bit, index, tree, 
-                                        first, begin, end);
+      splitInMortonCode<threading>(system, next_bit, index, tree, first, begin, end);
       return;
     }
     else {
@@ -126,19 +124,20 @@ void BinaryRadixTreeBvh::splitInMortonCode(System& system,
   ZISC_ASSERT(left_child_index < tree.size(), "BVH buffer is overrun!.");
   ZISC_ASSERT(right_child_index < tree.size(), "BVH buffer is overrun!.");
 
-  if (multithreading) {
-    auto split_in_left_morton_code =
-    [&system, next_bit, left_child_index, &tree, first, begin, split_position]()
-    {
-      splitInMortonCode<false>(system, next_bit, left_child_index, tree, 
-                               first, begin, split_position);
-    };
-    auto split_in_right_morton_code =
-    [&system, next_bit, right_child_index, &tree, first, split_position, end]()
-    {
-      splitInMortonCode<false>(system, next_bit, right_child_index, tree, 
-                               first, split_position, end);
-    };
+  auto split_in_left_morton_code =
+  [&system, next_bit, left_child_index, &tree, first, begin, split_position]()
+  {
+    splitInMortonCode<false>(
+        system, next_bit, left_child_index, tree, first, begin, split_position);
+  };
+  auto split_in_right_morton_code =
+  [&system, next_bit, right_child_index, &tree, first, split_position, end]()
+  {
+    splitInMortonCode<false>(
+        system, next_bit, right_child_index, tree, first, split_position, end);
+  };
+
+  if (threading) {
     auto& thread_pool = system.threadPool();
     auto left_result = thread_pool.enqueue<void>(split_in_left_morton_code);
     auto right_result = thread_pool.enqueue<void>(split_in_right_morton_code);
@@ -146,10 +145,8 @@ void BinaryRadixTreeBvh::splitInMortonCode(System& system,
     right_result.get();
   }
   else {
-    splitInMortonCode<false>(system, next_bit, left_child_index, tree, 
-                             first, begin, split_position);
-    splitInMortonCode<false>(system, next_bit, right_child_index, tree, 
-                             first, split_position, end);
+    split_in_left_morton_code();
+    split_in_right_morton_code();
   }
   ZISC_ASSERT(tree[left_child_index].parentIndex() == BvhNode::nonObjectIndex(),
               "BVH node rewrite.");

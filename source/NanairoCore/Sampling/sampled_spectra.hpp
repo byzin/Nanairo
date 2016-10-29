@@ -102,8 +102,11 @@ class SampledSpectra
   //! Get the intensity of wavelength by the index.
   Float intensity(const uint index) const noexcept;
 
-  //! Check if the each sample is between \p lower and \p upper
+  //! Check if the each sample is between [ \p lower , \p upper )
   bool isAllInBounds(const Float lower, const Float upper) const noexcept;
+
+  //! Check if the each sample is between [ \p lower , \p upper ]
+  bool isAllInClosedBounds(const Float lower, const Float upper) const noexcept;
 
   //! Check whether intensities of all elements are zero
   bool isAllZero() const noexcept;

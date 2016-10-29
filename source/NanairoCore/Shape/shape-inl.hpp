@@ -1,5 +1,5 @@
 /*!
-  \file geometry-inl.hpp
+  \file shape-inl.hpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
@@ -7,10 +7,10 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef NANAIRO_GEOMETRY_INL_HPP
-#define NANAIRO_GEOMETRY_INL_HPP
+#ifndef NANAIRO_SHAPE_INL_HPP
+#define NANAIRO_SHAPE_INL_HPP
 
-#include "geometry.hpp"
+#include "shape.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 
@@ -21,11 +21,11 @@ namespace nanairo {
   No detailed.
   */
 inline
-Float Geometry::surfaceArea() const noexcept
+Float Shape::surfaceArea() const noexcept
 {
   return surface_area_;
 }
 
 } // namespace nanairo
 
-#endif // NANAIRO_GEOMETRY_INL_HPP
+#endif // NANAIRO_SHAPE_INL_HPP

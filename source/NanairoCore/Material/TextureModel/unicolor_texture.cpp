@@ -59,17 +59,6 @@ Float UnicolorTexture::reflectiveValue(const Point2& /* coordinate */,
   \details
   No detailed.
   */
-std::size_t UnicolorTexture::textureSize() const noexcept
-{
-  return sizeof(*emissive_value_) +
-         sizeof(*reflective_value_) +
-         sizeof(float_value_);
-}
-
-/*!
-  \details
-  No detailed.
-  */
 TextureType UnicolorTexture::type() const noexcept
 {
   return TextureType::Unicolor;
@@ -84,9 +73,9 @@ void UnicolorTexture::initialize(const System& system,
 {
   const auto color_settings = SceneValue::toObject(settings, keyword::color);
   // Emissive value
-  emissive_value_ = makeEmissiveDistribution(system, color_settings);
+  emissive_value_ = SpectralDistribution::makeEmissive(system, color_settings);
   // Reflective value
-  reflective_value_ = makeReflectiveDistribution(system, color_settings);
+  reflective_value_ = SpectralDistribution::makeReflective(system, color_settings);
   // Float value
   float_value_ = reflective_value_->toReflectiveXyz(system).y();
   float_value_ = zisc::clamp(float_value_, 0.0, 1.0);

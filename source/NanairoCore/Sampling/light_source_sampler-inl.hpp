@@ -28,7 +28,7 @@ namespace nanairo {
 inline
 Float LightSourceSampler::getPdf(const Object* light_source) const noexcept
 {
-  const auto flux = light_source->geometry().surfaceArea() *
+  const auto flux = light_source->shape().surfaceArea() *
                     light_source->material().emitter().radiantExitance();
   return flux * inverse_total_flux_;
 }

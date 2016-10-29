@@ -9,7 +9,7 @@
 
 #include "object.hpp"
 // Nanairo
-#include "NanairoCore/Geometry/geometry.hpp"
+#include "NanairoCore/Shape/shape.hpp"
 #include "NanairoCore/Material/material.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
@@ -19,9 +19,9 @@ namespace nanairo {
   \details
   No detailed.
   */
-Object::Object(const Material& material, UniquePointer<Geometry>&& geometry) noexcept :
+Object::Object(const Material& material, UniquePointer<Shape>&& shape) noexcept :
     material_{material},
-    geometry_{std::move(geometry)}
+    shape_{std::move(shape)}
 {
 }
 
@@ -31,7 +31,7 @@ Object::Object(const Material& material, UniquePointer<Geometry>&& geometry) noe
   */
 Object::Object(Object&& object) noexcept :
     material_{object.material_},
-    geometry_{std::move(object.geometry_)}
+    shape_{std::move(object.shape_)}
 {
 }
 

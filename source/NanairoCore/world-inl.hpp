@@ -53,16 +53,6 @@ const LightSourceSampler& World::lightSourceSampler() const noexcept
   return *light_source_sampler_;
 }
 
-///*!
-//  \details
-//  No detailed.
-//  */
-//inline
-//const std::vector<Object>& World::objectList() const
-//{
-//  return object_list_;
-//}
-
 /*!
   \details
   No detailed.

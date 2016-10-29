@@ -40,15 +40,6 @@ SmoothDiffuseSurface::SmoothDiffuseSurface(
   \details
   No detailed.
   */
-std::size_t SmoothDiffuseSurface::surfaceSize() const noexcept
-{
-  return 0;
-}
-
-/*!
-  \details
-  No detailed.
-  */
 SurfaceType SmoothDiffuseSurface::type() const noexcept
 {
   return SurfaceType::SmoothDiffuse;

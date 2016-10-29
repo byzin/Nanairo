@@ -22,8 +22,8 @@
 #include "aabb.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/object.hpp"
-#include "NanairoCore/Geometry/geometry.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
+#include "NanairoCore/Shape/shape.hpp"
+#include "NanairoCore/Geometry/point.hpp"
 
 namespace nanairo {
 
@@ -45,7 +45,7 @@ BvhNode::BvhNode() noexcept :
   No detailed.
   */
 BvhNode::BvhNode(const Object* object) noexcept :
-    bounding_box_{object->geometry().boundingBox()},
+    bounding_box_{object->shape().boundingBox()},
     parent_index_{BvhNode::nonObjectIndex()},
     left_child_index_{BvhNode::nonObjectIndex()},
     right_child_index_{BvhNode::nonObjectIndex()},
@@ -84,7 +84,7 @@ uint64 calc63bitMortonCode(const Float x, const Float y, const Float z) noexcept
   \details
   No detailed.
   */
-Aabb combineBoundingBoxs(std::vector<BvhNode>::const_iterator begin, 
+Aabb combineBoundingBoxs(std::vector<BvhNode>::const_iterator begin,
                          std::vector<BvhNode>::const_iterator end) noexcept
 {
   auto i = begin;

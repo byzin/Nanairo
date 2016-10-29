@@ -12,7 +12,7 @@
 
 #include "object.hpp"
 // Nanairo
-#include "NanairoCore/Geometry/geometry.hpp"
+#include "NanairoCore/Shape/shape.hpp"
 #include "NanairoCore/Material/material.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
@@ -23,9 +23,9 @@ namespace nanairo {
   No detailed.
   */
 inline
-const Geometry& Object::geometry() const noexcept
+const Shape& Object::shape() const noexcept
 {
-  return *geometry_;
+  return *shape_;
 }
 
 /*!

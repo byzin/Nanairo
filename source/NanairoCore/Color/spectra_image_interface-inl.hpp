@@ -51,16 +51,19 @@ void SpectraImageInterface::addContribution(
 
   const auto image_type = type();
   switch (image_type) {
-   case SpectraImageType::Spectra:
+   case SpectraImageType::Spectra: {
     addSpectraContribution(this, x, y, contribution);
     break;
-   case SpectraImageType::Rgb:
+   }
+   case SpectraImageType::Rgb: {
     addRgbContribution(this, x, y, contribution);
     break;
-   default:
+   }
+   default: {
     zisc::raiseError("SpectraImageError: (type=", cast<int>(image_type),
                      " addContribution method is not implemented.");
     break;
+   }
   }
 }
 

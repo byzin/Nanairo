@@ -59,15 +59,6 @@ Float ValueTexture::reflectiveValue(const Point2& /* coordinate */,
   \details
   No detailed.
   */
-std::size_t ValueTexture::textureSize() const noexcept
-{
-  return 0;
-}
-
-/*!
-  \details
-  No detailed.
-  */
 TextureType ValueTexture::type() const noexcept
 {
   return TextureType::Value;

@@ -12,8 +12,8 @@
 
 #include "intersection_info.hpp"
 // Nanairo
-#include "NanairoCore/LinearAlgebra/point.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 
 namespace nanairo {
 

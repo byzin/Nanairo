@@ -23,7 +23,7 @@ namespace nanairo {
 // Forward declaration
 class Sampler;
 
-//! \addtogroup Core 
+//! \addtogroup Core
 //! \{
 
 /*!
@@ -44,7 +44,7 @@ class LightSourceSampler
   Float getPdf(const Object* light_source) const noexcept;
 
  private:
-  using LightSourceCdf = 
+  using LightSourceCdf =
       zisc::CumulativeDistributionFunction<const LightSourceReference*, Float>;
 
 
@@ -56,7 +56,7 @@ class LightSourceSampler
   Float inverse_total_flux_;
 };
 
-//! \} Core 
+//! \} Core
 
 } // namespace nanairo
 

@@ -49,7 +49,7 @@ class GuiRendererManager : public QObject
 
   //! Set rendered image provider
   void setRenderedImageProvider(RenderedImageProvider* image_provider) noexcept;
-    
+
   //! Return the current working directory
   Q_INVOKABLE QString currentWorkingDir() const noexcept;
 
@@ -84,28 +84,21 @@ class GuiRendererManager : public QObject
   //! Convert a url of absolute path to a relative path
   Q_INVOKABLE QString toRelativeFilePath(const QUrl& absolute_path) const noexcept;
 
- public slots:
-  //! Set output message to Log view
-  void setMessage(const QString& message) const noexcept;
-
  signals:
-  //! Called when rendering is finished
+  //! Called when the rendering is finished
   void finished() const;
 
-  //! Called when rendering is started
+  //! Called when the rendering is started
   void started() const;
 
-  //! Called when
-  void stopRendering() const;
+  //! Called when the manager is to stop the rendering
+  void stopping() const;
 
   //! Called when rendered image is updated
   void updated(QString fps, QString cycle, QString time) const;
 
   //! Output the total camera event
   void cameraEventHandled(QMatrix4x4 matrix) const;
-
-  //! Output a message
-  void outputMessage(const QString& message) const;
 
   //! Called when a preview event is occured
   void previewEvent(const int transformation_event_type,
@@ -135,7 +128,5 @@ class GuiRendererManager : public QObject
 //! \} Gui
 
 } // namespace nanairo
-
-#include "gui_renderer_manager-inl.hpp"
 
 #endif // NANAIRO_GUI_RENDERER_MANAGER

@@ -1,0 +1,41 @@
+/*!
+  \file NNumOfPhotonsSettingBlock.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "../SettingBlockItems"
+
+NSettingBlock {
+  id: num_of_photons_setting_block
+
+  labelText: qsTr("Num of photons")
+
+  NIntSpinBox {
+    id: num_of_photons_spinbox
+
+    y: num_of_photons_setting_block.labelHeight + @item_offset@
+
+    maximumValue: @integer32_max@
+    minimumValue: 1024
+  }
+
+  function initialize() {
+    num_of_photons_spinbox.value = 131072;
+  }
+
+  function getSceneData() {
+    var sceneData = {};
+    sceneData["@numOfPhotons@"] = num_of_photons_spinbox.value;
+    return sceneData;
+  }
+
+  function setSceneData(sceneData) {
+    num_of_photons_spinbox.value = sceneData["@numOfPhotons@"];
+  }
+}

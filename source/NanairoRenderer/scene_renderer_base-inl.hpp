@@ -18,7 +18,7 @@
 #include "zisc/stopwatch.hpp"
 // Nanairo
 #include "camera_event.hpp"
-#include "NanairoCore/LinearAlgebra/transformation.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoRenderer/nanairo_renderer_config.hpp"
 
 namespace nanairo {
@@ -62,6 +62,7 @@ void SceneRendererBase::handleCameraEvent(quint64* cycle,
 {
   if (camera_event_.isEventOccured()) {
     handleCameraEvent();
+    //! \todo Very slow
 //    stopwatch->stop();
 //    stopwatch->start();
     *cycle = 0;
@@ -95,7 +96,7 @@ const QImage& SceneRendererBase::renderedImage() const noexcept
 inline
 void SceneRendererBase::stopRendering() const noexcept
 {
-  emit stop();
+  emit stopping();
 }
 
 /*!
@@ -125,9 +126,9 @@ const CameraEvent& SceneRendererBase::cameraEvent() const noexcept
 inline
 bool SceneRendererBase::isCycleToSaveImage(const quint64 cycle) const noexcept
 {
-  bool flag = false;
-  if (is_power2_saving_)
-    flag = (cycle & (cycle - 1)) == 0;
+  const bool flag = (is_power2_cycle_saving_)
+      ? (cycle & (cycle - 1)) == 0
+      : false;
   return flag;
 }
 
@@ -138,7 +139,7 @@ bool SceneRendererBase::isCycleToSaveImage(const quint64 cycle) const noexcept
 inline
 bool SceneRendererBase::isLastCycle(const quint64 cycle) const noexcept
 {
-  return (cycle == termination_pass_);
+  return (cycle == termination_cycle_);
 }
 
 /*!
@@ -149,11 +150,10 @@ inline
 bool SceneRendererBase::isTimeToSaveImage(const Clock::duration& time,
                                           Clock::rep* interval_count) const noexcept
 {
-  if ((saving_interval_time_ * (*interval_count)) <= time) {
+  const bool is_time_to_save = (saving_interval_time_ * (*interval_count)) <= time;
+  if (is_time_to_save)
     ++(*interval_count);
-    return true;
-  }
-  return false;
+  return is_time_to_save;
 }
 
 /*!
@@ -175,17 +175,15 @@ void SceneRendererBase::saveLdrImage(const quint64 cycle,
 inline
 bool SceneRendererBase::waitForNextFrame(const Clock::duration& delta_time) const noexcept
 {
+  using Nano = std::chrono::nanoseconds;
   using std::chrono::duration_cast;
+  constexpr auto nano_time_per_frame = Nano{1'000'000'000 / RendererConfig::maxFps()};
+  constexpr auto time_per_frame = duration_cast<Clock::duration>(nano_time_per_frame);
 
-  constexpr auto time_per_frame =
-      std::chrono::milliseconds{1000 / RendererConfig::maxFps()};
-  constexpr auto wait_time = duration_cast<Clock::duration>(time_per_frame);
-
-  if (wait_time > delta_time) {
-    std::this_thread::sleep_for(wait_time - delta_time);
-    return true;
-  }
-  return false;
+  const bool is_faster = delta_time < time_per_frame;
+  if (is_faster)
+    std::this_thread::sleep_for(time_per_frame - delta_time);
+  return is_faster;
 }
 
 } // namespace nanairo

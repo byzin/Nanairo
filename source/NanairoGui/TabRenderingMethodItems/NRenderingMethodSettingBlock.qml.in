@@ -24,8 +24,8 @@ NSettingBlock {
     backgroundColor: rendering_method_setting_block.color
 
     model: ["@pathTracing@",
-            "@lightTracing@"]
-//            "@probabilisticPpm@"]
+            "@lightTracing@",
+            "@probabilisticPpm@"]
   }
 
   function getSceneData() {

@@ -165,7 +165,7 @@ ApplicationWindow {
         enabled: isRenderingMode
         text: qsTr("Stop")
         shortcut: ctrlKey + "+F"
-        onTriggered: nanairoManager.stopRendering()
+        onTriggered: nanairoManager.stopping()
       }
     }
 

@@ -12,13 +12,11 @@
 
 // Standard C++ library
 #include <cstddef>
-#include <functional>
 // Nanairo
 #include "Utility/unique_pointer.hpp"
 
 // Forward declaration
 class QJsonObject;
-class QString;
 
 namespace nanairo {
 
@@ -37,9 +35,7 @@ class Scene
 {
  public:
   //! Initialize the scene
-  Scene(System& system, 
-        const QJsonObject& settings, 
-        const std::function<void (const QString&)>& message_sender) noexcept;
+  Scene(System& system, const QJsonObject& settings) noexcept;
 
 
   //! Return the camera
@@ -59,9 +55,7 @@ class Scene
 
  private:
   //! Initialize the scene
-  void initialize(System& system, 
-                  const QJsonObject& settings,
-                  const std::function<void (const QString&)>& message_sender) noexcept;
+  void initialize(System& system, const QJsonObject& settings) noexcept;
 
 
   UniquePointer<CameraModel> camera_;

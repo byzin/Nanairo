@@ -20,7 +20,7 @@
 #include "zisc/stopwatch.hpp"
 // Nanairo
 #include "camera_event.hpp"
-#include "NanairoCore/LinearAlgebra/transformation.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 
 // Foward declaration
 class QJsonObject;
@@ -74,11 +74,8 @@ class SceneRendererBase : public QObject
   //! Output the total camera event 
   void cameraEventHandled(const QMatrix4x4& matrix) const;
 
-  //! Output message
-  void outputMessage(const QString& message) const;
-
-  //! Called when
-  void stop() const;
+  //! Called when the renderer is to stop
+  void stopping() const;
 
   //! Called when rendered image updated.
   void updated(quint64 cycle, qint64 time) const;
@@ -128,7 +125,7 @@ class SceneRendererBase : public QObject
   bool isLastCycle(const quint64 cycle) const noexcept;
 
   //! Check if the current time is to save image
-  bool isTimeToSaveImage(const Clock::duration& time, 
+  bool isTimeToSaveImage(const Clock::duration& time,
                          Clock::rep* interval_count) const noexcept;
 
   //! Output the transformation matrix
@@ -145,8 +142,8 @@ class SceneRendererBase : public QObject
   QImage ldr_image_;
   Clock::duration saving_interval_time_;
   CameraEvent camera_event_;
-  quint64 termination_pass_;
-  bool is_power2_saving_;
+  quint64 termination_cycle_;
+  bool is_power2_cycle_saving_;
 };
 
 //! \} Renderer

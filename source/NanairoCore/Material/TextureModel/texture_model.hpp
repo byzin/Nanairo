@@ -78,9 +78,6 @@ class TextureModel
       const Point2& coordinate,
       const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
 
-  //! Return the texture byte size
-  virtual std::size_t textureSize() const noexcept = 0;
-
   //! Return the texture type
   virtual TextureType type() const noexcept = 0;
 

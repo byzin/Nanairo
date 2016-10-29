@@ -18,14 +18,14 @@
 #include "zisc/math.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
-#include "geometry.hpp"
+#include "shape.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/DataStructure/aabb.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
-#include "NanairoCore/LinearAlgebra/transformation.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Sampling/sampled_point.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
 
@@ -54,8 +54,8 @@ Aabb Plane::boundingBox() const noexcept
 {
   auto min_point = top_left_.data();
   auto max_point = top_left_.data();
-  Point3 plane_points[] = {top_left_ + axis1_, 
-                           top_left_ + axis2_, 
+  Point3 plane_points[] = {top_left_ + axis1_,
+                           top_left_ + axis2_,
                            top_left_ + axis1_ + axis2_};
   for (const auto& point : plane_points) {
     min_point = zisc::minElements(min_point, point.data());
@@ -68,18 +68,9 @@ Aabb Plane::boundingBox() const noexcept
   \details
   No detailed.
   */
-std::size_t Plane::geometrySize() const noexcept
-{
-  return sizeof(Plane);
-}
-
-/*!
-  \details
-  No detailed.
-  */
 Float Plane::getTraversalCost() const noexcept
 {
-  return 0.4;
+  return 1.0;
 }
 
 /*!
@@ -103,19 +94,21 @@ bool Plane::testIntersection(const Ray& ray, IntersectionInfo* intersection) con
   const auto am = point - top_left_;
   const Float dot_axis1_am = zisc::dot(am, axis1_);
   const Float dot_axis2_am = zisc::dot(am, axis2_);
-  if ((0.0 <= dot_axis1_am) && (dot_axis1_am <= square_width_) &&
-      (0.0 <= dot_axis2_am) && (dot_axis2_am <= square_height_)) {
+  const bool is_hit = zisc::isInClosedBounds(dot_axis1_am, 0.0, square_width_) &&
+                      zisc::isInClosedBounds(dot_axis2_am, 0.0, square_height_);
+  if (is_hit) {
     intersection->setReverseFace(cos_theta > 0.0);
     intersection->setPoint(point);
     intersection->setNormal(normal_);
     const Float u = dot_axis1_am * inverse_square_width_;
     const Float v = dot_axis2_am * inverse_square_height_;
-    ZISC_ASSERT((0.0 <= u) && (u <= 1.0), "Texture coordinate u is must be [0, 1].");
-    ZISC_ASSERT((0.0 <= v) && (v <= 1.0), "Texture coordinate v is must be [0, 1].");
+    ZISC_ASSERT(zisc::isInClosedBounds(u, 0.0, 1.0),
+                "Texture coordinate u is must be [0, 1].");
+    ZISC_ASSERT(zisc::isInClosedBounds(v, 0.0, 1.0),
+                "Texture coordinate v is must be [0, 1].");
     intersection->setTextureCoordinate(Point2{u, v});
-    return true;
   }
-  return false;
+  return is_hit;
 }
 
 /*!
@@ -137,18 +130,18 @@ std::tuple<SampledPoint, Vector3, Point2> Plane::samplePoint(
  */
 void Plane::transform(const Matrix4x4& matrix) noexcept
 {
-  affineTransform(matrix, &top_left_);
-  affineTransform(matrix, &axis1_);
-  affineTransform(matrix, &axis2_);
+  Transformation::affineTransform(matrix, &top_left_);
+  Transformation::affineTransform(matrix, &axis1_);
+  Transformation::affineTransform(matrix, &axis2_);
 
   square_width_ = axis1_.squareNorm();
   square_height_ = axis2_.squareNorm();
-  ZISC_ASSERT(0.0 < square_width_, "The width of the plane must be greater than 0.");
-  ZISC_ASSERT(0.0 < square_height_, "The height of the plane must be greater than 0.");
+  ZISC_ASSERT(0.0 < square_width_, "The width of the plane is minus.");
+  ZISC_ASSERT(0.0 < square_height_, "The height of the plane is minus.");
   inverse_square_width_ = 1.0 / square_width_;
   inverse_square_height_ = 1.0 / square_height_;
   normal_ = cross(axis2_, axis1_).normalized();
-  ZISC_ASSERT(isUnitVector(normal_), "Normal must be unit vector.");
+  ZISC_ASSERT(isUnitVector(normal_), "Normal isn't unit vector.");
 
   const auto area = zisc::cross(axis1_, axis2_).norm();
   setSurfaceArea(area);

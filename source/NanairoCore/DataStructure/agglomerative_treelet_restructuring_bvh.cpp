@@ -29,7 +29,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Data/object.hpp"
-#include "NanairoCore/Geometry/geometry.hpp"
+#include "NanairoCore/Shape/shape.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
@@ -78,21 +78,22 @@ void AgglomerativeTreeletRestructuringBvh::constructBvh(
     std::vector<BvhNode>& tree) const noexcept
 {
   // Allocate memory
-  tree.resize((object_list.size() * 2) - 1);
+  const auto num_of_nodes = object_list.size() * 2 - 1;
+  tree.resize(num_of_nodes);
 
   BinaryRadixTreeBvh::constructBinaryRadixTreeBvh(system, object_list, tree);
-  
+
   std::vector<uint> inner_index_list;
   std::vector<uint> leaf_index_list;
   std::vector<Float> distance_matrix;
   inner_index_list.reserve(treeletSize() - 1);
   leaf_index_list.reserve(treeletSize());
   distance_matrix.resize((treeletSize() * (treeletSize() - 1)) / 2);
-  
-  constexpr bool multithreading = multithreadingIsEnabled();
+
   for (uint i = 0; i < optimizationLoopCount(); ++i) {
-    restructureTreelet<multithreading>(system, 0, inner_index_list, leaf_index_list, 
-                                       distance_matrix, tree);
+    constexpr bool threading = threadingIsEnabled();
+    restructureTreelet<threading>(
+        system, 0, inner_index_list, leaf_index_list, distance_matrix, tree);
   }
 }
 
@@ -177,7 +178,7 @@ void AgglomerativeTreeletRestructuringBvh::formTreelet(
     std::vector<uint>& leaf_index_list) const noexcept
 {
   ZISC_ASSERT(3 <= treelet_size, "Treelet size is small: ", treelet_size);
-  
+
   inner_index_list.clear();
   leaf_index_list.clear();
 
@@ -281,7 +282,7 @@ uint AgglomerativeTreeletRestructuringBvh::optimizationLoopCount() const noexcep
   \details
   No detailed.
   */
-template <bool multithreading>
+template <bool threading>
 uint AgglomerativeTreeletRestructuringBvh::restructureTreelet(
     System& system,
     const uint32 index,
@@ -296,27 +297,35 @@ uint AgglomerativeTreeletRestructuringBvh::restructureTreelet(
   if (root.isLeafNode())
     return num_of_subtree_nodes;
 
-  if (multithreading) {
-    auto restructure_left_treelet =
-    [this, &system, &root, &inner_index_list, &leaf_index_list, 
-     &distance_matrix, &tree]()
-    {
+  auto restructure_left_treelet =
+  [this, &system, &root, &inner_index_list, &leaf_index_list, &distance_matrix, &tree]()
+  {
+    if (threading) {
       auto inner_list = inner_index_list;
       auto leaf_list = leaf_index_list;
       auto matrix = distance_matrix;
-      return restructureTreelet<false>(system, root.leftChildIndex(), inner_list, 
-                                       leaf_list, matrix, tree);
-    };
-    auto restructure_right_treelet =
-    [this, &system, &root, &inner_index_list, &leaf_index_list, 
-     &distance_matrix, &tree]()
-    {
+      return restructureTreelet<false>(
+          system, root.leftChildIndex(), inner_list, leaf_list, matrix, tree);
+    }
+    else {
       auto& inner_list = inner_index_list;
       auto& leaf_list = leaf_index_list;
       auto& matrix = distance_matrix;
-      return restructureTreelet<false>(system, root.rightChildIndex(), inner_list, 
-                                       leaf_list, matrix, tree);
-    };
+      return restructureTreelet<false>(
+          system, root.leftChildIndex(), inner_list, leaf_list, matrix, tree);
+    }
+  };
+  auto restructure_right_treelet =
+  [this, &system, &root, &inner_index_list, &leaf_index_list, &distance_matrix, &tree]()
+  {
+    auto& inner_list = inner_index_list;
+    auto& leaf_list = leaf_index_list;
+    auto& matrix = distance_matrix;
+    return restructureTreelet<false>(
+        system, root.rightChildIndex(), inner_list, leaf_list, matrix, tree);
+  };
+
+  if (threading) {
     auto& thread_pool = system.threadPool();
     auto left_result = thread_pool.enqueue<uint>(restructure_left_treelet);
     auto right_result = thread_pool.enqueue<uint>(restructure_right_treelet);
@@ -324,18 +333,8 @@ uint AgglomerativeTreeletRestructuringBvh::restructureTreelet(
     num_of_subtree_nodes += right_result.get();
   }
   else {
-    num_of_subtree_nodes += restructureTreelet<false>(system,
-                                                      root.leftChildIndex(), 
-                                                      inner_index_list,
-                                                      leaf_index_list,
-                                                      distance_matrix,
-                                                      tree);
-    num_of_subtree_nodes += restructureTreelet<false>(system,
-                                                      root.rightChildIndex(), 
-                                                      inner_index_list,
-                                                      leaf_index_list,
-                                                      distance_matrix,
-                                                      tree);
+    num_of_subtree_nodes += restructure_left_treelet();
+    num_of_subtree_nodes += restructure_right_treelet();
   }
 
   ZISC_ASSERT(3 <= num_of_subtree_nodes, "Lack of nodes.");
@@ -345,8 +344,8 @@ uint AgglomerativeTreeletRestructuringBvh::restructureTreelet(
   }
   else {
     const auto num_of_leafs = (num_of_subtree_nodes >> 1) + 1;
-    const auto treelet_size = (num_of_leafs < treeletSize()) 
-        ? num_of_leafs 
+    const auto treelet_size = (num_of_leafs < treeletSize())
+        ? num_of_leafs
         : treeletSize();
     formTreelet(treelet_size, index, tree, inner_index_list, leaf_index_list);
     constructOptimalTree(inner_index_list, leaf_index_list, distance_matrix, tree);

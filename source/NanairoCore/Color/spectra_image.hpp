@@ -53,9 +53,6 @@ class SpectraImage : public SpectraImageInterface
       const uint y,
       const SampledSpectra<kSampleSize>& contribution) noexcept;
 
-  //! Return the buffer memory size
-  std::size_t bufferMemorySize() const noexcept override;
-
   //! Clear the spectra image buffer to 0
   void clear() noexcept override;
 

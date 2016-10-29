@@ -43,7 +43,7 @@ NonDirectionalLight<kSampleSize>::NonDirectionalLight(
   No detailed.
   */
 template <uint kSampleSize>
-auto NonDirectionalLight<kSampleSize>::evaluateRadiance(
+auto NonDirectionalLight<kSampleSize>::evalRadiance(
     const Vector3* /* vin */,
     const Vector3* /* vout */,
     const Vector3& /* normal */,
@@ -64,7 +64,7 @@ auto NonDirectionalLight<kSampleSize>::sample(
     const Wavelengths& /* wavelengths */,
     Sampler& sampler) const noexcept -> std::tuple<SampledDirection, Spectra>
 {
-  const auto vout = sampleDirectionOnHemisphere<1>(normal, sampler);
+  const auto vout = SampledDirection::sampleOnHemisphere<1>(normal, sampler);
   return std::make_tuple(vout, radiant_exitance_);
 }
 

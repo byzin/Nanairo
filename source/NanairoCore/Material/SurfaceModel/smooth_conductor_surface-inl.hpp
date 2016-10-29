@@ -47,14 +47,11 @@ auto SmoothConductorSurface::makeSpecularBrdf(
   No detailed.
   */
 template <uint kSampleSize> inline
-SurfaceModel::ShaderPointer<kSampleSize> makeSpecularBrdf(
-    const SurfaceModel* surface,
+auto SurfaceModel::makeSpecularBrdf(
     const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) noexcept
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
-  using zisc::cast;
-
-  auto s = cast<const SmoothConductorSurface*>(surface);
+  auto s = zisc::cast<const SmoothConductorSurface*>(this);
   return s->makeSpecularBrdf(wavelengths, memory_pool);
 }
 

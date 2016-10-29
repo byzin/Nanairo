@@ -42,8 +42,8 @@ enum class SurfaceType : int
   SmoothDielectric,
   SmoothConductor,
   RoughDielectric,
-  RoughConductor,
-  RoughPlastic
+  RoughConductor
+//  RoughPlastic
 };
 
 /*!
@@ -69,59 +69,52 @@ class SurfaceModel
       const WavelengthSamples<kSampleSize>& wavelengths,
       MemoryPool& memory_pool) const noexcept;
 
-  //! Return the surface model size
-  virtual std::size_t surfaceSize() const noexcept = 0;
+  //! Make a surface scattering model
+  static UniquePointer<SurfaceModel> makeSurface(
+      const QJsonObject& settings,
+      const std::vector<const TextureModel*>& texture_list) noexcept;
 
   //! Return the surface type
   virtual SurfaceType type() const noexcept = 0;
+
+ private:
+  //! Make a lambert BRDF
+  template <uint kSampleSize>
+  ShaderPointer<kSampleSize> makeLambertBrdf(
+      const Point2& texture_coordinate,
+      const WavelengthSamples<kSampleSize>& wavelengths,
+      MemoryPool& memory_pool) const noexcept;
+
+  //! Make a lambert BRDF
+  template <uint kSampleSize>
+  ShaderPointer<kSampleSize> makeSpecularBsdf(
+      const bool is_reverse_face,
+      const WavelengthSamples<kSampleSize>& wavelengths,
+      MemoryPool& memory_pool) const noexcept;
+
+  //! Make a lambert BRDF
+  template <uint kSampleSize>
+  ShaderPointer<kSampleSize> makeSpecularBrdf(
+      const WavelengthSamples<kSampleSize>& wavelengths,
+      MemoryPool& memory_pool) const noexcept;
+
+  //! Make a lambert BRDF
+  template <uint kSampleSize>
+  ShaderPointer<kSampleSize> makeGgxDielectricBsdf(
+      const Point2& texture_coordinate,
+      const bool is_reverse_face,
+      const WavelengthSamples<kSampleSize>& wavelengths,
+      MemoryPool& memory_pool) const noexcept;
+
+  //! Make a lambert BRDF
+  template <uint kSampleSize>
+  ShaderPointer<kSampleSize> makeGgxConductorBrdf(
+      const Point2& texture_coordinate,
+      const WavelengthSamples<kSampleSize>& wavelengths,
+      MemoryPool& memory_pool) const noexcept;
 };
 
-//! Make a lambert BRDF
-template <uint kSampleSize>
-SurfaceModel::ShaderPointer<kSampleSize> makeLambertBrdf(
-    const SurfaceModel* surface,
-    const Point2& texture_coordinate,
-    const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) noexcept;
-
-//! Make a lambert BRDF
-template <uint kSampleSize>
-SurfaceModel::ShaderPointer<kSampleSize> makeSpecularBsdf(
-    const SurfaceModel* surface,
-    const bool is_reverse_face,
-    const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) noexcept;
-
-//! Make a lambert BRDF
-template <uint kSampleSize>
-SurfaceModel::ShaderPointer<kSampleSize> makeSpecularBrdf(
-    const SurfaceModel* surface,
-    const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) noexcept;
-
-//! Make a lambert BRDF
-template <uint kSampleSize>
-SurfaceModel::ShaderPointer<kSampleSize> makeGgxDielectricBsdf(
-    const SurfaceModel* surface,
-    const Point2& texture_coordinate,
-    const bool is_reverse_face,
-    const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) noexcept;
-
-//! Make a lambert BRDF
-template <uint kSampleSize>
-SurfaceModel::ShaderPointer<kSampleSize> makeGgxConductorBrdf(
-    const SurfaceModel* surface,
-    const Point2& texture_coordinate,
-    const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) noexcept;
-
-//! Make a surface scattering model
-UniquePointer<SurfaceModel> makeSurface(
-    const QJsonObject& settings,
-    const std::vector<const TextureModel*>& texture_list) noexcept;
-
-//! \} Core 
+//! \} Core
 
 } // namespace nanairo
 

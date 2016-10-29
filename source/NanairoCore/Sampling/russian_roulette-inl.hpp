@@ -11,8 +11,6 @@
 #define NANAIRO_RUSSIAN_ROULETTE_INL_HPP
 
 #include "russian_roulette.hpp"
-// Standard C++ library
-#include <functional>
 // Qt
 #include <QJsonObject>
 #include <QString>
@@ -92,14 +90,78 @@ void RouletteResult::setResult(const bool result) noexcept
 }
 
 /*!
+  */
+inline
+RussianRoulette::RussianRoulette(const QJsonObject& settings) noexcept
+{
+  initialize(settings);
+}
+
+/*!
+  */
+template <uint kSampleSize> inline
+RouletteResult RussianRoulette::operator()(const uint path,
+                                           const SampledSpectra<kSampleSize>& weight,
+                                           Sampler& sampler) const noexcept
+{
+  return play(path, weight, sampler);
+}
+
+/*!
+  */
+template <uint kSampleSize> inline
+RouletteResult RussianRoulette::play(const uint path,
+                                     const SampledSpectra<kSampleSize>& weight,
+                                     Sampler& sampler) const noexcept
+{
+  return (type_ == RouletteType::kMax)     ? playWithMax(weight, sampler) :
+         (type_ == RouletteType::kAverage) ? playWithAverage(weight, sampler)
+                                           : playWithPath(path);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+void RussianRoulette::initialize(const QJsonObject& settings) noexcept
+{
+  using zisc::cast;
+  using zisc::toHash32;
+
+  const auto type = SceneValue::toString(settings, keyword::russianRoulette);
+
+  if (type == keyword::roulettePathLength)
+    max_path_ = SceneValue::toInt<uint>(settings, keyword::pathLength);
+
+  switch (keyword::toHash32(type)) {
+   case toHash32(keyword::rouletteAverageReflectance): {
+    type_ = RouletteType::kAverage;
+    break;
+   }
+   case toHash32(keyword::rouletteMaxReflectance): {
+    type_ = RouletteType::kMax;
+    break;
+   }
+   case toHash32(keyword::roulettePathLength): {
+    type_ = RouletteType::kPath;
+    break;
+   }
+   default: {
+    zisc::raiseError("SamplingError: Unsupported type is supecified.");
+    break;
+   }
+  }
+}
+
+/*!
   \details
   No detailed.
   */
 template <uint kSampleSize> inline
-RouletteResult playRussianRouletteWithAverage(
-    const uint /* path */,
+RouletteResult RussianRoulette::playWithAverage(
     const SampledSpectra<kSampleSize>& weight,
-    Sampler& sampler) noexcept
+    Sampler& sampler) const noexcept
 {
   const Float average = weight.average();
   const Float probability = zisc::min(1.0, average);
@@ -112,10 +174,9 @@ RouletteResult playRussianRouletteWithAverage(
   No detailed.
   */
 template <uint kSampleSize> inline
-RouletteResult playRussianRouletteWithMax(
-    const uint /* path */,
+RouletteResult RussianRoulette::playWithMax(
     const SampledSpectra<kSampleSize>& weight,
-    Sampler& sampler) noexcept
+    Sampler& sampler) const noexcept
 {
   const Float max = weight.max();
   const Float probability = zisc::min(1.0, max);
@@ -127,57 +188,10 @@ RouletteResult playRussianRouletteWithMax(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-RouletteResult playRussianRouletteWithPath(
-    const uint max_path,
-    const uint path,
-    const SampledSpectra<kSampleSize>& /* weight */,
-    Sampler& /* sampler */) noexcept
+inline
+RouletteResult RussianRoulette::playWithPath(const uint path) const noexcept
 {
-  return RouletteResult{path < max_path, 1.0};
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <uint kSampleSize> inline
-RussianRouletteFunction<kSampleSize> makeRussianRoulette(
-    const QJsonObject& settings) noexcept
-{
-  using zisc::cast;
-  using zisc::toHash32;
-
-  RussianRouletteFunction<kSampleSize> russian_roulette;
-
-  const auto type = SceneValue::toString(settings, keyword::russianRoulette);
-  uint path_length = 0;
-  if (type == keyword::roulettePathLength)
-    path_length = SceneValue::toInt<uint>(settings, keyword::pathLength);
-  switch (keyword::toHash32(type)) {
-    case toHash32(keyword::rouletteMaxReflectance): {
-      russian_roulette = playRussianRouletteWithMax<kSampleSize>;
-      break;
-    }
-    case toHash32(keyword::rouletteAverageReflectance): {
-      russian_roulette = playRussianRouletteWithAverage<kSampleSize>;
-      break;
-    }
-    case toHash32(keyword::roulettePathLength): {
-      russian_roulette = [path_length](const uint path,
-                                       const SampledSpectra<kSampleSize>& weight,
-                                       Sampler& sampler)
-      {
-        return playRussianRouletteWithPath(path_length, path, weight, sampler);
-      };
-      break;
-    }
-    default: {
-      zisc::raiseError("RussianRouletteError: Unsupported type is supecified.");
-      break;
-    }
-  }
-  return russian_roulette;
+  return RouletteResult{path < max_path_, 1.0};
 }
 
 } // namespace nanairo

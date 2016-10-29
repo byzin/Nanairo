@@ -61,7 +61,7 @@ const EmitterModel& Material::emitter() const noexcept
 {
   return *emitter_;
 }
-  
+
 } // namespace nanairo
 
 #endif // NANAIRO_MATERIAL_INL_HPP

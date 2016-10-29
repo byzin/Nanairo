@@ -17,7 +17,7 @@
 #include "zisc/error.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Material/SurfaceModel/microfacet_ggx.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
@@ -43,13 +43,13 @@ GgxConductorBrdf<kSampleSize>::GgxConductorBrdf(
   No detailed.
   */
 template <uint kSampleSize>
-Float GgxConductorBrdf<kSampleSize>::evaluatePdf(
+Float GgxConductorBrdf<kSampleSize>::evalPdf(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
     const Wavelengths& /* wavelengths */) const noexcept
 {
-  const Float pdf = evaluateGgxReflectionPdf(roughness_, *vin, *vout, normal);
+  const Float pdf = MicrofacetGgx::evalReflectionPdf(roughness_, *vin, *vout, normal);
   return pdf;
 }
 
@@ -58,14 +58,14 @@ Float GgxConductorBrdf<kSampleSize>::evaluatePdf(
   No detailed.
   */
 template <uint kSampleSize>
-auto GgxConductorBrdf<kSampleSize>::evaluateRadiance(
+auto GgxConductorBrdf<kSampleSize>::evalRadiance(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
     const Wavelengths& /* wavelengths */) const noexcept -> Spectra
 {
   const auto& r0 = reflectance_0deg_;
-  const auto f = evaluateGgxReflectance(roughness_, *vin, *vout, normal, r0);
+  const auto f = MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, normal, r0);
   return f;
 }
 
@@ -74,7 +74,7 @@ auto GgxConductorBrdf<kSampleSize>::evaluateRadiance(
   No detailed.
   */
 template <uint kSampleSize>
-auto GgxConductorBrdf<kSampleSize>::evaluateRadianceAndPdf(
+auto GgxConductorBrdf<kSampleSize>::evalRadianceAndPdf(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
@@ -82,8 +82,8 @@ auto GgxConductorBrdf<kSampleSize>::evaluateRadianceAndPdf(
 {
   const auto& r0 = reflectance_0deg_;
   Float pdf = 0.0;
-  const auto f = 
-      evaluateGgxReflectance(roughness_, *vin, *vout, normal, r0, &pdf);
+  const auto f =
+      MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, normal, r0, &pdf);
   return std::make_tuple(std::move(f), pdf);
 }
 
@@ -99,30 +99,27 @@ auto GgxConductorBrdf<kSampleSize>::sample(
     Sampler& sampler) const noexcept -> std::tuple<SampledDirection, Spectra>
 {
   // Sample a microfacet normal
-  Float cos_theta_ni = 0.0,
-        cos_theta_mi = 0.0,
-        cos_theta_nm = 0.0;
-  const auto m_normal =
-      sampleGgxMicrofacetNormal(roughness_, *vin, normal, sampler,
-                                &cos_theta_ni, &cos_theta_mi, &cos_theta_nm);
-  ZISC_ASSERT(0.0 <= cos_theta_ni * cos_theta_mi,
+  const auto sampled_m_normal =
+      SampledGgxNormal::sample(roughness_, *vin, normal, sampler);
+  const Float cos_ni = sampled_m_normal.cosNi(),
+              cos_mi = sampled_m_normal.cosMi(),
+              cos_nm = sampled_m_normal.cosNm();
+  const auto& m_normal = sampled_m_normal.microfacetNormal();
+  ZISC_ASSERT(0.0 <= cos_ni * cos_mi,
               "Microfacet normal isn't in the same hemisphere as normal.");
 
   // Evaluate fresnel term
   const auto& r0 = reflectance_0deg_;
-  const auto fresnel = solveFresnelConductorEquation(cos_theta_mi, r0);
+  const auto fresnel = Fresnel::evalConductorEquation(cos_mi, r0);
 
   // Get the reflection direction
-  const auto vout =
-      getMicrofacetReflectionDirection(*vin, m_normal, cos_theta_mi);
+  const auto vout = Microfacet::calcReflectionDirection(*vin, m_normal, cos_mi);
 
   // Evaluate the weight
-  const Float cos_theta_no = zisc::dot(normal, vout.direction());
-  const Float cos_theta_mo = cos_theta_mi;
-  const auto weight =
-      fresnel *
-      evaluateGgxWeight(roughness_, cos_theta_ni, cos_theta_no,
-                        cos_theta_mi, cos_theta_mo, cos_theta_nm);
+  const Float cos_no = zisc::dot(normal, vout.direction());
+  const Float cos_mo = cos_mi;
+  const auto weight = fresnel * MicrofacetGgx::evalWeight(roughness_, cos_ni, cos_no,
+                                                          cos_mi, cos_mo, cos_nm);
   ZISC_ASSERT(!weight.hasNegative(), "Weight contains negative.");
 
   return std::make_tuple(std::move(vout), std::move(weight));

@@ -54,7 +54,7 @@ void LightSourceSampler::initialize(
   zisc::CompensatedSummation<Float> total_flux{0.0};
   for (const auto& light_source : light_source_list) {
     const auto object = light_source.object();
-    const auto flux = object->geometry().surfaceArea() *
+    const auto flux = object->shape().surfaceArea() *
                       object->material().emitter().radiantExitance();
     total_flux.add(flux);
   }

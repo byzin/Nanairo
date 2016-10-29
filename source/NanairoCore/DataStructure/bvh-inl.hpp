@@ -45,50 +45,48 @@ const std::vector<Object>& Bvh::objectList() const noexcept
 }
 
 /*!
-  \details
-  No detailed.
   */
-template <bool multithreading>
-void Bvh::setBoundingBox(System& system, 
-                         std::vector<BvhNode>& tree, 
+template <bool threading> inline
+void Bvh::setBoundingBox(System& system,
+                         std::vector<BvhNode>& tree,
                          const uint32 index) noexcept
 {
   auto& node = tree[index];
+  // Inernal node
   if (!node.isLeafNode()) {
     const auto left_child_index = node.leftChildIndex();
     const auto right_child_index = node.rightChildIndex();
-    if (multithreading) {
-      auto set_left_bounding_box = [&system, &tree, left_child_index]()
-      {
-        setBoundingBox<false>(system, tree, left_child_index);
-      };
-      auto set_right_bounding_box = [&system, &tree, right_child_index]()
-      {
-        setBoundingBox<false>(system, tree, right_child_index);
-      };
+    auto set_left_bounding_box = [&system, &tree, left_child_index]()
+    {
+      setBoundingBox<false>(system, tree, left_child_index);
+    };
+    auto set_right_bounding_box = [&system, &tree, right_child_index]()
+    {
+      setBoundingBox<false>(system, tree, right_child_index);
+    };
+    // Threding
+    if (threading) {
       auto& thread_pool = system.threadPool();
       auto left_result = thread_pool.enqueue<void>(set_left_bounding_box);
       auto right_result = thread_pool.enqueue<void>(set_right_bounding_box);
       left_result.get();
       right_result.get();
     }
+    // Sequence
     else {
-      setBoundingBox<false>(system, tree, left_child_index);
-      setBoundingBox<false>(system, tree, right_child_index);
+      set_left_bounding_box();
+      set_right_bounding_box();
     }
-    const auto& left_node = tree[left_child_index];
-    const auto& right_node = tree[right_child_index];
-    node.setBoundingBox(combine(left_node.boundingBox(), right_node.boundingBox()));
   }
-  else {
-    const auto& object_list = node.objectList();
-    auto bounding_box = object_list[0]->geometry().boundingBox();
-    for (uint i = 1; i < node.numOfObjects(); ++i) {
-      const auto object = object_list[i];
-      bounding_box = combine(bounding_box, object->geometry().boundingBox());
-    }
-    node.setBoundingBox(bounding_box);
-  }
+  setBoundingBox(tree, index);
+}
+
+/*!
+  */
+inline
+constexpr bool Bvh::threadingIsEnabled() noexcept
+{
+  return true;
 }
 
 /*!
@@ -99,33 +97,6 @@ inline
 uint32 Bvh::endIndex() const noexcept
 {
   return end_index_;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-void Bvh::testRayObjectsIntersection(const Ray& ray, 
-                                     const BvhTreeNode& leaf_node,
-                                     IntersectionInfo* intersection,
-                                     Float* shortest_distance2) const noexcept
-{
-  IntersectionInfo current;
-  const auto& object_list = objectList();
-  for (uint i = 0; i < leaf_node.numOfObjects(); ++i) {
-    const auto object_index = leaf_node.objectIndex() + i;
-    const auto& object = object_list[object_index];
-    const bool ray_hits_object = object.geometry().testIntersection(ray, &current);
-    if (ray_hits_object) {
-      const Float distance2 = (current.point() - ray.origin()).squareNorm();
-      if (distance2 < *shortest_distance2) {
-        current.setObject(&object);
-        *intersection = current;
-        *shortest_distance2 = distance2;
-      }
-    }
-  }
 }
 
 } // namespace nanairo

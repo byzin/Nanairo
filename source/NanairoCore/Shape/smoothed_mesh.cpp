@@ -20,15 +20,15 @@
 #include "zisc/math.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
-#include "geometry.hpp"
+#include "shape.hpp"
 #include "triangle_mesh.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/DataStructure/aabb.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
-#include "NanairoCore/LinearAlgebra/transformation.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Sampling/sampled_point.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
 
@@ -84,7 +84,7 @@ Aabb SmoothedMesh::boundingBox() const noexcept
   const auto c2 = c_[3] + c0 + c1;
   const Vector3* curvature[] = {&c0, &c1, &c2};
 
-  const auto calc_extremum_edge = 
+  const auto calc_extremum_edge =
   [&distance, &curvature](const uint i, const uint j, Float* xi)
   {
     const auto c = (*(curvature[i]))[j];
@@ -92,19 +92,19 @@ Aabb SmoothedMesh::boundingBox() const noexcept
       return false;
     const auto d = (*(distance)[i])[j];
     const auto x = (c - d) / (2.0 * c);
-    if (x < 0.0 || 1.0 < x)
-      return false;
-    *xi = x;
-    return true;
+    const bool result = zisc::isInClosedBounds(x, 0.0, 1.0);
+    if (result)
+      *xi = x;
+    return result;
   };
 
-  const auto edge_point = 
+  const auto edge_point =
   [&vertices, &distance, &curvature](const uint i, const Float xi)
   {
     return *(vertices[i]) + (*(distance[i]) + (xi - 1.0) * *(curvature[i])) * xi;
   };
 
-  const auto calc_extremum_surface = 
+  const auto calc_extremum_surface =
   [this](const uint j, Float* eta, Float* xi)
   {
     const zisc::Matrix<Float, 2, 2> matrix{2.0 * c_[4][j], c_[3][j],
@@ -116,11 +116,12 @@ Aabb SmoothedMesh::boundingBox() const noexcept
     const auto result = inverse_matrix * c;
     const Float e = result(0, 0);
     const Float x = result(1, 0);
-    if (!((0.0 <= x) && (x <= e) && (e <= 1.0)))
-      return false;
-    *eta = e;
-    *xi = x;
-    return true;
+    const bool is_in = zisc::isInClosedBounds(x, 0.0, e) && (e <= 1.0);
+    if (is_in) {
+      *eta = e;
+      *xi = x;
+    }
+    return is_in;
   };
 
   // Calc a bounding box
@@ -152,18 +153,9 @@ Aabb SmoothedMesh::boundingBox() const noexcept
   \details
   No detailed.
   */
-std::size_t SmoothedMesh::geometrySize() const noexcept
-{
-  return sizeof(SmoothedMesh);
-}
-
-/*!
-  \details
-  No detailed.
-  */
 Float SmoothedMesh::getTraversalCost() const noexcept
 {
-  return 6.0;
+  return 8.0;
 }
 
 /*!
@@ -205,23 +197,20 @@ bool SmoothedMesh::testIntersection(const Ray& ray,
   Float eta,
         xi,
         t;
-  if (!calcSurfaceParameter(a, b, r, &eta, &xi, &t))
-    return false;
-
-  // Set point
-  intersection->setPoint(ray.origin() + t * ray.direction());
-
-  // Set normal
-  const auto normal = SmoothedMesh::normal(eta, xi);
-  const Float cos_theta = zisc::dot(normal, ray.direction());
-  intersection->setReverseFace(cos_theta > 0.0);
-  intersection->setNormal(normal);
-
-  // Set texture coordinate
-  Float barycentric[3] = {eta - xi, xi, 1.0 - eta};
-  intersection->setTextureCoordinate(textureCoordinate(barycentric));
-
-  return true;
+  const bool is_hit = calcSurfaceParameter(a, b, r, &eta, &xi, &t);
+  if (is_hit) {
+    // Set point
+    intersection->setPoint(ray.origin() + t * ray.direction());
+    // Set normal
+    const auto normal = SmoothedMesh::normal(eta, xi);
+    const Float cos_theta = zisc::dot(normal, ray.direction());
+    intersection->setReverseFace(0.0 < cos_theta);
+    intersection->setNormal(normal);
+    // Set texture coordinate
+    Float barycentric[3] = {eta - xi, xi, 1.0 - eta};
+    intersection->setTextureCoordinate(textureCoordinate(barycentric));
+  }
+  return is_hit;
 }
 
 /*!
@@ -233,7 +222,7 @@ std::tuple<SampledPoint, Vector3, Point2> SmoothedMesh::samplePoint(
 {
   Float u = sampler.sample(0.0, 1.0);
   Float v = sampler.sample(0.0, 1.0);
-  if (u + v > 1.0) {
+  if (1.0 < (u + v)) {
     u = 1.0 - u;
     v = 1.0 - v;
   }
@@ -253,9 +242,9 @@ std::tuple<SampledPoint, Vector3, Point2> SmoothedMesh::samplePoint(
   */
 void SmoothedMesh::transform(const Matrix4x4& matrix) noexcept
 {
-  affineTransform(matrix, treatAs<Point3*>(&c_[0]));
+  Transformation::affineTransform(matrix, treatAs<Point3*>(&c_[0]));
   for (uint i = 1; i < 6; ++i)
-    affineTransform(matrix, &c_[i]);
+    Transformation::affineTransform(matrix, &c_[i]);
 }
 
 /*!
@@ -305,12 +294,12 @@ Vector3 calcCurvatureParameter(const Vector3& distance,
   const auto delta_d = zisc::dot(distance, delta_v);
 
   constexpr Float epsilon = 0.01;
-  if (delta_c < epsilon)
-    return (delta_d / (1.0 - delta_c)) * v;
-  else if ((1.0 - epsilon) < delta_c)
-    return (d / delta_c) * delta_v;
-  else
-    return (delta_d / (1.0 - delta_c)) * v + (d / delta_c) * delta_v;
+  const auto parameter =
+      (delta_c < epsilon)         ? (delta_d / (1.0 - delta_c)) * v :
+      ((1.0 - epsilon) < delta_c) ? (d / delta_c) * delta_v
+                                  : (delta_d / (1.0 - delta_c)) * v +
+                                    (d / delta_c) * delta_v;
+  return parameter;
 }
 
 /*!
@@ -349,9 +338,9 @@ bool calcSurfaceParameter(const std::array<Float, 5>& a,
       const Float x = -(a[0] + (a[1] + a[4] * e) * e) / (a[2] + a[3] * e);
        if (x < 0.0 || e < x)
         continue;
-      const Float lambda = r[0] + (r[1] + r[4] * e) * e + 
+      const Float lambda = r[0] + (r[1] + r[4] * e) * e +
                            (r[2] + r[3] * e + r[5] * x) * x;
-      if (0.0 < lambda && lambda < *t) {
+      if (zisc::isInOpenBounds(lambda, 0.0, *t)) {
         *eta = e;
         *xi = x;
         *t = lambda;
@@ -376,12 +365,14 @@ bool calcSurfaceParameter(const std::array<Float, 5>& a,
           continue;
         const Float lambda = r[0] + (r[1] + r[4] * e) * e + 
                              (r[2] + r[3] * e + r[5] * x) * x;
-        if (0.0 < lambda && lambda < *t) {
+        if (zisc::isInOpenBounds(lambda, 0.0, *t)) {
           *eta = e;
           *xi = x;
           *t = lambda;
-          ZISC_ASSERT((0.0 <= x) && (x <= e), "The xi must be [0, eta]: ", x);
-          ZISC_ASSERT((x <= e) && (e <= 1.0), "The eta must be [xi, 1]: ", e);
+          ZISC_ASSERT(zisc::isInClosedBounds(x, 0.0, e),
+                      "The xi is out of the range [0, eta].");
+          ZISC_ASSERT(zisc::isInClosedBounds(e, x, 1.0),
+                      "The eta is out of the range [xi, 1].");
         }
       }
     }

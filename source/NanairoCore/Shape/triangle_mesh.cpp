@@ -25,15 +25,15 @@
 #include "zisc/utility.hpp"
 // Nanairo
 #include "flat_mesh.hpp"
-#include "geometry.hpp"
 #include "obj_loader.hpp"
+#include "shape.hpp"
 #include "smoothed_mesh.hpp"
 #include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/ray.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
-#include "NanairoCore/LinearAlgebra/transformation.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 
@@ -43,48 +43,13 @@ namespace nanairo  {
   \details
   No detailed.
   */
-bool calculateBarycentricCoordinate(const Ray& ray,
-                                    const Point3& vertex,
-                                    const Vector3* edge,
-                                    Float* barycentric,
-                                    Float* t) noexcept
-{
-  const auto direction = ray.origin() - vertex;
-  const auto q = zisc::cross(direction, edge[0]);
-  const auto p = zisc::cross(ray.direction(), edge[1]);
-  const Float inverse_determinant = 1.0 / zisc::dot(p, edge[0]);
-
-  // The time that tye ray intersects with this triangle
-  const Float time = inverse_determinant * zisc::dot(q, edge[1]);
-  if (time <= 0.0)
-    return false;
-
-  const Float u = inverse_determinant * zisc::dot(p, direction);
-  if (u < 0.0 || 1.0 < u)
-    return false;
-  const Float v = inverse_determinant * zisc::dot(q, ray.direction());
-  if (v < 0.0 || 1.0 < v)
-    return false;
-  if ((u + v) > 1.0)
-    return false;
-
-  barycentric[0] = u;
-  barycentric[1] = v;
-  barycentric[2] = 1.0 - (u + v);
-  *t = time;
-  return true;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-std::vector<UniquePointer<Geometry>> makeMeshes(const QJsonObject& settings) noexcept
+std::vector<UniquePointer<Shape>> TriangleMesh::makeMeshes(
+    const QJsonObject& settings) noexcept
 {
   using keyword::toHash32;
   using zisc::toHash32;
 
-  std::vector<UniquePointer<Geometry>> mesh_list;
+  std::vector<UniquePointer<Shape>> mesh_list;
 
   // Initialize object info
   const auto object_file_path = SceneValue::toString(settings,
@@ -123,12 +88,13 @@ std::vector<UniquePointer<Geometry>> makeMeshes(const QJsonObject& settings) noe
   \details
   No detailed.
   */
-UniquePointer<Geometry> makeSmoothedMesh(const Point3& v0,
-                                         const Point3& v1,
-                                         const Point3& v2,
-                                         const Vector3& n0,
-                                         const Vector3& n1,
-                                         const Vector3& n2) noexcept
+UniquePointer<Shape> TriangleMesh::makeSmoothedMesh(
+    const Point3& v0,
+    const Point3& v1,
+    const Point3& v2,
+    const Vector3& n0,
+    const Vector3& n1,
+    const Vector3& n2) noexcept
 {
   TriangleMesh* mesh = nullptr;
 
@@ -141,7 +107,43 @@ UniquePointer<Geometry> makeSmoothedMesh(const Point3& v0,
     mesh = new FlatMesh{v0, v1, v2};
   else
     mesh = new SmoothedMesh{v0, v1, v2, n0, n1, n2};
-  return UniquePointer<Geometry>{mesh};
+  return UniquePointer<Shape>{mesh};
 }
 
-} // namespace nanairo 
+/*!
+  \details
+  No detailed.
+  */
+bool TriangleMesh::calcBarycentricCoordinate(const Ray& ray,
+                                             const Point3& vertex,
+                                             const Vector3* edge,
+                                             Float* barycentric,
+                                             Float* t) const noexcept
+{
+  const auto direction = ray.origin() - vertex;
+  const auto q = zisc::cross(direction, edge[0]);
+  const auto p = zisc::cross(ray.direction(), edge[1]);
+  const Float inverse_determinant = 1.0 / zisc::dot(p, edge[0]);
+
+  // The time that tye ray intersects with this triangle
+  const Float time = inverse_determinant * zisc::dot(q, edge[1]);
+  if (time < 0.0)
+    return false;
+
+  const Float u = inverse_determinant * zisc::dot(p, direction);
+  const Float v = inverse_determinant * zisc::dot(q, ray.direction());
+  const bool is_hit = zisc::isInClosedBounds(u, 0.0, 1.0) &&
+                      zisc::isInClosedBounds(v, 0.0, 1.0) &&
+                      ((u + v) <= 1.0);
+
+  if (is_hit) {
+    barycentric[0] = u;
+    barycentric[1] = v;
+    barycentric[2] = 1.0 - (u + v);
+    *t = time;
+  }
+
+  return is_hit;
+}
+
+} // namespace nanairo

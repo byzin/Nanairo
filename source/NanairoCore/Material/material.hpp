@@ -16,7 +16,7 @@ namespace nanairo {
 class EmitterModel;
 class SurfaceModel;
 
-//! \addtogroup Core 
+//! \addtogroup Core
 //! \{
 
 /*!

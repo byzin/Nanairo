@@ -59,9 +59,6 @@ class ValueTexture : public TextureModel
       const Point2& coordinate,
       const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
 
-  //! Return the value texture byte size
-  std::size_t textureSize() const noexcept override;
-
   //! Return the value texture type
   TextureType type() const noexcept override;
 

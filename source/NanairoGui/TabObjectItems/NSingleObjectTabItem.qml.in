@@ -28,8 +28,8 @@ Rectangle {
     color: single_object_tab_item.color
   }
 
-  NGeometryTypeSettingBlock {
-    id: geometry_type_setting_block
+  NShapeTypeSettingBlock {
+    id: shape_type_setting_block
     x: object_name_setting_block.x
     y: (object_name_setting_block.y + object_name_setting_block.height) + @block_offset@
     color: single_object_tab_item.color
@@ -37,8 +37,8 @@ Rectangle {
 
   NSmoothingSettingBlock {
     id: smoothing_setting_block
-    x: geometry_type_setting_block.x
-    y: (geometry_type_setting_block.y + geometry_type_setting_block.height) + @block_offset@
+    x: shape_type_setting_block.x
+    y: (shape_type_setting_block.y + shape_type_setting_block.height) + @block_offset@
     color: single_object_tab_item.color
   }
 
@@ -59,7 +59,7 @@ Rectangle {
   }
 
   function initializeItem(item) {
-    geometry_type_setting_block.initializeItem(item);
+    shape_type_setting_block.initializeItem(item);
     smoothing_setting_block.initializeItem(item);
     emitter_index_setting_block.initializeItem(item);
     surface_index_setting_block.initializeItem(item);
@@ -67,7 +67,7 @@ Rectangle {
 
   function reflectItem() {
     object_name_setting_block.reflectItem();
-    geometry_type_setting_block.reflectItem();
+    shape_type_setting_block.reflectItem();
     smoothing_setting_block.reflectItem();
     emitter_index_setting_block.reflectItem();
     surface_index_setting_block.reflectItem();
@@ -75,7 +75,7 @@ Rectangle {
 
   function setCurrentItem(item, itemChangeMode) {
     object_name_setting_block.setCurrentItem(item, itemChangeMode);
-    geometry_type_setting_block.setCurrentItem(item, itemChangeMode);
+    shape_type_setting_block.setCurrentItem(item, itemChangeMode);
     smoothing_setting_block.setCurrentItem(item, itemChangeMode);
     emitter_index_setting_block.setCurrentItem(item, itemChangeMode);
     surface_index_setting_block.setCurrentItem(item, itemChangeMode);
@@ -83,7 +83,7 @@ Rectangle {
 
   function getItemData(item) {
     var dataList = [];
-    dataList.push(geometry_type_setting_block.getItemData(item));
+    dataList.push(shape_type_setting_block.getItemData(item));
     dataList.push(smoothing_setting_block.getItemData(item));
     dataList.push(emitter_index_setting_block.getItemData(item));
     dataList.push(surface_index_setting_block.getItemData(item));
@@ -92,7 +92,7 @@ Rectangle {
 
   function makeItem(itemData) {
     var dataList = [];
-    dataList.push(geometry_type_setting_block.makeItem(itemData));
+    dataList.push(shape_type_setting_block.makeItem(itemData));
     dataList.push(smoothing_setting_block.makeItem(itemData));
     dataList.push(emitter_index_setting_block.makeItem(itemData));
     dataList.push(surface_index_setting_block.makeItem(itemData));

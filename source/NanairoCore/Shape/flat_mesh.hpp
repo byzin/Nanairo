@@ -14,11 +14,11 @@
 #include <tuple>
 #include <utility>
 // Nanairo
-#include "geometry.hpp"
+#include "shape.hpp"
 #include "triangle_mesh.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_point.hpp"
 
 namespace nanairo {
@@ -40,14 +40,13 @@ class FlatMesh : public TriangleMesh
 {
  public:
   //! Create flat mesh
-  FlatMesh(const Point3& vertex0, const Point3& vertex1, const Point3& vertex2) noexcept;
+  FlatMesh(const Point3& vertex0,
+           const Point3& vertex1,
+           const Point3& vertex2) noexcept;
 
 
   //! Return the bounding box
   Aabb boundingBox() const noexcept override;
-
-  //! Return the flat mesh size
-  std::size_t geometrySize() const noexcept override;
 
   //! Return the cost of a ray-triangle intersection test
   Float getTraversalCost() const noexcept override;

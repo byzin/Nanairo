@@ -18,7 +18,6 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "rough_conductor_surface.hpp"
 #include "rough_dielectric_surface.hpp"
-#include "rough_plastic_surface.hpp"
 #include "smooth_conductor_surface.hpp"
 #include "smooth_dielectric_surface.hpp"
 #include "smooth_diffuse_surface.hpp"
@@ -46,36 +45,35 @@ auto SurfaceModel::makeBxdf(
   using zisc::cast;
 
   ShaderPointer<kSampleSize> shader;
-
   const auto surface_type = type();
   switch (surface_type) {
-   case SurfaceType::SmoothDiffuse:
-    shader = makeLambertBrdf(this, texture_coordinate,
-                             wavelengths, memory_pool);
+   case SurfaceType::SmoothDiffuse: {
+    shader = makeLambertBrdf(texture_coordinate, wavelengths, memory_pool);
     break;
-   case SurfaceType::SmoothDielectric:
-    shader = makeSpecularBsdf(this, is_reverse_face,
-                              wavelengths, memory_pool);
+   }
+   case SurfaceType::SmoothDielectric: {
+    shader = makeSpecularBsdf(is_reverse_face, wavelengths, memory_pool);
     break;
-   case SurfaceType::SmoothConductor:
-    shader = makeSpecularBrdf(this, wavelengths, memory_pool);
+   }
+   case SurfaceType::SmoothConductor: {
+    shader = makeSpecularBrdf(wavelengths, memory_pool);
     break;
-   case SurfaceType::RoughDielectric:
-    shader = makeGgxDielectricBsdf(this, 
-                                   texture_coordinate, is_reverse_face,
+   }
+   case SurfaceType::RoughDielectric: {
+    shader = makeGgxDielectricBsdf(texture_coordinate, is_reverse_face,
                                    wavelengths, memory_pool);
     break;
-   case SurfaceType::RoughConductor:
-    shader = makeGgxConductorBrdf(this, texture_coordinate,
-                                  wavelengths, memory_pool);
+   }
+   case SurfaceType::RoughConductor: {
+    shader = makeGgxConductorBrdf(texture_coordinate, wavelengths, memory_pool);
     break;
-   case SurfaceType::RoughPlastic:
-   default:
+   }
+   default: {
     zisc::raiseError("SurfaceModelError: (type=", cast<int>(surface_type),
                      ") makeBxdf method is not implemented.");
     break;
+   }
   }
-
   return shader;
 }
 

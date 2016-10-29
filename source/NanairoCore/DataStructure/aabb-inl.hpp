@@ -18,7 +18,7 @@
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/ray.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
+#include "NanairoCore/Geometry/point.hpp"
 
 namespace nanairo {
 
@@ -61,11 +61,11 @@ uint Aabb::longestAxis() const noexcept
   constexpr uint y = 1;
   constexpr uint z = 2;
   const auto range = maxPoint() - minPoint();
-  return (range[x] > range[y])
-    ? (range[x] > range[z])
+  return (range[y] < range[x])
+    ? (range[z] < range[x])
       ? x
       : z
-    : (range[y] > range[z])
+    : (range[z] < range[y])
       ? y
       : z;
 }
@@ -78,7 +78,7 @@ inline
 const Point3& Aabb::maxPoint() const noexcept
 {
   return point_[1];
-} 
+}
 
 /*!
  \details

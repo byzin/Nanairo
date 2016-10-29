@@ -39,23 +39,6 @@
 
 namespace nanairo {
 
-//! Check if the data is RGB
-bool isRgbData(const QJsonObject& settings) noexcept;
-
-//! Load spectra data from a spectra file
-zisc::LinearInterp<Float> loadSpectraData(const QString& file_path) noexcept;
-
-//! Make a RGB
-RgbColor makeRgb(const System& system, const QJsonObject& settings) noexcept;
-
-//! Convert emissive spectra to RGB spectra
-SpectralDistribution toEmissiveRgbSpectra(const System& system,
-                                          const SpectralDistribution& spectra) noexcept;
-
-//! Convert nanairoive spectra to RGB spectra
-SpectralDistribution toReflectiveRgbSpectra(const System& system,
-                                            const SpectralDistribution& spectra) noexcept;
-
 /*!
   \details
   No detailed.
@@ -115,43 +98,7 @@ XyzColor SpectralDistribution::toReflectiveXyz(const System& system) const noexc
   \details
   No detailed.
   */
-bool isRgbData(const QJsonObject& settings) noexcept
-{
-  return SceneValue::toString(settings, keyword::colorMode) == keyword::rgb;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-zisc::LinearInterp<Float> loadSpectraData(const QString& file_path) noexcept
-{
-  // Open distribution file
-  QFile csv_file{file_path};
-  csv_file.open(QIODevice::ReadOnly | QIODevice::Text);
-  QTextStream csv_text{&csv_file};
-
-  // Remove header
-  csv_text.readLine();
-  csv_text.readLine();
-
-  // Load distribution
-  zisc::Csv<Float, Float> csv;
-  for (auto line = csv_text.readLine(); !line.isNull(); line = csv_text.readLine())
-    csv.append(line.toStdString());
-
-  // Set distribution
-  zisc::LinearInterp<Float> spectra_data;
-  for (uint i = 0; i < csv.rowSize(); ++i)
-    spectra_data.add(csv.get<0>(i), csv.get<1>(i));
-  return spectra_data;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-std::unique_ptr<SpectralDistribution> makeEmissiveDistribution(
+std::unique_ptr<SpectralDistribution> SpectralDistribution::makeEmissive(
     const System& system,
     const QJsonObject& settings) noexcept
 {
@@ -176,7 +123,7 @@ std::unique_ptr<SpectralDistribution> makeEmissiveDistribution(
   \details
   No detailed.
   */
-std::unique_ptr<SpectralDistribution> makeReflectiveDistribution(
+std::unique_ptr<SpectralDistribution> SpectralDistribution::makeReflective(
     const System& system,
     const QJsonObject& settings) noexcept
 {
@@ -200,22 +147,8 @@ std::unique_ptr<SpectralDistribution> makeReflectiveDistribution(
   \details
   No detailed.
   */
-RgbColor makeRgb(const System& system, const QJsonObject& settings) noexcept
-{
-  const auto color = SceneValue::toArray(settings, keyword::value);
-  auto rgb = RgbColor{SceneValue::toFloat<Float>(color[0]),
-                      SceneValue::toFloat<Float>(color[1]),
-                      SceneValue::toFloat<Float>(color[2])};
-  rgb.correctGamma(system.gamma());
-  rgb.clampAll(0.0, 1.0);
-  return rgb;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-SpectralDistribution makeEmissiveSpectra(const QJsonObject& settings) noexcept
+SpectralDistribution SpectralDistribution::makeEmissiveSpectra(
+    const QJsonObject& settings) noexcept
 {
   auto spectra = makeSpectra(settings);
   spectra.clampAll(0.0, spectra.max());
@@ -227,7 +160,8 @@ SpectralDistribution makeEmissiveSpectra(const QJsonObject& settings) noexcept
   \details
   No detailed.
   */
-SpectralDistribution makeReflectiveSpectra(const QJsonObject& settings) noexcept
+SpectralDistribution SpectralDistribution::makeReflectiveSpectra(
+    const QJsonObject& settings) noexcept
 {
   auto spectra = makeSpectra(settings);
   spectra.clampAll(0.0, 1.0);
@@ -238,7 +172,8 @@ SpectralDistribution makeReflectiveSpectra(const QJsonObject& settings) noexcept
   \details
   No detailed.
   */
-SpectralDistribution makeSpectra(const QJsonObject& settings) noexcept
+SpectralDistribution SpectralDistribution::makeSpectra(
+    const QJsonObject& settings) noexcept
 {
   const auto file_path = SceneValue::toString(settings, keyword::value);
   return makeSpectra(file_path);
@@ -248,14 +183,13 @@ SpectralDistribution makeSpectra(const QJsonObject& settings) noexcept
   \details
   No detailed.
   */
-SpectralDistribution makeSpectra(const QString& file_path) noexcept
+SpectralDistribution SpectralDistribution::makeSpectra(
+    const QString& file_path) noexcept
 {
-  using zisc::cast;
-
   auto spectra_data = loadSpectraData(file_path);
   SpectralDistribution spectra;
   for (uint index = 0; index < CoreConfig::spectraSize(); ++index) {
-    const Float lambda = cast<Float>(getWavelength(index));
+    const Float lambda = zisc::cast<Float>(getWavelength(index));
     spectra.set(index, spectra_data(lambda));
   }
   return spectra;
@@ -265,35 +199,7 @@ SpectralDistribution makeSpectra(const QString& file_path) noexcept
   \details
   No detailed.
   */
-SpectralDistribution toEmissiveRgbSpectra(const System& system,
-                                          const SpectralDistribution& spectra) noexcept
-{
-  const auto& cmf = system.xyzColorMatchingFunction();
-  const auto xyz = cmf.toXyzInEmissiveCase(spectra);
-  auto rgb = xyz.toRgb(getXyzToRgbMatrix(system.colorSpace()));
-  rgb.clampAll(0.0, 1.0);
-  return toRgbSpectra(rgb);
-}
-
-/*!
-  \details
-  No detailed.
-  */
-SpectralDistribution toReflectiveRgbSpectra(const System& system,
-                                            const SpectralDistribution& spectra) noexcept
-{
-  const auto& cmf = system.xyzColorMatchingFunction();
-  const auto xyz = cmf.toXyzInReflectiveCase(spectra);
-  auto rgb = xyz.toRgb(getXyzToRgbMatrix(system.colorSpace()));
-  rgb.clampAll(0.0, 1.0);
-  return toRgbSpectra(rgb);
-}
-
-/*!
-  \details
-  No detailed.
-  */
-SpectralDistribution toRgbSpectra(const RgbColor& rgb) noexcept
+SpectralDistribution SpectralDistribution::toRgbSpectra(const RgbColor& rgb) noexcept
 {
   SpectralDistribution rgb_spectra;
   rgb_spectra.setByWavelength(CoreConfig::blueWavelength(), rgb.blue());
@@ -306,7 +212,8 @@ SpectralDistribution toRgbSpectra(const RgbColor& rgb) noexcept
   \details
   No detailed.
   */
-SpectralDistribution toSpectra(const System& system, const RgbColor& color) noexcept
+SpectralDistribution SpectralDistribution::toSpectra(const System& system,
+                                                     const RgbColor& color) noexcept
 {
   using zisc::cast;
 
@@ -330,7 +237,6 @@ SpectralDistribution toSpectra(const System& system, const RgbColor& color) noex
 
   const auto f = [&tmp1, &tmp2](const uint i, const uint16 lambda)
   {
-//    constexpr uint16 rgb[] = {641, 508, 426};
     constexpr uint16 rgb[] = {CoreConfig::redWavelength(),
                               CoreConfig::greenWavelength(),
                               CoreConfig::blueWavelength()};
@@ -362,6 +268,91 @@ SpectralDistribution toSpectra(const System& system, const RgbColor& color) noex
   spectra.clampAll(0.0, 1.0);
 
   return spectra;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+bool SpectralDistribution::isRgbData(const QJsonObject& settings) noexcept
+{
+  return SceneValue::toString(settings, keyword::colorMode) == keyword::rgb;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+zisc::LinearInterp<Float> SpectralDistribution::loadSpectraData(
+    const QString& file_path) noexcept
+{
+  // Open distribution file
+  QFile csv_file{file_path};
+  csv_file.open(QIODevice::ReadOnly | QIODevice::Text);
+  QTextStream csv_text{&csv_file};
+
+  // Remove header
+  csv_text.readLine();
+  csv_text.readLine();
+
+  // Load distribution
+  zisc::Csv<Float, Float> csv;
+  for (auto line = csv_text.readLine(); !line.isNull(); line = csv_text.readLine())
+    csv.append(line.toStdString());
+
+  // Set distribution
+  zisc::LinearInterp<Float> spectra_data;
+  for (uint i = 0; i < csv.rowSize(); ++i)
+    spectra_data.add(csv.get<0>(i), csv.get<1>(i));
+  return spectra_data;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+RgbColor SpectralDistribution::makeRgb(const System& system,
+                                       const QJsonObject& settings) noexcept
+{
+  const auto color = SceneValue::toArray(settings, keyword::value);
+  auto rgb = RgbColor{SceneValue::toFloat<Float>(color[0]),
+                      SceneValue::toFloat<Float>(color[1]),
+                      SceneValue::toFloat<Float>(color[2])};
+  rgb.correctGamma(system.gamma());
+  rgb.clampAll(0.0, 1.0);
+  return rgb;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+SpectralDistribution SpectralDistribution::toEmissiveRgbSpectra(
+    const System& system,
+    const SpectralDistribution& spectra) noexcept
+{
+  const auto& cmf = system.xyzColorMatchingFunction();
+  const auto xyz = cmf.toXyzInEmissiveCase(spectra);
+  auto rgb = xyz.toRgb(getXyzToRgbMatrix(system.colorSpace()));
+  rgb.clampAll(0.0, 1.0);
+  return toRgbSpectra(rgb);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+SpectralDistribution SpectralDistribution::toReflectiveRgbSpectra(
+    const System& system,
+    const SpectralDistribution& spectra) noexcept
+{
+  const auto& cmf = system.xyzColorMatchingFunction();
+  const auto xyz = cmf.toXyzInReflectiveCase(spectra);
+  auto rgb = xyz.toRgb(getXyzToRgbMatrix(system.colorSpace()));
+  rgb.clampAll(0.0, 1.0);
+  return toRgbSpectra(rgb);
 }
 
 } // namespace nanairo

@@ -80,9 +80,6 @@ function(getNanairoKeywords nanairo_keyword_list)
           rouletteAverageReflectance "Reflectance (Average)"
           roulettePathLength "Path length"
       pathLength "PathLength"
-      # Light tracing
-      numOfLightRays "NumOfLightRays"
-      isSameAsImageResolution "NumOfLightRaysIsSameAsImageResolution"
       # Probabilistic PPM
       numOfPhotons "NumOfPhotons"
       photonSearchRadius "PhotonSearchRadius"
@@ -143,7 +140,7 @@ function(getNanairoKeywords nanairo_keyword_list)
       # PinholeCamera
       angleOfView "AngleOfView"
       # SingleObject
-      geometryType "GeometryType"
+      shapeType "ShapeType"
           planeObject "PlaneObject"
           meshObject "MeshObject"
       objectFilePath "ObjectFilePath"

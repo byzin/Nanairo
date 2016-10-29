@@ -10,8 +10,6 @@
 #ifndef NANAIRO_PATH_TRACING_HPP
 #define NANAIRO_PATH_TRACING_HPP
 
-// Standard C++ library
-#include <functional>
 // Nanairo
 #include "rendering_method.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -32,7 +30,7 @@ template <uint> class ShaderModel;
 class System;
 template <typename> class UniquePointer;
 
-//! \addtogroup Core 
+//! \addtogroup Core
 //! \{
 
 /*!
@@ -45,40 +43,48 @@ class PathTracing : public RenderingMethod<kSampleSize>
  public:
   using Method = RenderingMethod<kSampleSize>;
   using Spectra = typename Method::Spectra;
-  using Wavelengths = typename Method::Wavelengths;
   using Shader = ShaderModel<kSampleSize>;
   using ShaderPointer = UniquePointer<Shader>;
+  using Wavelengths = typename Method::Wavelengths;
 
 
   //! Initialize path tracing method
-  PathTracing(const QJsonObject& settings) noexcept;
+  PathTracing(const System& system, const QJsonObject& settings) noexcept;
 
 
   //! Render scene using path tracing method
-  void render(System& system, 
-              Scene& scene, 
+  void render(System& system,
+              Scene& scene,
               const Wavelengths& sampled_wavelengths) noexcept override;
 
  private:
   //! Evaluate the explicit connection
-  void evaluateExplicitConnection(const World& world,
-                                  const Ray& ray,
-                                  const ShaderPointer& bxdf,
-                                  const IntersectionInfo& intersection,
-                                  const Spectra& ray_weight,
-                                  Sampler& sampler,
-                                  MemoryPool& memory_pool,
-                                  Spectra* contribution) const noexcept;
+  void evalExplicitConnection(const World& world,
+                              const Ray& ray,
+                              const ShaderPointer& bxdf,
+                              const IntersectionInfo& intersection,
+                              const Spectra& camera_contribution,
+                              const Spectra& ray_weight,
+                              Sampler& sampler,
+                              MemoryPool& memory_pool,
+                              Spectra* contribution) const noexcept;
 
   //! Evaluate the implicit connection
-  template <bool Mis>
-  void evaluateImplicitConnection(const World& world,
-                                  const Ray& ray,
-                                  const Float inverse_direction_pdf,
-                                  const IntersectionInfo& intersection,
-                                  const Spectra& ray_weight,
-                                  MemoryPool& memory_pool,
-                                  Spectra* contribution) const noexcept;
+  void evalImplicitConnection(const World& world,
+                              const Ray& ray,
+                              const Float inverse_direction_pdf,
+                              const IntersectionInfo& intersection,
+                              const Spectra& camera_contribution,
+                              const Spectra& ray_weight,
+                              const bool mis,
+                              MemoryPool& memory_pool,
+                              Spectra* contribution) const noexcept;
+
+  //! Check if the explicit connection is enabled
+  static constexpr bool explicitConnectionIsEnabled() noexcept;
+
+  //! Check if the implicit connection is enabled
+  static constexpr bool implicitConnectionIsEnabled() noexcept;
 
   //! Generate a camera ray
   Ray generateRay(const CameraModel& camera,
@@ -96,8 +102,8 @@ class PathTracing : public RenderingMethod<kSampleSize>
   Float calcMisWeight(const Float pdf1, const Float inverse_pdf2) const noexcept;
 
   //! Parallelize path tracing
-  void traceCameraPath(System& system, 
-                       Scene& scene, 
+  void traceCameraPath(System& system,
+                       Scene& scene,
                        const Wavelengths& sampled_wavelengths) noexcept;
 
   //! Trace the camera path

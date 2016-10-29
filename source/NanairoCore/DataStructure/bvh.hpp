@@ -49,20 +49,21 @@ class Bvh
   virtual ~Bvh() noexcept;
 
 
+  //! Return the tree of BVH
+  const std::vector<BvhTreeNode>& bvhTree() const noexcept;
+
+  //! Cast the ray and find the intersection closest to the ray origin
+  IntersectionInfo castRay(const Ray& ray,
+                           const Float max_distance2) const noexcept;
+
   //! Build BVH
   void construct(System& system, std::vector<Object>&& object_list) noexcept;
 
-  //! Return the BVH byte size
-  std::size_t getBvhSize() const noexcept;
-
-  //! Cast the ray and find the intersection closest to the ray origin
-  IntersectionInfo castRay(const Ray& ray, const Float max_distance2) const noexcept;
+  //! Make BVH
+  static UniquePointer<Bvh> makeBvh(const QJsonObject& settings) noexcept;
 
   //! Return the object list
   const std::vector<Object>& objectList() const noexcept;
-
-  //! Return the tree of BVH
-  const std::vector<BvhTreeNode>& bvhTree() const noexcept;
 
  protected:
   //! Build BVH
@@ -70,11 +71,18 @@ class Bvh
                             const std::vector<Object>& object_list,
                             std::vector<BvhNode>& tree) const noexcept = 0;
 
+  //! Check if multi-threading is enabled
+  static constexpr bool threadingIsEnabled() noexcept;
+
   //! Set the bounding box of the node
-  template <bool multithreading>
+  template <bool threading>
   static void setBoundingBox(System& system,
-                             std::vector<BvhNode>& tree, 
-                             const uint32 index = 0) noexcept;
+                             std::vector<BvhNode>& tree,
+                             const uint32 index) noexcept;
+
+  //! Set the bounding box of the node
+  static void setBoundingBox(std::vector<BvhNode>& tree,
+                             const uint32 index) noexcept;
 
  private:
   //! Return the end index of the ray traversal
@@ -84,7 +92,7 @@ class Bvh
   void setTreeInfo(const std::vector<BvhNode>& tree,
                    std::vector<Object>& object_list,
                    const uint32 failure_next_index,
-                   const uint32 index = 0) noexcept;
+                   const uint32 index) noexcept;
 
   //! Set
   void setUniqueObject(std::vector<Object>& object_list) noexcept;
@@ -93,7 +101,7 @@ class Bvh
   void sortTreeNode(std::vector<BvhNode>& tree) const noexcept;
 
   //! Sort nodes by the search order
-  void sortTreeNode(const std::vector<BvhNode>& old_tree, 
+  void sortTreeNode(const std::vector<BvhNode>& old_tree,
                     std::vector<BvhNode>& tree,
                     const uint32 old_index,
                     uint32& index) const noexcept;
@@ -108,17 +116,7 @@ class Bvh
   std::vector<BvhTreeNode> tree_;
   std::vector<Object> object_list_;
   uint32 end_index_;
-
- protected:
-  //! Check if multi-threading is enabled
-  static constexpr bool multithreadingIsEnabled() noexcept
-  {
-    return true;
-  }
 };
-
-//! Make BVH
-UniquePointer<Bvh> makeBvh(const QJsonObject& settings) noexcept;
 
 //! \} Core
 

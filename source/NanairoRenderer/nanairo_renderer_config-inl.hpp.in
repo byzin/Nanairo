@@ -20,6 +20,7 @@ inline
 constexpr int RendererConfig::maxFps() noexcept
 {
   constexpr int max_fps = @NANAIRO_MAX_FPS@;
+  static_assert(0 < max_fps, "FPS is minus.");
   return max_fps;
 }
 

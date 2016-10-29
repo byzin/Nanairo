@@ -30,7 +30,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-SpectralDistribution calculateFresnelConductorReflectance0(
+SpectralDistribution Fresnel::calcConductorReflectance0(
     const SpectralDistribution& eta,
     const SpectralDistribution& eta_k) noexcept
 {
@@ -51,11 +51,11 @@ SpectralDistribution calculateFresnelConductorReflectance0(
   No detailed.
   */
 inline
-Vector3 getFresnelReflectionDirection(const Vector3& vin, 
-                                      const Vector3& normal,
-                                      const Float cos_theta_ni) noexcept
+Vector3 Fresnel::calcReflectionDirection(const Vector3& vin,
+                                         const Vector3& normal,
+                                         const Float cos_ni) noexcept
 {
-  const auto vout = vin + (2.0 * cos_theta_ni) * normal;
+  const auto vout = vin + (2.0 * cos_ni) * normal;
   ZISC_ASSERT(isUnitVector(vout), "The vout isn't unit vector.");
   return vout;
 }
@@ -65,13 +65,13 @@ Vector3 getFresnelReflectionDirection(const Vector3& vin,
   No detailed.
   */
 inline
-Vector3 getFresnelRefractionDirection(const Vector3& vin,
-                                      const Vector3& normal,
-                                      const Float cos_theta_ni,
-                                      const Float n,
-                                      const Float g) noexcept
+Vector3 Fresnel::calcRefractionDirection(const Vector3& vin,
+                                         const Vector3& normal,
+                                         const Float cos_ni,
+                                         const Float n,
+                                         const Float g) noexcept
 {
-  const auto vout = (vin + (cos_theta_ni - g) * normal) * (1.0 / n);
+  const auto vout = (vin + (cos_ni - g) * normal) * (1.0 / n);
   ZISC_ASSERT(isUnitVector(vout), "The vout isn't unit vector.");
   return vout;
 }
@@ -81,10 +81,9 @@ Vector3 getFresnelRefractionDirection(const Vector3& vin,
   No detailed.
   */
 inline
-std::tuple<bool, Float> evaluateFresnelG(const Float n, 
-                                         const Float cos_theta_ni) noexcept
+std::tuple<bool, Float> Fresnel::evalG(const Float n, const Float cos_ni) noexcept
 {
-  const Float g2 = n * n + cos_theta_ni * cos_theta_ni - 1.0;
+  const Float g2 = zisc::power<2>(n) + zisc::power<2>(cos_ni) - 1.0;
   return (g2 < 0.0)
       ? std::make_tuple(false, 0.0)
       : std::make_tuple(true, zisc::sqrt(g2));
@@ -95,17 +94,15 @@ std::tuple<bool, Float> evaluateFresnelG(const Float n,
   No detailed.
   */
 template <uint kSampleSize> inline
-SampledSpectra<kSampleSize> solveFresnelConductorEquation(
-    const Float cos_theta_ni,
+SampledSpectra<kSampleSize> Fresnel::evalConductorEquation(
+    const Float cos_ni,
     const SampledSpectra<kSampleSize>& reflectance_0deg) noexcept
 {
   const auto& wavelengths = reflectance_0deg.wavelengths();
   const SampledSpectra<kSampleSize> one{wavelengths, 1.0};
-  const Float tmp = zisc::power<5>(1.0 - cos_theta_ni);
-  const auto reflectance = reflectance_0deg + 
-                           (one - reflectance_0deg) * tmp;
-  ZISC_ASSERT(reflectance.isAllInBounds(0.0, 1.0),
-              "Reflectances aren't [0, 1].");
+  const Float tmp = zisc::power<5>(1.0 - cos_ni);
+  const auto reflectance = reflectance_0deg + (one - reflectance_0deg) * tmp;
+  ZISC_ASSERT(reflectance.isAllInBounds(0.0, 1.0), "Reflectances aren't [0, 1].");
   return reflectance;
 }
 
@@ -114,14 +111,14 @@ SampledSpectra<kSampleSize> solveFresnelConductorEquation(
   No detailed.
   */
 inline
-Float solveFresnelDielectricEquation(const Float cos_theta_ni, 
-                                     const Float g) noexcept
+Float Fresnel::evalDielectricEquation(const Float cos_ni, const Float g) noexcept
 {
-  const Float a = g + cos_theta_ni,
-              b = g - cos_theta_ni;
+  const Float a = g + cos_ni,
+              b = g - cos_ni;
   const Float tmp1 = b / a,
-              tmp2 = (cos_theta_ni * a - 1.0) / (cos_theta_ni * b + 1.0);
-  const Float reflectance = 0.5 * tmp1 * tmp1 * (1.0 + tmp2 * tmp2);
+              tmp2 = (cos_ni * a - 1.0) / (cos_ni * b + 1.0);
+  const Float reflectance = (0.5 * zisc::power<2>(tmp1)) *
+                            (1.0 + zisc::power<2>(tmp2));
   ZISC_ASSERT(zisc::isInBounds(reflectance, 0.0, 1.0),
               "Reflectance isn't [0, 1].");
   return reflectance;

@@ -13,7 +13,7 @@
 #include "zisc/matrix.hpp"
 // Nanairo
 #include "xyz_color.hpp"
-#include "NanairoCore/LinearAlgebra/transformation.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 
 namespace nanairo {
 

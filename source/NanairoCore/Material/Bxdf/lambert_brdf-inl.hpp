@@ -45,15 +45,15 @@ LambertBrdf<kSampleSize>::LambertBrdf(const Spectra& reflectance) noexcept :
   No detailed.
   */
 template <uint kSampleSize>
-Float LambertBrdf<kSampleSize>::evaluatePdf(
+Float LambertBrdf<kSampleSize>::evalPdf(
     const Vector3* /* vin */,
     const Vector3* vout,
     const Vector3& normal,
     const Wavelengths& /* wavelemgths */) const noexcept
 {
   constexpr Float k = 1.0 / zisc::kPi<Float>;
-  const Float cos_theta = zisc::dot(normal, *vout);
-  return k * cos_theta;
+  const Float cos_no = zisc::dot(normal, *vout);
+  return k * cos_no;
 }
 
 /*!
@@ -61,7 +61,7 @@ Float LambertBrdf<kSampleSize>::evaluatePdf(
   No detailed.
   */
 template <uint kSampleSize>
-auto LambertBrdf<kSampleSize>::evaluateRadiance(
+auto LambertBrdf<kSampleSize>::evalRadiance(
     const Vector3* /* vin */,
     const Vector3* /* vout */,
     const Vector3& /* normal */,
@@ -76,17 +76,16 @@ auto LambertBrdf<kSampleSize>::evaluateRadiance(
   No detailed.
   */
 template <uint kSampleSize>
-auto LambertBrdf<kSampleSize>::evaluateRadianceAndPdf(
+auto LambertBrdf<kSampleSize>::evalRadianceAndPdf(
     const Vector3* /* vin */,
     const Vector3* vout,
     const Vector3& normal,
     const Wavelengths& /* wavelemgths */) const noexcept -> std::tuple<Spectra, Float>
 {
   constexpr Float k = 1.0 / zisc::kPi<Float>;
-  const Float cos_theta_no = zisc::dot(normal, *vout);
-  ZISC_ASSERT(zisc::isInBounds(cos_theta_no, 0.0, 1.0),
-              "The cos theta_{n, o} isn't [0, 1].");
-  return std::make_tuple(k * reflectance_, k * cos_theta_no);;
+  const Float cos_no = zisc::dot(normal, *vout);
+  ZISC_ASSERT(zisc::isInBounds(cos_no, 0.0, 1.0), "cos_no isn't [0, 1].");
+  return std::make_tuple(k * reflectance_, k * cos_no);;
 }
 
 /*!
@@ -100,7 +99,7 @@ auto LambertBrdf<kSampleSize>::sample(
     const Wavelengths& /* wavelemgths */,
     Sampler& sampler) const noexcept -> std::tuple<SampledDirection, Spectra>
 {
-  const auto vout = sampleDirectionOnHemisphere<1>(normal, sampler);
+  const auto vout = SampledDirection::sampleOnHemisphere<1>(normal, sampler);
   return std::make_tuple(std::move(vout), reflectance_);
 }
 

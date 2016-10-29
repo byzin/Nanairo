@@ -22,17 +22,18 @@
 // Nanairo
 #include "flat_mesh.hpp"
 #include "smoothed_mesh.hpp"
+#include "shape.hpp"
+#include "triangle_mesh.hpp"
 #include "NanairoCommon/keyword.hpp"
-#include "NanairoCore/Geometry/triangle_mesh.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo  {
 
 /*!
   */
-std::vector<UniquePointer<Geometry>> ObjLoader::parse(QTextStream& obj_stream,
+std::vector<UniquePointer<Shape>> ObjLoader::parse(QTextStream& obj_stream,
                                                       const MeshType type) noexcept
 {
   ZISC_ASSERT(obj_stream.device() != 0, "The obj stream isn't initialized.");
@@ -98,7 +99,7 @@ std::tuple<uint, uint, uint, uint> ObjLoader::countNumOfMeshes(
 
 /*!
   */
-UniquePointer<Geometry> ObjLoader::makeMesh(
+UniquePointer<Shape> ObjLoader::makeMesh(
     QTextStream& face_line,
     const std::vector<Point3>& vertices,
     const std::vector<Vector3>& vnormals,
@@ -129,19 +130,19 @@ UniquePointer<Geometry> ObjLoader::makeMesh(
       face_line >> vertex_index[i];
     }
   }
-  UniquePointer<Geometry> mesh;
+  UniquePointer<Shape> mesh;
   if (mesh_type == MeshType::Flat || !smoothing) {
     mesh.reset(new FlatMesh{vertices[vertex_index[0] - 1],
                             vertices[vertex_index[1] - 1],
                             vertices[vertex_index[2] - 1]});
   }
   else {
-    mesh = makeSmoothedMesh(vertices[vertex_index[0] - 1],
-                            vertices[vertex_index[1] - 1],
-                            vertices[vertex_index[2] - 1],
-                            vnormals[vnormal_index[0] - 1],
-                            vnormals[vnormal_index[1] - 1],
-                            vnormals[vnormal_index[2] - 1]);
+    mesh = TriangleMesh::makeSmoothedMesh(vertices[vertex_index[0] - 1],
+                                          vertices[vertex_index[1] - 1],
+                                          vertices[vertex_index[2] - 1],
+                                          vnormals[vnormal_index[0] - 1],
+                                          vnormals[vnormal_index[1] - 1],
+                                          vnormals[vnormal_index[2] - 1]);
   }
   if (has_vtexture) {
     auto triangle = zisc::cast<TriangleMesh*>(mesh.get());
@@ -154,7 +155,7 @@ UniquePointer<Geometry> ObjLoader::makeMesh(
 
 /*!
   */
-std::vector<UniquePointer<Geometry>> ObjLoader::makeMeshes(
+std::vector<UniquePointer<Shape>> ObjLoader::makeMeshes(
     QTextStream& obj_stream,
     const std::tuple<uint, uint, uint, uint>& mesh_info,
     const MeshType type) noexcept
@@ -176,7 +177,7 @@ std::vector<UniquePointer<Geometry>> ObjLoader::makeMeshes(
   vtextures.reserve(num_of_vtextures);
   // Triangle faces
   const uint num_of_faces = std::get<3>(mesh_info);
-  std::vector<UniquePointer<Geometry>> meshes;
+  std::vector<UniquePointer<Shape>> meshes;
   meshes.reserve(num_of_faces);
   // Variables for parsing
   bool smoothing = false;
@@ -212,6 +213,8 @@ std::vector<UniquePointer<Geometry>> ObjLoader::makeMeshes(
      }
      case toHash32("vt"): {
       buffer >> x >> y;
+      x = zisc::clamp(x, 0.0, 1.0);
+      y = zisc::clamp(y, 0.0, 1.0);
       vtextures.emplace_back(x, 1.0 - y);
       break;
      }

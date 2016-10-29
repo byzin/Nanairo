@@ -18,6 +18,8 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
+#include "NanairoCore/Sampling/wavelength_sampler.hpp"
+#include "NanairoCore/Utility/value.hpp"
 
 constexpr nanairo::uint kSampleSize = nanairo::CoreConfig::wavelengthSampleSize();
 
@@ -27,11 +29,9 @@ namespace {
   \details
   No detailed.
   */
-template <nanairo::uint N>
-std::array<nanairo::uint, nanairo::CoreConfig::spectraSize()>
-testWavelengthDistribution(
-    const nanairo::WavelengthSampler<kSampleSize>& wavelength_sampler,
-    nanairo::Sampler& sampler)
+template <nanairo::uint N, typename WavelengthSampler>
+auto testWavelengthDistribution(const WavelengthSampler& wavelength_sampler,
+                                nanairo::Sampler& sampler)
 {
   using namespace nanairo;
   using zisc::cast;
@@ -54,8 +54,8 @@ testWavelengthDistribution(
   \details
   No detailed.
   */
-void testUniformWavelengthSampler(
-    const nanairo::WavelengthSampler<kSampleSize>& wavelength_sampler)
+template <typename WavelengthSampler>
+void testUniformWavelengthSampler(const WavelengthSampler& wavelength_sampler)
 {
   using namespace nanairo;
   using zisc::cast;
@@ -86,29 +86,32 @@ void testUniformWavelengthSampler(
 TEST(SamplingWavelengthsTest, RegularSamplingTest)
 {
   using namespace nanairo;
-  using zisc::cast;
-  // Initialize sampler
-  WavelengthSampler<kSampleSize> wavelength_sampler{
-      sampleWavelengthsRegularly<kSampleSize>};
+  auto wavelength_sampler = [](Sampler& sampler)
+  {
+    using WSampler = WavelengthSampler<CoreConfig::wavelengthSampleSize()>;
+    return WSampler::sampleRegularly(sampler);
+  };
   testUniformWavelengthSampler(wavelength_sampler);
 }
 
 TEST(SamplingWavelengthsTest, RandomSamplingTest)
 {
   using namespace nanairo;
-  using zisc::cast;
-  // Initialize sampler
-  WavelengthSampler<kSampleSize> wavelength_sampler{
-      sampleWavelengthsRandomly<kSampleSize>};
+  auto wavelength_sampler = [](Sampler& sampler)
+  {
+    using WSampler = WavelengthSampler<CoreConfig::wavelengthSampleSize()>;
+    return WSampler::sampleRandomly(sampler);
+  };
   testUniformWavelengthSampler(wavelength_sampler);
 }
 
 TEST(SamplingWavelengthsTest, StratifiedSamplingTest)
 {
   using namespace nanairo;
-  using zisc::cast;
-  // Initialize sampler
-  WavelengthSampler<kSampleSize> wavelength_sampler{
-      sampleStratifiedWavelengths<kSampleSize>};
+  auto wavelength_sampler = [](Sampler& sampler)
+  {
+    using WSampler = WavelengthSampler<CoreConfig::wavelengthSampleSize()>;
+    return WSampler::sampleStratified(sampler);
+  };
   testUniformWavelengthSampler(wavelength_sampler);
 }

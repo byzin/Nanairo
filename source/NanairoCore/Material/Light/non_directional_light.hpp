@@ -40,10 +40,10 @@ class NonDirectionalLight : public DiffuseShaderModel<kSampleSize>
 
   //! Create a non-directional light 
   NonDirectionalLight(const Spectra& radiant_exitance) noexcept;
-  
+
 
   //! Evaluate the radiance of area sampling
-  Spectra evaluateRadiance(const Vector3* vin,
+  Spectra evalRadiance(const Vector3* vin,
                            const Vector3* vout,
                            const Vector3& normal,
                            const Wavelengths& wavelengths) const noexcept override;

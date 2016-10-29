@@ -15,10 +15,10 @@
 #include <tuple>
 #include <utility>
 // Nanairo
-#include "geometry.hpp"
+#include "shape.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_point.hpp"
 
 namespace nanairo {
@@ -37,7 +37,7 @@ class Sampler;
  \details
  No detailed.
  */
-class Plane : public Geometry 
+class Plane : public Shape
 {
  public:
   //! Initialize
@@ -45,9 +45,6 @@ class Plane : public Geometry
 
   //! Get bounding box
   Aabb boundingBox() const noexcept override;
-
-  //! Return the plane size
-  std::size_t geometrySize() const noexcept override;
 
   //! Return the cost of a ray-plane intersection test
   Float getTraversalCost() const noexcept override;

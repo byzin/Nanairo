@@ -48,50 +48,40 @@ EmitterModel::EmitterModel(const QJsonObject& settings) noexcept
   \details
   No detailed.
   */
-void EmitterModel::initialize(const QJsonObject& /* settings */) noexcept
-{
-}
-
-/*!
-  \details
-  No detailed.
-  */
-//void EmitterModel::setPowerDistribution(
-//    const SpectralDistribution& distribution) noexcept
-//{
-//  power_distribution_ = distribution;
-//}
-
-/*!
-  */
-void EmitterModel::setRadiantExitance(const Float radiant_exitance) noexcept
-{
-  radiant_exitance_ = radiant_exitance;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-UniquePointer<EmitterModel> makeEmitter(
+UniquePointer<EmitterModel> EmitterModel::makeEmitter(
     const QJsonObject& settings,
     const std::vector<const TextureModel*>& texture_list) noexcept
 {
   using zisc::toHash32;
 
   EmitterModel* emitter = nullptr;
-
   const auto type = SceneValue::toString(settings, keyword::type);
   switch (keyword::toHash32(type)) {
-   case toHash32(keyword::nonDirectionalEmitter):
+   case toHash32(keyword::nonDirectionalEmitter): {
     emitter = new NonDirectionalEmitter{settings, texture_list};
     break;
-   default:
+   }
+   default: {
     zisc::raiseError("EmitterError: Unsupported type is specified.");
     break;
+   }
   }
-
   return UniquePointer<EmitterModel>{emitter};
+}
+
+/*!
+  \details
+  No detailed.
+  */
+void EmitterModel::initialize(const QJsonObject& /* settings */) noexcept
+{
+}
+
+/*!
+  */
+void EmitterModel::setRadiantExitance(const Float radiant_exitance) noexcept
+{
+  radiant_exitance_ = radiant_exitance;
 }
 
 } // namespace nanairo

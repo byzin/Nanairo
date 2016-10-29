@@ -29,7 +29,7 @@
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
-#include "NanairoCore/LinearAlgebra/transformation.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Material/SurfaceModel/rough_conductor_surface.hpp"
 #include "NanairoCore/Material/SurfaceModel/smooth_diffuse_surface.hpp"

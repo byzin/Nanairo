@@ -35,9 +35,8 @@ QImage RenderedImageProvider::requestImage(const QString& /* id */,
                                            const QSize& /* requested_size */) noexcept
 {
   if (image_ == nullptr) {
-    QSize image_size{640, 480};
-    QImage image{image_size, QImage::Format_RGB32};
-    *size = image_size;
+    QImage image{QSize{640, 480}, QImage::Format_RGB32};
+    *size = image.size();
     return image;
   }
   *size = image_->size();

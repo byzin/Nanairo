@@ -11,8 +11,7 @@
 #define NANAIRO_LIGHT_TRACING_HPP
 
 // Standard C++ library
-#include <bitset>
-#include <vector>
+#include <thread>
 // Nanairo
 #include "rendering_method.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -46,9 +45,9 @@ class LightTracing : public RenderingMethod<kSampleSize>
  public:
   using Method = RenderingMethod<kSampleSize>;
   using Spectra = typename Method::Spectra;
-  using Wavelengths = typename Method::Wavelengths;
   using Shader = ShaderModel<kSampleSize>;
   using ShaderPointer = UniquePointer<Shader>;
+  using Wavelengths = typename Method::Wavelengths;
 
 
   //! Initialize light tracing method
@@ -61,48 +60,32 @@ class LightTracing : public RenderingMethod<kSampleSize>
               const Wavelengths& sampled_wavelengths) noexcept override;
 
  private:
-  //! Add the contributions
-  void addContribution(const System& system, CameraModel& camera) noexcept;
-
-  // Add the contribution to the light contribution buffer
-  void addLightContribution(const CameraModel& camera,
-                            const int thread_id, 
-                            const uint x, 
+  //! Add a light contribution to buffer
+  void addLightContribution(CameraModel& camera,
+                            const uint x,
                             const uint y,
                             const Spectra& contribution) noexcept;
 
-  //! Clear the light contribution buffer
-  void clearLightContribution() noexcept;
-
   //! Evaluate the explicit connection
-  void evaluateExplicitConnection(const World& world,
-                                  const CameraModel& camera,
-                                  const int thread_id,
-                                  const ShaderPointer& bxdf,
-                                  const IntersectionInfo& intersection,
-                                  const Vector3* vin,
-                                  const Spectra& ray_weight,
-                                  MemoryPool& memory_pool) noexcept;
+  void evalExplicitConnection(const World& world,
+                              const Vector3* vin,
+                              const ShaderPointer& bxdf,
+                              const IntersectionInfo& intersection,
+                              const Spectra& light_contribution,
+                              const Spectra& ray_weight,
+                              CameraModel& camera,
+                              MemoryPool& memory_pool) noexcept;
 
   //! Generate a light ray
   Ray generateRay(const World& world,
-                  const CameraModel& camera,
-                  const int thread_id,
+                  Spectra* light_contribution,
+                  const Spectra& ray_weight,
+                  CameraModel& camera,
                   Sampler& sampler,
-                  MemoryPool& memory_pool,
-                  Spectra* weight) noexcept;
-
-  //! Check if the buffer has contribution
-  bool hasLightContribution(const uint index) const noexcept;
+                  MemoryPool& memory_pool) noexcept;
 
   //! Initialize
   void initialize(const System& system, const QJsonObject& settings) noexcept;
-
-  //! Return the num of light rays per thread
-  uint numOfThreadRays() const noexcept;
-
-  //! Set the light contribution flag
-  void setLightContributionFlag(const uint index, const bool flag) noexcept;
 
   //! Parallelize light tracing
   void traceLightPath(System& system,
@@ -116,20 +99,7 @@ class LightTracing : public RenderingMethod<kSampleSize>
                       const int thread_id) noexcept;
 
 
-  static constexpr uint kFlagBitsetSize = 64;
-
- 
-  std::vector<Spectra> light_contribution_buffer_;
-  std::vector<std::bitset<kFlagBitsetSize>> light_contribution_flag_;
-  Float ray_weight_;
-  uint num_of_thread_rays_;
-
-
-  //! Return the flag bitset size
-  static constexpr uint flagBitsetSize() noexcept
-  {
-    return kFlagBitsetSize;
-  }
+  std::mutex lock_;
 };
 
 //! \} Core

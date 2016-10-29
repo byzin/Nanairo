@@ -1,5 +1,5 @@
 /*!
-  \file geometry.hpp
+  \file shape.hpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef NANAIRO_GEOMETRY_HPP
-#define NANAIRO_GEOMETRY_HPP
+#ifndef NANAIRO_SHAPE_HPP
+#define NANAIRO_SHAPE_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -17,8 +17,8 @@
 #include <utility>
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_point.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
@@ -40,34 +40,35 @@ class Sampler;
   \details
   No detailed.
   */
-class Geometry
+class Shape
 {
  public:
   //!
-  virtual ~Geometry() noexcept;
+  virtual ~Shape() noexcept;
 
 
   //! Return the bounding box
   virtual Aabb boundingBox() const noexcept = 0;
 
-  //! Return the geometry size
-  virtual std::size_t geometrySize() const noexcept = 0;
-
   //! Return the ray traversal cost
   virtual Float getTraversalCost() const noexcept = 0;
 
-  //! Return the surface area of the geometry
+  //! Make geometries
+  static std::vector<UniquePointer<Shape>> makeShape(
+      const QJsonObject& settings) noexcept;
+
+  //! Return the surface area of the shape
   Float surfaceArea() const noexcept;
 
-  //! Test ray-geometry intersection
+  //! Test ray-shape intersection
   virtual bool testIntersection(const Ray& ray,
                                 IntersectionInfo* intersection) const noexcept = 0;
 
-  //! Sample a point randomly on the surface of the geometry
+  //! Sample a point randomly on the surface of the shape
   virtual std::tuple<SampledPoint, Vector3, Point2> samplePoint(
       Sampler& sampler) const noexcept = 0;
 
-  //! Set surface area of geometry
+  //! Set surface area of shape
   void setSurfaceArea(const Float surface_area) noexcept;
 
   //! Apply affine transformation
@@ -77,14 +78,10 @@ class Geometry
   Float surface_area_;
 };
 
-//! Make geometries
-std::vector<UniquePointer<Geometry>> makeGeometry(
-    const QJsonObject& settings) noexcept;
-
 //! \} Core
 
 } // namespace nanairo
 
-#include "geometry-inl.hpp"
+#include "shape-inl.hpp"
 
-#endif // NANAIRO_GEOMETRY_HPP
+#endif // NANAIRO_SHAPE_HPP

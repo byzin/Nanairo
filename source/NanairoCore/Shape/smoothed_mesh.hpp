@@ -14,11 +14,11 @@
 #include <tuple>
 #include <utility>
 // Nanairo
-#include "geometry.hpp"
+#include "shape.hpp"
 #include "triangle_mesh.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_point.hpp"
 
 namespace nanairo {
@@ -38,23 +38,20 @@ class Sampler;
   Entitled "Ray tracing simulation method using piecewise quadratic interpolant
   for aspheric optical systems"
   */
-class SmoothedMesh : public TriangleMesh 
+class SmoothedMesh : public TriangleMesh
 {
  public:
   //! Initialize smoothed mesh
-  SmoothedMesh(const Point3& vertex0, 
-               const Point3& vertex1, 
+  SmoothedMesh(const Point3& vertex0,
+               const Point3& vertex1,
                const Point3& vertex2,
-               const Vector3& normal0, 
+               const Vector3& normal0,
                const Vector3& normal1,
                const Vector3& normal2) noexcept;
 
 
   //! Return the bounding box
   Aabb boundingBox() const noexcept override;
-
-  //! Return the smoothd mesh size
-  std::size_t geometrySize() const noexcept override;
 
   //! Return the cost of a ray-patch intersection test
   Float getTraversalCost() const noexcept override;

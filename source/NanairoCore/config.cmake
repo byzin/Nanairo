@@ -36,7 +36,21 @@ endfunction(getCoreSamplerType)
 
 # Make Nanairo Core config file
 function(makeCoreConfigFile config_file_path config_file_inl_path)
+  # Sampler setting
   getCoreSamplerType(nanairo_core_sampler_header_path nanairo_core_sampler_type)
+  # Path tracing setting
+    set(NANAIRO_PATH_TRACING_EXPLICIT_CONNECTION_IS_ENABLED "true")
+    set(NANAIRO_PATH_TRACING_IMPLICIT_CONNECTION_IS_ENABLED "true")
+  if(NANAIRO_PATH_TRACING_EXPLICIT_CONNECTION_ONLY)
+    set(NANAIRO_PATH_TRACING_IMPLICIT_CONNECTION_IS_ENABLED "false")
+  elseif(NANAIRO_PATH_TRACING_IMPLICIT_CONNECTION_ONLY)
+    set(NANAIRO_PATH_TRACING_EXPLICIT_CONNECTION_IS_ENABLED "false")
+  endif()
+  if(NANAIRO_PATH_TRACING_EXPLICIT_CONNECTION_ONLY AND
+     NANAIRO_PATH_TRACING_IMPLICIT_CONNECTION_ONLY)
+    message(FATAL_ERROR "'NANAIRO_PATH_TRACING_EXPLICIT_CONNECTION_ONLY' and 'NANAIRO_PATH_TRACING_IMPLICIT_CONNECTION_ONLY' can not be specified together.")
+  endif()
+
   configure_file(${__nanairo_core_root__}/nanairo_core_config.hpp.in
                  ${config_file_path})
   configure_file(${__nanairo_core_root__}/nanairo_core_config-inl.hpp.in
@@ -79,11 +93,6 @@ function(getNanairoCore core_source_files core_definitions)
   findNanairoSourceFiles(${__nanairo_core_root__} source_files)
   # Definitions
   set(definitions "")
-  if(NANAIRO_PATH_TRACING_EXPLICIT_CONNECTION_ONLY)
-    list(APPEND definitions -DNANAIRO_PATH_TRACING_EXPLICIT_CONNECTION_ONLY)
-  elseif(NANAIRO_PATH_TRACING_IMPLICIT_CONNECTION_ONLY)
-    list(APPEND definitions -DNANAIRO_PATH_TRACING_IMPLICIT_CONNECTION_ONLY)
-  endif()
   # Config file
   set(config_file_path
       ${PROJECT_BINARY_DIR}/include/NanairoCore/nanairo_core_config.hpp)

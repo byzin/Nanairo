@@ -27,7 +27,7 @@
 #include "NanairoCore/Color/color_space.hpp"
 #include "NanairoCore/Color/hdr_image.hpp"
 #include "NanairoCore/Color/yxy_color.hpp"
-#include "NanairoCore/LinearAlgebra/transformation.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 
@@ -115,7 +115,7 @@ void ToneMappingOperator::initialize(const System& system,
   \details
   No detailed.
   */
-UniquePointer<ToneMappingOperator> makeToneMappingOperator(
+UniquePointer<ToneMappingOperator> ToneMappingOperator::makeOperator(
     const System& system,
     const QJsonObject& settings) noexcept
 {
@@ -125,21 +125,21 @@ UniquePointer<ToneMappingOperator> makeToneMappingOperator(
 
   const auto type = SceneValue::toString(settings, keyword::toneMapping);
   switch (keyword::toHash32(type)) {
-    case toHash32(keyword::reinhard): {
-      method = new Reinhard{system, settings};
-      break;
-    }
-    case toHash32(keyword::filmic): {
-      method = new Filmic{system, settings};
-      break;
-    }
-    case toHash32(keyword::uncharted2Filmic): {
-      method = new Uncharted2Filmic{system, settings};
-      break;
-    }
-    default: {
-      zisc::raiseError("ToneMappingError: Unsupprted type is specified.");
-    }
+   case toHash32(keyword::reinhard): {
+    method = new Reinhard{system, settings};
+    break;
+   }
+   case toHash32(keyword::filmic): {
+    method = new Filmic{system, settings};
+    break;
+   }
+   case toHash32(keyword::uncharted2Filmic): {
+    method = new Uncharted2Filmic{system, settings};
+    break;
+   }
+   default: {
+    zisc::raiseError("ToneMappingError: Unsupprted type is specified.");
+   }
   }
   return UniquePointer<ToneMappingOperator>{method};
 }

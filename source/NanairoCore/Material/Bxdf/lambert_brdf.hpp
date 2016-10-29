@@ -46,19 +46,19 @@ class LambertBrdf : public DiffuseShaderModel<kSampleSize>
 
 
   //! Evaluate the pdf
-  Float evaluatePdf(const Vector3* vin,
+  Float evalPdf(const Vector3* vin,
                     const Vector3* vout,
                     const Vector3& normal,
                     const Wavelengths& wavelengths) const noexcept override;
 
   //! Evaluate the BRDF of the area sampling
-  Spectra evaluateRadiance(const Vector3* vin,
+  Spectra evalRadiance(const Vector3* vin,
                            const Vector3* vout,
                            const Vector3& normal,
                            const Wavelengths& wavelengths) const noexcept override;
 
   //! Evaluate the BRDF of the area sampling
-  std::tuple<Spectra, Float> evaluateRadianceAndPdf(
+  std::tuple<Spectra, Float> evalRadianceAndPdf(
       const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,

@@ -12,19 +12,15 @@
 
 #include "light_tracing.hpp"
 // Standard C++ library
-#include <bitset>
-#include <cstdint>
-#include <functional>
 #include <future>
+#include <thread>
 #include <tuple>
 #include <utility>
-#include <vector>
 // Qt
 #include <QJsonObject>
 #include <QString>
 // Zisc
 #include "zisc/aligned_memory_pool.hpp"
-#include "zisc/algorithm.hpp"
 #include "zisc/arithmetic_array.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
@@ -42,8 +38,8 @@
 #include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
 #include "NanairoCore/DataStructure/bvh.hpp"
-#include "NanairoCore/LinearAlgebra/point.hpp"
-#include "NanairoCore/LinearAlgebra/vector.hpp"
+#include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Material/material.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Material/EmitterModel/emitter_model.hpp"
@@ -65,7 +61,7 @@ namespace nanairo {
 template <uint kSampleSize> inline
 LightTracing<kSampleSize>::LightTracing(const System& system,
                                         const QJsonObject& settings) noexcept :
-    RenderingMethod<kSampleSize>(settings)
+    RenderingMethod<kSampleSize>(system, settings)
 {
   initialize(system, settings);
 }
@@ -87,75 +83,69 @@ void LightTracing<kSampleSize>::render(System& system,
   No detailed.
   */
 template <uint kSampleSize>
-void LightTracing<kSampleSize>::evaluateExplicitConnection(
+void LightTracing<kSampleSize>::evalExplicitConnection(
     const World& world,
-    const CameraModel& camera,
-    const int thread_id,
+    const Vector3* vin,
     const ShaderPointer& bxdf,
     const IntersectionInfo& intersection,
-    const Vector3* vin,
+    const Spectra& light_contribution,
     const Spectra& ray_weight,
+    CameraModel& camera,
     MemoryPool& memory_pool) noexcept
 {
   if (bxdf->type() == ShaderType::Specular)
     return;
 
-  const auto& wavelengths = ray_weight.wavelengths();
-  const auto& normal = intersection.normal();
-
   // Make a shadow ray
-  const auto ray_epsilon = Method::rayCastEpsilon() * normal;
-  ZISC_ASSERT(!isZeroVector(ray_epsilon), 
-              "Ray epsilon must not be zero vector.");
-  const auto ray_origin = intersection.point() + ray_epsilon;
-  const auto diff = camera.sampledLensPoint() - ray_origin;
-  const auto ray_direction = diff.normalized();
-  const Float cos_theta_no = zisc::dot(normal, ray_direction);
-  if (cos_theta_no < 0.0)
+  const auto& normal = intersection.normal();
+  const auto shadow_ray = Method::makeShadowRay(intersection.point(),
+                                                camera.sampledLensPoint(),
+                                                normal);
+  const Float cos_no = zisc::dot(normal, shadow_ray.direction());
+  if (cos_no < 0.0)
     return;
-  const Ray shadow_ray{ray_origin, ray_direction};
 
   // Check the visibility of the camera
-  const auto diff2 = diff.squareNorm();
-  ZISC_ASSERT(0.0 < diff2, "Diff^2 must be greater than 0.");
-  const auto shadow_intersection = 
-      Method::castRay(world, shadow_ray, diff2);
+  const auto diff2 = (camera.sampledLensPoint() - shadow_ray.origin()).squareNorm();
+  ZISC_ASSERT(0.0 < diff2, "Diff^2 isn't greater than 0.");
+  const auto shadow_intersection = Method::castRay(world, shadow_ray, diff2);
   if (shadow_intersection.isIntersected())
     return;
 
   // Get the pixel location
   uint x = 0,
        y = 0;
-  const bool ray_hits_film = 
-      camera.getPixelLocation(ray_direction, &x, &y);
+  const bool ray_hits_film = camera.getPixelLocation(shadow_ray.direction(), &x, &y);
   if (!ray_hits_film)
     return;
 
   // Evaluate the surface reflectance
-  const auto f = 
-      bxdf->evaluateRadiance(vin, &ray_direction, normal, wavelengths);
-  ZISC_ASSERT(!f.hasNegative(), 
-              "The f of sensor has negative values.");
+  const auto& wavelengths = ray_weight.wavelengths();
+  const auto f = bxdf->evalRadiance(vin,
+                                    &shadow_ray.direction(),
+                                    normal,
+                                    wavelengths);
+  ZISC_ASSERT(!f.hasNegative(), "The f of BxDF has negative values.");
 
   // Evaluate the camera importance
   const auto sensor = camera.makeSensor(x, y, wavelengths, memory_pool);
-  const auto camera_dir = -ray_direction;
-  const auto importance = sensor->evaluateRadiance(nullptr, 
-                                                   &camera_dir,
-                                                   camera.normal(),
-                                                   wavelengths);
+  const auto camera_dir = -shadow_ray.direction();
+  const auto importance = sensor->evalRadiance(nullptr,
+                                               &camera_dir,
+                                               camera.normal(),
+                                               wavelengths);
+  ZISC_ASSERT(!importance.hasNegative(), "The importance has negative values.");
 
   // Calculate the geometry term
-  const Float cos_theta_cni = zisc::dot(camera.normal(), camera_dir);
-  const Float geometry_term = (cos_theta_cni * cos_theta_no) / diff2;
-  ZISC_ASSERT(0.0 < geometry_term, 
-              "Geometry term must be greater than 0.");
+  const Float cos_cni = zisc::dot(camera.normal(), camera_dir);
+  const Float geometry_term = (cos_cni * cos_no) / diff2;
+  ZISC_ASSERT(0.0 < geometry_term, "Geometry term is negative.");
 
   // Calculate the contribution
-  const auto contribution = ray_weight * f * importance * geometry_term;
-  ZISC_ASSERT(!contribution.hasNegative(), 
-              "The contribution has negative values.");
-  addLightContribution(camera, thread_id, x, y, contribution);
+  const auto contribution = (light_contribution * ray_weight * f * importance) *
+                            geometry_term;
+  ZISC_ASSERT(!contribution.hasNegative(), "The contribution has negative values.");
+  addLightContribution(camera, x, y, contribution);
 }
 
 /*!
@@ -164,21 +154,21 @@ void LightTracing<kSampleSize>::evaluateExplicitConnection(
   */
 template <uint kSampleSize>
 Ray LightTracing<kSampleSize>::generateRay(const World& world,
-                                           const CameraModel& camera,
-                                           const int thread_id,
+                                           Spectra* light_contribution,
+                                           const Spectra& ray_weight,
+                                           CameraModel& camera,
                                            Sampler& sampler,
-                                           MemoryPool& memory_pool,
-                                           Spectra* weight) noexcept
+                                           MemoryPool& memory_pool) noexcept
 {
-  const auto& wavelengths = weight->wavelengths();
+  const auto& wavelengths = light_contribution->wavelengths();
   // Sample a light point
-  const auto& sampled_light_source = world.sampleLightSource(sampler);
-  const auto light_source = sampled_light_source.object();
-  const auto light_point = light_source->geometry().samplePoint(sampler);
-  const auto& point = std::get<0>(light_point);
-  const auto& normal = std::get<1>(light_point);
-  const auto& texture_coordinate = std::get<2>(light_point);
-  ZISC_ASSERT(0.0 < point.pdf(), "Invalid point pdf.");
+  const auto& light_source_info = world.sampleLightSource(sampler);
+  const auto light_source = light_source_info.object();
+  const auto light_point_info = light_source->shape().samplePoint(sampler);
+  const auto& point = std::get<0>(light_point_info);
+  const auto& normal = std::get<1>(light_point_info);
+  const auto& texture_coordinate = std::get<2>(light_point_info);
+  ZISC_ASSERT(0.0 < point.pdf(), "The point pdf is negative.");
 
   // Sample a direction
   const auto& emitter = light_source->material().emitter();
@@ -190,28 +180,24 @@ Ray LightTracing<kSampleSize>::generateRay(const World& world,
   const auto light = emitter.makeLight(intersection.textureCoordinate(),
                                        wavelengths,
                                        memory_pool);
-  const auto result = 
-      light->sample(nullptr, normal, wavelengths, sampler);
-  const auto& sampled_vout = std::get<0>(result);
-  ZISC_ASSERT(0.0 < sampled_vout.pdf(), "Invalid direction pdf.");
-  const auto& w = std::get<1>(result);
-  *weight = *weight * w;
-
-  // Evaluate the weight
-  const auto k = sampled_light_source.inverseWeight() * 
-                 point.inversePdf() * 
-                 ray_weight_;
-  ZISC_ASSERT(0.0 < k, "Invalid light ray coefficient.");
-  *weight = k * (*weight);
 
   // Evaluate the explicit connection
-  evaluateExplicitConnection(world, camera, thread_id, light, intersection,
-                             nullptr, *weight, memory_pool);
+  const auto k = light_source_info.inverseWeight() * point.inversePdf();
+  ZISC_ASSERT(0.0 < k, "The light ray coefficient is negative.");
+  *light_contribution = k * (*light_contribution);
+  evalExplicitConnection(world, nullptr, light, intersection,
+                         *light_contribution, ray_weight, camera, memory_pool);
+  // Sample a ray direction
+  const auto result = light->sample(nullptr, normal, wavelengths, sampler);
+  const auto& sampled_vout = std::get<0>(result);
+  ZISC_ASSERT(0.0 < sampled_vout.pdf(), "The ray direction pdf is negative.");
+  // Evaluate the light_contribution
+  const auto& w = std::get<1>(result);
+  *light_contribution = w * (*light_contribution);
 
   // Generate a ray
   const auto ray_epsilon = Method::rayCastEpsilon() * normal;
-  ZISC_ASSERT(!isZeroVector(ray_epsilon), 
-              "Ray epsilon must not be zero vector.");
+  ZISC_ASSERT(!isZeroVector(ray_epsilon), "Ray epsilon is zero vector.");
   return Ray{point.point() + ray_epsilon, sampled_vout.direction()};
 }
 
@@ -219,21 +205,15 @@ Ray LightTracing<kSampleSize>::generateRay(const World& world,
   \details
   No detailed.
   */
-template <uint kSampleSize>
-void LightTracing<kSampleSize>::addContribution(const System& system,
-                                                CameraModel& camera) noexcept
+template <uint kSampleSize> inline
+void LightTracing<kSampleSize>::addLightContribution(
+    CameraModel& camera,
+    const uint x,
+    const uint y,
+    const Spectra& contribution) noexcept
 {
-  const auto& thread_pool = system.threadPool();
-  uint index = 0;
-  for (uint thread_id = 0; thread_id < thread_pool.numOfThreads(); ++thread_id) {
-    for (uint y = 0; y < camera.heightResolution(); ++y) {
-      for (uint x = 0; x < camera.widthResolution(); ++x) {
-        if (hasLightContribution(index))
-          camera.addContribution(x, y, light_contribution_buffer_[index]);
-        ++index;
-      }
-    }
-  }
+  std::unique_lock<std::mutex> locker{lock_};
+  camera.addContribution(x, y, contribution);
 }
 
 /*!
@@ -241,45 +221,10 @@ void LightTracing<kSampleSize>::addContribution(const System& system,
   No detailed.
   */
 template <uint kSampleSize> inline
-void LightTracing<kSampleSize>::addLightContribution(const CameraModel& camera,
-                                                     const int thread_id,
-                                                     const uint x,
-                                                     const uint y,
-                                                     const Spectra& contribution) noexcept 
+void LightTracing<kSampleSize>::initialize(
+    const System& /* system */,
+    const QJsonObject& /* settings */) noexcept
 {
-  using zisc::cast;
-  const uint index = (cast<uint>(thread_id) * camera.heightResolution() + y) * 
-                     camera.widthResolution() + x;
-  if (!hasLightContribution(index)) {
-    light_contribution_buffer_[index] = contribution;
-    setLightContributionFlag(index, true);
-  }
-  else {
-    light_contribution_buffer_[index] += contribution;
-  }
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <uint kSampleSize> inline
-void LightTracing<kSampleSize>::clearLightContribution() noexcept
-{
-  for (auto& flag : light_contribution_flag_)
-    flag.reset();
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <uint kSampleSize> inline
-bool LightTracing<kSampleSize>::hasLightContribution(const uint index) const noexcept
-{
-  const uint i = index / flagBitsetSize();
-  const uint position = index - (i * flagBitsetSize());
-  return light_contribution_flag_[i][position];
 }
 
 /*!
@@ -287,65 +232,10 @@ bool LightTracing<kSampleSize>::hasLightContribution(const uint index) const noe
   No detailed.
   */
 template <uint kSampleSize>
-void LightTracing<kSampleSize>::initialize(const System& system,
-                                           const QJsonObject& /* settings */) noexcept
-{
-  using zisc::cast;
-
-  const auto num_of_threads = system.threadPool().numOfThreads();
-
-  const auto width = system.imageWidthResolution();
-  const auto height = system.imageHeightResolution();
-
-  uint num_of_light_rays = width * height;
-  num_of_thread_rays_ = num_of_light_rays / num_of_threads;
-  ZISC_ASSERT(0 < num_of_thread_rays_, "Invalid the number of rays.");
-  num_of_light_rays = num_of_thread_rays_ * num_of_threads;
-  ray_weight_ = cast<Float>(width * height) / cast<Float>(num_of_light_rays);
-  ZISC_ASSERT(0.0 < ray_weight_, "Invalid ray weight.");
-
-  light_contribution_buffer_.resize(num_of_threads * width * height);
-  ZISC_ASSERT(0 < light_contribution_buffer_.size(), "Invalid buffer size.");
-
-  const uint flag_size = ((light_contribution_buffer_.size() % flagBitsetSize()) == 0)
-      ? cast<uint>(light_contribution_buffer_.size()) / flagBitsetSize()
-      : cast<uint>(light_contribution_buffer_.size()) / flagBitsetSize() + 1;
-  light_contribution_flag_.resize(flag_size);
-  ZISC_ASSERT(0 < light_contribution_flag_.size(), "Invalid flag size.");
-  ZISC_ASSERT(sizeof(light_contribution_flag_[0]) == 8, "Invalid flag data size.");
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <uint kSampleSize> inline
-uint LightTracing<kSampleSize>::numOfThreadRays() const noexcept
-{
-  return num_of_thread_rays_;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <uint kSampleSize> inline
-void LightTracing<kSampleSize>::setLightContributionFlag(const uint index,
-                                                         const bool flag) noexcept
-{
-  const uint i = index / flagBitsetSize();
-  const uint position = index - (i * flagBitsetSize());
-  light_contribution_flag_[i].set(position, flag);
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <uint kSampleSize>
-void LightTracing<kSampleSize>::traceLightPath(System& system,
-                                               Scene& scene,
-                                               const Wavelengths& sampled_wavelengths) noexcept 
+void LightTracing<kSampleSize>::traceLightPath(
+    System& system,
+    Scene& scene,
+    const Wavelengths& sampled_wavelengths) noexcept
 {
   auto& sampler = system.globalSampler();
 
@@ -354,22 +244,20 @@ void LightTracing<kSampleSize>::traceLightPath(System& system,
   camera.sampleLensPoint(sampler);
   camera.jitter(sampler);
 
-  clearLightContribution();
-
   auto trace_light_path =
   [this, &system, &scene, &sampled_wavelengths](const int thread_id, const uint)
   {
-    for (uint i = 0; i < numOfThreadRays(); ++i) {
+    const auto& c = scene.camera();
+    for (uint x = 0; x < c.widthResolution(); ++x) {
       traceLightPath(system, scene, sampled_wavelengths, thread_id);
     }
   };
 
   auto& thread_pool = system.threadPool();
   constexpr uint start = 0;
-  const uint end = thread_pool.numOfThreads();
+  const uint end = camera.heightResolution();
   auto result = thread_pool.enqueueLoop(trace_light_path, start, end);
   result.get();
-  addContribution(system, camera);
 }
 
 /*!
@@ -377,10 +265,11 @@ void LightTracing<kSampleSize>::traceLightPath(System& system,
   No detailed.
   */
 template <uint kSampleSize>
-void LightTracing<kSampleSize>::traceLightPath(System& system,
-                                               Scene& scene,
-                                               const Wavelengths& sampled_wavelengths,
-                                               const int thread_id) noexcept
+void LightTracing<kSampleSize>::traceLightPath(
+    System& system,
+    Scene& scene,
+    const Wavelengths& sampled_wavelengths,
+    const int thread_id) noexcept
 {
   // System
   auto& sampler = system.threadSampler(thread_id);
@@ -390,16 +279,16 @@ void LightTracing<kSampleSize>::traceLightPath(System& system,
   auto& camera = scene.camera();
   // Trace info
   const auto& wavelengths = sampled_wavelengths.wavelengths();
-  const auto wavelength_weight = makeSampledSpectra(sampled_wavelengths);
+  auto light_contribution = makeSampledSpectra(sampled_wavelengths);
   Spectra contribution{wavelengths};
   IntersectionInfo intersection;
   uint path_length = 1;
   bool wavelength_is_selected = false;
 
   // Generate a light ray
-  auto ray_weight = wavelength_weight;
-  auto ray = generateRay(world, camera, thread_id, 
-                         sampler, memory_pool, &ray_weight);
+  Spectra ray_weight{wavelengths, 1.0};
+  auto ray = generateRay(world, &light_contribution, ray_weight, camera,
+                         sampler, memory_pool);
 
   while (true) {
     // Cast the ray
@@ -414,31 +303,28 @@ void LightTracing<kSampleSize>::traceLightPath(System& system,
                                        intersection.isReverseFace(),
                                        wavelengths,
                                        memory_pool);
-    Method::updateSelectedWavelengthInfo(bxdf, 
-                                         &ray_weight, 
+    Method::updateSelectedWavelengthInfo(bxdf,
+                                         &light_contribution,
                                          &wavelength_is_selected);
 
     // Sample next ray
     auto next_ray_weight = ray_weight;
-    const auto next_ray = 
-        Method::sampleNextRay(path_length, ray, bxdf, intersection, 
-                              &ray_weight, &next_ray_weight, sampler);
+    const auto next_ray = Method::sampleNextRay(path_length, ray, bxdf, intersection,
+                                                &ray_weight, &next_ray_weight,
+                                                sampler);
     if (!next_ray.isAlive())
       break;
-
     ++path_length;
 
-    evaluateExplicitConnection(world, camera, thread_id, bxdf, 
-                               intersection, &ray.direction(), ray_weight,
-                               memory_pool);
+    evalExplicitConnection(world, &ray.direction(), bxdf, intersection,
+                           light_contribution, ray_weight, camera, memory_pool);
 
-    // Update ray
+    // Update the ray
     ray = next_ray;
     ray_weight = next_ray_weight;
     // Clear memory
     memory_pool.reset();
   }
-//  camera.addContribution();
   memory_pool.reset();
 }
 

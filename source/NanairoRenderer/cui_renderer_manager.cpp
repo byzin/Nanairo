@@ -69,26 +69,6 @@ void CuiRendererManager::invokeRenderer() noexcept
     qFatal("%s", message.toStdString().c_str());
   }
 
-  // Load the scene settings
-//  QScopedPointer<SceneSettings> settings{new SceneSettings};
-//  settings->open(scene_file_path_);
-
-  // Make output directory
-//  const auto current_dir = QDir::current();
-//  const auto key = QString{keyword::system} + "/" + keyword::sceneName;
-//  const auto scene_name = settings->SceneValue::toString(key);
-//  const auto current_time = getCurrentTime();
-//  const auto dir_name = scene_name + "_" + current_time;
-//  current_dir.mkdir(dir_name);
-//
-//  // Set the output path
-//  const auto current_path = current_dir.absolutePath();
-//  const auto output_dir = current_path + "/" + dir_name;
-//
-//  // Make the renderer
-//  QScopedPointer<SceneRendererBase> renderer{new CpuSceneRenderer};
-//  setRenderer(renderer.data());
-
   // Render
   renderer_->initialize(settings_);
   renderer_->renderImage(output_dir);
@@ -171,13 +151,6 @@ void CuiRendererManager::setRenderer() noexcept
     flush(*cout);
   };
   QObject::connect(renderer, &SceneRendererBase::updated, output_rendering_info);
-
-  auto output_message = [cout](const QString& message)
-  {
-    *cout << message;
-    endl(*cout);
-  };
-  QObject::connect(renderer, &SceneRendererBase::outputMessage, output_message);
 }
 
 } // namespace nanairo
