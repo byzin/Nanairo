@@ -18,6 +18,7 @@ Version: 0.0.2
 
 * Path tracing
 * Light tracing
+* Progressive photon mapping [[thesis](http://www.cgg.unibe.ch/publications/2011/progressive-photon-mapping-a-probabilistic-approach)]
 
 **BVH**
 
@@ -74,11 +75,11 @@ Please see [wiki](https://github.com/byzin/Nanairo/wiki/Home "NanairoWiki").
 ### Test environments ###
 Building step is tested in the following environments  
 
-* OS X Mavericks + Clang 3.8 + Qt 5.7
+* OS X Mavericks + Apple Clang 8.0 + Qt 5.7
 * Ubuntu 14.04 + GCC 5.3 + Qt 5.7
 * Ubuntu 14.04 + Clang 3.9 + Qt 5.7
 * Windows 8 (64bit) + MinGW GCC 5.3 + Qt 5.6
-* Windows 8 (64bit) + MSVC (Visual Studio 2015) + Qt 5.7
+* Windows 8 (64bit) + Clang 3.9 with MSVC (Visual Studio 2015) + Qt 5.7
 
 ### Download source code ###
 
