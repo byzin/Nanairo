@@ -1,0 +1,468 @@
+{
+    "Bvh": {
+        "OptimizationLoopCount": 2,
+        "TreeletSize": 9,
+        "Type": "AgglomerativeTreeletRestructuringBvh"
+    },
+    "Color": {
+        "ColorMode": "RGB",
+        "ColorSpace": "sRGB (D65)",
+        "Exposure": 1,
+        "Gamma": 2.2,
+        "StandardIllumination": "CIE D65",
+        "StandardObserver": "CIE 2deg color matching function",
+        "ToneMapping": "Reinhard",
+        "WavelengthSampling": "Regular sampling"
+    },
+    "EmitterModel": [
+        {
+            "EmissiveColorIndex": 1,
+            "Name": "Emitter",
+            "RadiantExitance": 32768,
+            "Type": "NonDirectionalEmitter"
+        }
+    ],
+    "Object": [
+        {
+            "AngleOfView": 45,
+            "CameraType": "PinholeCamera",
+            "Enabled": true,
+            "GroupLevel": 0,
+            "Jittering": true,
+            "Name": "Camera",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        1.3,
+                        -1.5
+                    ]
+                },
+                {
+                    "Angle": 60,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "CameraObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 0,
+            "Name": "World",
+            "Transformation": [
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "Floor",
+            "ShapeType": "PlaneObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -1.5,
+                        0.75
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        3,
+                        1,
+                        4.5
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "LeftWall",
+            "ShapeType": "PlaneObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        1.5,
+                        0,
+                        0.75
+                    ]
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        3,
+                        1,
+                        4.5
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "RightWall",
+            "ShapeType": "PlaneObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -1.5,
+                        0,
+                        0.75
+                    ]
+                },
+                {
+                    "Angle": -90,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        3,
+                        1,
+                        4.5
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "BackWall",
+            "ShapeType": "PlaneObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        3
+                    ]
+                },
+                {
+                    "Angle": -90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        3,
+                        1,
+                        3
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "Ceiling",
+            "ShapeType": "PlaneObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        1.5,
+                        0.75
+                    ]
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        3,
+                        1,
+                        4.5
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 1,
+            "IsEmissiveObject": true,
+            "Name": "Light",
+            "ObjectFilePath": "resources/models/Primitives/LowPolySphere.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -0.8,
+                        0
+                    ]
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.02,
+                        0.02,
+                        0.02
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "Diamond1",
+            "ObjectFilePath": "resources/models/DiamondGem.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 1,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.25,
+                        -1.49,
+                        -0.1
+                    ]
+                },
+                {
+                    "Angle": 30,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 45,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "Diamond2",
+            "ObjectFilePath": "resources/models/DiamondGem.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 1,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.5,
+                        -1.49,
+                        -0.2
+                    ]
+                },
+                {
+                    "Angle": -40,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 45,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "Diamond3",
+            "ObjectFilePath": "resources/models/DiamondGem.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 1,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.5,
+                        -1.49,
+                        0.3
+                    ]
+                },
+                {
+                    "Angle": -45,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": -45,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.4,
+                        0.4,
+                        0.4
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        }
+    ],
+    "RenderingMethod": {
+        "KNearestNeighbor": 8,
+        "NumOfPhotons": 131072,
+        "PathLength": 3,
+        "PhotonSearchRadius": 0.02,
+        "RadiusReductionRate": 0.6666667,
+        "RayCastEpsilon": 1e-07,
+        "RussianRoulette": "Reflectance (Max)",
+        "Type": "ProbabilisticPPM"
+    },
+    "Scene": {
+        "SceneName": "DispersionTest"
+    },
+    "SurfaceModel": [
+        {
+            "Name": "WhiteWallSurface",
+            "ReflectanceIndex": 0,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "InnerRefractiveIndex": "resources/spectrum/dielectric/diamond.csv",
+            "Name": "DiamondSurface",
+            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "Type": "SmoothDielectricSurface"
+        }
+    ],
+    "System": {
+        "ImageResolution": [
+            640,
+            480
+        ],
+        "NumOfThreads": 4,
+        "Power2CycleSaving": true,
+        "RandomSeed": 123456789,
+        "SavingInterval": 3600000,
+        "TerminationCycle": 0
+    },
+    "TextureModel": [
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/reflectance/cornell_box_white.csv"
+            },
+            "Name": "WhiteTexture",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
+            },
+            "Name": "EmitterTexture",
+            "Type": "UnicolorTexture"
+        }
+    ]
+}

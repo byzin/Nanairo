@@ -85,6 +85,12 @@ ApplicationWindow {
 
       MenuItem {
         enabled: !isRenderingMode
+        text: qsTr("DispersionTest")
+        onTriggered: loadPresetSceneData(text)
+      }
+
+      MenuItem {
+        enabled: !isRenderingMode
         text: qsTr("VeachMisTest")
         onTriggered: loadPresetSceneData(text)
       }
