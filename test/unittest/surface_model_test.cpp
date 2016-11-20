@@ -126,7 +126,7 @@ TEST(SurfaceModelTest, RoughConductorSurfaceTest)
     std::cout << "Roughness: " << roughness << std::endl;
 
     // Roughness texture
-    auto texture = makeTestValueTexture(*system, 1.0);
+    auto texture = makeTestValueTexture(*system, roughness);
     std::vector<const TextureModel*> texture_list;
     texture_list.push_back(texture.get());
 
@@ -155,4 +155,44 @@ TEST(SurfaceModelTest, RoughConductorSurfaceTest)
     testBxdfImportanceSampling(*surface, intersection, wavelengths, 
                                sampler, memory_pool, brdf_name);
   }
+}
+
+TEST(SurfaceModelTest, ClothSurfaceTest)
+{
+  using namespace nanairo;
+  using zisc::cast;
+
+  // System
+  auto system = makeTestSystem(512, 512, false);
+  auto& memory_pool = system->globalMemoryPool();
+  auto& sampler = system->globalSampler();
+
+  // Texture
+  auto texture = makeTestValueTexture(*system, 1.0);
+  std::vector<const TextureModel*> texture_list;
+  texture_list.push_back(texture.get());
+
+  // Diffuse surface
+  const auto json_path = QStringLiteral(":/test/test_cloth_surface.json");
+  const auto surface = ::makeTestSurface<ClothSurface>(json_path, texture_list);
+
+  // Intersection point
+  const Point3 point{0.0, 0.0, 0.0};
+  const Vector3 normal{0.0, 1.0, 0.0};
+  const IntersectionInfo intersection{point, normal, nullptr, false};
+
+  // Wavelengths
+  WavelengthSamples<1> wavelengths;
+  wavelengths[0] = CoreConfig::shortestWavelength();
+  wavelengths.setPrimaryWavelength(0);
+
+  constexpr char brdf_name[] = "Microcylinder cloth BRDF";
+  testBxdfSampling(*surface, intersection, wavelengths, 
+                   sampler, memory_pool, brdf_name);
+  testBxdfHelmholtzReciprocity(*surface, intersection, wavelengths, 
+                               sampler, memory_pool, brdf_name);
+  testBxdfEnergyConservation(*surface, intersection, wavelengths, 
+                             sampler, memory_pool, brdf_name);
+  testBxdfImportanceSampling(*surface, intersection, wavelengths, 
+                             sampler, memory_pool, brdf_name);
 }

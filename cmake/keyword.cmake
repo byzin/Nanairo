@@ -119,7 +119,12 @@ function(getNanairoKeywords nanairo_keyword_list)
           roughDielectricSurface "RoughDielectricSurface"
               roughnessIndex "RoughnessIndex"
           roughConductorSurface "RoughConductorSurface"
-          roughPlasticSurface "RoughPlasticSurface"
+          clothSurface "ClothSurface"
+              fabricRefractiveIndex "FabricRefractiveIndex"
+              isotropicScatteringCoefficient "IsotropicScatteringCoefficient"
+              surfaceReflectanceGaussianWidth "SurfaceReflectanceGaussianWidth"
+              volumeReflectanceGaussianWidth "VolumeReflectanceGaussianWidth"
+              bandwidthParameter "bandwidthParameter"
 
       # EmitterModel
       emitterModel "EmitterModel"

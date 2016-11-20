@@ -42,8 +42,8 @@ enum class SurfaceType : int
   SmoothDielectric,
   SmoothConductor,
   RoughDielectric,
-  RoughConductor
-//  RoughPlastic
+  RoughConductor,
+  Cloth
 };
 
 /*!
@@ -85,20 +85,20 @@ class SurfaceModel
       const WavelengthSamples<kSampleSize>& wavelengths,
       MemoryPool& memory_pool) const noexcept;
 
-  //! Make a lambert BRDF
+  //! Make a specular BRDF
   template <uint kSampleSize>
   ShaderPointer<kSampleSize> makeSpecularBsdf(
       const bool is_reverse_face,
       const WavelengthSamples<kSampleSize>& wavelengths,
       MemoryPool& memory_pool) const noexcept;
 
-  //! Make a lambert BRDF
+  //! Make a specular BRDF
   template <uint kSampleSize>
   ShaderPointer<kSampleSize> makeSpecularBrdf(
       const WavelengthSamples<kSampleSize>& wavelengths,
       MemoryPool& memory_pool) const noexcept;
 
-  //! Make a lambert BRDF
+  //! Make a GGX dielectric BRDF
   template <uint kSampleSize>
   ShaderPointer<kSampleSize> makeGgxDielectricBsdf(
       const Point2& texture_coordinate,
@@ -106,12 +106,20 @@ class SurfaceModel
       const WavelengthSamples<kSampleSize>& wavelengths,
       MemoryPool& memory_pool) const noexcept;
 
-  //! Make a lambert BRDF
+  //! Make a GGX conductor BRDF
   template <uint kSampleSize>
   ShaderPointer<kSampleSize> makeGgxConductorBrdf(
       const Point2& texture_coordinate,
       const WavelengthSamples<kSampleSize>& wavelengths,
       MemoryPool& memory_pool) const noexcept;
+
+  //! Make a microcylinder cloth BRDF
+  template <uint kSampleSize>
+  ShaderPointer<kSampleSize> makeMicrocylinderClothBrdf(
+      const Point2& texture_coordinate,
+      const WavelengthSamples<kSampleSize>& wavelengths,
+      MemoryPool& memory_pool) const noexcept;
+
 };
 
 //! \} Core

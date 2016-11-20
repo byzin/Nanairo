@@ -16,6 +16,7 @@
 #include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "cloth_surface.hpp"
 #include "rough_conductor_surface.hpp"
 #include "rough_dielectric_surface.hpp"
 #include "smooth_conductor_surface.hpp"
@@ -66,6 +67,10 @@ auto SurfaceModel::makeBxdf(
    }
    case SurfaceType::RoughConductor: {
     shader = makeGgxConductorBrdf(texture_coordinate, wavelengths, memory_pool);
+    break;
+   }
+   case SurfaceType::Cloth: {
+    shader = makeMicrocylinderClothBrdf(texture_coordinate, wavelengths, memory_pool);
     break;
    }
    default: {

@@ -19,6 +19,7 @@
 #include "zisc/error.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
+#include "cloth_surface.hpp"
 #include "rough_dielectric_surface.hpp"
 #include "rough_conductor_surface.hpp"
 #include "smooth_conductor_surface.hpp"
@@ -72,6 +73,10 @@ UniquePointer<SurfaceModel> SurfaceModel::makeSurface(
    }
    case toHash32(keyword::roughConductorSurface): {
     surface_scattering = new RoughConductorSurface{settings, texture_list};
+    break;
+   }
+   case toHash32(keyword::clothSurface): {
+    surface_scattering = new ClothSurface{settings, texture_list};
     break;
    }
    default: {

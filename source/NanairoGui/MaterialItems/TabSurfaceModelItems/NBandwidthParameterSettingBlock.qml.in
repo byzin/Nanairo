@@ -1,0 +1,64 @@
+/*!
+  \file NBandwidthParameterSettingBlock.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "../../SettingBlockItems"
+
+NSettingBlock {
+  id: bandwidth_parameter_setting_block_item
+
+  property var currentItem: null
+  property bool isItemChangeMode: false
+
+  labelText: qsTr("Bandwidth parameter")
+
+  NSpinBox {
+    id: bandwidth_parameter_spinbox
+
+    y: bandwidth_parameter_setting_block_item.labelHeight + @item_offset@
+
+    maximumValue: @integer32_max@
+    minimumValue: 0.0000001
+
+    onValueChanged: setCurrentItemValue("@bandwidthParameter@", value)
+  }
+
+  function initializeItem(item) {
+    item["@bandwidthParameter@"] = 1.0;
+  }
+
+  function reflectItem() {
+    var item = currentItem;
+    bandwidth_parameter_spinbox.value = item["@bandwidthParameter@"];
+  }
+
+  function setCurrentItem(item, itemChangeMode) {
+    currentItem = item;
+    isItemChangeMode = itemChangeMode;
+  }
+
+  function setCurrentItemValue(key, value) {
+    if (currentItem != null) {
+      currentItem[key] = value;
+    }
+  }
+
+  function getItemData(item) {
+    var itemData = {};
+    itemData["@bandwidthParameter@"] = item["@bandwidthParameter@"];
+    return itemData;
+  }
+
+  function makeItem(itemData) {
+    var item = {};
+    item["@bandwidthParameter@"] = itemData["@bandwidthParameter@"];
+    return item;
+  }
+}

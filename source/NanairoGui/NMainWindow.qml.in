@@ -139,6 +139,12 @@ ApplicationWindow {
 
       MenuItem {
         enabled: !isRenderingMode
+        text: qsTr("SurfaceTest-Cloth")
+        onTriggered: loadPresetSceneData(text)
+      }
+
+      MenuItem {
+        enabled: !isRenderingMode
         text: qsTr("RaytracingCamp4")
         onTriggered: loadPresetSceneData(text)
       }

@@ -78,6 +78,17 @@ Rectangle {
         color: surface_model_setting_view.color
       }
     }
+
+    Tab {
+      title: "@clothSurface@"
+      active: true
+
+      NClothSurfaceItem {
+        textureModel: surface_model_setting_view.textureModel
+        color: surface_model_setting_view.color
+      }
+    }
+
   }
 
   onCurrentTypeIndexChanged: {

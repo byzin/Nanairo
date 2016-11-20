@@ -1,0 +1,8 @@
+{
+    "FabricRefractiveIndex": 1.539,
+    "IsotropicScatteringCoefficient": 0.7,
+    "ReflectanceIndex": 0,
+    "SurfaceReflectanceGaussianWidth": 30,
+    "VolumeReflectanceGaussianWidth": 60,
+    "bandwidthParameter": 0.2
+}

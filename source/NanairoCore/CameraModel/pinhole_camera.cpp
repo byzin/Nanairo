@@ -148,7 +148,7 @@ SampledDirection PinholeCamera::sampleDirection(const uint x, const uint y) cons
   const auto direction = (pinhole_point - film_point).normalized();
 
   const Float cos_theta = zisc::dot(normal(), direction);
-  ZISC_ASSERT(zisc::isInBounds(cos_theta, 0.0, 1.0),
+  ZISC_ASSERT(zisc::isInClosedBounds(cos_theta, 0.0, 1.0),
               "Invalid direction is sampled.");
   return SampledDirection{direction, calcInversePdf(cos_theta)};
 }

@@ -59,9 +59,6 @@ nanairo::UniquePointer<nanairo::TextureModel> makeTestValueTexture(
       new nanairo::ValueTexture{system, settings}};
 }
 
-constexpr double kError = 0.01;
-constexpr int kLoopCountBase = 1'000;
-
 /*!
   \details
   No detailed.
@@ -79,9 +76,9 @@ void testBxdfSampling(
   using namespace nanairo;
   using namespace zisc;
 
-  constexpr Float error = kError;
-  constexpr uint in_vec_loop = kLoopCountBase;
-  constexpr uint out_vec_loop = kLoopCountBase * 1000;
+  constexpr Float error = 0.02;
+  constexpr uint in_vec_loop = 1'000;
+  constexpr uint out_vec_loop = 1'000'000;
 
   const auto& normal = intersection.normal();
   for (uint i = 0; i < in_vec_loop; ++i) {
@@ -138,8 +135,8 @@ void testBxdfImportanceSampling(
   using namespace nanairo;
   using namespace zisc;
 
-  constexpr Float error = kError;
-  constexpr uint in_vec_loop = kLoopCountBase * kLoopCountBase;
+  constexpr Float error = 0.01;
+  constexpr uint in_vec_loop = 10'000'000;
 
   const auto& normal = intersection.normal();
   for (uint i = 0; i < in_vec_loop; ++i) {
@@ -188,9 +185,9 @@ void testBxdfEnergyConservation(
   using namespace nanairo;
   using namespace zisc;
 
-  constexpr Float error = kError;
-  constexpr uint in_vec_loop = kLoopCountBase;
-  constexpr uint out_vec_loop = kLoopCountBase * 1000;
+  constexpr Float error = 0.01;
+  constexpr uint in_vec_loop = 1'000;
+  constexpr uint out_vec_loop = 1'000'000;
 
   const auto& normal = intersection.normal();
   for (uint i = 0; i < in_vec_loop; ++i) {
@@ -246,9 +243,9 @@ void testBxdfHelmholtzReciprocity(
   using namespace nanairo;
   using namespace zisc;
 
-  constexpr Float error = kError;
-  constexpr uint in_vec_loop = kLoopCountBase;
-  constexpr uint out_vec_loop = kLoopCountBase * 100;
+  constexpr Float error = 0.01;
+  constexpr uint in_vec_loop = 1'000;
+  constexpr uint out_vec_loop = 1'000'000;
 
   const auto& normal = intersection.normal();
   for (uint i = 0; i < in_vec_loop; ++i) {

@@ -1,0 +1,69 @@
+/*!
+  \file NVolumeReflectanceGaussianWidthSettingBlock.qml
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+import QtQuick @qt_quick_version@
+import QtQuick.Controls @qt_quick_controls_version@
+import "../../SettingBlockItems"
+
+NSettingBlock {
+  id: volume_reflectance_gaussian_width_setting_block_item
+
+  property var currentItem: null
+  property bool isItemChangeMode: false
+
+  labelText: qsTr("Volume gaussian width")
+
+  NSpinBox {
+    id: volume_reflectance_gaussian_width_spinbox
+
+    y: volume_reflectance_gaussian_width_setting_block_item.labelHeight + @item_offset@
+
+    maximumValue: @integer32_max@
+    minimumValue: 0.0000001
+
+    onValueChanged: setCurrentItemValue("@volumeReflectanceGaussianWidth@", value)
+  }
+
+  function initializeItem(item) {
+    item["@volumeReflectanceGaussianWidth@"] = 1.0;
+  }
+
+  function reflectItem() {
+    var item = currentItem;
+    volume_reflectance_gaussian_width_spinbox.value = item["@volumeReflectanceGaussianWidth@"];
+  }
+
+  function setCurrentItem(item, itemChangeMode) {
+    currentItem = item;
+    isItemChangeMode = itemChangeMode;
+  }
+
+  function setCurrentItemValue(key, value) {
+    if (currentItem != null) {
+      currentItem[key] = value;
+    }
+  }
+
+  function setValue(width) {
+    volume_reflectance_gaussian_width_spinbox.value = width;
+  }
+
+  function getItemData(item) {
+    var itemData = {};
+    itemData["@volumeReflectanceGaussianWidth@"] = item["@volumeReflectanceGaussianWidth@"];
+    return itemData;
+  }
+
+  function makeItem(itemData) {
+    var item = {};
+    item["@volumeReflectanceGaussianWidth@"] = itemData["@volumeReflectanceGaussianWidth@"];
+    return item;
+  }
+
+}
