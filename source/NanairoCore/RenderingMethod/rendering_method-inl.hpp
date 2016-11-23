@@ -22,6 +22,7 @@
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
+#include "zisc/math.hpp"
 // Nanairo
 #include "NanairoCommon/keyword.hpp"
 #include "path_tracing.hpp"
@@ -130,12 +131,12 @@ Float RenderingMethod<kSampleSize>::rayCastEpsilon() const noexcept
   */
 template <uint kSampleSize> inline
 Float RenderingMethod<kSampleSize>::calcShadowRayDistance(
-    const Float diff) const noexcept
+    const Float diff2) const noexcept
 {
-  constexpr Float distance_epsilon = 0.0001;
+  constexpr Float distance_epsilon = 0.000001;
   constexpr Float extension = 1.0 + distance_epsilon;
   static_assert(1.0 < extension, "The extension isn't greater than 1.");
-  return extension * diff;
+  return extension * zisc::sqrt(diff2);
 }
 
 /*!
@@ -146,10 +147,10 @@ template <uint kSampleSize> inline
 IntersectionInfo RenderingMethod<kSampleSize>::castRay(
     const World& world,
     const Ray& ray,
-    const Float max_distance2) const noexcept
+    const Float max_distance) const noexcept
 {
   const auto& bvh = world.bvh();
-  return bvh.castRay(ray, max_distance2);
+  return bvh.castRay(ray, max_distance);
 }
 
 /*!

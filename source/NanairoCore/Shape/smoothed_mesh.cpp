@@ -196,18 +196,18 @@ bool SmoothedMesh::testIntersection(const Ray& ray,
 
   Float eta,
         xi,
-        t;
+        t = intersection->rayDistance();
   const bool is_hit = calcSurfaceParameter(a, b, r, &eta, &xi, &t);
   if (is_hit) {
-    // Set point
-    intersection->setPoint(ray.origin() + t * ray.direction());
-    // Set normal
+    // Set the intersection info
+    const auto point = ray.origin() + t * ray.direction();
     const auto normal = SmoothedMesh::normal(eta, xi);
+    intersection->setPoint(point);
     const Float cos_theta = zisc::dot(normal, ray.direction());
     intersection->setReverseFace(0.0 < cos_theta);
     intersection->setNormal(normal);
-    // Set texture coordinate
-    Float barycentric[3] = {eta - xi, xi, 1.0 - eta};
+    intersection->setRayDistance(t);
+    const Vector3 barycentric{eta - xi, xi, 1.0 - eta};
     intersection->setTextureCoordinate(textureCoordinate(barycentric));
   }
   return is_hit;
@@ -228,7 +228,7 @@ std::tuple<SampledPoint, Vector3, Point2> SmoothedMesh::samplePoint(
   }
   const Float xi = v;
   const Float eta = u + v;
-  const Float barycentric[3] = {u, v, 1.0 - (u + v)};
+  const Vector3 barycentric{u, v, 1.0 - (u + v)};
   //! \todo Calculate the surface area of the smoothed mesh
   zisc::raiseError("Todo: calculate the surface area.");
   return std::make_tuple(SampledPoint{point(eta, xi), 0.0},
@@ -313,9 +313,8 @@ bool calcSurfaceParameter(const std::array<Float, 5>& a,
                           Float* xi,
                           Float* t) noexcept
 {
+  bool is_hit = false;
   // Calc eta
-  constexpr Float lambda_max = std::numeric_limits<Float>::max();
-  *t = lambda_max;
   if (a[2] != 0.0 || a[3] != 0.0) {
     const std::array<Float, 4> u = {{
         a[3] * b[4] - a[4] * b[3],
@@ -336,7 +335,7 @@ bool calcSurfaceParameter(const std::array<Float, 5>& a,
         continue;
       const auto e = 1.0 / inverse_eta_list[i];
       const Float x = -(a[0] + (a[1] + a[4] * e) * e) / (a[2] + a[3] * e);
-       if (x < 0.0 || e < x)
+      if (x < 0.0 || e < x)
         continue;
       const Float lambda = r[0] + (r[1] + r[4] * e) * e +
                            (r[2] + r[3] * e + r[5] * x) * x;
@@ -344,6 +343,7 @@ bool calcSurfaceParameter(const std::array<Float, 5>& a,
         *eta = e;
         *xi = x;
         *t = lambda;
+        is_hit = true;
       }
     }
   }
@@ -369,6 +369,7 @@ bool calcSurfaceParameter(const std::array<Float, 5>& a,
           *eta = e;
           *xi = x;
           *t = lambda;
+          is_hit = true;
           ZISC_ASSERT(zisc::isInClosedBounds(x, 0.0, e),
                       "The xi is out of the range [0, eta].");
           ZISC_ASSERT(zisc::isInClosedBounds(e, x, 1.0),
@@ -377,7 +378,7 @@ bool calcSurfaceParameter(const std::array<Float, 5>& a,
       }
     }
   }
-  return *t != lambda_max;
+  return is_hit;
 }
 
 } // namespace nanairo

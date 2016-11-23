@@ -108,7 +108,10 @@ void LightTracing<kSampleSize>::evalExplicitConnection(
   // Check the visibility of the camera
   const auto diff2 = (camera.sampledLensPoint() - shadow_ray.origin()).squareNorm();
   ZISC_ASSERT(0.0 < diff2, "Diff^2 isn't greater than 0.");
-  const auto shadow_intersection = Method::castRay(world, shadow_ray, diff2);
+  const Float max_shadow_ray_distance = zisc::sqrt(diff2);
+  const auto shadow_intersection = Method::castRay(world,
+                                                   shadow_ray,
+                                                   max_shadow_ray_distance);
   if (shadow_intersection.isIntersected())
     return;
 

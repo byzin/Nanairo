@@ -13,6 +13,8 @@
 // Standard C++ library
 #include <tuple>
 #include <utility>
+// Zisc
+#include "zisc/matrix.hpp"
 // Nanairo
 #include "shape.hpp"
 #include "triangle_mesh.hpp"
@@ -52,7 +54,7 @@ class FlatMesh : public TriangleMesh
   Float getTraversalCost() const noexcept override;
 
   //! Test ray-triangle intersection
-  bool testIntersection(const Ray& ray, 
+  bool testIntersection(const Ray& ray,
                         IntersectionInfo* intersection) const noexcept override;
 
   //! Sample a point randomly on the surface of the triangle
@@ -68,7 +70,11 @@ class FlatMesh : public TriangleMesh
   //! Set normal vector
   void setNormal() noexcept;
 
+  //! Set the world-to-local matrix
+  void setToLocalMatrix() noexcept;
 
+
+  zisc::Matrix<Float, 3, 4> to_local_;
   Point3 vertex_;
   Vector3 edge_[2]; // v0 to v1 and v0 to v2 edge vectors
   Vector3 normal_;

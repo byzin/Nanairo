@@ -17,6 +17,7 @@
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 
 namespace nanairo {
 
@@ -39,7 +40,7 @@ void TriangleMesh::setTextureCoordinate(const Point2& texture_coordinate0,
   No detailed.
   */
 inline
-Point2 TriangleMesh::textureCoordinate(const Float* barycentric) const noexcept
+Point2 TriangleMesh::textureCoordinate(const Vector3& barycentric) const noexcept
 {
   Point2 texture_coordinate;
   for (uint index = 0; index < 2; ++index) {

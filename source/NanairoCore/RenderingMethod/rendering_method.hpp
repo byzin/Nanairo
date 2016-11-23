@@ -84,13 +84,13 @@ class RenderingMethod
   uint calcPixelBlockSize(const uint width, const uint height) const noexcept;
 
   //! Calculate the max distance of the shadow ray
-  Float calcShadowRayDistance(const Float diff) const noexcept;
+  Float calcShadowRayDistance(const Float diff2) const noexcept;
 
   //! Find and return the closest intersection of the ray
   IntersectionInfo castRay(
       const World& world,
       const Ray& ray,
-      const Float max_distance2 = std::numeric_limits<Float>::max()) const noexcept;
+      const Float max_distance = std::numeric_limits<Float>::max()) const noexcept;
 
   //! Make a shadow ray
   Ray makeShadowRay(const Point3& source,

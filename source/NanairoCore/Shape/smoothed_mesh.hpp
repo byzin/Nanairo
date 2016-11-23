@@ -69,7 +69,8 @@ class SmoothedMesh : public TriangleMesh
 
  private:
   // Calculate the bounding box
-  Aabb calcBoundingBox(const Vector3* distance, const Vector3* curvature) const noexcept;
+  Aabb calcBoundingBox(const Vector3* distance,
+                       const Vector3* curvature) const noexcept;
 
   //! Initialize
   void initialize(const Point3& vertex0,

@@ -53,8 +53,7 @@ class Bvh
   const std::vector<BvhTreeNode>& bvhTree() const noexcept;
 
   //! Cast the ray and find the intersection closest to the ray origin
-  IntersectionInfo castRay(const Ray& ray,
-                           const Float max_distance2) const noexcept;
+  IntersectionInfo castRay(const Ray& ray, const Float max_distance) const noexcept;
 
   //! Build BVH
   void construct(System& system, std::vector<Object>&& object_list) noexcept;
@@ -109,8 +108,7 @@ class Bvh
   //! Test ray-objects of a leaf node intersection
   void testRayObjectsIntersection(const Ray& ray,
                                   const BvhTreeNode& leaf_node,
-                                  IntersectionInfo* intersection,
-                                  Float* shortest_distance2) const noexcept;
+                                  IntersectionInfo* intersection) const noexcept;
 
 
   std::vector<BvhTreeNode> tree_;

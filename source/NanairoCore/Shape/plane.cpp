@@ -78,15 +78,17 @@ Float Plane::getTraversalCost() const noexcept
   Please see the details of this algorithm below RUL.
  http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-plane-and-ray-disk-intersection/
  */
-bool Plane::testIntersection(const Ray& ray, IntersectionInfo* intersection) const noexcept
+bool Plane::testIntersection(const Ray& ray,
+                             IntersectionInfo* intersection) const noexcept
 {
   // Rayが平面と交差するまでの時間tを求めます
   const Float cos_theta = zisc::dot(normal_, ray.direction());
   // 平面の法線とレイの方向が垂直な関係にある場合は当たらない
   if (cos_theta == 0.0)
     return false;
+
   const Float t = zisc::dot(top_left_ - ray.origin(), normal_) / cos_theta;
-  if (t < 0.0)
+  if (!zisc::isInOpenBounds(t, 0.0, intersection->rayDistance()))
     return false;
 
   //  交点が矩形の内側にあるか確認します
@@ -97,9 +99,11 @@ bool Plane::testIntersection(const Ray& ray, IntersectionInfo* intersection) con
   const bool is_hit = zisc::isInClosedBounds(dot_axis1_am, 0.0, square_width_) &&
                       zisc::isInClosedBounds(dot_axis2_am, 0.0, square_height_);
   if (is_hit) {
-    intersection->setReverseFace(cos_theta > 0.0);
+    // Set the intersection info
     intersection->setPoint(point);
+    intersection->setReverseFace(0.0 < cos_theta);
     intersection->setNormal(normal_);
+    intersection->setRayDistance(t);
     const Float u = dot_axis1_am * inverse_square_width_;
     const Float v = dot_axis2_am * inverse_square_height_;
     ZISC_ASSERT(zisc::isInClosedBounds(u, 0.0, 1.0),

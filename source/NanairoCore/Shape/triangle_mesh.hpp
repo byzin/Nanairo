@@ -55,11 +55,11 @@ class TriangleMesh : public Shape
 
   //! Make a smoothed mesh
   static UniquePointer<Shape> makeSmoothedMesh(const Point3& v0,
-                                                  const Point3& v1,
-                                                  const Point3& v2,
-                                                  const Vector3& n0,
-                                                  const Vector3& n1,
-                                                  const Vector3& n2) noexcept;
+                                               const Point3& v1,
+                                               const Point3& v2,
+                                               const Vector3& n0,
+                                               const Vector3& n1,
+                                               const Vector3& n2) noexcept;
 
   //! Set vertex texture coordinate
   void setTextureCoordinate(const Point2& texture_coordinate0,
@@ -67,15 +67,7 @@ class TriangleMesh : public Shape
                             const Point2& texture_coordinate2) noexcept;
 
   //! Calculate the texture coordinate using Barycentric coordinate system
-  Point2 textureCoordinate(const Float* barycentric) const noexcept;
-
- protected:
-  //! Calculate Barycentric coordinate
-  bool calcBarycentricCoordinate(const Ray& ray,
-                                 const Point3& vertex,
-                                 const Vector3* edge,
-                                 Float* barycentric,
-                                 Float* t) const noexcept;
+  Point2 textureCoordinate(const Vector3& barycentric) const noexcept;
 
  private:
   Point2 texture_coordinate_[3];

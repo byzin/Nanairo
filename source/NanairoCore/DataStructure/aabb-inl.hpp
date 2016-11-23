@@ -47,7 +47,7 @@ std::tuple<bool, Float> Aabb::testIntersection(const Ray& ray) const noexcept
   auto t1 = (max_p - ray.origin()).data() * ray.inverseDirection().data();
   const auto tmin = zisc::max(zisc::max(t0[0], t0[1]), t0[2]);
   const auto tmax = zisc::min(zisc::min(t1[0], t1[1]), t1[2]);
-  return std::make_tuple(tmin <= tmax, (tmin < 0.0) ? 0.0 : tmin);
+  return std::make_tuple(tmin <= tmax, tmin);
 }
 
 /*!

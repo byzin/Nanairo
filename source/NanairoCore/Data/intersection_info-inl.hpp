@@ -11,6 +11,8 @@
 #define NANAIRO_INTERSECTION_INFO_INL_HPP
 
 #include "intersection_info.hpp"
+// Standard C++ library
+#include <limits>
 // Nanairo
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
@@ -40,6 +42,7 @@ IntersectionInfo::IntersectionInfo(const Point3& point,
     point_{point},
     normal_{is_reverse_face ? -normal : normal},
     object_{object},
+    ray_distance_{0.0},
     is_reverse_face_{is_reverse_face}
 {
 }
@@ -58,6 +61,7 @@ IntersectionInfo::IntersectionInfo(const Point3& point,
     normal_{is_reverse_face ? -normal : normal},
     texture_coordinate_{texture_coordinate},
     object_{object},
+    ray_distance_{0.0},
     is_reverse_face_{is_reverse_face}
 {
 }
@@ -113,6 +117,14 @@ const Point3& IntersectionInfo::point() const noexcept
 }
 
 /*!
+  */
+inline
+Float IntersectionInfo::rayDistance() const noexcept
+{
+  return ray_distance_;
+}
+
+/*!
   \details
   No detailed.
   */
@@ -150,6 +162,14 @@ inline
 void IntersectionInfo::setPoint(const Point3& point) noexcept
 {
   point_ = point;
+}
+
+/*!
+  */
+inline
+void IntersectionInfo::setRayDistance(const Float distance) noexcept
+{
+  ray_distance_ = distance;
 }
 
 /*!

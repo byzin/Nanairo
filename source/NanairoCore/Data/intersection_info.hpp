@@ -62,6 +62,9 @@ class IntersectionInfo
   //! Return the intersection point
   const Point3& point() const noexcept;
 
+  //! Return the ray distance from the origin
+  Float rayDistance() const noexcept;
+
   //! Set reverse face
   void setReverseFace(const bool is_reverse_face) noexcept;
 
@@ -74,6 +77,9 @@ class IntersectionInfo
   //! Set intersection point
   void setPoint(const Point3& point) noexcept;
 
+  //! Set the ray distance from the origin
+  void setRayDistance(const Float distance) noexcept;
+
   //! Set texture coordinate
   void setTextureCoordinate(const Point2& texture_coordinate) noexcept;
 
@@ -85,6 +91,7 @@ class IntersectionInfo
   Vector3 normal_;
   Point2 texture_coordinate_;
   const Object* object_;
+  Float ray_distance_;
   bool is_reverse_face_;
 };
 

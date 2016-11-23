@@ -71,22 +71,47 @@ Float FlatMesh::getTraversalCost() const noexcept
 
 /*!
   \details
-  Please see the details of this algorithm below URL.
-  http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-9-ray-triangle-intersection/m-ller-trumbore-algorithm/
+  Please see "Fast Ray-Triangle Intersections by Coordinate Transformation"
   */
-bool FlatMesh::testIntersection(const Ray& ray, IntersectionInfo* intersection) const noexcept
+bool FlatMesh::testIntersection(const Ray& ray,
+                                IntersectionInfo* intersection) const noexcept
 {
-  Float t;
-  Float barycentric[3];
-  const bool is_hit = calcBarycentricCoordinate(ray, vertex_, edge_, barycentric, &t);
+  const auto& ray_origin = ray.origin();
+  const auto& ray_dir = ray.direction();
+
+  const Float dz = to_local_(2, 0) * ray_dir[0] +
+                   to_local_(2, 1) * ray_dir[1] +
+                   to_local_(2, 2) * ray_dir[2];
+  if (dz == 0.0)
+    return false;
+
+  const Float oz = to_local_(2, 0) * ray_origin[0] +
+                   to_local_(2, 1) * ray_origin[1] +
+                   to_local_(2, 2) * ray_origin[2] +
+                   to_local_(2, 3);
+  const Float t = -oz / dz;
+  if (!zisc::isInOpenBounds(t, 0.0, intersection->rayDistance()))
+    return false;
+
+  const auto point = ray.origin() + t * ray.direction();
+  const Float u = to_local_(0, 0) * point[0] +
+                  to_local_(0, 1) * point[1] +
+                  to_local_(0, 2) * point[2] +
+                  to_local_(0, 3);
+  const Float v = to_local_(1, 0) * point[0] +
+                  to_local_(1, 1) * point[1] +
+                  to_local_(1, 2) * point[2] +
+                  to_local_(1, 3);
+  const Float w = 1.0 - (u + v);
+  const bool is_hit = (0.0 < u) && (0.0 < v) && (0.0 < w);
   if (is_hit) {
-    // Set point
-    intersection->setPoint(ray.origin() + t * ray.direction());
-    // Set normal
+    // Set the intersection info
+    intersection->setPoint(point);
     const Float cos_theta = zisc::dot(normal_, ray.direction());
     intersection->setReverseFace(0.0 < cos_theta);
     intersection->setNormal(normal_);
-    // Set texture coordinate
+    intersection->setRayDistance(t);
+    const Vector3 barycentric{u, v, w};
     intersection->setTextureCoordinate(textureCoordinate(barycentric));
   }
   return is_hit;
@@ -105,7 +130,7 @@ std::tuple<SampledPoint, Vector3, Point2> FlatMesh::samplePoint(Sampler& sampler
     v = 1.0 - v;
   }
   const auto point = vertex_ + u * edge_[0] + v * edge_[1];
-  const Float barycentric[3] = {u, v, 1.0 - (u + v)};
+  const Vector3 barycentric{u, v, 1.0 - (u + v)};
   return std::make_tuple(SampledPoint{point, surfaceArea()},
                          normal_,
                          textureCoordinate(barycentric));
@@ -125,6 +150,7 @@ void FlatMesh::transform(const Matrix4x4& matrix) noexcept
 
   const auto area = 0.5 * zisc::cross(edge_[0], edge_[1]).norm();
   setSurfaceArea(area);
+  setToLocalMatrix();
 }
 
 // private member function
@@ -138,6 +164,7 @@ void FlatMesh::initialize(const Point3& vertex1, const Point3& vertex2) noexcept
   edge_[0] = vertex1 - vertex_;
   edge_[1] = vertex2 - vertex_;
   setNormal();
+  setToLocalMatrix();
 }
 
 /*!
@@ -148,6 +175,65 @@ void FlatMesh::setNormal() noexcept
 {
   normal_ = (zisc::cross(edge_[0], edge_[1])).normalized();
   ZISC_ASSERT(isUnitVector(normal_), "Normal isn't unit vector.");
+}
+
+/*!
+  */
+void FlatMesh::setToLocalMatrix() noexcept
+{
+  const auto& e1 = edge_[0];
+  const auto& e2 = edge_[1];
+  const Vector3 v0 = *zisc::treatAs<const Vector3*>(&vertex_);
+  const Vector3 v1 = v0 + e1;
+  const Vector3 v2 = v0 + e2;
+  const Vector3 normal = zisc::cross(e1, e2);
+
+  using zisc::abs;
+  if ((abs(normal[1]) < abs(normal[0])) && (abs(normal[2]) < abs(normal[0]))) {
+    to_local_(0, 0) = 0.0;
+    to_local_(1, 0) = 0.0;
+    to_local_(2, 0) = 1.0;
+    to_local_(0, 1) = e2[2] / normal[0];
+    to_local_(1, 1) = -e1[2] / normal[0];
+    to_local_(2, 1) = normal[1] / normal[0];
+    to_local_(0, 2) = -e2[1] / normal[0];
+    to_local_(1, 2) = e1[1] / normal[0];
+    to_local_(2, 2) = normal[2] / normal[0];
+    to_local_(0, 3) = zisc::cross(v2, v0)[0] / normal[0];
+    to_local_(1, 3) = -zisc::cross(v1, v0)[0] / normal[0];
+    to_local_(2, 3) = -zisc::dot(v0, normal) / normal[0];
+  }
+  else if (abs(normal[2]) < abs(normal[1])) {
+    to_local_(0, 0) = -e2[2] / normal[1];
+    to_local_(1, 0) = e1[2] / normal[1];
+    to_local_(2, 0) = normal[0] / normal[1];
+    to_local_(0, 1) = 0.0;
+    to_local_(1, 1) = 0.0;
+    to_local_(2, 1) = 1.0;
+    to_local_(0, 2) = e2[0] / normal[1];
+    to_local_(1, 2) = -e1[0] / normal[1];
+    to_local_(2, 2) = normal[2] / normal[1];
+    to_local_(0, 3) = zisc::cross(v2, v0)[1] / normal[1];
+    to_local_(1, 3) = -zisc::cross(v1, v0)[1] / normal[1];
+    to_local_(2, 3) = -zisc::dot(v0, normal) / normal[1];
+  }
+  else if (0.0 < abs(normal[2])) {
+    to_local_(0, 0) = e2[1] / normal[2];
+    to_local_(1, 0) = -e1[1] / normal[2];
+    to_local_(2, 0) = normal[0] / normal[2];
+    to_local_(0, 1) = -e2[0] / normal[2];
+    to_local_(1, 1) = e1[0] / normal[2];
+    to_local_(2, 1) = normal[1] / normal[2];
+    to_local_(0, 2) = 0.0;
+    to_local_(1, 2) = 0.0;
+    to_local_(2, 2) = 1.0;
+    to_local_(0, 3) = zisc::cross(v2, v0)[2] / normal[2];
+    to_local_(1, 3) = -zisc::cross(v1, v0)[2] / normal[2];
+    to_local_(2, 3) = -zisc::dot(v0, normal) / normal[2];
+  }
+  else {
+    zisc::raiseError("Making world-to-local matrix failed.");
+  }
 }
 
 } // namespace nanairo

@@ -61,10 +61,11 @@ Bvh::Bvh(const QJsonObject& /* settings */) noexcept
   No detailed.
   */
 IntersectionInfo Bvh::castRay(const Ray& ray,
-                              const Float max_distance2) const noexcept 
+                              const Float max_distance) const noexcept 
 {
+  ZISC_ASSERT(0.0 < max_distance, "The max_distance is minus.");
   IntersectionInfo intersection;
-  Float shortest_distance2 = max_distance2;
+  intersection.setRayDistance(max_distance);
   uint32 index = 0;
   while (index != endIndex()) {
     const auto& node = tree_[index];
@@ -72,10 +73,10 @@ IntersectionInfo Bvh::castRay(const Ray& ray,
     // If the ray hits the bounding box of the node, enter the node
     const bool ray_hits_aabb = std::get<0>(result);
     const Float distance = std::get<1>(result);
-    if (ray_hits_aabb && (zisc::power<2>(distance) < shortest_distance2)) {
+    if (ray_hits_aabb && (distance < intersection.rayDistance())) {
       // A case of leaf node
       if (node.isLeafNode())
-        testRayObjectsIntersection(ray, node, &intersection, &shortest_distance2);
+        testRayObjectsIntersection(ray, node, &intersection);
       ++index;
     }
     else {
@@ -274,23 +275,16 @@ void Bvh::setUniqueObject(std::vector<Object>& object_list) noexcept
   */
 void Bvh::testRayObjectsIntersection(const Ray& ray,
                                      const BvhTreeNode& leaf_node,
-                                     IntersectionInfo* intersection,
-                                     Float* shortest_distance2) const noexcept
+                                     IntersectionInfo* intersection) const noexcept
 {
-  IntersectionInfo current;
+  ZISC_ASSERT(intersection != nullptr, "The intersection is null.");
   const auto& object_list = objectList();
   for (uint i = 0; i < leaf_node.numOfObjects(); ++i) {
     const auto object_index = leaf_node.objectIndex() + i;
     const auto& object = object_list[object_index];
-    const bool ray_hits_object = object.shape().testIntersection(ray, &current);
-    if (ray_hits_object) {
-      const Float distance2 = (current.point() - ray.origin()).squareNorm();
-      if (distance2 < *shortest_distance2) {
-        current.setObject(&object);
-        *intersection = current;
-        *shortest_distance2 = distance2;
-      }
-    }
+    const bool ray_hits_object = object.shape().testIntersection(ray, intersection);
+    if (ray_hits_object)
+      intersection->setObject(&object);
   }
 }
 
