@@ -42,9 +42,9 @@ class FlatMesh : public TriangleMesh
 {
  public:
   //! Create flat mesh
-  FlatMesh(const Point3& vertex0,
-           const Point3& vertex1,
-           const Point3& vertex2) noexcept;
+  FlatMesh(const Point3& vertex1,
+           const Point3& vertex2,
+           const Point3& vertex3) noexcept;
 
 
   //! Return the bounding box
@@ -65,7 +65,7 @@ class FlatMesh : public TriangleMesh
   void transform(const Matrix4x4& matrix) noexcept override;
 
  private:
-  void initialize(const Point3& vertex1, const Point3& vertex2) noexcept;
+  void initialize(const Point3& vertex2, const Point3& vertex3) noexcept;
 
   //! Set normal vector
   void setNormal() noexcept;
@@ -75,8 +75,8 @@ class FlatMesh : public TriangleMesh
 
 
   zisc::Matrix<Float, 3, 4> to_local_;
-  Point3 vertex_;
-  Vector3 edge_[2]; // v0 to v1 and v0 to v2 edge vectors
+  Point3 vertex_; // v1
+  Vector3 edge_[2]; // v1 to v2 and v1 to v3 edge vectors
   Vector3 normal_;
 };
 

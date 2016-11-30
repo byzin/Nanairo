@@ -28,15 +28,41 @@ using zisc::treatAs;
   No detailed.
   */
 inline
-Vector3 SmoothedMesh::normal(const Float eta, const Float xi) const noexcept
+Vector3 SmoothedMesh::normal(const Float u, const Float v) const noexcept
 {
-  ZISC_ASSERT(zisc::isInClosedBounds(xi, 0.0, eta),
-              "The xi is out of the range [0, eta].");
-  ZISC_ASSERT(zisc::isInClosedBounds(eta, xi, 1.0),
-              "The eta is out of the range [xi, 1].");
-  const auto x1 = c_[1] + c_[3] * xi + 2.0 * c_[4] * eta;
-  const auto x2 = c_[2] + c_[3] * eta + 2.0 * c_[5] * xi;
-  return zisc::cross(x1, x2).normalized();
+  const auto du = (2.0 * u) * c_[0] + v * c_[3] + c_[4];
+  const auto dv = (2.0 * v) * c_[1] + u * c_[3] + c_[5];
+  return zisc::cross(dv, du).normalized();
+}
+
+/*!
+  */
+inline
+Vector3 SmoothedMesh::normal1() const noexcept
+{
+  const auto du = 2.0 * c_[0] + c_[4];
+  const auto dv = c_[3] + c_[5];
+  return zisc::cross(dv, du).normalized();
+}
+
+/*!
+  */
+inline
+Vector3 SmoothedMesh::normal2() const noexcept
+{
+  const auto du = c_[3] + c_[4];
+  const auto dv = 2.0 * c_[1] + c_[5];
+  return zisc::cross(dv, du).normalized();
+}
+
+/*!
+  */
+inline
+Vector3 SmoothedMesh::normal3() const noexcept
+{
+  const auto& du = c_[4];
+  const auto& dv = c_[5];
+  return zisc::cross(dv, du).normalized();
 }
 
 /*!
@@ -44,16 +70,34 @@ Vector3 SmoothedMesh::normal(const Float eta, const Float xi) const noexcept
   No detailed.
   */
 inline
-Point3 SmoothedMesh::point(const Float eta, const Float xi) const noexcept
+Point3 SmoothedMesh::point(const Float u, const Float v) const noexcept
 {
-  ZISC_ASSERT(zisc::isInClosedBounds(xi, 0.0, eta),
-              "The xi is out of the range [0, eta].");
-  ZISC_ASSERT(zisc::isInClosedBounds(eta, xi, 1.0),
-              "The eta is out of the range [xi, 1].");
-  const auto point = c_[0] +
-                     (c_[1] + c_[4] * eta) * eta +
-                     (c_[2] + c_[3] * eta + c_[5] * xi) * xi;
-  return *treatAs<const Point3*>(&point);
+  const auto p = (c_[0] * u + c_[3] * v + c_[4]) * u + (c_[1] * v + c_[5]) * v + c_[2];
+  return Point3{p.data()};
+}
+
+/*!
+  */
+inline
+Vector3 SmoothedMesh::vertex1() const noexcept
+{
+  return c_[0] + c_[2] + c_[4];
+}
+
+/*!
+  */
+inline
+Vector3 SmoothedMesh::vertex2() const noexcept
+{
+  return c_[1] + c_[2] + c_[5];
+}
+
+/*!
+  */
+inline
+const Vector3& SmoothedMesh::vertex3() const noexcept
+{
+  return c_[2];
 }
 
 } // namespace nanairo

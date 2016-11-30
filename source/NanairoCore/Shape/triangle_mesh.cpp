@@ -89,24 +89,24 @@ std::vector<UniquePointer<Shape>> TriangleMesh::makeMeshes(
   No detailed.
   */
 UniquePointer<Shape> TriangleMesh::makeSmoothedMesh(
-    const Point3& v0,
-    const Point3& v1,
-    const Point3& v2,
-    const Vector3& n0,
-    const Vector3& n1,
-    const Vector3& n2) noexcept
+    const Point3& vertex1,
+    const Point3& vertex2,
+    const Point3& vertex3,
+    const Vector3& normal1,
+    const Vector3& normal2,
+    const Vector3& normal3) noexcept
 {
   TriangleMesh* mesh = nullptr;
 
-  const auto c0 = zisc::dot(n0, n1);
-  const auto c1 = zisc::dot(n1, n2);
-  const auto c2 = zisc::dot(n0, n2);
+  const auto c1 = zisc::dot(normal1, normal2);
+  const auto c2 = zisc::dot(normal2, normal3);
+  const auto c3 = zisc::dot(normal1, normal3);
   constexpr Float threshold = 0.9999;
   // If the mesh is mostly the same as flat, make a flat mesh instead of the smoothed.
-  if ((threshold < c0) && (threshold < c1) && (threshold < c2))
-    mesh = new FlatMesh{v0, v1, v2};
+  if ((threshold < c1) && (threshold < c2) && (threshold < c3))
+    mesh = new FlatMesh{vertex1, vertex2, vertex3};
   else
-    mesh = new SmoothedMesh{v0, v1, v2, n0, n1, n2};
+    mesh = new SmoothedMesh{vertex1, vertex2, vertex3, normal1, normal2, normal3};
   return UniquePointer<Shape>{mesh};
 }
 

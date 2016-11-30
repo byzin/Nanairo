@@ -9,9 +9,7 @@
 
 #include "smoothed_mesh.hpp"
 // Standard C++ library
-#include <array>
 #include <cmath>
-#include <cstddef>
 #include <limits>
 #include <tuple>
 #include <utility>
@@ -34,31 +32,18 @@
 
 namespace nanairo {
 
-// Calculate curvature parameter
-Vector3 calcCurvatureParameter(const Vector3& distance,
-                               const Vector3& normal0,
-                               const Vector3& normal1) noexcept;
-
-// Calculate surface parameters
-bool calcSurfaceParameter(const std::array<Float, 5>& a,
-                          const std::array<Float, 6>& b,
-                          const std::array<Float, 6>& r,
-                          Float* eta,
-                          Float* xi,
-                          Float* t) noexcept;
-
 /*!
   \details
   No detailed.
   */
-SmoothedMesh::SmoothedMesh(const Point3& vertex0,
-                           const Point3& vertex1,
+SmoothedMesh::SmoothedMesh(const Point3& vertex1,
                            const Point3& vertex2,
-                           const Vector3& normal0,
+                           const Point3& vertex3,
                            const Vector3& normal1,
-                           const Vector3& normal2) noexcept
+                           const Vector3& normal2,
+                           const Vector3& normal3) noexcept
 {
-  initialize(vertex0, vertex1, vertex2, normal0, normal1, normal2);
+  initialize(vertex1, vertex2, vertex3, normal1, normal2, normal3);
 }
 
 /*!
@@ -67,85 +52,57 @@ SmoothedMesh::SmoothedMesh(const Point3& vertex0,
   */
 Aabb SmoothedMesh::boundingBox() const noexcept
 {
-  // Distance
-  const auto d0 = c_[1] + c_[4];
-  const auto d1 = c_[2] + c_[3] + c_[5];
-  const auto d2 = d0 + d1;
-  const Vector3* distance[] = {&d0, &d1, &d2};
-  // Points
-  const auto& v0 = c_[0];
-  const auto v1 = v0 + d0;
-  const auto v2 = v0 + d2;
-//  const Vector3* vertices[] = {&v0, &v1, &v2};
-  const Vector3* vertices[] = {&v0, &v1, &v0};
-  // Curvature parameters
-  const auto& c0 = c_[4];
-  const auto& c1 = c_[5];
-  const auto c2 = c_[3] + c0 + c1;
-  const Vector3* curvature[] = {&c0, &c1, &c2};
-
-  const auto calc_extremum_edge =
-  [&distance, &curvature](const uint i, const uint j, Float* xi)
+  // Vertices
+  const auto v1 = vertex1();
+  const auto v2 = vertex2();
+  const auto v3 = vertex3();
+  auto min_point = zisc::minElements(v1.data(), v2.data());
+  auto max_point = zisc::maxElements(v1.data(), v2.data());
+  min_point = zisc::minElements(min_point, v3.data());
+  max_point = zisc::maxElements(max_point, v3.data());
+  // Surface extremum
   {
-    const auto c = (*(curvature[i]))[j];
-    if (c == 0.0)
-      return false;
-    const auto d = (*(distance)[i])[j];
-    const auto x = (c - d) / (2.0 * c);
-    const bool result = zisc::isInClosedBounds(x, 0.0, 1.0);
-    if (result)
-      *xi = x;
-    return result;
-  };
-
-  const auto edge_point =
-  [&vertices, &distance, &curvature](const uint i, const Float xi)
-  {
-    return *(vertices[i]) + (*(distance[i]) + (xi - 1.0) * *(curvature[i])) * xi;
-  };
-
-  const auto calc_extremum_surface =
-  [this](const uint j, Float* eta, Float* xi)
-  {
-    const zisc::Matrix<Float, 2, 2> matrix{2.0 * c_[4][j], c_[3][j],
-                                           c_[3][j], 2.0 * c_[5][j]};
-    if (matrix.determinant() == 0.0)
-      return false;
-    const auto inverse_matrix = matrix.inverseMatrix();
-    const zisc::Matrix<Float, 2, 1> c{c_[1][j], c_[2][j]};
-    const auto result = inverse_matrix * c;
-    const Float e = result(0, 0);
-    const Float x = result(1, 0);
-    const bool is_in = zisc::isInClosedBounds(x, 0.0, e) && (e <= 1.0);
-    if (is_in) {
-      *eta = e;
-      *xi = x;
+    const auto ng = zisc::cross(v2 - v1, v3 - v1).normalized();
+    const Float k = 1.0 / (4.0 * zisc::dot(ng, c_[0]) * zisc::dot(ng, c_[1]) -
+                           zisc::power<2>(zisc::dot(ng, c_[3])));
+    const Float u = k * (-2.0 * zisc::dot(ng, c_[1]) * zisc::dot(ng, c_[4]) +
+                         zisc::dot(ng, c_[5]) * zisc::dot(ng, c_[3]));
+    const Float v = k * (-2.0 * zisc::dot(ng, c_[0]) * zisc::dot(ng, c_[5]) +
+                         zisc::dot(ng, c_[4]) * zisc::dot(ng, c_[3]));
+    const Float w = 1.0 - (u + v);
+    std::cout << "(u, v) = (" << u << ", " << v << ")" << std::endl;
+    if (zisc::isInClosedBounds(u, 0.0, 1.0) &&
+        zisc::isInClosedBounds(v, 0.0, 1.0) &&
+        zisc::isInClosedBounds(w, 0.0, 1.0)) {
+      const auto p = point(u, v);
+      min_point = zisc::minElements(min_point, p.data());
+      max_point = zisc::maxElements(max_point, p.data());
     }
-    return is_in;
-  };
-
-  // Calc a bounding box
-  auto min_point = zisc::minElements(v0.data(), v1.data());
-  auto max_point = zisc::maxElements(v0.data(), v1.data());
-  min_point = zisc::minElements(min_point, v2.data());
-  max_point = zisc::maxElements(max_point, v2.data());
-  Float eta,
-         xi;
-  for (uint j = 0; j < 3; ++j) {
-    for (uint i = 0; i < 3; ++i) {
-      if (calc_extremum_edge(i, j, &xi)) {
-        const auto point = edge_point(i, xi);
-        min_point = zisc::minElements(min_point, point.data());
-        max_point = zisc::maxElements(max_point, point.data());
+    else {
+      if (zisc::isInClosedBounds(u, 0.0, 1.0)) {
+        const auto p1 = point(u, 0.0);
+        min_point = zisc::minElements(min_point, p1.data());
+        max_point = zisc::maxElements(max_point, p1.data());
+      }
+      if (zisc::isInClosedBounds(v, 0.0, 1.0)) {
+        const auto p2 = point(0.0, v);
+        min_point = zisc::minElements(min_point, p2.data());
+        max_point = zisc::maxElements(max_point, p2.data());
       }
     }
-    if (calc_extremum_surface(j, &eta, &xi)) {
-      const auto point = SmoothedMesh::point(eta, xi);
-      min_point = zisc::minElements(min_point, point.data());
-      max_point = zisc::maxElements(max_point, point.data());
-    }
   }
-
+  // Edge extremums
+  {
+    const auto p1 = point(0.5, 0.0);
+    min_point = zisc::minElements(min_point, p1.data());
+    max_point = zisc::maxElements(max_point, p1.data());
+    const auto p2 = point(0.0, 0.5);
+    min_point = zisc::minElements(min_point, p2.data());
+    max_point = zisc::maxElements(max_point, p2.data());
+    const auto p3 = point(0.5, 0.5);
+    min_point = zisc::minElements(min_point, p3.data());
+    max_point = zisc::maxElements(max_point, p3.data());
+  }
   return Aabb{Point3{min_point}, Point3{max_point}};
 }
 
@@ -162,55 +119,29 @@ Float SmoothedMesh::getTraversalCost() const noexcept
   \details
   No detailed.
   */
-bool SmoothedMesh::testIntersection(const Ray& ray, 
+bool SmoothedMesh::testIntersection(const Ray& ray,
                                     IntersectionInfo* intersection) const noexcept
 {
-  const auto& e3 = ray.direction();
-  auto e1 = zisc::cross(e3, c_[5]);
-  const auto k = e1.squareNorm();
-  if (k == 0.0)
-    return false;
-  e1 = e1 * zisc::invSqrt(k);
-  const auto e2 = zisc::cross(e3, e1);
+  const auto plane1 = calcRayPlane(ray, c_[0]);
+  const auto& d1 = std::get<0>(plane1);
+  const Float k1 = std::get<1>(plane1);
+  const auto plane2 = calcRayPlane(ray, c_[1]);
+  const auto& d2 = std::get<0>(plane2);
+  const Float k2 = std::get<1>(plane2);
 
-  const std::array<Float, 5> a = {{
-      zisc::dot(e1, c_[0] - *treatAs<const Vector3*>(&ray.origin())), // a00
-      zisc::dot(e1, c_[1]), // a10
-      zisc::dot(e1, c_[2]), // a01
-      zisc::dot(e1, c_[3]), // a11
-      zisc::dot(e1, c_[4])}}; // a20
-  const std::array<Float, 6> b = {{
-      zisc::dot(e2, c_[0] - *treatAs<const Vector3*>(&ray.origin())), // b00
-      zisc::dot(e2, c_[1]), // b10
-      zisc::dot(e2, c_[2]), // b01
-      zisc::dot(e2, c_[3]), // b11
-      zisc::dot(e2, c_[4]), // b20
-      zisc::dot(e2, c_[5])}}; // b02
-  const std::array<Float, 6> r = {{
-      zisc::dot(e3, c_[0] - *treatAs<const Vector3*>(&ray.origin())), // r00
-      zisc::dot(e3, c_[1]), // r10
-      zisc::dot(e3, c_[2]), // r01
-      zisc::dot(e3, c_[3]), // r11
-      zisc::dot(e3, c_[4]), // r20
-      zisc::dot(e3, c_[5])}}; // r02
-
-  Float eta,
-        xi,
-        t = intersection->rayDistance();
-  const bool is_hit = calcSurfaceParameter(a, b, r, &eta, &xi, &t);
-  if (is_hit) {
-    // Set the intersection info
-    const auto point = ray.origin() + t * ray.direction();
-    const auto normal = SmoothedMesh::normal(eta, xi);
-    intersection->setPoint(point);
-    const Float cos_theta = zisc::dot(normal, ray.direction());
-    intersection->setReverseFace(0.0 < cos_theta);
-    intersection->setNormal(normal);
-    intersection->setRayDistance(t);
-    const Vector3 barycentric{eta - xi, xi, 1.0 - eta};
-    intersection->setTextureCoordinate(textureCoordinate(barycentric));
-  }
-  return is_hit;
+  const Float b = zisc::dot(c_[1], d1);
+  const Float c = zisc::dot(c_[2], d1) + k1;
+  const Float d = zisc::dot(c_[3], d1);
+  const Float e = zisc::dot(c_[4], d1);
+  const Float f = zisc::dot(c_[5], d1);
+  const Float l = zisc::dot(c_[0], d2);
+  const Float n = zisc::dot(c_[2], d2) + k2;
+  const Float o = zisc::dot(c_[3], d2);
+  const Float p = zisc::dot(c_[4], d2);
+  const Float q = zisc::dot(c_[5], d2);
+  const Float x = calcX(b, c, d, e, f, l , n, o, p, q);
+  return testLineSurfaceIntersection(ray, b, c, d, e, f, l , n, o, p, q, x,
+                                     intersection);
 }
 
 /*!
@@ -218,22 +149,10 @@ bool SmoothedMesh::testIntersection(const Ray& ray,
   No detailed.
   */
 std::tuple<SampledPoint, Vector3, Point2> SmoothedMesh::samplePoint(
-    Sampler& sampler) const noexcept
+    Sampler& /* sampler */) const noexcept
 {
-  Float u = sampler.sample(0.0, 1.0);
-  Float v = sampler.sample(0.0, 1.0);
-  if (1.0 < (u + v)) {
-    u = 1.0 - u;
-    v = 1.0 - v;
-  }
-  const Float xi = v;
-  const Float eta = u + v;
-  const Vector3 barycentric{u, v, 1.0 - (u + v)};
-  //! \todo Calculate the surface area of the smoothed mesh
-  zisc::raiseError("Todo: calculate the surface area.");
-  return std::make_tuple(SampledPoint{point(eta, xi), 0.0},
-                         normal(eta, xi),
-                         textureCoordinate(barycentric));
+  zisc::raiseError("Bad");
+  return std::make_tuple(SampledPoint{}, Vector3{}, Point2{});
 }
 
 /*!
@@ -242,143 +161,224 @@ std::tuple<SampledPoint, Vector3, Point2> SmoothedMesh::samplePoint(
   */
 void SmoothedMesh::transform(const Matrix4x4& matrix) noexcept
 {
-  Transformation::affineTransform(matrix, treatAs<Point3*>(&c_[0]));
-  for (uint i = 1; i < 6; ++i)
-    Transformation::affineTransform(matrix, &c_[i]);
+  auto v1 = Point3{vertex1().data()};
+  auto v2 = Point3{vertex2().data()};
+  auto v3 = Point3{vertex3().data()};
+  Transformation::affineTransform(matrix, &v1);
+  Transformation::affineTransform(matrix, &v2);
+  Transformation::affineTransform(matrix, &v3);
+  auto n1 = normal1();
+  auto n2 = normal2();
+  auto n3 = normal3();
+  Transformation::affineTransform(matrix, &n1);
+  Transformation::affineTransform(matrix, &n2);
+  Transformation::affineTransform(matrix, &n3);
+  calcControlPoints(v1, v2, v3, n1, n2, n3);
+}
+
+/*!
+  \details
+  Please see "Simplification of Meshes into Curved PN Triangles.pdf"
+  */
+void SmoothedMesh::calcControlPoints(const Point3& vertex1,
+                                     const Point3& vertex2,
+                                     const Point3& vertex3,
+                                     const Vector3& n1,
+                                     const Vector3& n2,
+                                     const Vector3& n3) noexcept
+{
+  const auto& v1 = *zisc::treatAs<const Vector3*>(&vertex1);
+  const auto& v2 = *zisc::treatAs<const Vector3*>(&vertex2);
+  const auto& v3 = *zisc::treatAs<const Vector3*>(&vertex3);
+
+  auto eval_w = [](const Vector3& vi, const Vector3& vj, const Vector3& n)
+  {
+    return zisc::dot((vj - vi), n);
+  };
+  const Float w12 = eval_w(v1, v2, n1);
+  const Float w13 = eval_w(v1, v3, n1);
+  const Float w21 = eval_w(v2, v1, n2);
+  const Float w23 = eval_w(v2, v3, n2);
+  const Float w31 = eval_w(v3, v1, n3);
+  const Float w32 = eval_w(v3, v2, n3);
+  c_[0] = 0.5 * (w13 * n1 + w31 * n3);
+  c_[1] = 0.5 * (w23 * n2 + w32 * n3);
+  c_[2] = v3;
+  c_[3] = 0.5 * ((w13 - w12) * n1 + (w23 - w21) * n2 + (w31 + w32) * n3);
+  c_[4] = (v1 - v3) - c_[0];
+  c_[5] = (v2 - v3) - c_[1];
+}
+
+/*!
+  */
+std::tuple<Vector3, Float> SmoothedMesh::calcRayPlane(
+    const Ray& ray,
+    const Vector3& c) const noexcept
+{
+  const auto& o = ray.origin();
+  const auto& v = ray.direction();
+  const Matrix3x3 kernel{o[0], o[1], o[2],
+                         v[0], v[1], v[2],
+                         c[0], c[1], c[2]};
+  const Float determinant = kernel.determinant();
+  ZISC_ASSERT(determinant == 0.0, "The determinant is zero.");
+  // Calc the plane (d[0] * x + d[1] * y * d[2] * z + k = 0)
+  const Vector3 d{v[2] * c[1] - v[1] * c[2],
+                  v[0] * c[2] - v[2] * c[0],
+                  v[1] * c[0] - v[0] * c[1]};
+  const Float k = determinant;
+  return std::make_tuple(d, k);
+}
+
+/*!
+  */
+Float SmoothedMesh::calcX(const Float b,
+                          const Float c,
+                          const Float d,
+                          const Float e,
+                          const Float f,
+                          const Float l,
+                          const Float n,
+                          const Float o,
+                          const Float p,
+                          const Float q) const noexcept
+{
+  const Float a3 = 0.25 * (d * e * f - b * e * e - c * d * d);
+  const Float a2 = (l * b * c) -
+                   0.5 * (b * e * p + c * d * o) +
+                   0.25 * (o * e * f + d * e * q + d * p * f - l * f * f - n * d * d);
+  const Float a1 = (l * b * n) -
+                   0.5 * (l * f * q + n * d * o) +
+                   0.25 * (d * p * q + o * e * q + o * p * f - b * p * p - c * o * o);
+  const Float a0 = 0.25 * (o * p * q - l * q * q - n * o * o);
+  return zisc::solveCubicOne(a3, a2, a1, a0);
 }
 
 /*!
   \details
   No detailed.
   */
-void SmoothedMesh::initialize(const Point3& vertex0,
-                              const Point3& vertex1,
+void SmoothedMesh::initialize(const Point3& vertex1,
                               const Point3& vertex2,
-                              const Vector3& normal0,
+                              const Point3& vertex3,
                               const Vector3& normal1,
-                              const Vector3& normal2) noexcept
+                              const Vector3& normal2,
+                              const Vector3& normal3) noexcept
 {
-  const Vector3 distance[3] = {vertex1 - vertex0,
-                               vertex2 - vertex1,
-                               vertex2 - vertex0};
-  const Vector3 curvature[3] = {
-      calcCurvatureParameter(distance[0], normal0, normal1),
-      calcCurvatureParameter(distance[1], normal1, normal2),
-      calcCurvatureParameter(distance[2], normal0, normal2)};
-
-  c_[0] = *treatAs<const Vector3*>(&vertex0); // c00
-  c_[1] = distance[0] - curvature[0]; // c10
-  c_[2] = distance[1] + curvature[0] - curvature[2]; // c01
-  c_[3] = curvature[2] - curvature[0] - curvature[1]; // c11
-  c_[4] = curvature[0]; // c20
-  c_[5] = curvature[1]; // c02
+  calcControlPoints(vertex1, vertex2, vertex3, normal1, normal2, normal3);
 }
 
 /*!
-  \details
-  No detailed.
   */
-Vector3 calcCurvatureParameter(const Vector3& distance,
-                               const Vector3& normal0,
-                               const Vector3& normal1) noexcept
+bool SmoothedMesh::testLineSurfaceIntersection(
+    const Ray& ray,
+    const Float b,
+    const Float c,
+    const Float d,
+    const Float e,
+    const Float f,
+    const Float l,
+    const Float n,
+    const Float o,
+    const Float p,
+    const Float q,
+    const Float x,
+    IntersectionInfo* intersection) const noexcept
 {
-  const auto c = zisc::dot(normal0, normal1);
-//  ZISC_ASSERT((0.0 <= c) && (c <= 1.0), "The c must be [0, 1]: ", c);
-  if (std::abs(c) == 1.0)
-    return Vector3{};
-  const auto delta_c = (1.0 - c) * 0.5;
-
-  const auto v = (normal0 + normal1) * 0.5;
-  const auto delta_v = (normal0 - normal1) * 0.5;
-  const auto d = zisc::dot(distance, v);
-  const auto delta_d = zisc::dot(distance, delta_v);
-
-  constexpr Float epsilon = 0.01;
-  const auto parameter =
-      (delta_c < epsilon)         ? (delta_d / (1.0 - delta_c)) * v :
-      ((1.0 - epsilon) < delta_c) ? (d / delta_c) * delta_v
-                                  : (delta_d / (1.0 - delta_c)) * v +
-                                    (d / delta_c) * delta_v;
-  return parameter;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-bool calcSurfaceParameter(const std::array<Float, 5>& a,
-                          const std::array<Float, 6>& b,
-                          const std::array<Float, 6>& r,
-                          Float* eta,
-                          Float* xi,
-                          Float* t) noexcept
-{
-  bool is_hit = false;
-  // Calc eta
-  if (a[2] != 0.0 || a[3] != 0.0) {
-    const std::array<Float, 4> u = {{
-        a[3] * b[4] - a[4] * b[3],
-        a[3] * b[1] - a[1] * b[3] + a[2] * b[4] - a[4] * b[2],
-        a[2] * b[1] - a[1] * b[2] + a[3] * b[0] - a[0] * b[3],
-        a[2] * b[0] - a[0] * b[2]}};
-    const Float m = a[3] * u[0] + a[4] * a[4] * b[5],
-                n = a[2] * u[0] + a[3] * u[1] + 2.0 * a[1] * a[4] * b[5],
-                o = a[2] * u[1] + a[3] * u[2] + 
-                    b[5] * (a[1] * a[1] + 2.0 * a[0] * a[4]),
-                p = a[2] * u[2] + a[3] * u[3] + 2.0 * a[0] * a[1] * b[5],
-                q = a[2] * u[3] + a[0] * a[0] * b[5];
-    const auto result = zisc::solveQuartic(q, p, o, n, m);
-    const auto& inverse_eta_list = std::get<0>(result);
-    const auto n_eta = std::get<1>(result);
-    for (uint i = 0; i < n_eta; ++i) {
-      if (inverse_eta_list[i] < 1.0)
-        continue;
-      const auto e = 1.0 / inverse_eta_list[i];
-      const Float x = -(a[0] + (a[1] + a[4] * e) * e) / (a[2] + a[3] * e);
-      if (x < 0.0 || e < x)
-        continue;
-      const Float lambda = r[0] + (r[1] + r[4] * e) * e +
-                           (r[2] + r[3] * e + r[5] * x) * x;
-      if (zisc::isInOpenBounds(lambda, 0.0, *t)) {
-        *eta = e;
-        *xi = x;
-        *t = lambda;
-        is_hit = true;
-      }
+  auto test_line_surface_intersection =
+  [this, &ray, &intersection, b, c, d, e, f](const Float beta, const Float gamma)
+  {
+    const Float x3 = b - d * beta;
+    const Float x2 = f - (d * gamma + e * beta);
+    const Float x1 = c - e * gamma;
+    const Float discriminant = zisc::power<2>(x2) - 4.0 * x3 * x1;
+    bool is_hit = false;
+    if (0.0 < discriminant) {
+      const Float inv_x3 = 1.0 / (2.0 * x3);
+      const Float v1 = (-x2 + zisc::sqrt(discriminant)) * inv_x3;
+      const Float u1 = -(beta * v1 + gamma);
+      is_hit = testRaySurfaceIntersection(ray, u1, v1, intersection);
+      const Float v2 = (-x2 - zisc::sqrt(discriminant)) * inv_x3;
+      const Float u2 = -(beta * v2 + gamma);
+      is_hit = is_hit || testRaySurfaceIntersection(ray, u2, v2, intersection);
     }
-  }
-  else {
-    const auto eta_result = zisc::solveQuadratic(a[4], a[1], a[0]);
-    const auto& eta_list = std::get<0>(eta_result);
-    const auto n_eta = std::get<1>(eta_result);
-    for (uint i = 0; i < n_eta; ++i) {
-      const auto e = eta_list[i];
-      if (e < 0.0 || 1.0 < e)
-        continue;
-      const auto& xi_result = 
-          zisc::solveQuadratic(b[5], b[2] + b[3] * e, b[0] + (b[1] + b[4] * e) * e);
-      const auto& xi_list = std::get<0>(xi_result);
-      const auto n_xi = std::get<1>(xi_result);
-      for (uint j = 0; j < n_xi; ++j) {
-        const auto x = xi_list[j];
-        if (x < 0.0 || e < x)
-          continue;
-        const Float lambda = r[0] + (r[1] + r[4] * e) * e + 
-                             (r[2] + r[3] * e + r[5] * x) * x;
-        if (zisc::isInOpenBounds(lambda, 0.0, *t)) {
-          *eta = e;
-          *xi = x;
-          *t = lambda;
-          is_hit = true;
-          ZISC_ASSERT(zisc::isInClosedBounds(x, 0.0, e),
-                      "The xi is out of the range [0, eta].");
-          ZISC_ASSERT(zisc::isInClosedBounds(e, x, 1.0),
-                      "The eta is out of the range [xi, 1].");
-        }
-      }
+    else if (discriminant == 0.0) {
+      const Float inv_x3 = 1.0 / (2.0 * x3);
+      const Float v = -x2 * inv_x3;
+      const Float u = -(beta * v + gamma);
+      is_hit = testRaySurfaceIntersection(ray, u, v, intersection);
+    }
+    return is_hit;
+  };
+
+  const Float m11 = l;
+  const Float m22 = b * x;
+  const Float m12 = 0.5 * (d * x + o);
+  const Float m21 = m12;
+  bool is_hit = (m11 * m22 - m12 * m21) < 0.0;
+  if (is_hit) {
+    if (m22 < m11) {
+      const Float inv_m11 = 1.0 / m11;
+      const Float m12d = m12 * inv_m11;
+      const Float m22d = m22 * inv_m11;
+      const Float m13d = 0.5 * (e * x + p) * inv_m11;
+      const Float m33d = (c * x + n) * inv_m11;
+      // Line1
+      const Float beta1 = m12d + zisc::sqrt(zisc::power<2>(m12d) - m22d);
+      const Float gamma1 = m13d + zisc::sqrt(zisc::power<2>(m13d) - m33d);
+      is_hit = test_line_surface_intersection(beta1, gamma1);
+      // Line2
+      const Float beta2 = m12d - zisc::sqrt(zisc::power<2>(m12d) - m22d);
+      const Float gamma2 = m13d - zisc::sqrt(zisc::power<2>(m13d) - m33d);
+      is_hit = is_hit || test_line_surface_intersection(beta2, gamma2);
+    }
+    else {
+      const Float inv_m22 = 1.0 / m22;
+      const Float m12d = m12 * inv_m22;
+      const Float m11d = m11 * inv_m22;
+      const Float m23d = 0.5 * (f * x + q) * inv_m22;
+      const Float m33d = (c * x + n) * inv_m22;
+      // Line1
+      const Float beta1 = m12d + zisc::sqrt(zisc::power<2>(m12d) - m11d);
+      const Float gamma1 = m23d + zisc::sqrt(zisc::power<2>(m23d) - m33d);
+      is_hit = test_line_surface_intersection(beta1, gamma1);
+      // Line2
+      const Float beta2 = m12d - zisc::sqrt(zisc::power<2>(m12d) - m11d);
+      const Float gamma2 = m23d - zisc::sqrt(zisc::power<2>(m23d) - m33d);
+      is_hit = is_hit || test_line_surface_intersection(beta2, gamma2);
     }
   }
   return is_hit;
+}
+
+/*!
+  */
+bool SmoothedMesh::testRaySurfaceIntersection(
+    const Ray& ray,
+    const Float u,
+    const Float v,
+    IntersectionInfo* intersection) const noexcept
+{
+  const Float w = 1.0 - (u + v);
+  if (!(zisc::isInClosedBounds(u, 0.0, 1.0) &&
+        zisc::isInClosedBounds(v, 0.0, 1.0) &&
+        zisc::isInClosedBounds(w, 0.0, 1.0)))
+    return false;
+
+  const auto p = point(u, v);
+  const Float t2 = (p - ray.origin()).squareNorm();
+  if (zisc::power<2>(intersection->rayDistance()) < t2)
+    return false;
+
+  const auto n = normal(u, v);
+  intersection->setPoint(p);
+  const Float cos_theta = zisc::dot(n, ray.direction());
+  intersection->setReverseFace(0.0 < cos_theta);
+  intersection->setNormal(n);
+  intersection->setRayDistance(zisc::sqrt(t2));
+  intersection->setTextureCoordinate(textureCoordinate(u, v));
+
+  return true;
 }
 
 } // namespace nanairo

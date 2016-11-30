@@ -26,13 +26,13 @@ namespace nanairo {
   No detailed.
   */
 inline
-void TriangleMesh::setTextureCoordinate(const Point2& texture_coordinate0,
-                                        const Point2& texture_coordinate1,
-                                        const Point2& texture_coordinate2) noexcept
+void TriangleMesh::setTextureCoordinate(const Point2& texture_coordinate1,
+                                        const Point2& texture_coordinate2,
+                                        const Point2& texture_coordinate3) noexcept
 {
-  texture_coordinate_[0] = texture_coordinate0;
-  texture_coordinate_[1] = texture_coordinate1;
-  texture_coordinate_[2] = texture_coordinate2;
+  texture_coordinate_ = texture_coordinate1;
+  texture_edge_[0] = texture_coordinate2 - texture_coordinate1;
+  texture_edge_[1] = texture_coordinate3 - texture_coordinate1;
 }
 
 /*!
@@ -40,14 +40,10 @@ void TriangleMesh::setTextureCoordinate(const Point2& texture_coordinate0,
   No detailed.
   */
 inline
-Point2 TriangleMesh::textureCoordinate(const Vector3& barycentric) const noexcept
+Point2 TriangleMesh::textureCoordinate(const Float u, const Float v) const noexcept
 {
-  Point2 texture_coordinate;
-  for (uint index = 0; index < 2; ++index) {
-    texture_coordinate[index] = barycentric[2] * texture_coordinate_[0][index] +
-                                barycentric[0] * texture_coordinate_[1][index] +
-                                barycentric[1] * texture_coordinate_[2][index];
-  }
+  const Point2 texture_coordinate = texture_coordinate_ + u * texture_edge_[0] +
+                                                          v * texture_edge_[1];
   ZISC_ASSERT(zisc::isInClosedBounds(texture_coordinate[0], 0.0, 1.0),
               "The texture_coordinate[0] is out of the range [0.0, 1.0].");
   ZISC_ASSERT(zisc::isInClosedBounds(texture_coordinate[1], 0.0, 1.0),

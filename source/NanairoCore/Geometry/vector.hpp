@@ -20,6 +20,7 @@ namespace nanairo {
 //! \addtogroup Core
 //! \{
 
+using Vector2 = zisc::Vector<Float, 2>;
 using Vector3 = zisc::Vector<Float, 3>;
 
 //! Check if the vector contains the specified value
