@@ -152,9 +152,10 @@
 !/test/
 !/test/config.cmake
 !/test/googletest
+!/test/unittest/
 !/test/unittest/*.cpp
 !/test/unittest/*.hpp
-!/test/resources
+!/test/resources/
 !/test/resources/test_resource.qrc
 !/test/resources/*.json
 

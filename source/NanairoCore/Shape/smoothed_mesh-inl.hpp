@@ -32,7 +32,7 @@ Vector3 SmoothedMesh::normal(const Float u, const Float v) const noexcept
 {
   const auto du = (2.0 * u) * c_[0] + v * c_[3] + c_[4];
   const auto dv = (2.0 * v) * c_[1] + u * c_[3] + c_[5];
-  return zisc::cross(dv, du).normalized();
+  return zisc::cross(du, dv).normalized();
 }
 
 /*!
@@ -42,7 +42,7 @@ Vector3 SmoothedMesh::normal1() const noexcept
 {
   const auto du = 2.0 * c_[0] + c_[4];
   const auto dv = c_[3] + c_[5];
-  return zisc::cross(dv, du).normalized();
+  return zisc::cross(du, dv).normalized();
 }
 
 /*!
@@ -52,7 +52,7 @@ Vector3 SmoothedMesh::normal2() const noexcept
 {
   const auto du = c_[3] + c_[4];
   const auto dv = 2.0 * c_[1] + c_[5];
-  return zisc::cross(dv, du).normalized();
+  return zisc::cross(du, dv).normalized();
 }
 
 /*!
@@ -62,7 +62,7 @@ Vector3 SmoothedMesh::normal3() const noexcept
 {
   const auto& du = c_[4];
   const auto& dv = c_[5];
-  return zisc::cross(dv, du).normalized();
+  return zisc::cross(du, dv).normalized();
 }
 
 /*!

@@ -70,7 +70,6 @@ Aabb SmoothedMesh::boundingBox() const noexcept
     const Float v = k * (-2.0 * zisc::dot(ng, c_[0]) * zisc::dot(ng, c_[5]) +
                          zisc::dot(ng, c_[4]) * zisc::dot(ng, c_[3]));
     const Float w = 1.0 - (u + v);
-    std::cout << "(u, v) = (" << u << ", " << v << ")" << std::endl;
     if (zisc::isInClosedBounds(u, 0.0, 1.0) &&
         zisc::isInClosedBounds(v, 0.0, 1.0) &&
         zisc::isInClosedBounds(w, 0.0, 1.0)) {
@@ -221,12 +220,16 @@ std::tuple<Vector3, Float> SmoothedMesh::calcRayPlane(
                          v[0], v[1], v[2],
                          c[0], c[1], c[2]};
   const Float determinant = kernel.determinant();
-  ZISC_ASSERT(determinant == 0.0, "The determinant is zero.");
+  ZISC_ASSERT(determinant != 0.0, "The determinant is zero.");
   // Calc the plane (d[0] * x + d[1] * y * d[2] * z + k = 0)
   const Vector3 d{v[2] * c[1] - v[1] * c[2],
                   v[0] * c[2] - v[2] * c[0],
                   v[1] * c[0] - v[0] * c[1]};
   const Float k = determinant;
+  ZISC_ASSERT(zisc::isInClosedBounds(zisc::dot(d, Vector3{o.data()}) + k, -0.000001, 0.000001),
+              "The calculation of plane d, k is wrong.");
+  ZISC_ASSERT(zisc::isInClosedBounds(zisc::dot(d, c), -0.000001, 0.000001),
+              "The calculation of plane d is wrong.");
   return std::make_tuple(d, k);
 }
 
@@ -303,8 +306,7 @@ bool SmoothedMesh::testLineSurfaceIntersection(
       is_hit = is_hit || testRaySurfaceIntersection(ray, u2, v2, intersection);
     }
     else if (discriminant == 0.0) {
-      const Float inv_x3 = 1.0 / (2.0 * x3);
-      const Float v = -x2 * inv_x3;
+      const Float v = -x2 / (2.0 * x3);
       const Float u = -(beta * v + gamma);
       is_hit = testRaySurfaceIntersection(ray, u, v, intersection);
     }
@@ -317,7 +319,7 @@ bool SmoothedMesh::testLineSurfaceIntersection(
   const Float m21 = m12;
   bool is_hit = (m11 * m22 - m12 * m21) < 0.0;
   if (is_hit) {
-    if (m22 < m11) {
+    if (zisc::abs(m22) < zisc::abs(m11)) {
       const Float inv_m11 = 1.0 / m11;
       const Float m12d = m12 * inv_m11;
       const Float m22d = m22 * inv_m11;
