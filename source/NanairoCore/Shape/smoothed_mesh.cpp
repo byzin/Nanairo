@@ -9,6 +9,7 @@
 
 #include "smoothed_mesh.hpp"
 // Standard C++ library
+#include <array>
 #include <cmath>
 #include <limits>
 #include <tuple>
@@ -106,6 +107,44 @@ Aabb SmoothedMesh::boundingBox() const noexcept
 }
 
 /*!
+  */
+Float SmoothedMesh::calcX(const std::array<Float, 10>& coefficients) const noexcept
+{
+  const Float a = coefficients[0];
+  const Float b = coefficients[1];
+  const Float c = coefficients[2];
+  const Float d = coefficients[3];
+  const Float f = coefficients[4];
+  const Float l = coefficients[5];
+  const Float m = coefficients[6];
+  const Float n = coefficients[7];
+  const Float o = coefficients[8];
+  const Float p = coefficients[9];
+  // Calculate the coefficients of x
+  const Float a3 = (a * b * c) - 0.25 * (a * f * f + c * d * d);
+  const Float a2 = a * (b * n + m * c) + (l * b * c) - 0.5 * (c * d * o) +
+                   0.25 * (d * p * f - l * f * f - n * d * d);
+  const Float a1 = (a * m * n) + l * (b * n + m * c) - 0.5 * (n * d * o) +
+                   0.25 * (o * p * f - b * p * p - c * o * o);
+  const Float a0 = (l * m * n) - 0.25 * (m * p * p + n * o * o);
+  // Calculate the x
+  Float x = 0.0;
+  if (a3 != 0.0) {
+    x = zisc::solveCubicOne(a3, a2, a1, a0);
+  }
+  else if (a2 != 0.0) {
+    const Float discriminant = zisc::power<2>(a1) - 4.0 * a2 * a0;
+    ZISC_ASSERT(0.0 <= discriminant, "The discriminant is minus.");
+    x = (-a1 + ((discriminant == 0.0) ? 0.0 : zisc::sqrt(discriminant))) / (2.0 * a2);
+  }
+  else {
+    ZISC_ASSERT(a1 != 0.0, "The a1 is zero.");
+    x = -a0 / a1;
+  }
+  return x;
+}
+
+/*!
   \details
   No detailed.
   */
@@ -121,26 +160,9 @@ Float SmoothedMesh::getTraversalCost() const noexcept
 bool SmoothedMesh::testIntersection(const Ray& ray,
                                     IntersectionInfo* intersection) const noexcept
 {
-  const auto plane1 = calcRayPlane(ray, c_[0]);
-  const auto& d1 = std::get<0>(plane1);
-  const Float k1 = std::get<1>(plane1);
-  const auto plane2 = calcRayPlane(ray, c_[1]);
-  const auto& d2 = std::get<0>(plane2);
-  const Float k2 = std::get<1>(plane2);
-
-  const Float b = zisc::dot(c_[1], d1);
-  const Float c = zisc::dot(c_[2], d1) + k1;
-  const Float d = zisc::dot(c_[3], d1);
-  const Float e = zisc::dot(c_[4], d1);
-  const Float f = zisc::dot(c_[5], d1);
-  const Float l = zisc::dot(c_[0], d2);
-  const Float n = zisc::dot(c_[2], d2) + k2;
-  const Float o = zisc::dot(c_[3], d2);
-  const Float p = zisc::dot(c_[4], d2);
-  const Float q = zisc::dot(c_[5], d2);
-  const Float x = calcX(b, c, d, e, f, l , n, o, p, q);
-  return testLineSurfaceIntersection(ray, b, c, d, e, f, l , n, o, p, q, x,
-                                     intersection);
+  const auto coefficients = calcCurveCoefficients(ray);
+  const Float x = calcX(coefficients);
+  return testLineSurfaceIntersection(ray, coefficients, x, intersection);
 }
 
 /*!
@@ -226,35 +248,12 @@ std::tuple<Vector3, Float> SmoothedMesh::calcRayPlane(
                   v[0] * c[2] - v[2] * c[0],
                   v[1] * c[0] - v[0] * c[1]};
   const Float k = determinant;
-  ZISC_ASSERT(zisc::isInClosedBounds(zisc::dot(d, Vector3{o.data()}) + k, -0.000001, 0.000001),
-              "The calculation of plane d, k is wrong.");
+  ZISC_ASSERT(
+    zisc::isInClosedBounds(zisc::dot(d, Vector3{o.data()}) + k, -0.000001, 0.000001),
+    "The calculation of plane d, k is wrong.");
   ZISC_ASSERT(zisc::isInClosedBounds(zisc::dot(d, c), -0.000001, 0.000001),
               "The calculation of plane d is wrong.");
   return std::make_tuple(d, k);
-}
-
-/*!
-  */
-Float SmoothedMesh::calcX(const Float b,
-                          const Float c,
-                          const Float d,
-                          const Float e,
-                          const Float f,
-                          const Float l,
-                          const Float n,
-                          const Float o,
-                          const Float p,
-                          const Float q) const noexcept
-{
-  const Float a3 = 0.25 * (d * e * f - b * e * e - c * d * d);
-  const Float a2 = (l * b * c) -
-                   0.5 * (b * e * p + c * d * o) +
-                   0.25 * (o * e * f + d * e * q + d * p * f - l * f * f - n * d * d);
-  const Float a1 = (l * b * n) -
-                   0.5 * (l * f * q + n * d * o) +
-                   0.25 * (d * p * q + o * e * q + o * p * f - b * p * p - c * o * o);
-  const Float a0 = 0.25 * (o * p * q - l * q * q - n * o * o);
-  return zisc::solveCubicOne(a3, a2, a1, a0);
 }
 
 /*!
@@ -275,46 +274,23 @@ void SmoothedMesh::initialize(const Point3& vertex1,
   */
 bool SmoothedMesh::testLineSurfaceIntersection(
     const Ray& ray,
-    const Float b,
-    const Float c,
-    const Float d,
-    const Float e,
-    const Float f,
-    const Float l,
-    const Float n,
-    const Float o,
-    const Float p,
-    const Float q,
+    const std::array<Float, 10>& coefficients,
     const Float x,
     IntersectionInfo* intersection) const noexcept
 {
-  auto test_line_surface_intersection =
-  [this, &ray, &intersection, b, c, d, e, f](const Float beta, const Float gamma)
-  {
-    const Float x3 = b - d * beta;
-    const Float x2 = f - (d * gamma + e * beta);
-    const Float x1 = c - e * gamma;
-    const Float discriminant = zisc::power<2>(x2) - 4.0 * x3 * x1;
-    bool is_hit = false;
-    if (0.0 < discriminant) {
-      const Float inv_x3 = 1.0 / (2.0 * x3);
-      const Float v1 = (-x2 + zisc::sqrt(discriminant)) * inv_x3;
-      const Float u1 = -(beta * v1 + gamma);
-      is_hit = testRaySurfaceIntersection(ray, u1, v1, intersection);
-      const Float v2 = (-x2 - zisc::sqrt(discriminant)) * inv_x3;
-      const Float u2 = -(beta * v2 + gamma);
-      is_hit = is_hit || testRaySurfaceIntersection(ray, u2, v2, intersection);
-    }
-    else if (discriminant == 0.0) {
-      const Float v = -x2 / (2.0 * x3);
-      const Float u = -(beta * v + gamma);
-      is_hit = testRaySurfaceIntersection(ray, u, v, intersection);
-    }
-    return is_hit;
-  };
+  const Float a = coefficients[0];
+  const Float b = coefficients[1];
+  const Float c = coefficients[2];
+  const Float d = coefficients[3];
+  const Float f = coefficients[4];
+  const Float l = coefficients[5];
+  const Float m = coefficients[6];
+  const Float n = coefficients[7];
+  const Float o = coefficients[8];
+  const Float p = coefficients[9];
 
-  const Float m11 = l;
-  const Float m22 = b * x;
+  const Float m11 = a * x + l;
+  const Float m22 = b * x * m;
   const Float m12 = 0.5 * (d * x + o);
   const Float m21 = m12;
   bool is_hit = (m11 * m22 - m12 * m21) < 0.0;
@@ -323,15 +299,40 @@ bool SmoothedMesh::testLineSurfaceIntersection(
       const Float inv_m11 = 1.0 / m11;
       const Float m12d = m12 * inv_m11;
       const Float m22d = m22 * inv_m11;
-      const Float m13d = 0.5 * (e * x + p) * inv_m11;
+      const Float m13d = 0.5 * p * inv_m11;
       const Float m33d = (c * x + n) * inv_m11;
-      // Line1
-      const Float beta1 = m12d + zisc::sqrt(zisc::power<2>(m12d) - m22d);
-      const Float gamma1 = m13d + zisc::sqrt(zisc::power<2>(m13d) - m33d);
+      // Lines
+      const Float b_term = zisc::sqrt(zisc::power<2>(m12d) - m22d);
+      const Float beta1 = m12d + b_term;
+      const Float beta2 = m12d - b_term;
+      const Float g_term = zisc::sqrt(zisc::power<2>(m13d) - m33d);
+      Float gamma1 = m13d + g_term;
+      Float gamma2 = m13d - g_term;
+
+      if (
+
+//      constexpr Float error = 0.001;
+      constexpr Float error = 0.5;
+      ZISC_ASSERT(zisc::isInBounds((d * x + o) / l - (beta1 + beta2), -error, error),
+                  "The calculation of beta is wrong: ",
+                  "m12d + m21d = ", (d * x + o) / l,
+                  ", beta1 = ", beta1, ", beta2 = ", beta2);
+      ZISC_ASSERT(zisc::isInBounds((e * x + p) / l - (gamma1 + gamma2), -error, error),
+                  "The calculation of gamma is wrong: ",
+                  "m13d + m31d = ", (e * x + p) / l,
+                  ", gamma1 = ", gamma1, ", gamma2 = ", gamma2);
+//      const Float m23d = 0.5 * (f * x + q) * inv_m11;
+//      std::cout << "T: " << (beta1 * gamma2 + beta2 * gamma1) << std::endl;
+      if (!zisc::isInBounds((f * x + q) / l  - (beta1 * gamma2 + beta2 * gamma1), -error, error)) {
+        gamma1 = m13d - g_term;
+        gamma2 = m13d + g_term;
+      }
+//      ZISC_ASSERT(
+//          zisc::isInBounds((f * x + q) / l - (beta1 * gamma2 + beta2 * gamma1), -error, error),
+//          "The calculation of beta and gamma is wrong: ",
+//          "m23d = ", (f * x + q) / l,
+//          ", b1g2 + b2g1 = ", beta1 * gamma2 + beta2 * gamma1);
       is_hit = test_line_surface_intersection(beta1, gamma1);
-      // Line2
-      const Float beta2 = m12d - zisc::sqrt(zisc::power<2>(m12d) - m22d);
-      const Float gamma2 = m13d - zisc::sqrt(zisc::power<2>(m13d) - m33d);
       is_hit = is_hit || test_line_surface_intersection(beta2, gamma2);
     }
     else {
@@ -340,18 +341,76 @@ bool SmoothedMesh::testLineSurfaceIntersection(
       const Float m11d = m11 * inv_m22;
       const Float m23d = 0.5 * (f * x + q) * inv_m22;
       const Float m33d = (c * x + n) * inv_m22;
-      // Line1
-      const Float beta1 = m12d + zisc::sqrt(zisc::power<2>(m12d) - m11d);
-      const Float gamma1 = m23d + zisc::sqrt(zisc::power<2>(m23d) - m33d);
-      is_hit = test_line_surface_intersection(beta1, gamma1);
-      // Line2
-      const Float beta2 = m12d - zisc::sqrt(zisc::power<2>(m12d) - m11d);
-      const Float gamma2 = m23d - zisc::sqrt(zisc::power<2>(m23d) - m33d);
-      is_hit = is_hit || test_line_surface_intersection(beta2, gamma2);
+      // Lines
+      const Float a_term = zisc::sqrt(zisc::power<2>(m12d) - m11d);
+      const Float g_term = zisc::sqrt(zisc::power<2>(m23d) - m33d);
+      const Float alpha1 = m12d + a_term;
+      Float gamma1 = m23d + g_term;
+      const Float alpha2 = m12d - a_term;
+      Float gamma2 = m23d - g_term;
+//      constexpr Float error = 0.001;
+      constexpr Float error = 0.5;
+      ZISC_ASSERT(zisc::isInBounds((d * x + o) / m22 - (alpha1 + alpha2), -error, error),
+                  "The calculation of alpha is wrong: ",
+                  "m12d + m21d = ", (d * x + o) / m22,
+                  ", alpha1 = ", alpha1, ", alpha2 = ", alpha2);
+      ZISC_ASSERT(zisc::isInBounds((f * x + q) / m22 - (gamma1 + gamma2), -error, error),
+                  "The calculation of gamma is wrong: ",
+                  "m13d + m31d = ", (f * x + q) / m22,
+                  ", gamma1 = ", gamma1, ", gamma2 = ", gamma2);
+//      const Float m13d = 0.5 * (e * x + p) * inv_m22;
+      if (!zisc::isInBounds((e * x + p) / m22 - (alpha1 * gamma2 + alpha2 * gamma1), -error, error)) {
+        gamma1 = m23d - g_term;
+        gamma2 = m23d + g_term;
+      }
+//      ZISC_ASSERT(zisc::isInBounds((e * x + p) / m22 - (alpha1 * gamma2 + alpha2 * gamma1), -error, error),
+//                  "The calculation of alpha and gamma is wrong: ",
+//                  "m13d = ", (e * x + p) / m22,
+//                  ", a1g2 + a2g1 = ", alpha1 * gamma2 + alpha2 * gamma1);
+      is_hit = test_line_surface_intersection(1.0 / alpha1, gamma1 / alpha1);
+      is_hit = is_hit || test_line_surface_intersection(1.0 / alpha2, gamma2 / alpha2);
     }
   }
   return is_hit;
 }
+
+/*!
+  */
+bool SmoothedMesh::testLineSurfaceIntersection(
+    const Ray& ray,
+    const std::array<Float, 10>& coefficients,
+    const Float alpha,
+    const Float beta,
+    const Float gamma,
+    IntersectionInfo* intersection) const noexcept
+{
+  const Float b = coefficients[0];
+  const Float c = coefficients[1];
+  const Float d = coefficients[2];
+  const Float e = coefficients[3];
+  const Float f = coefficients[4];
+
+  const Float x3 = b - d * beta;
+  const Float x2 = f - (d * gamma + e * beta);
+  const Float x1 = c - e * gamma;
+  const Float discriminant = zisc::power<2>(x2) - 4.0 * x3 * x1;
+  bool is_hit = false;
+  if (0.0 < discriminant) {
+    const Float inv_x3 = 1.0 / (2.0 * x3);
+    const Float v1 = (-x2 + zisc::sqrt(discriminant)) * inv_x3;
+    const Float u1 = -(beta * v1 + gamma);
+    is_hit = testRaySurfaceIntersection(ray, u1, v1, intersection);
+    const Float v2 = (-x2 - zisc::sqrt(discriminant)) * inv_x3;
+    const Float u2 = -(beta * v2 + gamma);
+    is_hit = is_hit || testRaySurfaceIntersection(ray, u2, v2, intersection);
+  }
+  else if (discriminant == 0.0) {
+    const Float v = -x2 / (2.0 * x3);
+    const Float u = -(beta * v + gamma);
+    is_hit = testRaySurfaceIntersection(ray, u, v, intersection);
+  }
+  return is_hit;
+};
 
 /*!
   */

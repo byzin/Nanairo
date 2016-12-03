@@ -11,8 +11,11 @@
 #define NANAIRO_SMOOTHED_MESH_INL_HPP
 
 #include "smoothed_mesh.hpp"
+// Standard C++ library
+#include <array>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/math.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -22,6 +25,35 @@
 namespace nanairo {
 
 using zisc::treatAs;
+
+/*!
+  */
+inline
+std::array<Float, 10> SmoothedMesh::calcCurveCoefficients(
+    const Ray& ray) const noexcept
+{
+  const auto plane1 = calcRayPlane(ray, c_[4]);
+  const auto& d1 = std::get<0>(plane1);
+  const Float k1 = std::get<1>(plane1);
+  const auto plane2 = calcRayPlane(ray, c_[5]);
+  const auto& d2 = std::get<0>(plane2);
+  const Float k2 = std::get<1>(plane2);
+
+  const Float a = zisc::dot(c_[0], d1);
+  const Float b = zisc::dot(c_[1], d1);
+  const Float c = zisc::dot(c_[2], d1) + k1;
+  const Float d = zisc::dot(c_[3], d1);
+//  const Float e = zisc::dot(c_[4], d1);
+  const Float f = zisc::dot(c_[5], d1);
+  const Float l = zisc::dot(c_[0], d2);
+  const Float m = zisc::dot(c_[1], d2);
+  const Float n = zisc::dot(c_[2], d2) + k2;
+  const Float o = zisc::dot(c_[3], d2);
+  const Float p = zisc::dot(c_[4], d2);
+//  const Float q = zisc::dot(c_[5], d2);
+
+  return std::array<Float, 10>{{a, b, c, d, f, l, m, n, o, p}};
+}
 
 /*!
   \details

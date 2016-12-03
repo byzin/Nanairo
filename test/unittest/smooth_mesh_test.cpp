@@ -22,8 +22,10 @@
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
+#include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/DataStructure/aabb.hpp"
 #include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Shape/smoothed_mesh.hpp"
 // Test
@@ -237,5 +239,44 @@ TEST(SmoothedMeshTest, AabbTest)
           << "max_p = (" << max_p[0] << ", " << max_p[1] << ", " << max_p[2] << "), "
           << "max_point = (" << max_point[0] << ", " << max_point[1] << ", " << max_point[2] << ");";
     }
+  }
+}
+
+TEST(SmoothedMeshTest, CurveCoefficientsTest)
+{
+  using namespace nanairo;
+  const auto triangle_data_list = ::getTriangleDataList();
+  const int size= static_cast<int>(triangle_data_list.size());
+  const Ray ray{Point3{1.0, -2.0, 5.0}, Vector3{2.0, -1.0, 6.0}.normalized()};
+  for (int index = 0; index < size; ++index) {
+    const auto& data = triangle_data_list[index];
+
+    const auto& v1 = data.vertices_[0];
+    const auto& v2 = data.vertices_[1];
+    const auto& v3 = data.vertices_[2];
+    const auto& n1 = data.normals_[0];
+    const auto& n2 = data.normals_[1];
+    const auto& n3 = data.normals_[2];
+
+    auto mesh = std::make_unique<SmoothedMesh>(v1, v2, v3, n1, n2, n3);
+    const auto coefficients = mesh->calcCurveCoefficients(ray);
+    const Float a = coefficients[0];
+    const Float b = coefficients[1];
+    const Float c = coefficients[2];
+    const Float d = coefficients[3];
+    const Float f = coefficients[4];
+    const Float l = coefficients[5];
+    const Float m = coefficients[6];
+    const Float n = coefficients[7];
+    const Float o = coefficients[8];
+    const Float p = coefficients[9];
+    const Float x = mesh->calcX(coefficients);
+
+    const auto M = Matrix3x3{a * x + l,         0.5 * (d * x + o), 0.5 * p,
+                             0.5 * (d * x + o), b * x + m,         0.5 * f * x,
+                             0.5 * p,           0.5 * f * x      , c * x + n};
+    constexpr double error = 0.0000001;
+    EXPECT_NEAR(0.0, M.determinant(), error)
+          << "The |M| of triangle[" << index << "] isn't zero.";
   }
 }

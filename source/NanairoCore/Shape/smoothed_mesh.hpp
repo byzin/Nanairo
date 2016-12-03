@@ -11,6 +11,7 @@
 #define NANAIRO_SMOOTHED_MESH_HPP
 
 // Standard C++ library
+#include <array>
 #include <tuple>
 // Nanairo
 #include "shape.hpp"
@@ -49,6 +50,12 @@ class SmoothedMesh : public TriangleMesh
 
   //! Return the bounding box
   Aabb boundingBox() const noexcept override;
+
+  //! Calculate the curve coefficients
+  std::array<Float, 10> calcCurveCoefficients(const Ray& ray) const noexcept;
+
+  //! Calculate the X
+  Float calcX(const std::array<Float, 10>& coefficients) const noexcept;
 
   //! Return the cost of a ray-patch intersection test
   Float getTraversalCost() const noexcept override;
@@ -101,18 +108,6 @@ class SmoothedMesh : public TriangleMesh
   std::tuple<Vector3, Float> calcRayPlane(const Ray& ray,
                                           const Vector3& c) const noexcept;
 
-  //! Calculate the X
-  Float calcX(const Float b,
-              const Float c,
-              const Float d,
-              const Float e,
-              const Float f,
-              const Float l,
-              const Float n,
-              const Float o,
-              const Float p,
-              const Float q) const noexcept;
-
   //! Initialize
   void initialize(const Point3& vertex1,
                   const Point3& vertex2,
@@ -123,17 +118,16 @@ class SmoothedMesh : public TriangleMesh
 
   //! Test line-surface intersection
   bool testLineSurfaceIntersection(const Ray& ray,
-                                   const Float b,
-                                   const Float c,
-                                   const Float d,
-                                   const Float e,
-                                   const Float f,
-                                   const Float l,
-                                   const Float n,
-                                   const Float o,
-                                   const Float p,
-                                   const Float q,
+                                   const std::array<Float, 10>& coefficients,
                                    const Float x,
+                                   IntersectionInfo* intersection) const noexcept;
+
+  //! Test line-surface intersection
+  bool testLineSurfaceIntersection(const Ray& ray,
+                                   const std::array<Float, 10>& coefficients,
+                                   const Float alpha,
+                                   const Float beta,
+                                   const Float gamma,
                                    IntersectionInfo* intersection) const noexcept;
 
   //! Test ray-surface intersection
