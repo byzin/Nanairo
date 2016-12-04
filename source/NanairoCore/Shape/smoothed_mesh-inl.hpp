@@ -39,12 +39,14 @@ std::array<Float, 10> SmoothedMesh::calcCurveCoefficients(
   const auto& d2 = std::get<0>(plane2);
   const Float k2 = std::get<1>(plane2);
 
+  // Plane1
   const Float a = zisc::dot(c_[0], d1);
   const Float b = zisc::dot(c_[1], d1);
   const Float c = zisc::dot(c_[2], d1) + k1;
   const Float d = zisc::dot(c_[3], d1);
 //  const Float e = zisc::dot(c_[4], d1);
   const Float f = zisc::dot(c_[5], d1);
+  // Plane2
   const Float l = zisc::dot(c_[0], d2);
   const Float m = zisc::dot(c_[1], d2);
   const Float n = zisc::dot(c_[2], d2) + k2;
@@ -130,6 +132,16 @@ inline
 const Vector3& SmoothedMesh::vertex3() const noexcept
 {
   return c_[2];
+}
+
+/*!
+  */
+inline
+constexpr auto SmoothedMesh::smoothingMethod() noexcept -> SmoothingMethod
+{
+  return SmoothingMethod::kResultant;
+//  return SmoothingMethod::kPencil;
+//  return SmoothingMethod::kNoSmoothed;
 }
 
 } // namespace nanairo

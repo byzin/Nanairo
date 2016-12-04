@@ -54,9 +54,6 @@ class SmoothedMesh : public TriangleMesh
   //! Calculate the curve coefficients
   std::array<Float, 10> calcCurveCoefficients(const Ray& ray) const noexcept;
 
-  //! Calculate the X
-  Float calcX(const std::array<Float, 10>& coefficients) const noexcept;
-
   //! Return the cost of a ray-patch intersection test
   Float getTraversalCost() const noexcept override;
 
@@ -74,6 +71,9 @@ class SmoothedMesh : public TriangleMesh
 
   //! Return the surface point
   Point3 point(const double u, const double v) const noexcept;
+
+  //! Solve the pencil equation
+  Float solvePencil(const std::array<Float, 10>& coefficients) const noexcept;
 
   //! Test ray-mesh intersection
   bool testIntersection(const Ray& ray,
@@ -96,17 +96,30 @@ class SmoothedMesh : public TriangleMesh
   const Vector3& vertex3() const noexcept;
 
  private:
+  //! The method of smoothing
+  enum class SmoothingMethod : uint
+  {
+    kResultant,
+    kPencil,
+    kNoSmoothed
+  };
+
   //! Calculate the control points of the surface
   void calcControlPoints(const Point3& vertex1,
                          const Point3& vertex2,
                          const Point3& vertex3,
-                         const Vector3& n1,
-                         const Vector3& n2,
-                         const Vector3& n3) noexcept;
+                         const Vector3& normal1,
+                         const Vector3& normal2,
+                         const Vector3& normal3) noexcept;
 
   //! Calculate the ray plane
   std::tuple<Vector3, Float> calcRayPlane(const Ray& ray,
                                           const Vector3& c) const noexcept;
+
+  //! Calculate the v using resultant method
+  std::tuple<std::array<Float, 2>, uint> calcResultantV(
+      const std::array<Float, 10>& coefficients,
+      const Float u) const noexcept;
 
   //! Initialize
   void initialize(const Point3& vertex1,
@@ -116,19 +129,41 @@ class SmoothedMesh : public TriangleMesh
                   const Vector3& normal2,
                   const Vector3& normal3) noexcept;
 
-  //! Test line-surface intersection
-  bool testLineSurfaceIntersection(const Ray& ray,
+  //! Return the used smoothing method
+  static constexpr SmoothingMethod smoothingMethod() noexcept;
+
+  //! Solve the resultant equation
+  std::tuple<std::array<Float, 4>, uint> solveResultant(
+      const std::array<Float, 10>& coefficients) const noexcept;
+
+  //! Test ray-mesh intersection
+  bool testIntersectionUsingPencil(const Ray& ray,
                                    const std::array<Float, 10>& coefficients,
-                                   const Float x,
                                    IntersectionInfo* intersection) const noexcept;
 
+  //! Test ray-mesh intersection
+  bool testIntersectionUsingResultant(const Ray& ray,
+                                      const std::array<Float, 10>& coefficients,
+                                      IntersectionInfo* intersection) const noexcept;
+
+  //! Test ray-mesh intersection
+  bool testIntersectionWithoutSmoothing(
+      const Ray& ray,
+      IntersectionInfo* intersection) const noexcept;
+
   //! Test line-surface intersection
-  bool testLineSurfaceIntersection(const Ray& ray,
-                                   const std::array<Float, 10>& coefficients,
-                                   const Float alpha,
-                                   const Float beta,
-                                   const Float gamma,
-                                   IntersectionInfo* intersection) const noexcept;
+  bool testPencilLineIntersection(const Ray& ray,
+                                  const std::array<Float, 10>& coefficients,
+                                  const Float x,
+                                  IntersectionInfo* intersection) const noexcept;
+
+  //! Test line-surface intersection
+  bool testPencilLineIntersection(const Ray& ray,
+                                  const std::array<Float, 10>& coefficients,
+                                  const Float alpha,
+                                  const Float beta,
+                                  const Float gamma,
+                                  IntersectionInfo* intersection) const noexcept;
 
   //! Test ray-surface intersection
   bool testRaySurfaceIntersection(const Ray& ray,

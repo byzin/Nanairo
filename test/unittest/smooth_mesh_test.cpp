@@ -270,7 +270,7 @@ TEST(SmoothedMeshTest, CurveCoefficientsTest)
     const Float n = coefficients[7];
     const Float o = coefficients[8];
     const Float p = coefficients[9];
-    const Float x = mesh->calcX(coefficients);
+    const Float x = mesh->solvePencil(coefficients);
 
     const auto M = Matrix3x3{a * x + l,         0.5 * (d * x + o), 0.5 * p,
                              0.5 * (d * x + o), b * x + m,         0.5 * f * x,
