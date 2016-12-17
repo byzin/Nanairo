@@ -327,19 +327,21 @@ std::tuple<std::array<Float, 4>, uint> SmoothedMesh::solveResultant(
   const Float o = coefficients[8];
   const Float p = coefficients[9];
 
-  const Float a0 = a * b * o * o + a * a * m * m + d * d * l * m + b * b * l * l -
-                   (a * d * m * o + b * d * l * o + 2.0 * a * b * l * m);
-  const Float a1 = d * d * m * p -
-                  (b * d * o * p + a * f * m * o + b * f * l * o) +
-                  2.0 * (b * b * l * p + d * f * l * m - a * b * m * p);
-  const Float a2 = f * f * l * m + b * c * o * o + d * d * m * n + b * b * p * p -
-                   (b * f * o * p + b * d * n * o + c * d * m * o) +
-                   2.0 * (b * b * l * n + a * c * m * m + d * f * m * p -
-                          a * d * m * n - b * c * l * m);
-  const Float a3 = f * f * m * p - (b * f * n * o + c * f * m * o) +
-                   2.0 * (b * b * n * p + d * f * m * n - b * c * m * p);
-  const Float a4 = b * b * n * n + f * f * m * n + c * c * m * m -
-                   2.0 * b * c * m * n;
+  const Float a0 = (a * b * o * o) + (a * a * m * m) +
+                   (d * d * l * m) + (b * b * l * l) -
+                   ((a * d * m * o) + (b * d * l * o) + 2.0 * (a * b * l * m));
+  const Float a1 = (d * d * m * p) -
+                   ((b * d * o * p) + (a * f * m * o) + (b * f * l * o)) +
+                  2.0 * ((b * b * l * p) + (d * f * l * m) - (a * b * m * p));
+  const Float a2 = (f * f * l * m) + (b * c * o * o) +
+                   (d * d * m * n) + (b * b * p * p) -
+                   ((b * f * o * p) + (b * d * n * o) + (c * d * m * o)) +
+                   2.0 * ((b * b * l * n) + (a * c * m * m) + (d * f * m * p) -
+                          (a * b * m * n) - (b * c * l * m));
+  const Float a3 = (f * f * m * p) - ((b * f * n * o) + (c * f * m * o)) +
+                   2.0 * ((b * b * n * p) + (d * f * m * n) - (b * c * m * p));
+  const Float a4 = (b * b * n * n) + (f * f * m * n) + (c * c * m * m) -
+                   2.0 * (b * c * m * n);
   return zisc::solveQuartic(a4, a3, a2, a1, a0);
 }
 
