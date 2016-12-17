@@ -34,12 +34,12 @@ namespace nanairo  {
   \details
   No detailed.
   */
-FlatMesh::FlatMesh(const Point3& vertex0,
-                   const Point3& vertex1,
-                   const Point3& vertex2) noexcept :
-    vertex_{vertex0}
+FlatMesh::FlatMesh(const Point3& vertex1,
+                   const Point3& vertex2,
+                   const Point3& vertex3) noexcept :
+    vertex_{vertex1}
 {
-  initialize(vertex1, vertex2);
+  initialize(vertex2, vertex3);
 }
 
 /*!
@@ -111,8 +111,7 @@ bool FlatMesh::testIntersection(const Ray& ray,
     intersection->setReverseFace(0.0 < cos_theta);
     intersection->setNormal(normal_);
     intersection->setRayDistance(t);
-    const Vector3 barycentric{u, v, w};
-    intersection->setTextureCoordinate(textureCoordinate(barycentric));
+    intersection->setTextureCoordinate(textureCoordinate(u, v));
   }
   return is_hit;
 }
@@ -130,10 +129,9 @@ std::tuple<SampledPoint, Vector3, Point2> FlatMesh::samplePoint(Sampler& sampler
     v = 1.0 - v;
   }
   const auto point = vertex_ + u * edge_[0] + v * edge_[1];
-  const Vector3 barycentric{u, v, 1.0 - (u + v)};
   return std::make_tuple(SampledPoint{point, surfaceArea()},
                          normal_,
-                         textureCoordinate(barycentric));
+                         textureCoordinate(u, v));
 }
 
 /*!
@@ -159,10 +157,10 @@ void FlatMesh::transform(const Matrix4x4& matrix) noexcept
   \details
   No detailed.
   */
-void FlatMesh::initialize(const Point3& vertex1, const Point3& vertex2) noexcept
+void FlatMesh::initialize(const Point3& vertex2, const Point3& vertex3) noexcept
 {
-  edge_[0] = vertex1 - vertex_;
-  edge_[1] = vertex2 - vertex_;
+  edge_[0] = vertex2 - vertex_;
+  edge_[1] = vertex3 - vertex_;
   setNormal();
   setToLocalMatrix();
 }
@@ -183,9 +181,9 @@ void FlatMesh::setToLocalMatrix() noexcept
 {
   const auto& e1 = edge_[0];
   const auto& e2 = edge_[1];
-  const Vector3 v0 = *zisc::treatAs<const Vector3*>(&vertex_);
-  const Vector3 v1 = v0 + e1;
-  const Vector3 v2 = v0 + e2;
+  const Vector3 v1 = *zisc::treatAs<const Vector3*>(&vertex_);
+  const Vector3 v2 = v1 + e1;
+  const Vector3 v3 = v1 + e2;
   const Vector3 normal = zisc::cross(e1, e2);
 
   using zisc::abs;
@@ -199,9 +197,9 @@ void FlatMesh::setToLocalMatrix() noexcept
     to_local_(0, 2) = -e2[1] / normal[0];
     to_local_(1, 2) = e1[1] / normal[0];
     to_local_(2, 2) = normal[2] / normal[0];
-    to_local_(0, 3) = zisc::cross(v2, v0)[0] / normal[0];
-    to_local_(1, 3) = -zisc::cross(v1, v0)[0] / normal[0];
-    to_local_(2, 3) = -zisc::dot(v0, normal) / normal[0];
+    to_local_(0, 3) = zisc::cross(v3, v1)[0] / normal[0];
+    to_local_(1, 3) = -zisc::cross(v2, v1)[0] / normal[0];
+    to_local_(2, 3) = -zisc::dot(v1, normal) / normal[0];
   }
   else if (abs(normal[2]) < abs(normal[1])) {
     to_local_(0, 0) = -e2[2] / normal[1];
@@ -213,9 +211,9 @@ void FlatMesh::setToLocalMatrix() noexcept
     to_local_(0, 2) = e2[0] / normal[1];
     to_local_(1, 2) = -e1[0] / normal[1];
     to_local_(2, 2) = normal[2] / normal[1];
-    to_local_(0, 3) = zisc::cross(v2, v0)[1] / normal[1];
-    to_local_(1, 3) = -zisc::cross(v1, v0)[1] / normal[1];
-    to_local_(2, 3) = -zisc::dot(v0, normal) / normal[1];
+    to_local_(0, 3) = zisc::cross(v3, v1)[1] / normal[1];
+    to_local_(1, 3) = -zisc::cross(v2, v1)[1] / normal[1];
+    to_local_(2, 3) = -zisc::dot(v1, normal) / normal[1];
   }
   else if (0.0 < abs(normal[2])) {
     to_local_(0, 0) = e2[1] / normal[2];
@@ -227,9 +225,9 @@ void FlatMesh::setToLocalMatrix() noexcept
     to_local_(0, 2) = 0.0;
     to_local_(1, 2) = 0.0;
     to_local_(2, 2) = 1.0;
-    to_local_(0, 3) = zisc::cross(v2, v0)[2] / normal[2];
-    to_local_(1, 3) = -zisc::cross(v1, v0)[2] / normal[2];
-    to_local_(2, 3) = -zisc::dot(v0, normal) / normal[2];
+    to_local_(0, 3) = zisc::cross(v3, v1)[2] / normal[2];
+    to_local_(1, 3) = -zisc::cross(v2, v1)[2] / normal[2];
+    to_local_(2, 3) = -zisc::dot(v1, normal) / normal[2];
   }
   else {
     zisc::raiseError("Making world-to-local matrix failed.");

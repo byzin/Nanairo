@@ -42,12 +42,12 @@ class SmoothedMesh : public TriangleMesh
 {
  public:
   //! Initialize smoothed mesh
-  SmoothedMesh(const Point3& vertex0,
-               const Point3& vertex1,
+  SmoothedMesh(const Point3& vertex1,
                const Point3& vertex2,
-               const Vector3& normal0,
+               const Point3& vertex3,
                const Vector3& normal1,
-               const Vector3& normal2) noexcept;
+               const Vector3& normal2,
+               const Vector3& normal3) noexcept;
 
 
   //! Return the bounding box
@@ -73,12 +73,12 @@ class SmoothedMesh : public TriangleMesh
                        const Vector3* curvature) const noexcept;
 
   //! Initialize
-  void initialize(const Point3& vertex0,
-                  const Point3& vertex1,
+  void initialize(const Point3& vertex1,
                   const Point3& vertex2,
-                  const Vector3& normal0,
+                  const Point3& vertex3,
                   const Vector3& normal1,
-                  const Vector3& normal2) noexcept;
+                  const Vector3& normal2,
+                  const Vector3& normal3) noexcept;
 
   //! Return the normal
   Vector3 normal(const double eta, const double xi) const noexcept;

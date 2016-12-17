@@ -54,23 +54,24 @@ class TriangleMesh : public Shape
       const QJsonObject& settings) noexcept;
 
   //! Make a smoothed mesh
-  static UniquePointer<Shape> makeSmoothedMesh(const Point3& v0,
-                                               const Point3& v1,
-                                               const Point3& v2,
-                                               const Vector3& n0,
-                                               const Vector3& n1,
-                                               const Vector3& n2) noexcept;
+  static UniquePointer<Shape> makeSmoothedMesh(const Point3& vertex1,
+                                               const Point3& vertex2,
+                                               const Point3& vertex3,
+                                               const Vector3& normal1,
+                                               const Vector3& normal2,
+                                               const Vector3& normal3) noexcept;
 
   //! Set vertex texture coordinate
-  void setTextureCoordinate(const Point2& texture_coordinate0,
-                            const Point2& texture_coordinate1,
-                            const Point2& texture_coordinate2) noexcept;
+  void setTextureCoordinate(const Point2& texture_coordinate1,
+                            const Point2& texture_coordinate2,
+                            const Point2& texture_coordinate3) noexcept;
 
   //! Calculate the texture coordinate using Barycentric coordinate system
-  Point2 textureCoordinate(const Vector3& barycentric) const noexcept;
+  Point2 textureCoordinate(const Float u, const Float v) const noexcept;
 
  private:
-  Point2 texture_coordinate_[3];
+  Point2 texture_coordinate_;
+  Vector2 texture_edge_[2];
 };
 
 //! \} Core

@@ -36,8 +36,8 @@ namespace nanairo {
 
 // Calculate curvature parameter
 Vector3 calcCurvatureParameter(const Vector3& distance,
-                               const Vector3& normal0,
-                               const Vector3& normal1) noexcept;
+                               const Vector3& normal1,
+                               const Vector3& normal2) noexcept;
 
 // Calculate surface parameters
 bool calcSurfaceParameter(const std::array<Float, 5>& a,
@@ -51,14 +51,14 @@ bool calcSurfaceParameter(const std::array<Float, 5>& a,
   \details
   No detailed.
   */
-SmoothedMesh::SmoothedMesh(const Point3& vertex0,
-                           const Point3& vertex1,
+SmoothedMesh::SmoothedMesh(const Point3& vertex1,
                            const Point3& vertex2,
-                           const Vector3& normal0,
+                           const Point3& vertex3,
                            const Vector3& normal1,
-                           const Vector3& normal2) noexcept
+                           const Vector3& normal2,
+                           const Vector3& normal3) noexcept
 {
-  initialize(vertex0, vertex1, vertex2, normal0, normal1, normal2);
+  initialize(vertex1, vertex2, vertex3, normal1, normal2, normal3);
 }
 
 /*!
@@ -207,8 +207,9 @@ bool SmoothedMesh::testIntersection(const Ray& ray,
     intersection->setReverseFace(0.0 < cos_theta);
     intersection->setNormal(normal);
     intersection->setRayDistance(t);
-    const Vector3 barycentric{eta - xi, xi, 1.0 - eta};
-    intersection->setTextureCoordinate(textureCoordinate(barycentric));
+    const Float u = eta - xi,
+                v = xi;
+    intersection->setTextureCoordinate(textureCoordinate(u, v));
   }
   return is_hit;
 }
@@ -226,14 +227,13 @@ std::tuple<SampledPoint, Vector3, Point2> SmoothedMesh::samplePoint(
     u = 1.0 - u;
     v = 1.0 - v;
   }
-  const Float xi = v;
   const Float eta = u + v;
-  const Vector3 barycentric{u, v, 1.0 - (u + v)};
+  const Float xi = v;
   //! \todo Calculate the surface area of the smoothed mesh
   zisc::raiseError("Todo: calculate the surface area.");
   return std::make_tuple(SampledPoint{point(eta, xi), 0.0},
                          normal(eta, xi),
-                         textureCoordinate(barycentric));
+                         textureCoordinate(u, v));
 }
 
 /*!
@@ -251,22 +251,22 @@ void SmoothedMesh::transform(const Matrix4x4& matrix) noexcept
   \details
   No detailed.
   */
-void SmoothedMesh::initialize(const Point3& vertex0,
-                              const Point3& vertex1,
+void SmoothedMesh::initialize(const Point3& vertex1,
                               const Point3& vertex2,
-                              const Vector3& normal0,
+                              const Point3& vertex3,
                               const Vector3& normal1,
-                              const Vector3& normal2) noexcept
+                              const Vector3& normal2,
+                              const Vector3& normal3) noexcept
 {
-  const Vector3 distance[3] = {vertex1 - vertex0,
-                               vertex2 - vertex1,
-                               vertex2 - vertex0};
+  const Vector3 distance[3] = {vertex2 - vertex1,
+                               vertex3 - vertex2,
+                               vertex3 - vertex1};
   const Vector3 curvature[3] = {
-      calcCurvatureParameter(distance[0], normal0, normal1),
-      calcCurvatureParameter(distance[1], normal1, normal2),
-      calcCurvatureParameter(distance[2], normal0, normal2)};
+      calcCurvatureParameter(distance[0], normal1, normal2),
+      calcCurvatureParameter(distance[1], normal2, normal3),
+      calcCurvatureParameter(distance[2], normal1, normal3)};
 
-  c_[0] = *treatAs<const Vector3*>(&vertex0); // c00
+  c_[0] = *treatAs<const Vector3*>(&vertex1); // c00
   c_[1] = distance[0] - curvature[0]; // c10
   c_[2] = distance[1] + curvature[0] - curvature[2]; // c01
   c_[3] = curvature[2] - curvature[0] - curvature[1]; // c11

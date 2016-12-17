@@ -33,6 +33,7 @@ Version: 0.0.2
 * Smooth dielectric surface (Fresnel BSDF)
 * Rough conductor surface (GGX BRDF) [[thesis](https://hal.inria.fr/hal-00996995v2)]
 * Rough dielectric surface (GGX BSDF) [[thesis](https://hal.inria.fr/hal-00996995v2)]
+* Cloth surface (Microcylinder cloth BRDF) [[thesis](http://dl.acm.org/citation.cfm?id=2451240)]
 
 **Camera**
 
