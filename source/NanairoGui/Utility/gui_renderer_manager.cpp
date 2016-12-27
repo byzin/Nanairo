@@ -164,6 +164,13 @@ void GuiRendererManager::invokePreviewing() noexcept
 }
 
 /*!
+  */
+bool GuiRendererManager::isDebugMode() const noexcept
+{
+  return false;
+}
+
+/*!
   \details
   No detailed.
   */

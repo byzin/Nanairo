@@ -55,7 +55,7 @@ function(getNanairoKeywords nanairo_keyword_list)
           regularSampling "Regular sampling"
           randomSampling "Random sampling"
           stratifiedSampling "Stratified sampling"
-          lightsBasedImportanceSampling "Lights based importance sampling"
+          lightsBasedSampling "Lights based sampling"
       colorSpace "ColorSpace"
           sRgbD65 "sRGB (D65)"
           sRgbD50 "sRGB (D50)"

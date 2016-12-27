@@ -65,6 +65,9 @@ class GuiRendererManager : public QObject
   //! Invoke the previewing function of the renderer
   Q_INVOKABLE void invokePreviewing() noexcept;
 
+  //! Check if the GUI is debug mode
+  Q_INVOKABLE bool isDebugMode() const noexcept;
+
   //! Make the directory
   Q_INVOKABLE void makeDir(const QString& dir) const noexcept;
 
