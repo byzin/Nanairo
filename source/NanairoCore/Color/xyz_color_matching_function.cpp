@@ -1,5 +1,5 @@
 /*!
-  \file color_matching_function.cpp
+  \file xyz_color_matching_function.cpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda

@@ -21,6 +21,9 @@
 
 namespace nanairo {
 
+//! \addtogroup Core
+//! \{
+
 /*!
   */
 class MicrofacetGgx : public Microfacet
@@ -225,6 +228,8 @@ class SampledGgxNormal
         cos_mi_,
         cos_nm_;
 };
+
+//! \} Core
 
 } // namespace nanairo
 

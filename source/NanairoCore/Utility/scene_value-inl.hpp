@@ -1,5 +1,5 @@
 /*!
-  \file scene_node-inl.hpp
+  \file scene_value-inl.hpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda

@@ -4,9 +4,10 @@
 # Copyright (c) 2015-2016 Sho Ikeda
 # This software is released under the MIT License.
 # http://opensource.org/licenses/mit-license.php
-# 
+#
 
 set(__test_root__ ${CMAKE_CURRENT_LIST_DIR})
+
 
 # Build tests
 function(buildUnitTest)

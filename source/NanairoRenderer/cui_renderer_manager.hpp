@@ -26,6 +26,9 @@ namespace nanairo {
 // Forward declaration
 class RendererParameter;
 
+//! \addtogroup Core
+//! \{
+
 /*!
   \details
   No detailed.
@@ -61,6 +64,8 @@ class CuiRendererManager
   QJsonObject settings_;
   bool is_runnable_;
 };
+
+//! \} Core
 
 } // namespace nanairo
 

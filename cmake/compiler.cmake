@@ -6,6 +6,7 @@
 # http://opensource.org/licenses/mit-license.php
 #
 
+
 # Check compiler features
 function(checkCompilerHasCxx14Features target)
   set(compiler_feature_list
@@ -89,7 +90,7 @@ function(getCompilerOption cxx_compile_flags cxx_linker_flags cxx_definitions)
   set(definitions "")
   # libc++
   if(Z_CLANG_USES_LIBCXX)
-    if(Z_IS_CLANG)
+    if(Z_CLANG)
       list(APPEND compile_flags -stdlib=libc++)
       list(APPEND linker_flags -stdlib=libc++)
     else()
@@ -98,7 +99,7 @@ function(getCompilerOption cxx_compile_flags cxx_linker_flags cxx_definitions)
   endif()
   # Sanitizer
   if(Z_ENABLE_SANITIZER)
-    if(Z_IS_CLANG OR Z_IS_GCC)
+    if(Z_CLANG OR Z_GCC)
       list(APPEND compile_flags -fsanitize=address -fno-omit-frame-pointer)
       list(APPEND linker_flags -fsanitize=address)
     else()
@@ -118,19 +119,19 @@ function(getCxxWarningOption compiler_warning_flags)
   set(environment "${CMAKE_SYSTEM_NAME} ${CMAKE_CXX_COMPILER_ID} ${compiler_version}")
 
   # Clang
-  if(Z_IS_VISUAL_STUDIO AND Z_IS_CLANG)
+  if(Z_VISUAL_STUDIO AND Z_CLANG)
     set(warning_flags /W4
                       -Wno-microsoft-enum-value
                       -Qunused-arguments
                       )
-  elseif(Z_IS_CLANG)
+  elseif(Z_CLANG)
     set(warning_flags -Werror
                       -Weverything
                       -Wno-c++98-compat
                       -Wno-c++98-compat-pedantic
                       )
   # GCC
-  elseif(Z_IS_GCC)
+  elseif(Z_GCC)
     set(warning_flags -pedantic
                       -Wall
                       -Wextra

@@ -4,7 +4,8 @@
 # Copyright (c) 2015-2016 Sho Ikeda
 # This software is released under the MIT License.
 # http://opensource.org/licenses/mit-license.php
-# 
+#
+
 
 # Retrieve Nanairo version from README.md
 function(retrieveNanairoVersion version_major version_minor version_patch)
@@ -63,14 +64,14 @@ function(findNanairoSourceFiles root_path nanairo_source_files)
 endfunction(findNanairoSourceFiles)
 
 
-#
+# Get the warning options of the compiler
 function(getNanairoWarningOption nanairo_warning_flags)
-  if(Z_IS_VISUAL_STUDIO)
+  if(Z_VISUAL_STUDIO)
     set(warning_flags -Wno-microsoft-enum-value
                       -Qunused-arguments
                       -Wno-sign-compare
                       )
-  elseif(Z_IS_CLANG)
+  elseif(Z_CLANG)
     set(warning_flags -Wno-padded
                       -Wno-covered-switch-default
                       -Wno-float-equal
@@ -80,7 +81,7 @@ function(getNanairoWarningOption nanairo_warning_flags)
                       -Wno-weak-vtables
                       -Wno-undefined-reinterpret-cast
                       )
-  elseif(Z_IS_GCC)
+  elseif(Z_GCC)
     set(warning_flags -Wno-sign-conversion
                       -Wno-strict-overflow
                       -Wno-sign-compare
@@ -111,7 +112,7 @@ function(buildNanairo)
   include(${PROJECT_SOURCE_DIR}/source/NanairoGui/config.cmake)
   getNanairoGui(gui_source_files gui_definitions)
   # Build Nanairo
-  if(Z_IS_WINDOWS)
+  if(Z_WINDOWS)
     set(executable_options WIN32)
   endif()
   add_executable(${PROJECT_NAME} ${executable_options}

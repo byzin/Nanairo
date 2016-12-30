@@ -1,28 +1,28 @@
 // Module
 
 /*!
-  \defgroup Common
+  \defgroup Common NanairoCommon
   \brief Common classes and functions of Nanairo
   \details
   No detailed.
   */
 
 /*!
-  \defgroup Core
+  \defgroup Core NanairoCore
   \brief Core classes and functions of Nanairo
   \details
   No detailed.
   */
 
 /*!
-  \defgroup Renderer
+  \defgroup Renderer NanairoRenderer
   \brief Renderer classes and functions of Nanairo
   \details
   No detailed.
   */
 
 /*!
-  \defgroup Gui
+  \defgroup Gui NanairoGui
   \brief GUI classes and functions of Nanairo
   \details
   No detailed.

@@ -20,6 +20,9 @@
 
 namespace nanairo {
 
+//! \addtogroup Core
+//! \{
+
 /*!
   */
 class Microcylinder
@@ -262,6 +265,8 @@ class SampledMicrocylinderDir
   Float theta_o_;
   Float phi_o_;
 };
+
+//! \} Core
 
 } // namespace nanairo
 

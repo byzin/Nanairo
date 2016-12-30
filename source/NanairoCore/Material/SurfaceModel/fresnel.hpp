@@ -24,6 +24,9 @@ namespace nanairo {
 // Forward declaration
 template <uint> class SampledSpectra;
 
+//! \addtogroup Core
+//! \{
+
 /*!
   */
 class Fresnel
@@ -58,6 +61,8 @@ class Fresnel
   //! Solve the fresnel dielectric equation
   static Float evalDielectricEquation(const Float cos_ni, const Float g) noexcept;
 };
+
+//! \} Core
 
 } // namespace nanairo
 

@@ -6,6 +6,7 @@
 # http://opensource.org/licenses/mit-license.php
 # 
 
+
 # Gtt Nanairo keywords
 function(getNanairoKeywords nanairo_keyword_list)
   set(keyword_list 
@@ -167,7 +168,7 @@ function(getNanairoKeywords nanairo_keyword_list)
               degreeUnit "Degree"
               radianUnit "Radian"
       )
-  if(Z_IS_MAC)
+  if(Z_MAC)
     list(APPEND nanairo_keyword_list ctrlKey "Meta")
   else()
     list(APPEND nanairo_keyword_list ctrlKey "Ctrl")

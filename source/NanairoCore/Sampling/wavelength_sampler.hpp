@@ -19,7 +19,7 @@ namespace nanairo {
 class Sampler;
 class World;
 
-//! \addgroup Core
+//! \addtogroup Core
 //! \{
 
 /*!

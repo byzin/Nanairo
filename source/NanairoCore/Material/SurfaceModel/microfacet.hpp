@@ -20,6 +20,9 @@ namespace nanairo {
 class Sampler;
 class SampledDirection;
 
+//! \addtogroup Core
+//! \{
+
 /*!
   */
 class Microfacet
@@ -56,6 +59,8 @@ class Microfacet
                                              const Float cos_theta_mo,
                                              const Float n) noexcept;
 };
+
+//! \} Core
 
 } // namespace nanairo
 

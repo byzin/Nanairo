@@ -24,6 +24,9 @@ namespace nanairo {
 class BvhNode;
 class Object;
 
+//! \addtogroup Core
+//! \{
+
 /*!
   \details
   No detailed.
@@ -112,6 +115,8 @@ using ClusterIterator = std::vector<AgglomerativeCluster>::iterator;
 //! Calculate the distance between a and b
 Float getClusterDistance(const AgglomerativeCluster& a, 
                          const AgglomerativeCluster& b) noexcept;
+
+//! \} Core
 
 } // namespace nanairo
 

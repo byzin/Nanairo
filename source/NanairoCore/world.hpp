@@ -34,6 +34,9 @@ namespace nanairo {
 class Bvh;
 class System;
 
+//! \addtogroup Core
+//! \{
+
 /*!
  \brief Rendering world
  \details
@@ -109,6 +112,8 @@ class World
   UniquePointer<Bvh> bvh_;
   UniquePointer<LightSourceSampler> light_source_sampler_;
 };
+
+//! \} Core
 
 } // namespace nanairo
 

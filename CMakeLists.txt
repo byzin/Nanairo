@@ -8,13 +8,14 @@
 
 cmake_minimum_required(VERSION 3.4)
 
-## Set project information
+# Set project information
 project(Nanairo LANGUAGES C CXX)
 include(${PROJECT_SOURCE_DIR}/cmake/project.cmake)
 setNanairoProperties()
-message(STATUS "## Nanairo version: ${PROJECT_VERSION}")
+message(STATUS "Nanairo version: ${PROJECT_VERSION}")
 
-# Debug info
+# Configure build types
+set(CMAKE_CONFIGURATION_TYPES "Debug" "RelWithDebInfo" "Release")
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif()

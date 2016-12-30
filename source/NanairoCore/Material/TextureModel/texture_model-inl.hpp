@@ -1,5 +1,5 @@
 /*!
-  \file texture-inl.hpp
+  \file texture_model-inl.hpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda

@@ -1,5 +1,5 @@
 /*!
-  \file surface_scattering_model.cpp
+  \file surface_model.cpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda

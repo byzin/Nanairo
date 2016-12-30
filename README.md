@@ -76,11 +76,11 @@ Please see [wiki](https://github.com/byzin/Nanairo/wiki/Home "NanairoWiki").
 ### Test environments ###
 Building step is tested in the following environments  
 
-* OS X Mavericks + Apple Clang 8.0 + Qt 5.7
-* Ubuntu 14.04 + GCC 5.3 + Qt 5.7
-* Ubuntu 14.04 + Clang 3.9 + Qt 5.7
-* Windows 8 (64bit) + MinGW GCC 5.3 + Qt 5.6
-* Windows 8 (64bit) + Clang 3.9 with MSVC (Visual Studio 2015) + Qt 5.7
+* OS X Mavericks + Apple Clang 8.0 + Qt 5.7 + CMake 3.7
+* Ubuntu 14.04 + GCC 5.3 + Qt 5.7 + CMake 3.7
+* Ubuntu 14.04 + Clang 3.9 + Qt 5.7 + CMake 3.7
+* Windows 8 (64bit) + MinGW GCC 5.3 + Qt 5.6 + CMake 3.6
+* Windows 8 (64bit) + Clang 3.9 with MSVC (Visual Studio 2015) + Qt 5.7 + CMake 3.6
 
 ### Download source code ###
 
@@ -109,13 +109,13 @@ Next, we generate a Makefile using cmake.
 
 GCC  
 ```
-% CXX=g++ cmake -DCMAKE_BUILD_TYPE=Release ..
+% CC=gcc CXX=g++ cmake -DCMAKE_BUILD_TYPE=Release ..
 % cmake --build .
 ```
 
 Clang  
 ```
-% CXX=clang++ cmake -DCMAKE_BUILD_TYPE=Release -DZ_CLANG_USES_LIBCXX=ON ..
+% CC=clang CXX=clang++ cmake -DCMAKE_BUILD_TYPE=Release -DZ_CLANG_USES_LIBCXX=ON ..
 % cmake --build .
 ```
 
@@ -123,7 +123,7 @@ Clang
 
 Visual Studio 2015 64bit
 ```
-% cmake -G"Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE=Release -TLLVM-vs2014 ..
+% cmake -G"Visual Studio 14 2015 Win64" -TLLVM-vs2014 -DCMAKE_BUILD_TYPE=Release ..
 % cmake --build . --config Release
 ```
 

@@ -6,6 +6,7 @@
 # http://opensource.org/licenses/mit-license.php
 # 
 
+
 # Set boolean value option
 macro(setBooleanOption variable value doc_string)
   set(${variable} ${value} CACHE BOOL ${doc_string})
@@ -29,97 +30,97 @@ endfunction(restrictBuildDirectory)
 
 # Check development environment
 function(detectEnvironment environment_definitions)
+  set(definitions "")
+
   # Detect Platform
   if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    set(Z_IS_WINDOWS ON PARENT_SCOPE)
-    set(Z_PLATFORM_DEFINITION Z_WINDOWS)
+    set(Z_WINDOWS ON PARENT_SCOPE)
+    set(platform_definition Z_WINDOWS)
   elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    set(Z_IS_LINUX ON PARENT_SCOPE)
-    set(Z_PLATFORM_DEFINITION Z_LINUX)
+    set(Z_LINUX ON PARENT_SCOPE)
+    set(platform_definition Z_LINUX)
   elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    set(Z_IS_MAC ON PARENT_SCOPE)
-    set(Z_PLATFORM_DEFINITION Z_MAC)
+    set(Z_MAC ON PARENT_SCOPE)
+    set(platform_definition Z_MAC)
   else()
     set(unsupported_platform ON)
   endif()
-  list(APPEND definitions ${Z_PLATFORM_DEFINITION})
-
+  list(APPEND definitions ${platform_definition})
   if(unsupported_platform)
     message(WARNING "Unsupported platform: ${CMAKE_SYSTEM_NAME}")
   else()
-    message(STATUS "## Platform: ${CMAKE_SYSTEM_NAME}")
+    message(STATUS "Platform: ${CMAKE_SYSTEM_NAME}")
   endif()
 
   # Detect C++ compiler
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(Z_IS_GCC ON PARENT_SCOPE)
-    set(Z_COMPILER_DEFINITION Z_GCC)
+    set(Z_GCC ON PARENT_SCOPE)
+    set(compiler_definition Z_GCC)
   elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR 
          CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    set(Z_IS_CLANG ON PARENT_SCOPE)
-    set(Z_COMPILER_DEFINITION Z_CLANG)
+    set(Z_CLANG ON PARENT_SCOPE)
+    set(compiler_definition Z_CLANG)
   else()
     set(unsupported_compiler ON)
   endif()
-  list(APPEND definitions ${Z_COMPILER_DEFINITION})
-
+  list(APPEND definitions ${compiler_definition})
   if(unsupported_compiler)
     message(WARNING "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
   else()
-    message(STATUS "## Compiler: ${CMAKE_CXX_COMPILER_ID}")
+    message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID}")
   endif()
 
   # Detect environment
   if(CMAKE_GENERATOR MATCHES ".*Makefiles")
-    set(Z_IS_MAKEFILE ON PARENT_SCOPE)
-    set(Z_GENERATOR_DEFINITION Z_MAKEFILE)
+    set(Z_MAKEFILE ON PARENT_SCOPE)
+    set(generator_definition Z_MAKEFILE)
   elseif(CMAKE_GENERATOR MATCHES "Visual Studio.*")
-    set(Z_IS_VISUAL_STUDIO ON PARENT_SCOPE)
-    set(Z_GENERATOR_DEFINITION Z_VISUAL_STUDIO)
+    set(Z_VISUAL_STUDIO ON PARENT_SCOPE)
+    set(generator_definition Z_VISUAL_STUDIO)
   else()
     set(unsupported_generator ON)
   endif()
-  list(APPEND definitions ${Z_GENERATOR_DEFINITION})
-
+  list(APPEND definitions ${generator_definition})
   if(unsupported_generator)
     message(WARNING "Unsupported generator: ${CMAKE_GENERATOR}")
   else()
-    message(STATUS "## Generator: ${CMAKE_GENERATOR}")
+    message(STATUS "Generator: ${CMAKE_GENERATOR}")
   endif()
 
 
   # Detect build type
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(Z_IS_DEBUG_BUILD ON PARENT_SCOPE)
-    set(Z_BUILD_TYPE_DEFINITION Z_DEBUG_BUILD)
+    set(Z_DEBUG_MODE ON PARENT_SCOPE)
+    set(build_mode_definition Z_DEBUG_MODE)
   elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-    set(Z_IS_DEBUG_BUILD ON PARENT_SCOPE)
-    set(Z_IS_RELEASE_BUILD ON PARENT_SCOPE)
-    set(Z_BUILD_TYPE_DEFINITION DZ_DEBUG_BUILD Z_RELEASE_BUILD)
+    set(Z_DEBUG_MODE ON PARENT_SCOPE)
+    set(Z_RELEASE_MODE ON PARENT_SCOPE)
+    set(build_mode_definition Z_DEBUG_MODE Z_RELEASE_MODE)
   elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(Z_IS_RELEASE_BUILD ON PARENT_SCOPE)
-    set(Z_BUILD_TYPE_DEFINITION Z_RELEASE_BUILD)
+    set(Z_RELEASE_MODE ON PARENT_SCOPE)
+    set(build_mode_definition Z_RELEASE_MODE)
   else()
     set(unsupported_build_type ON)
   endif()
-  list(APPEND definitions ${Z_BUILD_TYPE_DEFINITION})
-
+  list(APPEND definitions ${build_mode_definition})
   if(unsupported_build_type)
     message(WARNING "Unsupported build type: ${CMAKE_BUILD_TYPE}")
   else()
-    message(STATUS "## Build type: ${CMAKE_BUILD_TYPE}")
+    message(STATUS "Build mode: ${CMAKE_BUILD_TYPE}")
   endif()
 
+
+  # Output variable
   set(${environment_definitions} ${definitions} PARENT_SCOPE)
 endfunction(detectEnvironment)
 
 
 #
 function(setIncludeWhatYouUse target)
-  find_program(iwyu include-what-you-use)
+  find_program(iwyu include_what_you_use)
   if(iwyu)
-    set_target_properties(${target} 
-                          PROPERTIES CXX_INCLUDE_WHAT_YOU_USE include-what-you-use)
+    set_target_properties(${target}
+                          PROPERTIES CXX_INCLUDE_WHAT_YOU_USE include_what_you_use)
   else()
     message(WARNING "${target}: Could not find include-what-you-use.")
   endif()

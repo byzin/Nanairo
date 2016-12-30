@@ -26,6 +26,9 @@ class Film;
 class System;
 class World;
 
+//! \addtogroup Core
+//! \{
+
 /*!
   \brief Rendering scene
   \details
@@ -62,6 +65,8 @@ class Scene
   UniquePointer<Film> film_;
   UniquePointer<World> world_;
 };
+
+//! \} Core
 
 } // namespace nanairo
 
