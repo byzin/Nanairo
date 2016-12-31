@@ -114,6 +114,8 @@ function(buildNanairo)
   # Build Nanairo
   if(Z_WINDOWS)
     set(executable_options WIN32)
+  elseif(Z_MAC)
+    set(executable_options MACOSX_BUNDLE)
   endif()
   add_executable(${PROJECT_NAME} ${executable_options}
                                  ${PROJECT_SOURCE_DIR}/source/main.cpp

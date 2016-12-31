@@ -26,6 +26,12 @@ macro(findQt5 __qt_version__)
     list(APPEND __libraries__ ${Qt5${module}_LIBRARIES})
     list(APPEND __compile_flags__ ${Qt5${module}_EXECUTABLE_COMPILE_FLAGS})
     list(APPEND __definitions__ ${Qt5${module}_COMPILE_DEFINITIONS})
+    # Get the Qt library path
+    if(module STREQUAL "Core")
+      get_target_property(__qt_core_path__ Qt5::Core LOCATION)
+      get_filename_component(qt5_library_path ${__qt_core_path__} DIRECTORY)
+      get_filename_component(qt5_library_path ${qt5_library_path} DIRECTORY)
+    endif()
   endforeach(module)
 
 

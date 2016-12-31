@@ -6,13 +6,6 @@
 # http://opensource.org/licenses/mit-license.php
 # 
 
-#
-macro(setNanairoPackPropertiesForMac)
-  set(CPACK_BUNDLE_NAME ${PROJECT_NAME})
-  set(CPACK_BUNDLE_PLIST ${PROJECT_BINARY_DIR}/packaging/${PROJECT_NAME}.plist)
-  set(CPACK_BUNDLE_ICON ${PROJECT_BINARY_DIR}/packaging/${PROJECT_NAME}.icns)
-  set(CPACK_BUNDLE_STARTUP_COMMAND ${PROJECT_BINARY_DIR}/packaging/exec_script.sh)
-endmacro(setNanairoPackPropertiesForMac)
 
 #
 macro(setNanairoPackProperties)
@@ -49,11 +42,8 @@ macro(setNanairoPackProperties)
 
   if(Z_WINDOWS)
     set(CPACK_GENERATOR "ZIP")
-  elseif(Z_MAC)
-    set(CPACK_GENERATOR "Bundle")
-    setNanairoPackPropertiesForMac()
   else()
-    set(CPACK_GENERATOR "TGZ")
+    set(CPACK_GENERATOR "TXZ")
   endif()
 endmacro(setNanairoPackProperties)
 
@@ -70,20 +60,27 @@ endfunction(setNanairoPackInfoForLinux)
 
 #
 function(setNanairoPackInfoForMac)
-  message(WARNING "Packaging function isn't implemented.")
-  configure_file(${PROJECT_SOURCE_DIR}/packaging/mac_plist.in
-                 ${PROJECT_BINARY_DIR}/packaging/${PROJECT_NAME}.plist
-                 @ONLY)
-  configure_file(${PROJECT_SOURCE_DIR}/packaging/icon.icns
-                 ${PROJECT_BINARY_DIR}/packaging/${PROJECT_NAME}.icns
-                 COPYONLY)
+  # Properties
+  set_target_properties(${PROJECT_NAME} PROPERTIES
+                            MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}"
+                            MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+                            MACOSX_BUNDLE_COPYRIGHT "© 2016 Sho Ikeda"
+                            MACOSX_BUNDLE_GUI_IDENTIFIER "com.ShoIkeda.${PROJECT_NAME}"
+                            MACOSX_BUNDLE_ICON_FILE "${PROJECT_NAME}.icns"
+                            MACOSX_BUNDLE_INFO_STRING "${PROJECT_NAME} ${PROJECT_VERSION}"
+                            MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_VERSION}"
+                            MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}")
+
+  # Execute install script
+  set(body_exec_name "NanairoRender")
   configure_file(${PROJECT_SOURCE_DIR}/packaging/mac_exec_script.sh.in
-                 ${PROJECT_BINARY_DIR}/packaging/exec_script.sh
+                 ${PROJECT_BINARY_DIR}/packaging/${PROJECT_NAME}
                  @ONLY)
   configure_file(${PROJECT_SOURCE_DIR}/packaging/mac_install_script.cmake.in
                  ${PROJECT_BINARY_DIR}/packaging/install_script.cmake
                  @ONLY)
-  install(SCRIPT ${PROJECT_BINARY_DIR}/packaging/install_script.cmake)
+  install(SCRIPT ${PROJECT_BINARY_DIR}/packaging/install_script.cmake
+          COMPONENT ${PROJECT_NAME})
 endfunction(setNanairoPackInfoForMac)
 
 
@@ -94,6 +91,7 @@ function(setNanairoPackInfoForWindows)
                  @ONLY)
   install(PROGRAMS ${PROJECT_BINARY_DIR}/packaging/exec_script.cmd
           DESTINATION .
+export DYLD_LIBRARY_PATH=${ZContentsRootPath}/Frameworks:${DYLD_LIBRARY_PATH}
           RENAME ${PROJECT_NAME}.cmd
           COMPONENT ${PROJECT_NAME})
   configure_file(${PROJECT_SOURCE_DIR}/packaging/windows_install_script.cmake.in
@@ -106,9 +104,9 @@ endfunction(setNanairoPackInfoForWindows)
 #
 function(setCommonNanairoPackInfo)
   install(TARGETS ${PROJECT_NAME}
-          DESTINATION bin
+          DESTINATION .
           COMPONENT ${PROJECT_NAME})
-  install(DIRECTORY resources
+  install(DIRECTORY ${PROJECT_BINARY_DIR}/resources
           DESTINATION .
           COMPONENT ${PROJECT_NAME})
 endfunction(setCommonNanairoPackInfo)
@@ -117,7 +115,7 @@ endfunction(setCommonNanairoPackInfo)
 ## Set the packaging information
 function(setupPackInfo)
   # Initialize cpack
-  set(CPACK_BUNDLE_NAME "Test")
+  set(CPACK_BUNDLE_NAME "${CMAKE_PROJECT_NAME}")
   include(InstallRequiredSystemLibraries)
   setNanairoPackProperties()
   include(CPack)
