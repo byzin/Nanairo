@@ -4,7 +4,7 @@
 # Copyright (c) 2015-2016 Sho Ikeda
 # This software is released under the MIT License.
 # http://opensource.org/licenses/mit-license.php
-# 
+#
 
 
 #
@@ -86,18 +86,15 @@ endfunction(setNanairoPackInfoForMac)
 
 #
 function(setNanairoPackInfoForWindows)
+  # Execute install script
   configure_file(${PROJECT_SOURCE_DIR}/packaging/windows_exec_script.cmd.in
-                 ${PROJECT_BINARY_DIR}/packaging/exec_script.cmd
+                 ${PROJECT_BINARY_DIR}/packaging/${PROJECT_NAME}.cmd
                  @ONLY)
-  install(PROGRAMS ${PROJECT_BINARY_DIR}/packaging/exec_script.cmd
-          DESTINATION .
-export DYLD_LIBRARY_PATH=${ZContentsRootPath}/Frameworks:${DYLD_LIBRARY_PATH}
-          RENAME ${PROJECT_NAME}.cmd
-          COMPONENT ${PROJECT_NAME})
   configure_file(${PROJECT_SOURCE_DIR}/packaging/windows_install_script.cmake.in
                  ${PROJECT_BINARY_DIR}/packaging/install_script.cmake
                  @ONLY)
-  install(SCRIPT ${PROJECT_BINARY_DIR}/packaging/install_script.cmake)
+  install(SCRIPT ${PROJECT_BINARY_DIR}/packaging/install_script.cmake
+          COMPONENT ${PROJECT_NAME})
 endfunction(setNanairoPackInfoForWindows)
 
 

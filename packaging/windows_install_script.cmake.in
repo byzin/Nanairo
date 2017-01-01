@@ -12,25 +12,42 @@ set(__build_dir__ @PROJECT_BINARY_DIR@)
 set(__project_name__ @PROJECT_NAME@)
 set(__install_dir__ ${CMAKE_INSTALL_PREFIX})
 
+
 #
-function(installLibraryDependencies)
+function(installFiles)
   set(library_dir ${__install_dir__}/bin)
-  set(exe_path ${library_dir}/${__project_name__}.exe)
   # Deploy Qt libraries
   message("Deploying Qt libraries")
+  file(MAKE_DIRECTORY ${library_dir})
   execute_process(COMMAND windeployqt.exe
+                      --dir bin
                       --release
                       --no-translations
                       --compiler-runtime
-                      --qmldir ${__build_dir__}/resource_code
+                      --qmldir ${__project_root__}/source/NanairoGui
                       ${__project_name__}.exe
-                  WORKING_DIRECTORY ${library_dir})
+                  WORKING_DIRECTORY ${__install_dir__})
 
   # Deploy other libraries
   message("Deploying other libraries")
   include(${__project_root__}/packaging/dependencies.cmake)
-  deployUnresolvedDependencies(${exe_path} ${library_dir})
-endfunction(installLibraryDependencies)
+  set(exe_path ${__install_dir__}/${__project_name__}.exe)
+  deployUnresolvedDependencies(${exe_path} ${library_dir} "")
+  # Move exe file
+  file(RENAME ${__install_dir__}/${__project_name__}.exe
+              ${library_dir}/${__project_name__}.exe)
+  # Install start script
+  file(INSTALL ${__build_dir__}/packaging/${__project_name__}.cmd
+       DESTINATION ${__install_dir__}
+       FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                        GROUP_READ GROUP_EXECUTE
+                        WORLD_READ WORLD_EXECUTE)
+  # Remove vcredist
+  file(GLOB_RECURSE vcredist_files ${__install_dir__}/*/vcredist*)
+  if(NOT vcredist_files STREQUAL "")
+    file(REMOVE ${vcredist_files})
+  endif()
+endfunction(installFiles)
 
 # Main
-installLibraryDependencies()
+installFiles()

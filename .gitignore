@@ -207,8 +207,9 @@
 !packaging/*.cmake
 !packaging/*.cmake.in
 !packaging/icon.icns
+!packaging/icon.ico
 !packaging/icon.pxm
-!packaging/mac_plist.in
+!packaging/icon.rc
 
 # Build directories
 !/build/

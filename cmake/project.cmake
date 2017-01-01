@@ -112,13 +112,15 @@ function(buildNanairo)
   include(${PROJECT_SOURCE_DIR}/source/NanairoGui/config.cmake)
   getNanairoGui(gui_source_files gui_definitions)
   # Build Nanairo
+  set(nanairo_source_files ${PROJECT_SOURCE_DIR}/source/main.cpp)
   if(Z_WINDOWS)
     set(executable_options WIN32)
+    list(APPEND nanairo_source_files ${PROJECT_SOURCE_DIR}/packaging/icon.rc)
   elseif(Z_MAC)
     set(executable_options MACOSX_BUNDLE)
   endif()
   add_executable(${PROJECT_NAME} ${executable_options}
-                                 ${PROJECT_SOURCE_DIR}/source/main.cpp
+                                 ${nanairo_source_files}
                                  ${common_source_files}
                                  ${core_source_files}
                                  ${renderer_source_files}

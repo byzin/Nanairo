@@ -79,7 +79,7 @@ Building step is tested in the following environments
 * OS X Mavericks + Apple Clang 8.0 + Qt 5.7 + CMake 3.7
 * Ubuntu 14.04 + GCC 5.3 + Qt 5.7 + CMake 3.7
 * Ubuntu 14.04 + Clang 3.9 + Qt 5.7 + CMake 3.7
-* Windows 8 (64bit) + MinGW GCC 5.3 + Qt 5.6 + CMake 3.6
+* Windows 8 (64bit) + MinGW GCC 6.2 + Qt 5.6 + CMake 3.7
 * Windows 8 (64bit) + Clang 3.9 with MSVC (Visual Studio 2015) + Qt 5.7 + CMake 3.6
 
 ### Download source code ###
