@@ -32,7 +32,7 @@ function(installFiles)
   message("Deploying other libraries")
   include(${__project_root__}/packaging/dependencies.cmake)
   set(exe_path ${__install_dir__}/${__project_name__}.exe)
-  deployUnresolvedDependencies(${exe_path} ${library_dir} "")
+  deployUnresolvedDependencies(${exe_path} ${library_dir} "" "")
   # Move exe file
   file(RENAME ${__install_dir__}/${__project_name__}.exe
               ${library_dir}/${__project_name__}.exe)

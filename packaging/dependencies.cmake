@@ -8,9 +8,9 @@
 
 
 #
-function(deployUnresolvedDependencies target_path dest_dir rpath)
+function(deployUnresolvedDependencies target_path dest_dir exepath rpath)
   include(GetPrerequisites)
-  get_prerequisites(${target_path} dependencies 1 1 "" "" "${rpath}")
+  get_prerequisites(${target_path} dependencies 1 1 "${exepath}" "" "${rpath}")
   foreach(dependency ${dependencies})
     gp_resolve_item("${target_path}" "${dependency}" "" "" resolved_file_path)
 

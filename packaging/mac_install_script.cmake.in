@@ -10,7 +10,6 @@ set(__package_script_dir__ ${CMAKE_CURRENT_LIST_DIR})
 set(__project_root__ @PROJECT_SOURCE_DIR@)
 set(__build_dir__ @PROJECT_BINARY_DIR@)
 set(__project_name__ @PROJECT_NAME@)
-set(__qt_lib_dir__ @qt5_library_path@)
 set(__install_dir__ ${CMAKE_INSTALL_PREFIX})
 set(__app_contents_path__ ${__install_dir__}/${__project_name__}.app/Contents)
 set(__body_exec_name__ @body_exec_name@)
@@ -28,7 +27,8 @@ function(installFiles)
   file(MAKE_DIRECTORY ${library_dir})
   deployUnresolvedDependencies(${__app_contents_path__}/MacOS/${__project_name__}
                                ${library_dir}
-                               ${__qt_lib_dir__})
+                               ${__app_contents_path__}/Frameworks
+                               ${__app_contents_path__}/Frameworks)
 
   # Deploy resources
   # Install icon
