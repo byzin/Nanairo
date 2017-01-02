@@ -109,7 +109,8 @@ class MicrofacetGgx : public Microfacet
                           const Float cos_nm) noexcept;
 
 
-  static constexpr GgxMethodType kUsedType = GgxMethodType::kSmith;
+//  static constexpr GgxMethodType kUsedType = GgxMethodType::kSmith;
+  static constexpr GgxMethodType kUsedType = GgxMethodType::kVCavity;
 
  private:
   template <GgxMethodType kMethod>
@@ -214,6 +215,10 @@ class SampledGgxNormal
     //! Stretch the microfacet normal
     static Vector3 smithStretch(const Float roughness,
                                 const Vector3& vin) noexcept;
+
+    //! Sample a microfacet normal
+    static Vector3 vcavitySampleMicrofacetNormal(const Float roughness,
+                                                 Sampler& sampler) noexcept;
   };
 
   // Methods

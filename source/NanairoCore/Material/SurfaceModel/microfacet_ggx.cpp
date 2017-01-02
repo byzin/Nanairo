@@ -275,6 +275,46 @@ Vector3 SampledGgxNormal::GgxMethod<kMethod>::smithStretch(const Float roughness
 }
 
 /*!
+  \details
+  No detailed.
+  */
+template <>
+Vector3 SampledGgxNormal::VCavity::sampleMicrofacetNormal(const Float roughness,
+                                                          const Vector3& vin,
+                                                          Sampler& sampler) noexcept
+{
+  const Vector3 m_normal1 = vcavitySampleMicrofacetNormal(roughness, sampler);
+  const Vector3 m_normal2{-m_normal1[0], -m_normal1[1], m_normal1[2]};
+  const Float cos_m1 = zisc::clamp(zisc::dot(m_normal1, vin), 0.0, 1.0);
+  const Float cos_m2 = zisc::clamp(zisc::dot(m_normal2, vin), 0.0, 1.0);
+  const Float u = sampler.sample(0.0, 1.0);
+  const auto& m_normal = ((cos_m2 / (cos_m1 + cos_m2)) < u)
+      ? m_normal1
+      : m_normal2;
+  return m_normal;
+}
+
+/*!
+  */
+template <MicrofacetGgx::GgxMethodType kMethod> inline
+Vector3 SampledGgxNormal::GgxMethod<kMethod>::vcavitySampleMicrofacetNormal(
+    const Float roughness,
+    Sampler& sampler) noexcept
+{
+  const Float u1 = sampler.sample(0.0, 1.0);
+  const Float u2 = sampler.sample(0.0, 1.0);
+
+  const Float theta = zisc::atan(roughness * zisc::sqrt(u1 / (1.0 - u1)));
+  const Float phi = 2.0 * zisc::kPi<Float> * (u2 - 0.5);
+
+  const Vector3 m_normal{zisc::sin(theta) * zisc::cos(phi),
+                         zisc::sin(theta) * zisc::sin(phi),
+                         zisc::cos(theta)};
+  ZISC_ASSERT(isUnitVector(m_normal), "The microfacet normal isn't unit vector.");
+  return m_normal;
+}
+
+/*!
   */
 inline
 Vector3 SampledGgxNormal::sampleMicrofacetNormal(const Float roughness,

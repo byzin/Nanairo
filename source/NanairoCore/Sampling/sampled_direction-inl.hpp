@@ -145,15 +145,15 @@ SampledDirection SampledDirection::SampledDirection::sampleOnHemisphere(
   const Float u1 = sampler.sample(0.0, 1.0);
   const Float u2 = sampler.sample(0.0, 1.0);
 
-  const Float phi = 2.0 * zisc::kPi<Float> * (u1 - 0.5);
   constexpr Float exponent = 1.0 / cast<Float>(kCosineWeight + 1);
-  const Float cos_theta = zisc::pow(1.0 - u2, exponent);
+  const Float cos_theta = zisc::pow(1.0 - u1, exponent);
   const Float sin_theta = zisc::sqrt(1.0 - cos_theta * cos_theta);
+  const Float phi = 2.0 * zisc::kPi<Float> * (u2 - 0.5);
 
   const Vector3 direction{sin_theta * zisc::cos(phi),
                           sin_theta * zisc::sin(phi),
                           cos_theta};
-  ZISC_ASSERT(isUnitVector(direction), "The direction must be unit vector.");
+  ZISC_ASSERT(isUnitVector(direction), "The direction isn't unit vector.");
 
   constexpr Float t = (2.0 * zisc::kPi<Float>) / cast<Float>(kCosineWeight + 1);
   const Float inverse_pdf = t / zisc::power<kCosineWeight>(cos_theta);

@@ -264,6 +264,63 @@ Float MicrofacetGgx::Smith::evalWeight(const Float roughness,
   \details
   No detailed.
   */
+template <> inline
+Float MicrofacetGgx::VCavity::evalG1(const Float /* roughness */,
+                                     const Float cos_n,
+                                     const Float cos_m,
+                                     const Float cos_nm) noexcept
+{
+  if (cos_n * cos_m < 0.0)
+    return 0.0;
+
+  constexpr Float g_a = 1.0;
+  const Float g_b = 2.0 * zisc::abs((cos_nm * cos_n) / cos_m);
+  const Float g1 = zisc::min(g_a, g_b);
+  ZISC_ASSERT(zisc::isInClosedBounds(g1, 0.0, 1.0), "GGX G1 isn't [0, 1].");
+  return g1;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <> inline
+Float MicrofacetGgx::VCavity::evalG2(const Float roughness,
+                                     const Float cos_ni,
+                                     const Float cos_no,
+                                     const Float cos_mi,
+                                     const Float cos_mo,
+                                     const Float cos_nm) noexcept
+{
+  const Float gi = evalG1(roughness, cos_ni, cos_mi, cos_nm);
+  const Float go = evalG1(roughness, cos_no, cos_mo, cos_nm);
+  const Float g2 = (0.0 < cos_no)
+      ? zisc::min(gi, go)
+      : zisc::max(gi + go - 1.0, 0.0);
+  ZISC_ASSERT(zisc::isInClosedBounds(g2, 0.0, 1.0), "GGX G2 isn't [0, 1].");
+  return g2;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <> inline
+Float MicrofacetGgx::VCavity::evalWeight(const Float roughness,
+                                         const Float cos_ni,
+                                         const Float cos_no,
+                                         const Float cos_mi,
+                                         const Float cos_mo,
+                                         const Float cos_nm) noexcept
+{
+  return evalG2(roughness, cos_ni, cos_no, cos_mi, cos_mo, cos_nm) /
+         evalG1(roughness, cos_ni, cos_mi, cos_nm);
+}
+
+/*!
+  \details
+  No detailed.
+  */
 inline
 Float MicrofacetGgx::evalG1(const Float roughness,
                             const Float cos_n,
