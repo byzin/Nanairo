@@ -43,6 +43,7 @@ enum class SurfaceType : int
   SmoothConductor,
   RoughDielectric,
   RoughConductor,
+  LayeredDiffuse,
   Cloth
 };
 

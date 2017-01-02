@@ -154,4 +154,14 @@ function(buildNanairo)
                                                      ${qt5_definitions}
                                                      ${zisc_definitions}
                                                      ${environment_definitions})
+  # Create symlink for the executable for Mac
+  if(Z_MAC)
+    set(exec_path ${PROJECT_NAME}.app/Contents/MacOS/${PROJECT_NAME})
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E create_symlink
+                          ${exec_path}
+                          ${PROJECT_NAME}
+                       WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+                       COMMENT "Creating the symlink to \"${exec_path}\".")
+  endif()
 endfunction(buildNanairo)

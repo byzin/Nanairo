@@ -20,33 +20,33 @@ Rectangle {
   height: Nanairo.materialSettingViewHeight
 
   NTextureIndexSettingBlock {
-    id: texture_index_setting_block
+    id: reflectance_index_setting_block
     x: Nanairo.blockOffset
     y: Nanairo.blockOffset
     color: smooth_diffuse_surface_item.color
 
     textureIndexKey: Nanairo.reflectanceIndex
-    labelText: qsTr("ReflectanceIndex")
+    labelText: qsTr("Reflectance")
     textureModel: smooth_diffuse_surface_item.textureModel
   }
 
   function initializeItem(item) {
-    texture_index_setting_block.initializeItem(item);
+    reflectance_index_setting_block.initializeItem(item);
   }
 
   function reflectItem() {
-    texture_index_setting_block.reflectItem();
+    reflectance_index_setting_block.reflectItem();
   }
 
   function setCurrentItem(item, itemChangeMode) {
-    texture_index_setting_block.setCurrentItem(item, itemChangeMode);
+    reflectance_index_setting_block.setCurrentItem(item, itemChangeMode);
   }
 
   function getItemData(item) {
-    return texture_index_setting_block.getItemData(item);
+    return reflectance_index_setting_block.getItemData(item);
   }
 
   function makeItem(itemData) {
-    return texture_index_setting_block.makeItem(itemData);
+    return reflectance_index_setting_block.makeItem(itemData);
   }
 }

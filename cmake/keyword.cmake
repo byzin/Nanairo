@@ -120,6 +120,7 @@ function(getNanairoKeywords nanairo_keyword_list)
           roughDielectricSurface "RoughDielectricSurface"
               roughnessIndex "RoughnessIndex"
           roughConductorSurface "RoughConductorSurface"
+          layeredDiffuseSurface "LayeredDiffuseSurface"
           clothSurface "ClothSurface"
               fabricRefractiveIndex "FabricRefractiveIndex"
               isotropicScatteringCoefficient "IsotropicScatteringCoefficient"

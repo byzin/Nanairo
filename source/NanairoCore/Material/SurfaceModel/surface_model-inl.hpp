@@ -69,6 +69,10 @@ auto SurfaceModel::makeBxdf(
     shader = makeGgxConductorBrdf(texture_coordinate, wavelengths, memory_pool);
     break;
    }
+   case SurfaceType::LayeredDiffuse: {
+     zisc::raiseError("LayeredDiffuse isn't implemented.");
+     break;
+   }
    case SurfaceType::Cloth: {
     shader = makeMicrocylinderClothBrdf(texture_coordinate, wavelengths, memory_pool);
     break;

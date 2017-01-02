@@ -113,6 +113,7 @@ var surfaceModel = "@surfaceModel@";
     var roughDielectricSurface = "@roughDielectricSurface@";
         var roughnessIndex = "@roughnessIndex@";
     var roughConductorSurface = "@roughConductorSurface@";
+    var layeredDiffuseSurface = "@layeredDiffuseSurface@";
     var clothSurface = "@clothSurface@";
         var fabricRefractiveIndex = "@fabricRefractiveIndex@";
         var isotropicScatteringCoefficient = "@isotropicScatteringCoefficient@";

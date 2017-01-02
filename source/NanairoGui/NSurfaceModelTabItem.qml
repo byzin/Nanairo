@@ -24,6 +24,7 @@ NMaterialTabItem {
                      Nanairo.smoothConductorSurface,
                      Nanairo.roughDielectricSurface,
                      Nanairo.roughConductorSurface,
+                     Nanairo.layeredDiffuseSurface,
                      Nanairo.clothSurface]
   materialComponent: setting_view_component
   addMaterialButtonImage:"../image/add_surface_model.png"

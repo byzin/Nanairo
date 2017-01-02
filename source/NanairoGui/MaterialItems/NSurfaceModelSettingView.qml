@@ -81,6 +81,16 @@ Rectangle {
     }
 
     Tab {
+      title: Nanairo.layeredDiffuseSurface
+      active: true
+
+      NLayeredDiffuseSurfaceItem {
+        textureModel: surface_model_setting_view.textureModel
+        color: surface_model_setting_view.color
+      }
+    }
+
+    Tab {
       title: Nanairo.clothSurface
       active: true
 
