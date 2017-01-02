@@ -66,8 +66,8 @@ auto SpecularBsdf<kSampleSize>::sample(
   // Determine a reflection or a refraction
   const bool is_reflection = (sampler.sample(0.0, 1.0) < fresnel);
   const auto vout = (is_reflection)
-      ? Fresnel::calcReflectionDirection(*vin, normal, cos_ni)
-      : Fresnel::calcRefractionDirection(*vin, normal, cos_ni, n_, g);
+      ? Fresnel::calcReflectionDirection(*vin, normal)
+      : Fresnel::calcRefractionDirection(*vin, normal, n_, g);
 
   Spectra weight{wavelengths};
   weight.setIntensity(wavelengths.primaryWavelengthIndex(), 1.0);

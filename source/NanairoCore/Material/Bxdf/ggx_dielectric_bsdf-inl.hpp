@@ -71,8 +71,8 @@ auto GgxDielectricBsdf<kSampleSize>::evalRadiance(
   const Float cos_no = zisc::dot(normal, *vout);
   const bool is_reflection = (0.0 < cos_no);
   const Float f = (is_reflection)
-      ? MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, normal, n_, cos_no)
-      : MicrofacetGgx::evalTransmittance(roughness_, *vin, *vout, normal, n_, cos_no);
+      ? MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, normal, n_)
+      : MicrofacetGgx::evalTransmittance(roughness_, *vin, *vout, normal, n_);
 
   Spectra radiance{wavelengths};
   radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
@@ -94,8 +94,8 @@ auto GgxDielectricBsdf<kSampleSize>::evalRadianceAndPdf(
   const bool is_reflection = (0.0 < cos_no);
   Float pdf = 0.0;
   const Float f = (is_reflection)
-      ? MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, normal, n_, cos_no, &pdf)
-      : MicrofacetGgx::evalTransmittance(roughness_, *vin, *vout, normal, n_, cos_no, &pdf);
+      ? MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, normal, n_, &pdf)
+      : MicrofacetGgx::evalTransmittance(roughness_, *vin, *vout, normal, n_, &pdf);
 
   Spectra radiance{wavelengths};
   radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
@@ -132,8 +132,8 @@ auto GgxDielectricBsdf<kSampleSize>::sample(
   // Determine a reflection or a refraction
   const bool is_reflection = (sampler.sample(0.0, 1.0) < fresnel);
   auto vout = (is_reflection)
-      ? Microfacet::calcReflectionDirection(*vin, m_normal, cos_mi)
-      : Microfacet::calcRefractionDirection(*vin, m_normal, cos_mi, n_, g);
+      ? Microfacet::calcReflectionDirection(*vin, m_normal)
+      : Microfacet::calcRefractionDirection(*vin, m_normal, n_, g);
   vout.setInversePdf((is_reflection)
       ? vout.inversePdf() / fresnel
       : vout.inversePdf() / (1.0 - fresnel));

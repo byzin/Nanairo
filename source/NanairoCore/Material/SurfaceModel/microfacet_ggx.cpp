@@ -33,7 +33,6 @@ Float MicrofacetGgx::evalReflectance(const Float roughness,
                                      const Vector3& vout,
                                      const Vector3& normal,
                                      const Float n,
-                                     const Float cos_no,
                                      Float* pdf) noexcept
 {
   // Calculate nanairoion half vector
@@ -41,6 +40,7 @@ Float MicrofacetGgx::evalReflectance(const Float roughness,
 
   const Float cos_ni = -zisc::dot(normal, vin);
   const Float cos_mi = -zisc::dot(m_normal, vin);
+  const Float cos_no = zisc::dot(normal, vout);
   const Float cos_mo = cos_mi;
   const Float cos_nm = zisc::dot(normal, m_normal);
   ZISC_ASSERT(zisc::isInBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
@@ -89,7 +89,6 @@ Float MicrofacetGgx::evalTransmittance(const Float roughness,
                                        const Vector3& vout,
                                        const Vector3& normal,
                                        const Float n,
-                                       const Float cos_no,
                                        Float* pdf) noexcept
 {
   // Calculate refraction half vector
@@ -97,6 +96,7 @@ Float MicrofacetGgx::evalTransmittance(const Float roughness,
 
   const Float cos_ni = -zisc::dot(normal, vin);
   const Float cos_mi = -zisc::dot(m_normal, vin);
+  const Float cos_no = zisc::dot(normal, vout);
   const Float cos_mo = zisc::dot(m_normal, vout);
   const Float cos_nm = zisc::dot(normal, m_normal);
   ZISC_ASSERT(zisc::isInBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");

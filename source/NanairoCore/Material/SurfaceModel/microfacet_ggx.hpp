@@ -60,7 +60,6 @@ class MicrofacetGgx : public Microfacet
                                const Vector3& vout,
                                const Vector3& normal,
                                const Float n,
-                               const Float cos_no,
                                Float* pdf = nullptr) noexcept;
 
   //! Evaluate the GGX reflectance
@@ -99,7 +98,6 @@ class MicrofacetGgx : public Microfacet
                                  const Vector3& vout,
                                  const Vector3& normal,
                                  const Float n,
-                                 const Float cos_no,
                                  Float* pdf = nullptr) noexcept;
 
   //! Evaluate the weight

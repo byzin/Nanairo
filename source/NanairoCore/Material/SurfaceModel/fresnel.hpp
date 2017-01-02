@@ -39,13 +39,11 @@ class Fresnel
 
   //! Calculate the fresnel reflection direction
   static Vector3 calcReflectionDirection(const Vector3& vin,
-                                         const Vector3& normal,
-                                         const Float cos_ni) noexcept;
+                                         const Vector3& normal) noexcept;
 
   //! Calculate the fresnel refraction direction
   static Vector3 calcRefractionDirection(const Vector3& vin,
                                          const Vector3& normal,
-                                         const Float cos_ni,
                                          const Float n,
                                          const Float g) noexcept;
 

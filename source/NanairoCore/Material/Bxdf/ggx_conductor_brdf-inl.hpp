@@ -113,7 +113,7 @@ auto GgxConductorBrdf<kSampleSize>::sample(
   const auto fresnel = Fresnel::evalConductorEquation(cos_mi, r0);
 
   // Get the reflection direction
-  const auto vout = Microfacet::calcReflectionDirection(*vin, m_normal, cos_mi);
+  const auto vout = Microfacet::calcReflectionDirection(*vin, m_normal);
 
   // Evaluate the weight
   const Float cos_no = zisc::dot(normal, vout.direction());

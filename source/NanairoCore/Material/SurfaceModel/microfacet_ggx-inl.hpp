@@ -219,10 +219,10 @@ Float MicrofacetGgx::Smith::evalG1(const Float roughness,
     return 0.0;
 
   const Float roughness2 = zisc::power<2>(roughness);
-  const Float cos2_n = zisc::power<2>(cos_n);
-  const Float t = roughness2 + (1.0 - roughness2) * cos2_n;
-  const Float cos_theta_n = zisc::abs(cos_n);
-  const Float g1 = 2.0 * cos_theta_n / (cos_theta_n + zisc::sqrt(t));
+  const Float cos_vn = zisc::abs(cos_n);
+  const Float cos2_vn = zisc::power<2>(cos_vn);
+  const Float t = cos2_vn + roughness2 * (1.0 - cos2_vn);
+  const Float g1 = (2.0 * cos_vn) / (cos_vn + zisc::sqrt(t));
   ZISC_ASSERT(zisc::isInClosedBounds(g1, 0.0, 1.0), "GGX G1 isn't [0, 1].");
   return g1;
 }

@@ -21,6 +21,7 @@
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 
 namespace nanairo {
@@ -52,9 +53,9 @@ SpectralDistribution Fresnel::calcConductorReflectance0(
   */
 inline
 Vector3 Fresnel::calcReflectionDirection(const Vector3& vin,
-                                         const Vector3& normal,
-                                         const Float cos_ni) noexcept
+                                         const Vector3& normal) noexcept
 {
+  const Float cos_ni = -zisc::dot(normal, vin);
   const auto vout = vin + (2.0 * cos_ni) * normal;
   ZISC_ASSERT(isUnitVector(vout), "The vout isn't unit vector.");
   return vout;
@@ -67,10 +68,10 @@ Vector3 Fresnel::calcReflectionDirection(const Vector3& vin,
 inline
 Vector3 Fresnel::calcRefractionDirection(const Vector3& vin,
                                          const Vector3& normal,
-                                         const Float cos_ni,
                                          const Float n,
                                          const Float g) noexcept
 {
+  const Float cos_ni = -zisc::dot(normal, vin);
   const auto vout = (vin + (cos_ni - g) * normal) * (1.0 / n);
   ZISC_ASSERT(isUnitVector(vout), "The vout isn't unit vector.");
   return vout;

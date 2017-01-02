@@ -32,11 +32,13 @@ namespace nanairo {
 inline
 SampledDirection Microfacet::calcReflectionDirection(
     const Vector3& vin,
-    const SampledDirection& microfacet_normal,
-    const Float cos_mi) noexcept
+    const SampledDirection& microfacet_normal) noexcept
 {
-  const auto& normal = microfacet_normal.direction();
-  const auto vout = Fresnel::calcReflectionDirection(vin, normal, cos_mi);
+  // Calculate the reflection direction
+  const auto& m_normal = microfacet_normal.direction();
+  const auto vout = Fresnel::calcReflectionDirection(vin, m_normal);
+  // Calculate the pdf of the direction
+  const Float cos_mi = -zisc::dot(m_normal, vin);
   const Float inverse_jacobian = calcReflectionInverseJacobian(cos_mi);
   const Float inverse_pdf = inverse_jacobian * microfacet_normal.inversePdf();
   ZISC_ASSERT(0.0 < inverse_pdf, "PDF isn't positive.");
@@ -75,14 +77,14 @@ inline
 SampledDirection Microfacet::calcRefractionDirection(
     const Vector3& vin,
     const SampledDirection& microfacet_normal,
-    const Float cos_mi,
     const Float n,
     const Float g) noexcept
 {
-  // Direction
+  // Calculate the refraction direction
   const auto& m_normal = microfacet_normal.direction();
-  const auto vout = Fresnel::calcRefractionDirection(vin, m_normal, cos_mi, n, g);
-  // Jacobian
+  const auto vout = Fresnel::calcRefractionDirection(vin, m_normal, n, g);
+  // Calculate the pdf of the direction
+  const Float cos_mi = -zisc::dot(m_normal, vin);
   const Float cos_mo = zisc::dot(m_normal, vout);
   ZISC_ASSERT(zisc::isInBounds(-cos_mo, 0.0, 1.0), "cos_mo isn't [0, 1].");
   const Float inverse_jacobian = calcRefractionInverseJacobian(cos_mi, cos_mo, n);

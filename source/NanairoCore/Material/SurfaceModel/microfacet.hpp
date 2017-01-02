@@ -31,8 +31,7 @@ class Microfacet
   //! Calculate microfacet reflection direction
   static SampledDirection calcReflectionDirection(
       const Vector3& vin,
-      const SampledDirection& microfacet_normal,
-      const Float cos_mi) noexcept;
+      const SampledDirection& microfacet_normal) noexcept;
 
   //! Calculate microfacet reflection half-vector
   static Vector3 calcReflectionHalfVector(const Vector3& vin,
@@ -45,7 +44,6 @@ class Microfacet
   static SampledDirection calcRefractionDirection(
       const Vector3& vin,
       const SampledDirection& microfacet_normal,
-      const Float cos_mi,
       const Float n,
       const Float g) noexcept;
 
