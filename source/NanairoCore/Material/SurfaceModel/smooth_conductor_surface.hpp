@@ -60,7 +60,7 @@ class SmoothConductorSurface : public SurfaceModel
 
 //  SpectralDistribution eta_, //!< The ratio of refractive index
 //                       eta_k_; //!< Refractive index absorption ratio
-  SpectralDistribution reflectance_0deg_;
+  SpectralDistribution fresnel_0deg_;
 };
 
 //! \} Core

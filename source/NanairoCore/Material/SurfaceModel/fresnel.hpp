@@ -32,11 +32,6 @@ template <uint> class SampledSpectra;
 class Fresnel
 {
  public:
-  //! Calculate the fresnel 0degree reflectance for the conductor
-  static SpectralDistribution calcConductorReflectance0(
-      const SpectralDistribution& eta,
-      const SpectralDistribution& eta_k) noexcept;
-
   //! Calculate the fresnel reflection direction
   static Vector3 calcReflectionDirection(const Vector3& vin,
                                          const Vector3& normal) noexcept;
@@ -48,16 +43,25 @@ class Fresnel
                                          const Float g) noexcept;
 
   //! Calculate the fresnel dielectric g term
-  static std::tuple<bool, Float> evalG(const Float n, const Float cos_ni) noexcept;
+  static std::tuple<bool, Float> evalG(const Float n,
+                                       const Float cos_theta) noexcept;
+
+  //! Calculate the fresnel 0degree reflectance for the conductor
+  static SpectralDistribution evalFresnel0(
+      const SpectralDistribution& eta,
+      const SpectralDistribution& eta_k) noexcept;
 
   //! Solve fresnel conductor equation
   template <uint kSampleSize>
-  static SampledSpectra<kSampleSize> evalConductorEquation(
-      const Float cos_ni,
-      const SampledSpectra<kSampleSize>& reflectance_0deg) noexcept;
+  static SampledSpectra<kSampleSize> evalFresnel(
+      const Float cos_theta,
+      const SampledSpectra<kSampleSize>& fresnel_0deg) noexcept;
 
   //! Solve the fresnel dielectric equation
-  static Float evalDielectricEquation(const Float cos_ni, const Float g) noexcept;
+  static Float evalFresnel(const Float n, const Float cos_theta) noexcept;
+
+  //! Solve the fresnel dielectric equation
+  static Float evalFresnelFromG(const Float cos_theta, const Float g) noexcept;
 };
 
 //! \} Core

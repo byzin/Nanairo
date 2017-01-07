@@ -31,7 +31,7 @@ class Microfacet
   //! Calculate microfacet reflection direction
   static SampledDirection calcReflectionDirection(
       const Vector3& vin,
-      const SampledDirection& microfacet_normal) noexcept;
+      const SampledDirection& sampled_m_normal) noexcept;
 
   //! Calculate microfacet reflection half-vector
   static Vector3 calcReflectionHalfVector(const Vector3& vin,
@@ -43,7 +43,7 @@ class Microfacet
   //! Calculate microfacet refraction direction
   static SampledDirection calcRefractionDirection(
       const Vector3& vin,
-      const SampledDirection& microfacet_normal,
+      const SampledDirection& sampled_m_normal,
       const Float n,
       const Float g) noexcept;
 
@@ -53,8 +53,8 @@ class Microfacet
                                           const Float n) noexcept;
 
   //! Calculate microfacet reflection inverse jacobian
-  static Float calcRefractionInverseJacobian(const Float cos_theta_mi,
-                                             const Float cos_theta_mo,
+  static Float calcRefractionInverseJacobian(const Float cos_mi,
+                                             const Float cos_mo,
                                              const Float n) noexcept;
 };
 

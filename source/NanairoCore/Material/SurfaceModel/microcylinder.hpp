@@ -28,46 +28,6 @@ namespace nanairo {
 class Microcylinder
 {
  public:
-  //! Calculate the effective angle
-  static Float calcEffectiveAngle(const Float theta_i, const Float theta_o) noexcept;
-
-  //! Calculate the half-angle
-  static Float calcHalfAngle(const Float theta_i, const Float theta_o) noexcept;
-
-  //! Evaluate the azimuthal pdf
-  static Float evalAzimuthalAnglePdf(const Float phi_i,
-                                     const Float phi_o) noexcept;
-
-  //! Evaluate the pdf of the surface angles
-  static Float evalSurfaceAnglesPdf(const Float theta_i,
-                                    const Float phi_i,
-                                    const Float theta_o,
-                                    const Float phi_o,
-                                    const Float gamma) noexcept;
-
-  //! Calculate the longitudinal angle pdf of the surface reflection
-  static Float evalSurfaceLongitudinalAnglePdf(const Float theta_i,
-                                               const Float theta_o,
-                                               const Float gamma) noexcept;
-
-  //! Evaluate the pdf of the volume angles
-  static Float evalVolumeAnglesPdf(const Float theta_i,
-                                   const Float phi_i,
-                                   const Float theta_o,
-                                   const Float phi_o,
-                                   const Float k_d,
-                                   const Float gamma) noexcept;
-
-  constexpr static Float evalVolumeIsotropicLongitudinalAnglePdf(
-      const Float theta_i,
-      const Float theta_o) noexcept;
-
-  //! Calculate the longitudinal angle pdf of the volumetric reflection
-  static Float evalVolumeLongitudinalAnglePdf(const Float theta_i,
-                                              const Float theta_o,
-                                              const Float k_d,
-                                              const Float gamma) noexcept;
-
   //! Evaluate the reflectance
   static Float evalPdf(const Vector3& vin,
                        const Vector3& vout,
@@ -103,10 +63,50 @@ class Microcylinder
          const Float rho,
          Sampler& sampler) noexcept;
 
+  //! Evaluate the azimuthal pdf
+  static Float evalAzimuthalAnglePdf(const Float phi_i,
+                                     const Float phi_o) noexcept;
+
+  //! Evaluate the pdf of the surface angles
+  static Float evalSurfaceAnglesPdf(const Float theta_i,
+                                    const Float phi_i,
+                                    const Float theta_o,
+                                    const Float phi_o,
+                                    const Float gamma) noexcept;
+
+  //! Calculate the longitudinal angle pdf of the surface reflection
+  static Float evalSurfaceLongitudinalAnglePdf(const Float theta_i,
+                                               const Float theta_o,
+                                               const Float gamma) noexcept;
+
+  //! Evaluate the pdf of the volume angles
+  static Float evalVolumeAnglesPdf(const Float theta_i,
+                                   const Float phi_i,
+                                   const Float theta_o,
+                                   const Float phi_o,
+                                   const Float k_d,
+                                   const Float gamma) noexcept;
+
+  constexpr static Float evalVolumeIsotropicLongitudinalAnglePdf(
+      const Float theta_i,
+      const Float theta_o) noexcept;
+
+  //! Calculate the longitudinal angle pdf of the volumetric reflection
+  static Float evalVolumeLongitudinalAnglePdf(const Float theta_i,
+                                              const Float theta_o,
+                                              const Float k_d,
+                                              const Float gamma) noexcept;
+
  private:
   //! Calculate the incident and outgoing angles
   static std::tuple<Float, Float, Float, Float>
   calcAngles(const Vector3& vin, const Vector3& vout, const Vector3& normal) noexcept;
+
+  //! Calculate the effective angle
+  static Float calcEffectiveAngle(const Float theta_i, const Float theta_o) noexcept;
+
+  //! Calculate the half-angle
+  static Float calcHalfAngle(const Float theta_i, const Float theta_o) noexcept;
 
   //! Calculate the fresnel reflectance
   static Float calcFresnelReflectance(const Float theta_i,
@@ -136,8 +136,7 @@ class Microcylinder
       const Float k_d,
       const Float gamma_r,
       const Float gamma_v,
-      const Float rho,
-      const Float fresnel) noexcept;
+      const Float rho) noexcept;
 
   //! Evaluate the D function
   static Float evalD(const Float x, const Float y, const Float z) noexcept;

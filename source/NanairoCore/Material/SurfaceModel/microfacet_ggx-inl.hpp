@@ -64,11 +64,10 @@ SampledSpectra<kSampleSize> MicrofacetGgx::evalReflectance(
   const Float cos_mi = -zisc::dot(m_normal, vin);
   const Float cos_mo = cos_mi;
   const Float cos_nm = zisc::dot(normal, m_normal);
-  ZISC_ASSERT(zisc::isInBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
-  ZISC_ASSERT(zisc::isInBounds(cos_no, 0.0, 1.0), "cos_no isn't [0, 1].");
-  ZISC_ASSERT(zisc::isInBounds(cos_nm, 0.0, 1.0), "cos_nm isn't [0, 1].");
-  ZISC_ASSERT(0.0 <= cos_ni * cos_mi,
-              "Microfacet normal isn't in the same hemisphere as normal.");
+  ZISC_ASSERT(zisc::isInClosedBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInClosedBounds(cos_no, 0.0, 1.0), "cos_no isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInClosedBounds(cos_mi, 0.0, 1.0), "cos_mi isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInClosedBounds(cos_nm, 0.0, 1.0), "cos_nm isn't [0, 1].");
 
   // Evaluate D
   const Float d = evalD(roughness, cos_nm);
@@ -81,15 +80,16 @@ SampledSpectra<kSampleSize> MicrofacetGgx::evalReflectance(
     return SampledSpectra<kSampleSize>{wavelengths};
 
   // Evaluate the fresnel reflectance
-  const auto fresnel = Fresnel::evalConductorEquation(cos_mi, r0);
+  const auto fresnel = Fresnel::evalFresnel(cos_mi, r0);
+
+  // Calculate reflectance
+  const auto f = fresnel * (g2 * d / (4.0 * cos_ni * cos_no));
+  ZISC_ASSERT(!f.hasNegative(), "Reflectance isn't positive.");
 
   // Calculate the pdf
   if (pdf != nullptr)
     *pdf = calcReflectionPdf(roughness, d, cos_ni, cos_mi, cos_nm);
 
-  // Calculate reflectance
-  const auto f = fresnel * (g2 * d / (4.0 * cos_ni * cos_no));
-  ZISC_ASSERT(!f.hasNegative(), "Reflectance isn't positive.");
   return f;
 }
 
@@ -109,57 +109,15 @@ Float MicrofacetGgx::evalReflectionPdf(const Float roughness,
   const Float cos_ni = -zisc::dot(normal, vin);
   const Float cos_mi = -zisc::dot(m_normal, vin);
   const Float cos_nm = zisc::dot(normal, m_normal);
-  ZISC_ASSERT(zisc::isInBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
-  ZISC_ASSERT(zisc::isInBounds(cos_nm, 0.0, 1.0), "cos_nm isn't [0, 1].");
-  ZISC_ASSERT(0.0 <= cos_ni * cos_mi,
-              "Microfacet normal isn't in the same hemisphere as normal.");
+  ZISC_ASSERT(zisc::isInClosedBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInClosedBounds(cos_mi, 0.0, 1.0), "cos_mi isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInClosedBounds(cos_nm, 0.0, 1.0), "cos_nm isn't [0, 1].");
 
   const Float d = evalD(roughness, cos_nm);
   if (d == 0.0)
     return 0.0;
 
   return calcReflectionPdf(roughness, d, cos_ni, cos_mi, cos_nm);
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-Float MicrofacetGgx::evalReflectionPdf(const Float roughness,
-                                       const Vector3& vin,
-                                       const Vector3& vout,
-                                       const Vector3& normal,
-                                       const Float n) noexcept
-{
-  // Calculate reflection half vector
-  const auto m_normal = calcReflectionHalfVector(vin, vout);
-
-  const Float cos_ni = -zisc::dot(normal, vin);
-  const Float cos_mi = -zisc::dot(m_normal, vin);
-  const Float cos_nm = zisc::dot(normal, m_normal);
-  ZISC_ASSERT(zisc::isInBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
-  ZISC_ASSERT(zisc::isInBounds(cos_nm, 0.0, 1.0), "cos_nm isn't [0, 1].");
-  ZISC_ASSERT(0.0 <= cos_ni * cos_mi,
-              "Microfacet normal isn't in the same hemisphere as normal.");
-
-  const Float d = evalD(roughness, cos_nm);
-  if (d == 0.0)
-    return 0.0;
-
-  // Evaluate the fresnel term
-  const auto result = Fresnel::evalG(n, cos_mi);
-  const bool is_perfect_reflection = !std::get<0>(result);
-  const Float g = std::get<1>(result);
-  const Float fresnel = (!is_perfect_reflection)
-      ? Fresnel::evalDielectricEquation(cos_mi, g)
-      : 1.0; // Perfect reflection
-  ZISC_ASSERT(zisc::isInBounds(fresnel, 0.0, 1.0),
-              "Fresnel reflectance isn't [0, 1].");
-  if (fresnel == 0.0)
-    return 0.0;
-
-  return fresnel * calcReflectionPdf(roughness, d, cos_ni, cos_mi, cos_nm);
 }
 
 /*!
@@ -180,29 +138,15 @@ Float MicrofacetGgx::evalRefractionPdf(const Float roughness,
   const Float cos_mi = -zisc::dot(m_normal, vin);
   const Float cos_mo = zisc::dot(m_normal, vout);
   const Float cos_nm = zisc::dot(normal, m_normal);
-  ZISC_ASSERT(zisc::isInBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
-  ZISC_ASSERT(zisc::isInBounds(cos_nm, 0.0, 1.0), "cos_nm isn't [0, 1].");
-  ZISC_ASSERT(0.0 <= cos_ni * cos_mi,
-              "Microfacet normal isn't in the same hemisphere as normal.");
+  ZISC_ASSERT(zisc::isInClosedBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInClosedBounds(cos_mi, 0.0, 1.0), "cos_mi isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInClosedBounds(cos_nm, 0.0, 1.0), "cos_nm isn't [0, 1].");
 
   const Float d = evalD(roughness, cos_nm);
   if (d == 0.0)
     return 0.0;
 
-  // Evaluate the fresnel term
-  const auto result = Fresnel::evalG(n, cos_mi);
-  const bool is_perfect_reflection = !std::get<0>(result);
-  const Float g = std::get<1>(result);
-  const Float fresnel = (!is_perfect_reflection)
-      ? Fresnel::evalDielectricEquation(cos_mi, g)
-      : 1.0; // Perfect reflection
-  ZISC_ASSERT(zisc::isInBounds(fresnel, 0.0, 1.0),
-              "Fresnel reflectance isn't [0, 1].");
-  if (fresnel == 1.0)
-    return 0.0;
-
-  return (1.0 - fresnel) *
-         calcRefractionPdf(roughness, d, cos_ni, cos_mi, cos_mo, cos_nm, n);
+  return calcRefractionPdf(roughness, d, cos_ni, cos_mi, cos_mo, cos_nm, n);
 }
 
 /*!
@@ -380,7 +324,7 @@ Float MicrofacetGgx::calcReflectionPdf(const Float roughness,
 
   const Float inverse_jacobian = calcReflectionInverseJacobian(cos_mi);
 
-  const Float pdf = (g1 * cos_mi * d) / (cos_ni * inverse_jacobian);
+  const Float pdf = zisc::abs(cos_mi / (cos_ni * inverse_jacobian)) * (g1 * d);
   ZISC_ASSERT(0.0 < pdf, "PDF isn't positive.");
   return pdf;
 }
@@ -404,55 +348,9 @@ Float MicrofacetGgx::calcRefractionPdf(const Float roughness,
 
   const Float inverse_jacobian = calcRefractionInverseJacobian(cos_mi, cos_mo, n);
 
-  const Float pdf = (g1 * cos_mi * d) / (cos_ni * inverse_jacobian);
+  const Float pdf = zisc::abs(cos_mi / (cos_ni * inverse_jacobian)) * (g1 * d);
   ZISC_ASSERT(0.0 < pdf, "PDF isn't positive.");
   return pdf;
-}
-
-/*!
-  */
-inline
-SampledGgxNormal::SampledGgxNormal(const SampledDirection& microfacet_normal,
-                                   const Float cos_ni,
-                                   const Float cos_mi,
-                                   const Float cos_nm) noexcept :
-    microfacet_normal_{microfacet_normal},
-    cos_ni_{cos_ni},
-    cos_mi_{cos_mi},
-    cos_nm_{cos_nm}
-{
-}
-
-/*!
-  */
-inline
-Float SampledGgxNormal::cosNi() const noexcept
-{
-  return cos_ni_;
-}
-
-/*!
-  */
-inline
-Float SampledGgxNormal::cosMi() const noexcept
-{
-  return cos_mi_;
-}
-
-/*!
-  */
-inline
-Float SampledGgxNormal::cosNm() const noexcept
-{
-  return cos_nm_;
-}
-
-/*!
-  */
-inline
-const SampledDirection& SampledGgxNormal::microfacetNormal() const noexcept
-{
-  return microfacet_normal_;
 }
 
 } // namespace nanairo

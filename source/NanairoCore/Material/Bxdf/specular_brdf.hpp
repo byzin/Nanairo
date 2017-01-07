@@ -40,7 +40,7 @@ class SpecularBrdf : public SpecularShaderModel<kSampleSize>
 
 
   //! Create a specular BRDF
-  SpecularBrdf(const Spectra& reflectance_0deg) noexcept;
+  SpecularBrdf(const Spectra& fresnel_0deg) noexcept;
 
 
   //! Evalute the weight of solid angle sampling
@@ -54,7 +54,7 @@ class SpecularBrdf : public SpecularShaderModel<kSampleSize>
   bool wavelengthIsSelected() const noexcept override;
 
  private:
-  const Spectra reflectance_0deg_;
+  const Spectra fresnel_0deg_;
 };
 
 //! \} Core

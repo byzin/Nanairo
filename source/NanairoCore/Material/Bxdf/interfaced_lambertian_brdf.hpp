@@ -1,5 +1,5 @@
 /*!
-  \file ggx_conductor_brdf.hpp
+  \file interfaced_lambertian_brdf.hpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef NANAIRO_GGX_CONDUCTOR_BRDF_HPP
-#define NANAIRO_GGX_CONDUCTOR_BRDF_HPP
+#ifndef NANAIRO_INTERFACED_LAMBERTIAN_BRDF_HPP
+#define NANAIRO_INTERFACED_LAMBERTIAN_BRDF_HPP
 
 // Standard C++ library
 #include <tuple>
@@ -33,28 +33,32 @@ template <uint> class WavelengthSamples;
   No detailed.
   */
 template <uint kSampleSize>
-class GgxConductorBrdf : public GlossyShaderModel<kSampleSize>
+class InterfacedLambertianBrdf : public GlossyShaderModel<kSampleSize>
 {
  public:
   using Spectra = typename ShaderModel<kSampleSize>::Spectra;
   using Wavelengths = typename ShaderModel<kSampleSize>::Wavelengths;
 
 
-  //! Create a GGX conductor BRDF
-  GgxConductorBrdf(const Float roughness, const Spectra& reflectance_0reg) noexcept;
+  //! Create a interfaced lambertian BRDF 
+  InterfacedLambertianBrdf(const Float k_d,
+                           const Float roughness,
+                           const Float n,
+                           const Float ri,
+                           Sampler& sampler) noexcept;
 
 
   //! Evaluate the pdf
   Float evalPdf(const Vector3* vin,
-                    const Vector3* vout,
-                    const Vector3& normal,
-                    const Wavelengths& wavelengths) const noexcept override;
+                const Vector3* vout,
+                const Vector3& normal,
+                const Wavelengths& wavelengths) const noexcept override;
 
   //! Evaluate the radiance of the area sampling
   Spectra evalRadiance(const Vector3* vin,
-                           const Vector3* vout,
-                           const Vector3& normal,
-                           const Wavelengths& wavelengths) const noexcept override;
+                       const Vector3* vout,
+                       const Vector3& normal,
+                       const Wavelengths& wavelengths) const noexcept override;
 
   //! Evaluate the radiance of the area sampling
   std::tuple<Spectra, Float> evalRadianceAndPdf(
@@ -74,14 +78,17 @@ class GgxConductorBrdf : public GlossyShaderModel<kSampleSize>
   bool wavelengthIsSelected() const noexcept override;
 
  private:
-  const Spectra fresnel_0deg_;
+  Sampler* sampler_;
+  const Float k_d_;
   const Float roughness_;
+  const Float n_;
+  const Float ri_;
 };
 
 //! \} Core
 
 } // namespace nanairo
 
-#include "ggx_conductor_brdf-inl.hpp"
+#include "interfaced_lambertian_brdf-inl.hpp"
 
-#endif // NANAIRO_GGX_CONDUCTOR_BRDF_HPP
+#endif // NANAIRO_INTERFACED_LAMBERTIAN_BRDF_HPP

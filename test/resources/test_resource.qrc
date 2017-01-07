@@ -4,6 +4,7 @@
     <file>./test_pinhole_camera.json</file>
     <file>./test_smooth_diffuse_surface.json</file>
     <file>./test_rough_conductor_surface.json</file>
+    <file>./test_layered_diffuse_surface.json</file>
     <file>./test_cloth_surface.json</file>
   </qresource>
 </RCC>

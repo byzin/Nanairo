@@ -1,0 +1,6 @@
+{
+  "InnerRefractiveIndex": "resources/spectrum/dielectric/SiO2.csv",
+  "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+  "ReflectanceIndex": 0,
+  "RoughnessIndex": 1 
+}

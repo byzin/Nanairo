@@ -32,15 +32,15 @@ namespace nanairo {
 inline
 SampledDirection Microfacet::calcReflectionDirection(
     const Vector3& vin,
-    const SampledDirection& microfacet_normal) noexcept
+    const SampledDirection& sampled_m_normal) noexcept
 {
   // Calculate the reflection direction
-  const auto& m_normal = microfacet_normal.direction();
+  const auto& m_normal = sampled_m_normal.direction();
   const auto vout = Fresnel::calcReflectionDirection(vin, m_normal);
   // Calculate the pdf of the direction
   const Float cos_mi = -zisc::dot(m_normal, vin);
   const Float inverse_jacobian = calcReflectionInverseJacobian(cos_mi);
-  const Float inverse_pdf = inverse_jacobian * microfacet_normal.inversePdf();
+  const Float inverse_pdf = inverse_jacobian * sampled_m_normal.inversePdf();
   ZISC_ASSERT(0.0 < inverse_pdf, "PDF isn't positive.");
   return SampledDirection{vout, inverse_pdf};
 }
@@ -64,7 +64,7 @@ Vector3 Microfacet::calcReflectionHalfVector(const Vector3& vin,
 inline
 Float Microfacet::calcReflectionInverseJacobian(const Float cos_mi) noexcept
 {
-  const Float inverse_jacobian = 4.0 * cos_mi;
+  const Float inverse_jacobian = 4.0 * zisc::abs(cos_mi);
   ZISC_ASSERT(0.0 < inverse_jacobian, "Jacobian isn't positive.");
   return inverse_jacobian;
 }
@@ -76,19 +76,19 @@ Float Microfacet::calcReflectionInverseJacobian(const Float cos_mi) noexcept
 inline
 SampledDirection Microfacet::calcRefractionDirection(
     const Vector3& vin,
-    const SampledDirection& microfacet_normal,
+    const SampledDirection& sampled_m_normal,
     const Float n,
     const Float g) noexcept
 {
   // Calculate the refraction direction
-  const auto& m_normal = microfacet_normal.direction();
+  const auto& m_normal = sampled_m_normal.direction();
   const auto vout = Fresnel::calcRefractionDirection(vin, m_normal, n, g);
   // Calculate the pdf of the direction
   const Float cos_mi = -zisc::dot(m_normal, vin);
   const Float cos_mo = zisc::dot(m_normal, vout);
   ZISC_ASSERT(zisc::isInBounds(-cos_mo, 0.0, 1.0), "cos_mo isn't [0, 1].");
   const Float inverse_jacobian = calcRefractionInverseJacobian(cos_mi, cos_mo, n);
-  const Float inverse_pdf = inverse_jacobian * microfacet_normal.inversePdf();
+  const Float inverse_pdf = inverse_jacobian * sampled_m_normal.inversePdf();
   ZISC_ASSERT(0.0 < inverse_pdf, "PDF isn't positive.");
   return SampledDirection{vout, inverse_pdf};
 }
@@ -115,7 +115,8 @@ Float Microfacet::calcRefractionInverseJacobian(const Float cos_mi,
                                                 const Float n) noexcept
 {
   const Float tmp = cos_mi + n * cos_mo;
-  const Float inverse_jacobian = zisc::power<2>(tmp) / (zisc::power<2>(n) * -cos_mo);
+  const Float inverse_jacobian = zisc::power<2>(tmp) /
+                                 (zisc::power<2>(n) * zisc::abs(cos_mo));
   ZISC_ASSERT(0.0 < inverse_jacobian, "Jacobian isn't positive.");
   return inverse_jacobian;
 }

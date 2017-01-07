@@ -1,5 +1,5 @@
 /*!
-  \file rough_conductor_surface.hpp
+  \file layered_diffuse_surface.hpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef NANAIRO_ROUGH_CONDUCTOR_SURFACE_HPP
-#define NANAIRO_ROUGH_CONDUCTOR_SURFACE_HPP
+#ifndef NANAIRO_LAYERED_DIFFUSE_SURFACE_HPP
+#define NANAIRO_LAYERED_DIFFUSE_SURFACE_HPP
 
 // Standard C++ library
 #include <cstddef>
@@ -37,43 +37,49 @@ template <uint> class WavelengthSamples;
   \details
   No detailed.
   */
-class RoughConductorSurface : public SurfaceModel
+class LayeredDiffuseSurface : public SurfaceModel
 {
  public:
   template <uint kSampleSize>
   using ShaderPointer = SurfaceModel::ShaderPointer<kSampleSize>;
 
 
-  //! Create a rough conductor surface
-  RoughConductorSurface(
+  //! Create a rough dielectric surface
+  LayeredDiffuseSurface(
       const QJsonObject& settings,
       const std::vector<const TextureModel*>& texture_list) noexcept;
 
 
-  //! Make a GGX BRDF
+  //! Make a interfaced lambertian BRDF
   template <uint kSampleSize>
-  ShaderPointer<kSampleSize> makeGgxConductorBrdf(
+  ShaderPointer<kSampleSize> makeInterfacedLambertianBrdf(
       const Point2& texture_coordinate,
       const WavelengthSamples<kSampleSize>& wavelengths,
+      Sampler& sampler,
       MemoryPool& memory_pool) const noexcept;
 
-  //! Return the rough conductor surface type
+  //! Return the rough dielectric surface type
   SurfaceType type() const noexcept override;
 
  private:
+  //! Calculate the internal reflectance
+  void calcInternalReflectance() noexcept;
+
   //! Initialize
   void initialize(const QJsonObject& settings,
                   const std::vector<const TextureModel*>& texture_list) noexcept;
 
 
+  const TextureModel* reflectance_;
   const TextureModel* roughness_;
-  SpectralDistribution fresnel_0deg_;
+  SpectralDistribution ri_;
+  SpectralDistribution eta_;
 };
 
 //! \} Core
 
 } // namespace nanairo
 
-#include "rough_conductor_surface-inl.hpp"
+#include "layered_diffuse_surface-inl.hpp"
 
-#endif // NANAIRO_ROUGH_CONDUCTOR_SURFACE_HPP
+#endif // NANAIRO_LAYERED_DIFFUSE_SURFACE_HPP

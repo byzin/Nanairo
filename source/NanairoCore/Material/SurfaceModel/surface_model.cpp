@@ -20,6 +20,7 @@
 #include "zisc/utility.hpp"
 // Nanairo
 #include "cloth_surface.hpp"
+#include "layered_diffuse_surface.hpp"
 #include "rough_dielectric_surface.hpp"
 #include "rough_conductor_surface.hpp"
 #include "smooth_conductor_surface.hpp"
@@ -75,12 +76,16 @@ UniquePointer<SurfaceModel> SurfaceModel::makeSurface(
     surface_scattering = new RoughConductorSurface{settings, texture_list};
     break;
    }
+   case toHash32(keyword::layeredDiffuseSurface): {
+    surface_scattering = new LayeredDiffuseSurface{settings, texture_list};
+    break;
+   }
    case toHash32(keyword::clothSurface): {
     surface_scattering = new ClothSurface{settings, texture_list};
     break;
    }
    default: {
-    zisc::raiseError("SurfaceError: Unsupported type is specified.");
+    zisc::raiseError("SurfaceModelError: Unsupported type is specified.");
     break;
    }
   }

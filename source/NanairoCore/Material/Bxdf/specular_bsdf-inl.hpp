@@ -58,7 +58,7 @@ auto SpecularBsdf<kSampleSize>::sample(
   const bool is_perfect_reflection = !std::get<0>(result);
   const Float g = std::get<1>(result);
   const Float fresnel = (!is_perfect_reflection)
-      ? Fresnel::evalDielectricEquation(cos_ni, g)
+      ? Fresnel::evalFresnelFromG(cos_ni, g)
       : 1.0; // Perfect reflection
   ZISC_ASSERT(zisc::isInClosedBounds(fresnel, 0.0, 1.0),
               "Fresnel reflectance isn't [0, 1].");

@@ -31,7 +31,8 @@ void testBxdfSampling(
     const nanairo::WavelengthSamples<1>& wavelengths,
     nanairo::Sampler& sampler,
     nanairo::MemoryPool& memory_pool,
-    const char* bxdf_name);
+    const char* bxdf_name,
+    const bool compare_reflectance = true);
 
 //! Test importance sampling of a BxDF
 void testBxdfImportanceSampling(

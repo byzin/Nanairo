@@ -35,10 +35,10 @@ auto SmoothConductorSurface::makeSpecularBrdf(
     const WavelengthSamples<kSampleSize>& wavelengths,
     MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
-  const auto reflectance_0deg = sample(reflectance_0deg_, wavelengths);
+  const auto fresnel_0deg = sample(fresnel_0deg_, wavelengths);
 
   using Brdf = SpecularBrdf<kSampleSize>;
-  auto brdf = memory_pool.allocate<Brdf>(reflectance_0deg);
+  auto brdf = memory_pool.allocate<Brdf>(fresnel_0deg);
   return ShaderPointer<kSampleSize>{brdf};
 }
 

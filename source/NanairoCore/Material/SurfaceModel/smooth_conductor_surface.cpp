@@ -66,7 +66,7 @@ void SmoothConductorSurface::initialize(const QJsonObject& settings) noexcept
 
   const auto eta = n2 / n1;
   const auto eta_k = k2 / n1;
-  reflectance_0deg_ = Fresnel::calcConductorReflectance0(eta, eta_k);
+  fresnel_0deg_ = Fresnel::evalFresnel0(eta, eta_k);
 }
 
 } // namespace nanairo

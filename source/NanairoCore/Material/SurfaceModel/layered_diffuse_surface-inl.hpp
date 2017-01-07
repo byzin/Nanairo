@@ -1,5 +1,5 @@
 /*!
-  \file rough_dielectric_surface-inl.hpp
+  \file layered_diffuse_surface-inl.hpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
@@ -7,10 +7,10 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef NANAIRO_ROUGH_DIELECTRIC_SURFACE_INL_HPP
-#define NANAIRO_ROUGH_DIELECTRIC_SURFACE_INL_HPP
+#ifndef NANAIRO_LAYERED_DIFFUSE_SURFACE_INL_HPP
+#define NANAIRO_LAYERED_DIFFUSE_SURFACE_INL_HPP
 
-#include "rough_dielectric_surface.hpp"
+#include "layered_diffuse_surface.hpp"
 // Standard C++ library
 #include <tuple>
 // Zisc
@@ -24,7 +24,7 @@
 #include "NanairoCore/Data/wavelength_samples.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
-#include "NanairoCore/Material/Bxdf/ggx_dielectric_bsdf.hpp"
+#include "NanairoCore/Material/Bxdf/interfaced_lambertian_brdf.hpp"
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
@@ -36,10 +36,10 @@ namespace nanairo {
   No detailed.
   */
 template <uint kSampleSize>
-auto RoughDielectricSurface::makeGgxDielectricBsdf(
+auto LayeredDiffuseSurface::makeInterfacedLambertianBrdf(
     const Point2& texture_coordinate,
-    const bool is_reverse_face,
     const WavelengthSamples<kSampleSize>& wavelengths,
+    Sampler& sampler,
     MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
   // Get the roughness
@@ -53,14 +53,17 @@ auto RoughDielectricSurface::makeGgxDielectricBsdf(
 
   // Evaluate the refractive index
   const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];
-  const Float n = (is_reverse_face)
-      ? 1.0 / eta_.getByWavelength(wavelength)
-      : eta_.getByWavelength(wavelength);
+  const Float n = eta_.getByWavelength(wavelength);
+  const Float ri = ri_.getByWavelength(wavelength);
 
-  // Make GGX BSDF
-  using Bsdf = GgxDielectricBsdf<kSampleSize>;
-  auto bsdf = memory_pool.allocate<Bsdf>(roughness, n);
-  return ShaderPointer<kSampleSize>(bsdf);
+  // Get the reflectance
+  const Float k_d = reflectance_->reflectiveValue(texture_coordinate, wavelength);
+  ZISC_ASSERT(zisc::isInClosedBounds(k_d, 0.0, 1.0), "Reflectance isn't [0, 1].");
+
+  // Make a interfaced lambertian BRDF
+  using Brdf = InterfacedLambertianBrdf<kSampleSize>;
+  auto brdf = memory_pool.allocate<Brdf>(k_d, roughness, n, ri, sampler);
+  return ShaderPointer<kSampleSize>(brdf);
 }
 
 /*!
@@ -68,19 +71,19 @@ auto RoughDielectricSurface::makeGgxDielectricBsdf(
   No detailed.
   */
 template <uint kSampleSize> inline
-auto SurfaceModel::makeGgxDielectricBsdf(
+auto SurfaceModel::makeInterfacedLambertianBrdf(
     const Point2& texture_coordinate,
-    const bool is_reverse_face,
     const WavelengthSamples<kSampleSize>& wavelengths,
+    Sampler& sampler,
     MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
-  auto s = zisc::cast<const RoughDielectricSurface*>(this);
-  return s->makeGgxDielectricBsdf(texture_coordinate,
-                                  is_reverse_face,
-                                  wavelengths,
-                                  memory_pool);
+  auto s = zisc::cast<const LayeredDiffuseSurface*>(this);
+  return s->makeInterfacedLambertianBrdf(texture_coordinate,
+                                         wavelengths,
+                                         sampler,
+                                         memory_pool);
 }
 
 } // namespace nanairo
 
-#endif // NANAIRO_ROUGH_DIELECTRIC_SURFACE_INL_HPP
+#endif // NANAIRO_LAYERED_DIFFUSE_SURFACE_INL_HPP

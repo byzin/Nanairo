@@ -1,5 +1,5 @@
 /*!
-  \file rough_conductor_surface.cpp
+  \file layered_diffuse_surface.cpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
@@ -7,8 +7,9 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#include "rough_conductor_surface.hpp"
+#include "layered_diffuse_surface.hpp"
 // Standard C++ library
+#include <cmath>
 #include <cstddef>
 #include <utility>
 #include <vector>
@@ -17,8 +18,10 @@
 #include <QString>
 // Zisc
 #include "zisc/error.hpp"
-// Reflect
+#include "zisc/math.hpp"
+// Nanairo
 #include "fresnel.hpp"
+#include "layered_diffuse.hpp"
 #include "surface_model.hpp"
 #include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -31,7 +34,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-RoughConductorSurface::RoughConductorSurface(
+LayeredDiffuseSurface::LayeredDiffuseSurface(
     const QJsonObject& settings,
     const std::vector<const TextureModel*>& texture_list) noexcept
 {
@@ -42,22 +45,39 @@ RoughConductorSurface::RoughConductorSurface(
   \details
   No detailed.
   */
-SurfaceType RoughConductorSurface::type() const noexcept
+SurfaceType LayeredDiffuseSurface::type() const noexcept
 {
-  return SurfaceType::RoughConductor;
+  return SurfaceType::LayeredDiffuse;
+}
+
+/*!
+  */
+void LayeredDiffuseSurface::calcInternalReflectance() noexcept
+{
+  for (uint i = 0; i < SpectralDistribution::size(); ++i) {
+    const Float n = eta_[i];
+    ri_[i] = LayeredDiffuse::calcRi(n);
+  }
 }
 
 /*!
   \details
   No detailed.
   */
-void RoughConductorSurface::initialize(
+void LayeredDiffuseSurface::initialize(
     const QJsonObject& settings,
     const std::vector<const TextureModel*>& texture_list) noexcept
 {
-  const auto texture_index = SceneValue::toInt<uint>(settings,
-                                                     keyword::roughnessIndex);
-  roughness_ = texture_list[texture_index];
+  {
+    const auto texture_index = SceneValue::toInt<uint>(settings,
+                                                       keyword::reflectanceIndex);
+    reflectance_ = texture_list[texture_index];
+  }
+  {
+    const auto texture_index = SceneValue::toInt<uint>(settings,
+                                                       keyword::roughnessIndex);
+    roughness_ = texture_list[texture_index];
+  }
 
   const auto outer_refractive_index_settings =
       SceneValue::toString(settings, keyword::outerRefractiveIndex);
@@ -70,14 +90,9 @@ void RoughConductorSurface::initialize(
   const auto n2 = SpectralDistribution::makeSpectra(inner_refractive_index_settings);
   ZISC_ASSERT(!n2.hasNegative(), "The n2 contains negative value.");
 
-  const auto inner_extinction_settings =
-      SceneValue::toString(settings, keyword::innerExtinction);
-  const auto k2 = SpectralDistribution::makeSpectra(inner_extinction_settings);
-  ZISC_ASSERT(!k2.hasNegative(), "The k2 contains negative value.");
+  eta_ = n2 / n1;
 
-  const auto eta = n2 / n1;
-  const auto eta_k = k2 / n1;
-  fresnel_0deg_ = Fresnel::evalFresnel0(eta, eta_k);
+  calcInternalReflectance();
 }
 
 } // namespace nanairo

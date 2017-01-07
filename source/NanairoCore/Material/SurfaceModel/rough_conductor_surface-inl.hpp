@@ -38,19 +38,19 @@ auto RoughConductorSurface::makeGgxConductorBrdf(
     MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
   // Get the roughness
-  constexpr Float threshold = 0.001;
+  constexpr Float min_roughness = 0.001;
   Float roughness = roughness_->floatValue(texture_coordinate);
-  roughness = (threshold < roughness)
+  roughness = (min_roughness < roughness)
       ? roughness * roughness
-      : threshold * threshold;
+      : min_roughness * min_roughness;
   ZISC_ASSERT(zisc::isInClosedBounds(roughness, 0.0, 1.0),
               "The roughness is out of the range [0, 1].");
 
-  const auto reflectance_0deg = sample(reflectance_0deg_, wavelengths);
+  const auto fresnel_0deg = sample(fresnel_0deg_, wavelengths);
 
   // Make GGX BRDF
   using Brdf = GgxConductorBrdf<kSampleSize>;
-  auto brdf = memory_pool.allocate<Brdf>(roughness, reflectance_0deg);
+  auto brdf = memory_pool.allocate<Brdf>(roughness, fresnel_0deg);
   return ShaderPointer<kSampleSize>{brdf};
 }
 

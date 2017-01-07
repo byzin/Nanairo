@@ -31,8 +31,8 @@ namespace nanairo {
   No detailed.
   */
 template <uint kSampleSize> inline
-SpecularBrdf<kSampleSize>::SpecularBrdf(const Spectra& reflectance_0deg) noexcept :
-    reflectance_0deg_{reflectance_0deg}
+SpecularBrdf<kSampleSize>::SpecularBrdf(const Spectra& fresnel_0deg) noexcept :
+    fresnel_0deg_{fresnel_0deg}
 {
 }
 
@@ -50,7 +50,7 @@ auto SpecularBrdf<kSampleSize>::sample(
   const Float cos_ni = -zisc::dot(normal, *vin);
   ZISC_ASSERT(zisc::isInClosedBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
   const auto vout = Fresnel::calcReflectionDirection(*vin, normal);
-  const auto weight = Fresnel::evalConductorEquation(cos_ni, reflectance_0deg_);
+  const auto weight = Fresnel::evalFresnel(cos_ni, fresnel_0deg_);
   return std::make_tuple(SampledDirection{vout, 1.0}, std::move(weight));
 }
 

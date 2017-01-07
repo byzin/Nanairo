@@ -402,6 +402,7 @@ void ProbabilisticPpm<kSampleSize>::traceCameraPath(
     const auto bxdf = surface.makeBxdf(intersection.textureCoordinate(),
                                        intersection.isReverseFace(),
                                        wavelengths,
+                                       sampler,
                                        memory_pool);
     wavelength_is_selected = wavelength_is_selected || bxdf->wavelengthIsSelected();
 
@@ -487,6 +488,7 @@ void ProbabilisticPpm<kSampleSize>::tracePhoton(
     const auto bxdf = surface.makeBxdf(intersection.textureCoordinate(),
                                        intersection.isReverseFace(),
                                        wavelengths,
+                                       sampler,
                                        memory_pool);
     wavelength_is_selected = wavelength_is_selected || bxdf->wavelengthIsSelected();
 

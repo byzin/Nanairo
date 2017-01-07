@@ -17,6 +17,7 @@
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "cloth_surface.hpp"
+#include "layered_diffuse_surface.hpp"
 #include "rough_conductor_surface.hpp"
 #include "rough_dielectric_surface.hpp"
 #include "smooth_conductor_surface.hpp"
@@ -41,6 +42,7 @@ auto SurfaceModel::makeBxdf(
     const Point2& texture_coordinate,
     const bool is_reverse_face,
     const WavelengthSamples<kSampleSize>& wavelengths,
+    Sampler& sampler,
     MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
 {
   using zisc::cast;
@@ -70,8 +72,9 @@ auto SurfaceModel::makeBxdf(
     break;
    }
    case SurfaceType::LayeredDiffuse: {
-     zisc::raiseError("LayeredDiffuse isn't implemented.");
-     break;
+    shader = makeInterfacedLambertianBrdf(texture_coordinate, wavelengths,
+                                          sampler, memory_pool);
+    break;
    }
    case SurfaceType::Cloth: {
     shader = makeMicrocylinderClothBrdf(texture_coordinate, wavelengths, memory_pool);

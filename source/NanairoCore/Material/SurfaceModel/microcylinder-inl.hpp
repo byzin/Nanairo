@@ -27,6 +27,89 @@ namespace nanairo {
 /*!
   */
 inline
+Float Microcylinder::evalPdf(const Vector3& vin,
+                             const Vector3& vout,
+                             const Vector3& normal,
+                             const Float k_d,
+                             const Float gamma_r,
+                             const Float gamma_v) noexcept
+{
+  const auto angles = calcAngles(vin, vout, normal);
+  const Float theta_i = std::get<0>(angles);
+  const Float phi_i = std::get<1>(angles);
+  const Float theta_o = std::get<2>(angles);
+  const Float phi_o = std::get<3>(angles);
+  return calcPdf(theta_i, phi_i, theta_o, phi_o, k_d, gamma_r, gamma_v);
+}
+
+/*!
+  */
+template <uint kSampleSize> inline
+SampledSpectra<kSampleSize> Microcylinder::evalReflectance(
+    const Vector3& vin,
+    const Vector3& vout,
+    const Vector3& normal,
+    const SampledSpectra<kSampleSize>& albedo,
+    const Float n,
+    const Float k_d,
+    const Float gamma_r,
+    const Float gamma_v,
+    const Float rho,
+    Float* pdf) noexcept
+{
+  const auto angles = calcAngles(vin, vout, normal);
+  const Float theta_i = std::get<0>(angles);
+  const Float phi_i = std::get<1>(angles);
+  const Float theta_o = std::get<2>(angles);
+  const Float phi_o = std::get<3>(angles);
+
+  // Calculate the direction pdf
+  if (pdf != nullptr)
+    *pdf = calcPdf(theta_i, phi_i, theta_o, phi_o, k_d, gamma_r, gamma_v);
+
+  // Calculate the reflectance
+  const auto f = calcReflectance(theta_i, phi_i, theta_o, phi_o, albedo,
+                                 n, k_d, gamma_r, gamma_v, rho);
+  return f;
+}
+
+/*!
+  */
+template <uint kSampleSize> inline
+std::tuple<SampledDirection, SampledSpectra<kSampleSize>>
+Microcylinder::sample(const Vector3& vin,
+                      const Vector3& normal,
+                      const SampledSpectra<kSampleSize>& albedo,
+                      const Float n,
+                      const Float k_d,
+                      const Float gamma_r,
+                      const Float gamma_v,
+                      const Float rho,
+                      Sampler& sampler) noexcept
+{
+  // Sample a reflection direction
+  const auto sample_result = SampledMicrocylinderDir::sample(vin, normal, k_d,
+                                                             gamma_r, gamma_v,
+                                                             sampler);
+  const auto& sampled_vout = sample_result.direction();
+  const Float theta_i = sample_result.thetaI();
+  const Float phi_i = sample_result.phiI();
+  const Float theta_o = sample_result.thetaO();
+  const Float phi_o = sample_result.phiO();
+  // Calculate the reflectance
+  const auto reflectance = calcReflectance(theta_i, phi_i, theta_o, phi_o, albedo,
+                                           n, k_d, gamma_r, gamma_v, rho);
+  const Float cos_n = zisc::dot(normal, sampled_vout.direction());
+  ZISC_ASSERT(zisc::isInBounds(cos_n, 0.0, 1.0),
+              "The dot(n, o) is out of range [0, 1].");
+  const auto weight = reflectance * (cos_n * sampled_vout.inversePdf());
+  return std::make_tuple(sampled_vout, weight);
+}
+
+
+/*!
+  */
+inline
 Float Microcylinder::calcEffectiveAngle(const Float theta_i,
                                         const Float theta_o) noexcept
 {
@@ -123,93 +206,13 @@ Float Microcylinder::evalVolumeLongitudinalAnglePdf(const Float theta_i,
 /*!
   */
 inline
-Float Microcylinder::evalPdf(const Vector3& vin,
-                             const Vector3& vout,
-                             const Vector3& normal,
-                             const Float k_d,
-                             const Float gamma_r,
-                             const Float gamma_v) noexcept
-{
-  const auto angles = calcAngles(vin, vout, normal);
-  const Float theta_i = std::get<0>(angles);
-  const Float phi_i = std::get<1>(angles);
-  const Float theta_o = std::get<2>(angles);
-  const Float phi_o = std::get<3>(angles);
-  return calcPdf(theta_i, phi_i, theta_o, phi_o, k_d, gamma_r, gamma_v);
-}
-
-/*!
-  */
-template <uint kSampleSize> inline
-SampledSpectra<kSampleSize> Microcylinder::evalReflectance(
-    const Vector3& vin,
-    const Vector3& vout,
-    const Vector3& normal,
-    const SampledSpectra<kSampleSize>& albedo,
-    const Float n,
-    const Float k_d,
-    const Float gamma_r,
-    const Float gamma_v,
-    const Float rho,
-    Float* pdf) noexcept
-{
-  const auto angles = calcAngles(vin, vout, normal);
-  const Float theta_i = std::get<0>(angles);
-  const Float phi_i = std::get<1>(angles);
-  const Float theta_o = std::get<2>(angles);
-  const Float phi_o = std::get<3>(angles);
-  // Calculate the direction pdf
-  if (pdf != nullptr)
-    *pdf = calcPdf(theta_i, phi_i, theta_o, phi_o, k_d, gamma_r, gamma_v);
-  // Fresnel equation
-  const Float fresnel = calcFresnelReflectance(theta_i, phi_i, theta_o, phi_o, n);
-  return calcReflectance(theta_i, phi_i, theta_o, phi_o, albedo,
-                         n, k_d, gamma_r, gamma_v, rho, fresnel);
-}
-
-/*!
-  */
-template <uint kSampleSize> inline
-std::tuple<SampledDirection, SampledSpectra<kSampleSize>>
-Microcylinder::sample(const Vector3& vin,
-                      const Vector3& normal,
-                      const SampledSpectra<kSampleSize>& albedo,
-                      const Float n,
-                      const Float k_d,
-                      const Float gamma_r,
-                      const Float gamma_v,
-                      const Float rho,
-                      Sampler& sampler) noexcept
-{
-  // Sample a reflection direction
-  const auto sample_result = SampledMicrocylinderDir::sample(vin, normal, k_d,
-                                                             gamma_r, gamma_v,
-                                                             sampler);
-  const auto& sampled_vout = sample_result.direction();
-  const Float theta_i = sample_result.thetaI();
-  const Float phi_i = sample_result.phiI();
-  const Float theta_o = sample_result.thetaO();
-  const Float phi_o = sample_result.phiO();
-  // Calculate the fresnel term
-  const Float fresnel = calcFresnelReflectance(theta_i, phi_i, theta_o, phi_o, n);
-  // Calculate the reflectance
-  const auto reflectance = calcReflectance(theta_i, phi_i, theta_o, phi_o, albedo,
-                                           n, k_d, gamma_r, gamma_v, rho, fresnel);
-  const Float cos_n = zisc::dot(normal, sampled_vout.direction());
-  ZISC_ASSERT(zisc::isInBounds(cos_n, 0.0, 1.0),
-              "The dot(n, o) is out of range [0, 1].");
-  const auto weight = reflectance * (cos_n * sampled_vout.inversePdf());
-  return std::make_tuple(sampled_vout, weight);
-}
-
-/*!
-  */
-inline
 std::tuple<Float, Float, Float, Float>
 Microcylinder::calcAngles(const Vector3& vin,
                           const Vector3& vout,
                           const Vector3& normal) noexcept
 {
+  using zisc::kPi;
+
   // Change of basis of the incident vector
   const auto transformation = Transformation::makeChangeOfBasisToLocal(normal);
   // Incident vector
@@ -217,24 +220,19 @@ Microcylinder::calcAngles(const Vector3& vin,
   ZISC_ASSERT(isUnitVector(incident_vector), "Incident vector isn't unit vector.");
   const Float theta_i = zisc::asin(incident_vector[0]);
   const Float phi_i = zisc::atan(incident_vector[1] / incident_vector[2]);
-  ZISC_ASSERT(
-      zisc::isInClosedBounds(theta_i, -0.5*zisc::kPi<Float>, 0.5*zisc::kPi<Float>),
-      "The theta_i is out of range [-pi/2, pi/2].");
-  ZISC_ASSERT(
-      zisc::isInClosedBounds(phi_i, -0.5*zisc::kPi<Float>, 0.5*zisc::kPi<Float>),
-      "The phi_i is out of range [-pi/2, pi/2].");
+  ZISC_ASSERT(zisc::isInClosedBounds(theta_i, -0.5*kPi<Float>, 0.5*kPi<Float>),
+              "The theta_i is out of range [-pi/2, pi/2].");
+  ZISC_ASSERT(zisc::isInClosedBounds(phi_i, -0.5*kPi<Float>, 0.5*kPi<Float>),
+              "The phi_i is out of range [-pi/2, pi/2].");
   // Outgoing vector
   const auto outgoing_vector = transformation * vout;
   ZISC_ASSERT(isUnitVector(outgoing_vector), "Outgoing vector isn't unit vector.");
   const Float theta_o = zisc::asin(outgoing_vector[0]);
   const Float phi_o = zisc::atan(outgoing_vector[1] / outgoing_vector[2]);
-  ZISC_ASSERT(
-      zisc::isInClosedBounds(theta_o, -0.5*zisc::kPi<Float>, 0.5*zisc::kPi<Float>),
-      "The theta_o is out of range [-pi/2, pi/2].");
-  ZISC_ASSERT(
-      zisc::isInClosedBounds(phi_o, -0.5*zisc::kPi<Float>, 0.5*zisc::kPi<Float>),
-      "The phi_o is out of range [-pi/2, pi/2].");
-
+  ZISC_ASSERT(zisc::isInClosedBounds(theta_o, -0.5*kPi<Float>, 0.5*kPi<Float>),
+              "The theta_o is out of range [-pi/2, pi/2].");
+  ZISC_ASSERT(zisc::isInClosedBounds(phi_o, -0.5*kPi<Float>, 0.5*kPi<Float>),
+              "The phi_o is out of range [-pi/2, pi/2].");
   return std::make_tuple(theta_i, phi_i, theta_o, phi_o);
 }
 
@@ -250,14 +248,9 @@ Float Microcylinder::calcFresnelReflectance(const Float theta_i,
   const Float theta_d = calcEffectiveAngle(theta_i, theta_o);
   const Float phi_d = phi_i - phi_o;
   const Float cos_n = zisc::cos(theta_d) * zisc::cos(0.5 * phi_d);
-  const auto result = Fresnel::evalG(n, cos_n);
-  const bool is_perfect_reflection = !std::get<0>(result);
-  const Float g = std::get<1>(result);
-  const Float fresnel = (!is_perfect_reflection)
-      ? Fresnel::evalDielectricEquation(cos_n, g)
-      : 1.0;
-  ZISC_ASSERT(zisc::isInClosedBounds(fresnel, 0.0, 1.0),
-              "Fresnel reflectance isn&t [0, 1].");
+  ZISC_ASSERT(zisc::isInClosedBounds(cos_n, 0.0, 1.0),
+              "The cos(n) isn't [0, 1].");
+  const Float fresnel = Fresnel::evalFresnel(n, cos_n);
   return fresnel;
 }
 
@@ -293,13 +286,13 @@ SampledSpectra<kSampleSize> Microcylinder::calcReflectance(
     const Float k_d,
     const Float gamma_r,
     const Float gamma_v,
-    const Float rho,
-    const Float fresnel) noexcept
+    const Float rho) noexcept
 {
   const Float theta_d = calcEffectiveAngle(theta_i, theta_o);
-  // Calculate the reflectance
   const Float k = evalShadowingMasking(phi_i, phi_o, rho) /
                   zisc::power<2>(zisc::cos(theta_d));
+  // Calculate the reflectance
+  const Float fresnel = calcFresnelReflectance(theta_i, phi_i, theta_o, phi_o, n);
   const Float f_r = evalSurfaceScattering(theta_i, phi_i, theta_o, phi_o, gamma_r);
   SampledSpectra<kSampleSize> reflectance{albedo.wavelengths(),
                                           fresnel * f_r * k};
@@ -396,14 +389,7 @@ Float Microcylinder::evalVolumeScattering(const Float theta_i,
     const Float cos_m = zisc::sqrt(1.0 - zisc::power<2>(sin_m));
     ZISC_ASSERT(zisc::isInClosedBounds(cos_m, 0.0, 1.0),
                 "The cos_m is out of range [0, 1].");
-    const auto result = Fresnel::evalG(inv_n, cos_m);
-    const bool is_perfect_reflection = !std::get<0>(result);
-    const Float g = std::get<1>(result);
-    fresnel = (!is_perfect_reflection)
-        ? Fresnel::evalDielectricEquation(cos_m, g)
-        : 1.0;
-    ZISC_ASSERT(zisc::isInClosedBounds(fresnel, 0.0, 1.0),
-                "Fresnel reflectance isn&t [0, 1].");
+    fresnel = Fresnel::evalFresnel(n, cos_m);
   }
   const Float theta_h = calcHalfAngle(theta_i, theta_o);
   return (fresnel != 1.0)

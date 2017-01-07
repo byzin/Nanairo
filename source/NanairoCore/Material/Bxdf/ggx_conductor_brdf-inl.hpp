@@ -32,8 +32,8 @@ namespace nanairo {
 template <uint kSampleSize> inline
 GgxConductorBrdf<kSampleSize>::GgxConductorBrdf(
     const Float roughness,
-    const Spectra& reflectance_0deg) noexcept :
-        reflectance_0deg_{reflectance_0deg},
+    const Spectra& fresnel_0deg) noexcept :
+        fresnel_0deg_{fresnel_0deg},
         roughness_{roughness}
 {
 }
@@ -64,7 +64,7 @@ auto GgxConductorBrdf<kSampleSize>::evalRadiance(
     const Vector3& normal,
     const Wavelengths& /* wavelengths */) const noexcept -> Spectra
 {
-  const auto& r0 = reflectance_0deg_;
+  const auto& r0 = fresnel_0deg_;
   const auto f = MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, normal, r0);
   return f;
 }
@@ -80,7 +80,7 @@ auto GgxConductorBrdf<kSampleSize>::evalRadianceAndPdf(
     const Vector3& normal,
     const Wavelengths& /* wavelengths */) const noexcept -> std::tuple<Spectra, Float>
 {
-  const auto& r0 = reflectance_0deg_;
+  const auto& r0 = fresnel_0deg_;
   Float pdf = 0.0;
   const auto f =
       MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, normal, r0, &pdf);
@@ -95,33 +95,41 @@ template <uint kSampleSize>
 auto GgxConductorBrdf<kSampleSize>::sample(
     const Vector3* vin,
     const Vector3& normal,
-    const Wavelengths& /* wavelengths */,
+    const Wavelengths& wavelengths,
     Sampler& sampler) const noexcept -> std::tuple<SampledDirection, Spectra>
 {
   // Sample a microfacet normal
-  const auto sampled_m_normal =
-      SampledGgxNormal::sample(roughness_, *vin, normal, sampler);
-  const Float cos_ni = sampled_m_normal.cosNi(),
-              cos_mi = sampled_m_normal.cosMi(),
-              cos_nm = sampled_m_normal.cosNm();
-  const auto& m_normal = sampled_m_normal.microfacetNormal();
-  ZISC_ASSERT(0.0 <= cos_ni * cos_mi,
-              "Microfacet normal isn't in the same hemisphere as normal.");
-
-  // Evaluate fresnel term
-  const auto& r0 = reflectance_0deg_;
-  const auto fresnel = Fresnel::evalConductorEquation(cos_mi, r0);
-
+  const auto m_normal = MicrofacetGgx::sampleNormal(roughness_,
+                                                    *vin,
+                                                    normal,
+                                                    sampler);
   // Get the reflection direction
-  const auto vout = Microfacet::calcReflectionDirection(*vin, m_normal);
-
-  // Evaluate the weight
+  auto vout = Microfacet::calcReflectionDirection(*vin, m_normal);
   const Float cos_no = zisc::dot(normal, vout.direction());
-  const Float cos_mo = cos_mi;
-  const auto weight = fresnel * MicrofacetGgx::evalWeight(roughness_, cos_ni, cos_no,
-                                                          cos_mi, cos_mo, cos_nm);
-  ZISC_ASSERT(!weight.hasNegative(), "Weight contains negative.");
 
+  Spectra weight{wavelengths};
+  if (0.0 < cos_no) {
+    const Float cos_ni = -zisc::dot(normal, *vin),
+                cos_mi = -zisc::dot(m_normal.direction(), *vin);
+    ZISC_ASSERT(0.0 <= cos_ni * cos_mi,
+                "Microfacet normal isn't in the same hemisphere as normal.");
+
+    // Evaluate fresnel term
+    const auto& r0 = fresnel_0deg_;
+    const auto fresnel = Fresnel::evalFresnel(cos_mi, r0);
+
+    // Evaluate the weight
+    const Float cos_mo = cos_mi;
+    const Float cos_nm = zisc::dot(m_normal.direction(), normal);
+    weight = fresnel * MicrofacetGgx::evalWeight(roughness_,
+                                                 cos_ni, cos_no,
+                                                 cos_mi, cos_mo,
+                                                 cos_nm);
+    ZISC_ASSERT(!weight.hasNegative(), "Weight contains negative.");
+  }
+  else {
+    vout.setPdf(0.0);
+  }
   return std::make_tuple(std::move(vout), std::move(weight));
 }
 

@@ -140,6 +140,12 @@ ApplicationWindow {
 
       MenuItem {
         enabled: !isRenderingMode
+        text: Nanairo.layeredDiffuseTestScene
+        onTriggered: loadPresetSceneData(text)
+      }
+
+      MenuItem {
+        enabled: !isRenderingMode
         text: Nanairo.clothTestScene
         onTriggered: loadPresetSceneData(text)
       }

@@ -128,7 +128,7 @@ void SampledDirection::setInversePdf(const Float inverse_pdf) noexcept
 inline
 void SampledDirection::setPdf(const Float pdf) noexcept
 {
-  inverse_pdf_ = 1.0 / pdf;
+  inverse_pdf_ = (pdf != 0.0) ? (1.0 / pdf) : 0.0;
 }
 
 /*!

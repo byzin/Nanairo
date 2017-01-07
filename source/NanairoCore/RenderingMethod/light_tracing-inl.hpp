@@ -305,6 +305,7 @@ void LightTracing<kSampleSize>::traceLightPath(
     const auto bxdf = surface.makeBxdf(intersection.textureCoordinate(),
                                        intersection.isReverseFace(),
                                        wavelengths,
+                                       sampler,
                                        memory_pool);
     Method::updateSelectedWavelengthInfo(bxdf,
                                          &light_contribution,

@@ -33,6 +33,8 @@ SampledMicrocylinderDir SampledMicrocylinderDir::sample(const Vector3& vin,
                                                         const Float gamma_v,
                                                         Sampler& sampler) noexcept
 {
+  using zisc::kPi;
+
   // Change of basis of the incident vector
   const auto transformation = Transformation::makeChangeOfBasisToLocal(normal);
   // Incident vector
@@ -40,18 +42,19 @@ SampledMicrocylinderDir SampledMicrocylinderDir::sample(const Vector3& vin,
   ZISC_ASSERT(isUnitVector(incident_vector), "Incident vector isn't unit vector.");
   const Float theta_i = zisc::asin(incident_vector[0]);
   const Float phi_i = zisc::atan(incident_vector[1] / incident_vector[2]);
-  ZISC_ASSERT(zisc::isInBounds(phi_i, -0.5*zisc::kPi<Float>, 0.5*zisc::kPi<Float>),
+  ZISC_ASSERT(zisc::isInBounds(phi_i, -0.5*kPi<Float>, 0.5*kPi<Float>),
               "The phi_i is out of range [-pi/2, pi/2).");
-  ZISC_ASSERT(zisc::isInBounds(theta_i, -0.5*zisc::kPi<Float>, 0.5*zisc::kPi<Float>),
+  ZISC_ASSERT(zisc::isInBounds(theta_i, -0.5*kPi<Float>, 0.5*kPi<Float>),
               "The theta_i is out of range [-pi/2, pi/2).");
   // Sample a direction
   const auto result = sampleAngles(theta_i, phi_i, k_d, gamma_r, gamma_v, sampler);
   // Ohtgoing vector
   const Float theta_o = std::get<0>(result);
   const Float phi_o = std::get<1>(result);
+  const Float cos_o = zisc::cos(theta_o);
   Vector3 vout{zisc::sin(theta_o),
-               zisc::cos(theta_o) * zisc::sin(phi_o),
-               zisc::cos(theta_o) * zisc::cos(phi_o)};
+               cos_o * zisc::sin(phi_o),
+               cos_o * zisc::cos(phi_o)};
   vout = transformation.transposedMatrix() * vout;
   const Float pdf = std::get<2>(result);
   ZISC_ASSERT(isUnitVector(vout), "The sampled vout isn't unit vector.");

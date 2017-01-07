@@ -43,10 +43,9 @@ Float MicrofacetGgx::evalReflectance(const Float roughness,
   const Float cos_no = zisc::dot(normal, vout);
   const Float cos_mo = cos_mi;
   const Float cos_nm = zisc::dot(normal, m_normal);
-  ZISC_ASSERT(zisc::isInBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
-  ZISC_ASSERT(zisc::isInBounds(cos_nm, 0.0, 1.0), "cos_nm isn't [0, 1].");
-  ZISC_ASSERT(0.0 <= cos_ni * cos_mi,
-              "Microfacet normal isn't in the same hemisphere as normal.");
+  ZISC_ASSERT(zisc::isInClosedBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInClosedBounds(cos_mi, 0.0, 1.0), "cos_mi isn't [0, 1].");
+//  ZISC_ASSERT(zisc::isInClosedBounds(cos_nm, 0.0, 1.0), "cos_nm isn't [0, 1].");
 
   // Evaluate D
   const Float d = evalD(roughness, cos_nm);
@@ -59,24 +58,18 @@ Float MicrofacetGgx::evalReflectance(const Float roughness,
     return 0.0;
 
   // Evaluate the fresnel reflectance
-  const auto result = Fresnel::evalG(n, cos_mi);
-  const bool is_perfect_reflection = !std::get<0>(result);
-  const Float g = std::get<1>(result);
-  const Float fresnel = (!is_perfect_reflection)
-      ? Fresnel::evalDielectricEquation(cos_mi, g)
-      : 1.0; // Perfect reflection
-  ZISC_ASSERT(zisc::isInClosedBounds(fresnel, 0.0, 1.0),
-              "Fresnel reflectance isn't [0, 1].");
+  const Float fresnel = Fresnel::evalFresnel(n, cos_mi);
   if (fresnel == 0.0)
     return 0.0;
-
-  // Calculate the pdf
-  if (pdf != nullptr)
-    *pdf = fresnel * calcReflectionPdf(roughness, d, cos_ni, cos_mi, cos_nm);
 
   // Calculate reflectance
   const Float f = (fresnel * g2 * d) / (4.0 * cos_ni * cos_no);
   ZISC_ASSERT(0.0 <= f, "Reflectance isn't positive.");
+
+  // Calculate the pdf
+  if (pdf != nullptr)
+    *pdf = calcReflectionPdf(roughness, d, cos_ni, cos_mi, cos_nm);
+
   return f;
 }
 
@@ -99,10 +92,9 @@ Float MicrofacetGgx::evalTransmittance(const Float roughness,
   const Float cos_no = zisc::dot(normal, vout);
   const Float cos_mo = zisc::dot(m_normal, vout);
   const Float cos_nm = zisc::dot(normal, m_normal);
-  ZISC_ASSERT(zisc::isInBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
-  ZISC_ASSERT(zisc::isInBounds(cos_nm, 0.0, 1.0), "cos_nm isn't [0, 1].");
-  ZISC_ASSERT(0.0 <= cos_ni * cos_mi,
-              "Microfacet normal isn't in the same hemisphere as normal.");
+  ZISC_ASSERT(zisc::isInClosedBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
+  ZISC_ASSERT(zisc::isInClosedBounds(cos_mi, 0.0, 1.0), "cos_mi isn't [0, 1].");
+//  ZISC_ASSERT(zisc::isInClosedBounds(cos_nm, 0.0, 1.0), "cos_nm isn't [0, 1].");
 
   // Evaluate D
   const Float d = evalD(roughness, cos_nm);
@@ -115,29 +107,21 @@ Float MicrofacetGgx::evalTransmittance(const Float roughness,
     return 0.0;
 
   // Evaluate the fresnel reflectance
-  const auto result = Fresnel::evalG(n, cos_mi);
-  const bool is_perfect_reflection = !std::get<0>(result);
-  const Float g = std::get<1>(result);
-  const Float fresnel = (!is_perfect_reflection)
-      ? Fresnel::evalDielectricEquation(cos_mi, g)
-      : 1.0; // Perfect reflection
-  ZISC_ASSERT(zisc::isInBounds(fresnel, 0.0, 1.0),
-              "Fresnel reflectance isn't [0, 1].");
+  const Float fresnel = Fresnel::evalFresnel(n, cos_mi);
   if (fresnel == 1.0)
     return 0.0;
-
-  // Calculate the pdf
-  if (pdf != nullptr) {
-    *pdf = (1.0 - fresnel) *
-           calcRefractionPdf(roughness, d, cos_ni, cos_mi, cos_mo, cos_nm, n);
-  }
 
   // Calculate transmittance
   const Float k1 = (cos_mi * cos_mo) / (cos_ni * cos_no);
   ZISC_ASSERT(0.0 < k1, "The k1 isn't positive.");
-  const Float k2 = (n * n) / zisc::power<2>(cos_mi + n * cos_mo);
+  const Float k2 = zisc::power<2>(n) / zisc::power<2>(cos_mi + n * cos_mo);
   const Float f = (1.0 - fresnel) * (k1 * k2) * g2 * d;
   ZISC_ASSERT(0.0 < f, "Transmittance isn't positive.");
+
+  // Calculate the pdf
+  if (pdf != nullptr)
+    *pdf = calcRefractionPdf(roughness, d, cos_ni, cos_mi, cos_mo, cos_nm, n);
+
   return f;
 }
 
@@ -145,10 +129,11 @@ Float MicrofacetGgx::evalTransmittance(const Float roughness,
   \details
   No detailed.
   */
-SampledGgxNormal SampledGgxNormal::sample(const Float roughness,
-                                          const Vector3& vin,
-                                          const Vector3& normal,
-                                          Sampler& sampler) noexcept
+SampledDirection MicrofacetGgx::sampleNormal(const Float roughness,
+                                             const Vector3& vin,
+                                             const Vector3& normal,
+                                             Sampler& sampler,
+                                             const bool calc_pdf) noexcept
 {
   // Change of basis of the incident vector
   const auto transformation = Transformation::makeChangeOfBasisToLocal(normal);
@@ -165,17 +150,17 @@ SampledGgxNormal SampledGgxNormal::sample(const Float roughness,
   ZISC_ASSERT(zisc::isInClosedBounds(cos_nm, 0.0, 1.0), "cos_nm isn't [0, 1].");
 
   // Calculate the pdf of the microfacet normal
-  const Float g1 = MicrofacetGgx::evalG1(roughness, cos_ni, cos_mi, cos_nm);
-  const Float d = MicrofacetGgx::evalD(roughness, cos_nm);
-  const Float inverse_pdf = cos_ni / (cos_mi * d * g1);
-  ZISC_ASSERT(0.0 < inverse_pdf, "The pdf is negative.");
+  Float inverse_pdf = 0.0;
+  if (calc_pdf) {
+    const Float g1 = MicrofacetGgx::evalG1(roughness, cos_ni, cos_mi, cos_nm);
+    const Float d = MicrofacetGgx::evalD(roughness, cos_nm);
+    inverse_pdf = cos_ni / (cos_mi * d * g1);
+    ZISC_ASSERT(0.0 < inverse_pdf, "The pdf is negative.");
+  }
 
   m_normal = transformation.transposedMatrix() * m_normal;
   ZISC_ASSERT(isUnitVector(m_normal), "Microfacet normal isn't unit vector.");
-  return SampledGgxNormal{SampledDirection{m_normal, inverse_pdf},
-                          cos_ni,
-                          cos_mi,
-                          cos_nm};
+  return SampledDirection{m_normal, inverse_pdf};
 }
 
 /*!
@@ -183,7 +168,7 @@ SampledGgxNormal SampledGgxNormal::sample(const Float roughness,
   No detailed.
   */
 template <>
-Vector3 SampledGgxNormal::Smith::sampleMicrofacetNormal(const Float roughness,
+Vector3 MicrofacetGgx::Smith::sampleMicrofacetNormal(const Float roughness,
                                                         const Vector3& vin,
                                                         Sampler& sampler) noexcept
 {
@@ -219,7 +204,7 @@ Vector3 SampledGgxNormal::Smith::sampleMicrofacetNormal(const Float roughness,
   No detailed.
   */
 template <MicrofacetGgx::GgxMethodType kMethod>
-std::tuple<Float, Float> SampledGgxNormal::GgxMethod<kMethod>::smithSampleSlopeXY(
+std::tuple<Float, Float> MicrofacetGgx::GgxMethod<kMethod>::smithSampleSlopeXY(
     const Float cos_theta,
     Sampler& sampler) noexcept
 {
@@ -267,8 +252,8 @@ std::tuple<Float, Float> SampledGgxNormal::GgxMethod<kMethod>::smithSampleSlopeX
   No detailed.
   */
 template <MicrofacetGgx::GgxMethodType kMethod> inline
-Vector3 SampledGgxNormal::GgxMethod<kMethod>::smithStretch(const Float roughness,
-                                                           const Vector3& vin) noexcept
+Vector3 MicrofacetGgx::GgxMethod<kMethod>::smithStretch(const Float roughness,
+                                                        const Vector3& vin) noexcept
 {
   const Vector3 vin_dash{roughness * vin[0], roughness * vin[1], vin[2]};
   return vin_dash.normalized();
@@ -279,16 +264,16 @@ Vector3 SampledGgxNormal::GgxMethod<kMethod>::smithStretch(const Float roughness
   No detailed.
   */
 template <>
-Vector3 SampledGgxNormal::VCavity::sampleMicrofacetNormal(const Float roughness,
-                                                          const Vector3& vin,
-                                                          Sampler& sampler) noexcept
+Vector3 MicrofacetGgx::VCavity::sampleMicrofacetNormal(const Float roughness,
+                                                       const Vector3& vin,
+                                                       Sampler& sampler) noexcept
 {
   const Vector3 m_normal1 = vcavitySampleMicrofacetNormal(roughness, sampler);
   const Vector3 m_normal2{-m_normal1[0], -m_normal1[1], m_normal1[2]};
   const Float cos_m1 = zisc::clamp(zisc::dot(m_normal1, vin), 0.0, 1.0);
   const Float cos_m2 = zisc::clamp(zisc::dot(m_normal2, vin), 0.0, 1.0);
   const Float u = sampler.sample(0.0, 1.0);
-  const auto& m_normal = ((cos_m2 / (cos_m1 + cos_m2)) < u)
+  const auto m_normal = ((cos_m2 / (cos_m1 + cos_m2)) < u)
       ? m_normal1
       : m_normal2;
   return m_normal;
@@ -296,8 +281,8 @@ Vector3 SampledGgxNormal::VCavity::sampleMicrofacetNormal(const Float roughness,
 
 /*!
   */
-template <MicrofacetGgx::GgxMethodType kMethod> inline
-Vector3 SampledGgxNormal::GgxMethod<kMethod>::vcavitySampleMicrofacetNormal(
+template <MicrofacetGgx::GgxMethodType kMethod>
+Vector3 MicrofacetGgx::GgxMethod<kMethod>::vcavitySampleMicrofacetNormal(
     const Float roughness,
     Sampler& sampler) noexcept
 {
@@ -307,8 +292,9 @@ Vector3 SampledGgxNormal::GgxMethod<kMethod>::vcavitySampleMicrofacetNormal(
   const Float theta = zisc::atan(roughness * zisc::sqrt(u1 / (1.0 - u1)));
   const Float phi = 2.0 * zisc::kPi<Float> * (u2 - 0.5);
 
-  const Vector3 m_normal{zisc::sin(theta) * zisc::cos(phi),
-                         zisc::sin(theta) * zisc::sin(phi),
+  const Float sin_theta = zisc::sin(theta);
+  const Vector3 m_normal{sin_theta * zisc::cos(phi),
+                         sin_theta * zisc::sin(phi),
                          zisc::cos(theta)};
   ZISC_ASSERT(isUnitVector(m_normal), "The microfacet normal isn't unit vector.");
   return m_normal;
@@ -317,11 +303,11 @@ Vector3 SampledGgxNormal::GgxMethod<kMethod>::vcavitySampleMicrofacetNormal(
 /*!
   */
 inline
-Vector3 SampledGgxNormal::sampleMicrofacetNormal(const Float roughness,
-                                                 const Vector3& vin,
-                                                 Sampler& sampler) noexcept
+Vector3 MicrofacetGgx::sampleMicrofacetNormal(const Float roughness,
+                                              const Vector3& vin,
+                                              Sampler& sampler) noexcept
 {
-  using SamplerMethod = GgxMethod<MicrofacetGgx::kUsedType>;
+  using SamplerMethod = GgxMethod<kUsedType>;
   return SamplerMethod::sampleMicrofacetNormal(roughness, vin, sampler);
 }
 

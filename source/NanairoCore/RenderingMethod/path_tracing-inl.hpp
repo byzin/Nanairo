@@ -362,6 +362,7 @@ void PathTracing<kSampleSize>::traceCameraPath(
     const auto bxdf = surface.makeBxdf(intersection.textureCoordinate(), 
                                        intersection.isReverseFace(),
                                        wavelengths,
+                                       sampler,
                                        memory_pool);
     Method::updateSelectedWavelengthInfo(bxdf,
                                          &camera_contribution,

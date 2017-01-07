@@ -78,13 +78,6 @@ class MicrofacetGgx : public Microfacet
                                  const Vector3& vout,
                                  const Vector3& normal) noexcept;
 
-  //! Evaluate the reflection pdf fo the dielectric
-  static Float evalReflectionPdf(const Float roughness,
-                                 const Vector3& vin,
-                                 const Vector3& vout,
-                                 const Vector3& normal,
-                                 const Float n) noexcept;
-
   //! Evaluate the refraction pdf fo the dielectric
   static Float evalRefractionPdf(const Float roughness,
                                  const Vector3& vin,
@@ -107,6 +100,13 @@ class MicrofacetGgx : public Microfacet
                           const Float cos_mi,
                           const Float cos_mo,
                           const Float cos_nm) noexcept;
+
+  //! Sample a GGX microfacet normal
+  static SampledDirection sampleNormal(const Float roughness,
+                                       const Vector3& vin,
+                                       const Vector3& normal,
+                                       Sampler& sampler,
+                                       const bool calc_pdf = true) noexcept;
 
 
 //  static constexpr GgxMethodType kUsedType = GgxMethodType::kSmith;
@@ -138,70 +138,7 @@ class MicrofacetGgx : public Microfacet
                             const Float cos_mi,
                             const Float cos_mo,
                             const Float cos_nm) noexcept;
-  };
 
-  //! Calculate the pdf of the GGX reflection
-  static Float calcReflectionPdf(const Float roughness,
-                                 const Float d,
-                                 const Float cos_ni,
-                                 const Float cos_mi,
-                                 const Float cos_nm) noexcept;
-
-  //! Calculate the pdf of the GGX refraction
-  static Float calcRefractionPdf(const Float roughness,
-                                 const Float d,
-                                 const Float cos_ni,
-                                 const Float cos_mi,
-                                 const Float cos_mo,
-                                 const Float cos_nm,
-                                 const Float n) noexcept;
-
-
-  // Methods
-  using Smith = GgxMethod<GgxMethodType::kSmith>;
-  using VCavity = GgxMethod<GgxMethodType::kVCavity>;
-};
-
-/*!
-  */
-class SampledGgxNormal
-{
- public:
-  //! Initialize a instance
-  SampledGgxNormal(const SampledDirection& microfacet_normal,
-                   const Float cos_ni,
-                   const Float cos_mi,
-                   const Float cos_nm) noexcept;
-
-
-  //! Return the cos_ni
-  Float cosNi() const noexcept;
-
-  //! Return the cos_ni
-  Float cosMi() const noexcept;
-
-  //! Return the cos_ni
-  Float cosNm() const noexcept;
-
-  //! Return the microfacet normal
-  const SampledDirection& microfacetNormal() const noexcept;
-
-  //! Sample a GGX microfacet normal
-  static SampledGgxNormal sample(const Float roughness,
-                                 const Vector3& vin,
-                                 const Vector3& normal,
-                                 Sampler& sampler) noexcept;
-
-  //! Sample the microfacet normal
-  static Vector3 sampleMicrofacetNormal(const Float roughness,
-                                        const Vector3& vin,
-                                        Sampler& sampler) noexcept;
-
- private:
-  template <MicrofacetGgx::GgxMethodType kMethod>
-  class GgxMethod
-  {
-   public:
     //! Sample the microfacet normal
     static Vector3 sampleMicrofacetNormal(const Float roughness,
                                           const Vector3& vin,
@@ -221,15 +158,31 @@ class SampledGgxNormal
                                                  Sampler& sampler) noexcept;
   };
 
+  //! Calculate the pdf of the GGX reflection
+  static Float calcReflectionPdf(const Float roughness,
+                                 const Float d,
+                                 const Float cos_ni,
+                                 const Float cos_mi,
+                                 const Float cos_nm) noexcept;
+
+  //! Calculate the pdf of the GGX refraction
+  static Float calcRefractionPdf(const Float roughness,
+                                 const Float d,
+                                 const Float cos_ni,
+                                 const Float cos_mi,
+                                 const Float cos_mo,
+                                 const Float cos_nm,
+                                 const Float n) noexcept;
+
+  //! Sample the microfacet normal
+  static Vector3 sampleMicrofacetNormal(const Float roughness,
+                                        const Vector3& vin,
+                                        Sampler& sampler) noexcept;
+
+
   // Methods
-  using Smith = GgxMethod<MicrofacetGgx::GgxMethodType::kSmith>;
-  using VCavity = GgxMethod<MicrofacetGgx::GgxMethodType::kVCavity>;
-
-
-  SampledDirection microfacet_normal_;
-  Float cos_ni_,
-        cos_mi_,
-        cos_nm_;
+  using Smith = GgxMethod<GgxMethodType::kSmith>;
+  using VCavity = GgxMethod<GgxMethodType::kVCavity>;
 };
 
 //! \} Core

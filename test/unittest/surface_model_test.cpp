@@ -31,6 +31,7 @@
 #include "NanairoCore/Data/wavelength_samples.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
+#include "NanairoCore/Material/SurfaceModel/layered_diffuse_surface.hpp"
 #include "NanairoCore/Material/SurfaceModel/rough_conductor_surface.hpp"
 #include "NanairoCore/Material/SurfaceModel/smooth_diffuse_surface.hpp"
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
@@ -154,6 +155,54 @@ TEST(SurfaceModelTest, RoughConductorSurfaceTest)
                                sampler, memory_pool, brdf_name);
     testBxdfImportanceSampling(*surface, intersection, wavelengths, 
                                sampler, memory_pool, brdf_name);
+  }
+}
+
+TEST(SurfaceModelTest, LayeredDiffuseSurfaceTest)
+{
+  using namespace nanairo;
+  using zisc::cast;
+
+  // System
+  auto system = makeTestSystem(512, 512, false);
+  auto& memory_pool = system->globalMemoryPool();
+  auto& sampler = system->globalSampler();
+
+  for (int i = 1; i <= 10; ++i) {
+    const auto roughness = cast<Float>(i) / cast<Float>(10);
+    std::cout << "Roughness: " << roughness << std::endl;
+
+    // Roughness texture
+    auto texture1 = makeTestValueTexture(*system, 1.0);
+    auto texture2 = makeTestValueTexture(*system, roughness);
+    std::vector<const TextureModel*> texture_list;
+    texture_list.push_back(texture1.get());
+    texture_list.push_back(texture2.get());
+
+    // Rough conductor surface
+    const auto json_path = QStringLiteral(":/test/test_layered_diffuse_surface.json");
+    const auto surface = ::makeTestSurface<LayeredDiffuseSurface>(json_path,
+                                                                  texture_list);
+
+    // Intersection point
+    const Point3 point{0.0, 0.0, 0.0};
+    const Vector3 normal{0.0, 1.0, 0.0};
+    const IntersectionInfo intersection{point, normal, nullptr, false};
+
+    // Wavelengths
+    WavelengthSamples<1> wavelengths;
+    wavelengths[0] = CoreConfig::shortestWavelength();
+    wavelengths.setPrimaryWavelength(0);
+
+    constexpr char brdf_name[] = "Interfaced lambertian";
+    testBxdfSampling(*surface, intersection, wavelengths, 
+                     sampler, memory_pool, brdf_name, false);
+//    testBxdfHelmholtzReciprocity(*surface, intersection, wavelengths, 
+//                                 sampler, memory_pool, brdf_name);
+    testBxdfEnergyConservation(*surface, intersection, wavelengths, 
+                               sampler, memory_pool, brdf_name);
+//    testBxdfImportanceSampling(*surface, intersection, wavelengths, 
+//                               sampler, memory_pool, brdf_name);
   }
 }
 

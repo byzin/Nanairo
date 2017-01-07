@@ -68,6 +68,7 @@ class SurfaceModel
       const Point2& texture_coordinate,
       const bool is_reverse_face,
       const WavelengthSamples<kSampleSize>& wavelengths,
+      Sampler& sampler,
       MemoryPool& memory_pool) const noexcept;
 
   //! Make a surface scattering model
@@ -86,7 +87,7 @@ class SurfaceModel
       const WavelengthSamples<kSampleSize>& wavelengths,
       MemoryPool& memory_pool) const noexcept;
 
-  //! Make a specular BRDF
+  //! Make a specular BSDF
   template <uint kSampleSize>
   ShaderPointer<kSampleSize> makeSpecularBsdf(
       const bool is_reverse_face,
@@ -99,7 +100,7 @@ class SurfaceModel
       const WavelengthSamples<kSampleSize>& wavelengths,
       MemoryPool& memory_pool) const noexcept;
 
-  //! Make a GGX dielectric BRDF
+  //! Make a GGX dielectric BSDF
   template <uint kSampleSize>
   ShaderPointer<kSampleSize> makeGgxDielectricBsdf(
       const Point2& texture_coordinate,
@@ -112,6 +113,14 @@ class SurfaceModel
   ShaderPointer<kSampleSize> makeGgxConductorBrdf(
       const Point2& texture_coordinate,
       const WavelengthSamples<kSampleSize>& wavelengths,
+      MemoryPool& memory_pool) const noexcept;
+
+  //! Make a interfaced lambertian BRDF
+  template <uint kSampleSize>
+  ShaderPointer<kSampleSize> makeInterfacedLambertianBrdf(
+      const Point2& texture_coordinate,
+      const WavelengthSamples<kSampleSize>& wavelengths,
+      Sampler& sampler,
       MemoryPool& memory_pool) const noexcept;
 
   //! Make a microcylinder cloth BRDF
