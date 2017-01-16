@@ -162,7 +162,7 @@ Ray RenderingMethod<kSampleSize>::makeShadowRay(const Point3& source,
 {
   const auto ray_epsilon = rayCastEpsilon() * normal;
   ZISC_ASSERT(!isZeroVector(ray_epsilon), "Ray epsilon is zero vector.");
-  const auto& origin = source + ray_epsilon;
+  const auto origin = source + ray_epsilon;
   const auto dir = (dest - source).normalized();
   return Ray{origin, dir};
 }

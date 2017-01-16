@@ -76,7 +76,7 @@ Float ClothSurface::rho() const noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize>
+template <uint kSampleSize> inline
 auto ClothSurface::makeMicrocylinderClothBrdf(
     const Point2& texture_coordinate,
     const WavelengthSamples<kSampleSize>& wavelengths,

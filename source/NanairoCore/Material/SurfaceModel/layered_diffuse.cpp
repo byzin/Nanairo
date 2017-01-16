@@ -118,13 +118,6 @@ std::tuple<SampledDirection, Float> LayeredDiffuse::sample(const Float roughness
 
 /*!
   */
-Float LayeredDiffuse::calcRi(const Float n) noexcept
-{
-  return toRi(n, calcRe(n));
-}
-
-/*!
-  */
 Float LayeredDiffuse::calcRe(const Float n) noexcept
 {
   const Float n2 = zisc::power<2>(n);
@@ -145,16 +138,6 @@ Float LayeredDiffuse::calcRe(const Float n) noexcept
   ZISC_ASSERT(zisc::isInClosedBounds(re, 0.0, 1.0),
               "The internal reflectance is out of range [0, 1]: ", re);
   return re;
-}
-
-/*!
-  */
-Float LayeredDiffuse::evalBodyPdf(const Float cos_no) noexcept
-{
-  ZISC_ASSERT(0.0 <= cos_no, "The cos(no) is minus.");
-  constexpr Float t = 1.0 / zisc::kPi<Float>;
-  const Float pdf = t * cos_no;
-  return pdf;
 }
 
 /*!
@@ -239,18 +222,6 @@ Float LayeredDiffuse::evalPureBodyReflectance(const Vector3& vin,
 
 /*!
   */
-Float LayeredDiffuse::calcTotalBodyReflectance(const Float n,
-                                               const Float k_d,
-                                               const Float ri) noexcept
-{
-  const Float rb = zisc::power<2>(n * (1.0 - ri)) * (k_d / (1.0 - k_d * ri));
-  ZISC_ASSERT(zisc::isInClosedBounds(rb, 0.0, 1.0),
-              "The total reflectance is out of range [0, 1]: ", rb);
-  return rb;
-}
-
-/*!
-  */
 SampledDirection LayeredDiffuse::sampleReflectionDirection(const Float roughness,
                                                            const Vector3& vin,
                                                            const Vector3& normal,
@@ -295,25 +266,5 @@ SampledDirection LayeredDiffuse::sampleReflectionDirection(const Float roughness
   }
   return sampled_vout;
 }
-/*!
-  */
-Float LayeredDiffuse::toRi(const Float n, const Float re) noexcept
-{
-  const Float ri = 1.0 - (1.0 - re) / zisc::power<2>(n);
-  ZISC_ASSERT(zisc::isInClosedBounds(ri, 0.0, 1.0),
-              "The internal reflectance is out of range [0, 1]: ", ri);
-  return ri;
-}
-
-/*!
-  */
-Float LayeredDiffuse::toRe(const Float n, const Float ri) noexcept
-{
-  const Float re = 1.0 - (1.0 - ri) * zisc::power<2>(n);
-  ZISC_ASSERT(zisc::isInClosedBounds(re, 0.0, 1.0),
-              "The internal reflectance is out of range [0, 1]: ", re);
-  return re;
-}
-
 
 } // namespace nanairo

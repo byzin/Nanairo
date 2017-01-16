@@ -144,7 +144,8 @@ QRgb RgbColor::toQRgb() const noexcept
 {
   using zisc::cast;
 
-  const auto qt_color = color_ * 255.0;
+  constexpr Float scale = 255.0;
+  const auto qt_color = scale * color_;
   return qRgb(cast<int>(qt_color[0]), cast<int>(qt_color[1]), cast<int>(qt_color[2]));
 }
 

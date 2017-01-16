@@ -234,7 +234,7 @@ void LightTracing<kSampleSize>::initialize(
   \details
   No detailed.
   */
-template <uint kSampleSize>
+template <uint kSampleSize> inline
 void LightTracing<kSampleSize>::traceLightPath(
     System& system,
     Scene& scene,

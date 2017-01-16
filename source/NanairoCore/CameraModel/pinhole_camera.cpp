@@ -50,7 +50,6 @@ PinholeCamera::PinholeCamera(const QJsonObject& settings) noexcept :
   \details
   No detailed.
   */
-//! Calculate the pdf
 Float PinholeCamera::calcPdf(const Vector3& vout) const noexcept
 {
   const Float cos_theta_no = zisc::dot(normal(), vout);
@@ -59,7 +58,8 @@ Float PinholeCamera::calcPdf(const Vector3& vout) const noexcept
   return pdf;
 }
 
-//! Calculate the radiance
+/*!
+  */
 Float PinholeCamera::calcRadiance(const Vector3& vout) const noexcept
 {
   const Float cos_theta_no = zisc::dot(normal(), vout);
@@ -68,7 +68,8 @@ Float PinholeCamera::calcRadiance(const Vector3& vout) const noexcept
   return f;
 }
 
-//! Calculate the radiance and pdf
+/*!
+  */
 std::tuple<Float, Float> PinholeCamera::calcRadianceAndPdf(
     const Vector3& vout) const noexcept
 {
