@@ -26,9 +26,9 @@ namespace nanairo {
 
 // Forward declaration
 class Sampler;
-template <uint> class ShaderModel;
+class ShaderModel;
 class TextureModel;
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -40,8 +40,7 @@ template <uint> class WavelengthSamples;
 class RoughDielectricSurface : public SurfaceModel
 {
  public:
-  template <uint kSampleSize>
-  using ShaderPointer = SurfaceModel::ShaderPointer<kSampleSize>;
+  using ShaderPointer = SurfaceModel::ShaderPointer;
 
 
   //! Create a rough dielectric surface
@@ -51,12 +50,12 @@ class RoughDielectricSurface : public SurfaceModel
 
 
   //! Make a GGX BSDF
-  template <uint kSampleSize>
-  ShaderPointer<kSampleSize> makeGgxDielectricBsdf(
+  ShaderPointer makeBxdf(
       const Point2& texture_coordinate,
       const bool is_reverse_face,
-      const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const noexcept;
+      const WavelengthSamples& wavelengths,
+      Sampler& sampler,
+      MemoryPool& memory_pool) const noexcept override;
 
   //! Return the rough dielectric surface type
   SurfaceType type() const noexcept override;
@@ -74,7 +73,5 @@ class RoughDielectricSurface : public SurfaceModel
 //! \} Core
 
 } // namespace nanairo
-
-#include "rough_dielectric_surface-inl.hpp"
 
 #endif // NANAIRO_ROUGH_DIELECTRIC_SURFACE_HPP

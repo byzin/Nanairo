@@ -23,7 +23,7 @@ namespace nanairo {
 
 // Forward declaration
 class Sampler;
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -32,56 +32,51 @@ template <uint> class WavelengthSamples;
   \details
   No detailed.
   */
-template <uint kSampleSize>
-class GgxConductorBrdf : public GlossyShaderModel<kSampleSize>
+class GgxConductorBrdf : public GlossyShaderModel
 {
  public:
-  using Spectra = typename ShaderModel<kSampleSize>::Spectra;
-  using Wavelengths = typename ShaderModel<kSampleSize>::Wavelengths;
-
-
   //! Create a GGX conductor BRDF
-  GgxConductorBrdf(const Float roughness, const Spectra& reflectance_0reg) noexcept;
+  GgxConductorBrdf(const Float roughness,
+                   const SampledSpectra& reflectance_0reg) noexcept;
 
 
   //! Evaluate the pdf
   Float evalPdf(const Vector3* vin,
-                    const Vector3* vout,
-                    const Vector3& normal,
-                    const Wavelengths& wavelengths) const noexcept override;
+                const Vector3* vout,
+                const Vector3& normal,
+                const WavelengthSamples& wavelengths) const noexcept override;
 
   //! Evaluate the radiance of the area sampling
-  Spectra evalRadiance(const Vector3* vin,
-                           const Vector3* vout,
-                           const Vector3& normal,
-                           const Wavelengths& wavelengths) const noexcept override;
-
-  //! Evaluate the radiance of the area sampling
-  std::tuple<Spectra, Float> evalRadianceAndPdf(
+  SampledSpectra evalRadiance(
       const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,
-      const Wavelengths& wavelengths) const noexcept override;
+      const WavelengthSamples& wavelengths) const noexcept override;
+
+  //! Evaluate the radiance of the area sampling
+  std::tuple<SampledSpectra, Float> evalRadianceAndPdf(
+      const Vector3* vin,
+      const Vector3* vout,
+      const Vector3& normal,
+      const WavelengthSamples& wavelengths) const noexcept override;
 
   //! Sample a reflection direction and evaluate a reflection weight
-  std::tuple<SampledDirection, Spectra> sample(
+  std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin,
       const Vector3& normal,
-      const Wavelengths& wavelengths,
+      const WavelengthSamples& wavelengths,
       Sampler& sampler) const noexcept override;
 
   //! Check if wavelength selection occured
   bool wavelengthIsSelected() const noexcept override;
 
  private:
-  const Spectra fresnel_0deg_;
+  const SampledSpectra fresnel_0deg_;
   const Float roughness_;
 };
 
 //! \} Core
 
 } // namespace nanairo
-
-#include "ggx_conductor_brdf-inl.hpp"
 
 #endif // NANAIRO_GGX_CONDUCTOR_BRDF_HPP

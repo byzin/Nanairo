@@ -22,7 +22,7 @@
 namespace nanairo {
 
 // Forward declaration
-template <uint> class SampledSpectra;
+class SampledSpectra;
 
 //! \addtogroup Core
 //! \{
@@ -52,10 +52,9 @@ class Fresnel
       const SpectralDistribution& eta_k) noexcept;
 
   //! Solve fresnel conductor equation
-  template <uint kSampleSize>
-  static SampledSpectra<kSampleSize> evalFresnel(
+  static SampledSpectra evalFresnel(
       const Float cos_theta,
-      const SampledSpectra<kSampleSize>& fresnel_0deg) noexcept;
+      const SampledSpectra& fresnel_0deg) noexcept;
 
   //! Solve the fresnel dielectric equation
   static Float evalFresnel(const Float n, const Float cos_theta) noexcept;

@@ -1,14 +1,11 @@
 /*!
-  \file ggx_dielectric_bsdf-inl.hpp
+  \file ggx_dielectric_bsdf.cpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
-
-#ifndef NANAIRO_GGX_DIELECTRIC_BSDF_INL_HPP
-#define NANAIRO_GGX_DIELECTRIC_BSDF_INL_HPP
 
 #include "ggx_dielectric_bsdf.hpp"
 // Standard C++ library
@@ -30,9 +27,8 @@ namespace nanairo {
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-GgxDielectricBsdf<kSampleSize>::GgxDielectricBsdf(const Float roughness,
-                                                  const Float n) noexcept :
+GgxDielectricBsdf::GgxDielectricBsdf(const Float roughness,
+                                     const Float n) noexcept :
     roughness_{roughness},
     n_{n}
 {
@@ -42,12 +38,11 @@ GgxDielectricBsdf<kSampleSize>::GgxDielectricBsdf(const Float roughness,
   \details
   No detailed.
   */
-template <uint kSampleSize>
-Float GgxDielectricBsdf<kSampleSize>::evalPdf(
+Float GgxDielectricBsdf::evalPdf(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& /* wavelengths */) const noexcept
+    const WavelengthSamples& /* wavelengths */) const noexcept
 {
   const Float cos_no = zisc::dot(normal, *vout);
   const bool is_reflection = (0.0 < cos_no);
@@ -73,12 +68,11 @@ Float GgxDielectricBsdf<kSampleSize>::evalPdf(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto GgxDielectricBsdf<kSampleSize>::evalRadiance(
+SampledSpectra GgxDielectricBsdf::evalRadiance(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& wavelengths) const noexcept -> Spectra
+    const WavelengthSamples& wavelengths) const noexcept
 {
   const Float cos_no = zisc::dot(normal, *vout);
   const bool is_reflection = (0.0 < cos_no);
@@ -86,7 +80,7 @@ auto GgxDielectricBsdf<kSampleSize>::evalRadiance(
       ? MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, normal, n_)
       : MicrofacetGgx::evalTransmittance(roughness_, *vin, *vout, normal, n_);
 
-  Spectra radiance{wavelengths};
+  SampledSpectra radiance{wavelengths};
   radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
   return radiance;
 }
@@ -95,12 +89,11 @@ auto GgxDielectricBsdf<kSampleSize>::evalRadiance(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-auto GgxDielectricBsdf<kSampleSize>::evalRadianceAndPdf(
+std::tuple<SampledSpectra, Float> GgxDielectricBsdf::evalRadianceAndPdf(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& wavelengths) const noexcept -> std::tuple<Spectra, Float>
+    const WavelengthSamples& wavelengths) const noexcept
 {
   const Float cos_no = zisc::dot(normal, *vout);
   const bool is_reflection = (0.0 < cos_no);
@@ -109,7 +102,7 @@ auto GgxDielectricBsdf<kSampleSize>::evalRadianceAndPdf(
       ? MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, normal, n_, &pdf)
       : MicrofacetGgx::evalTransmittance(roughness_, *vin, *vout, normal, n_, &pdf);
 
-  Spectra radiance{wavelengths};
+  SampledSpectra radiance{wavelengths};
   radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
 
   // Calculate the pdf
@@ -129,12 +122,13 @@ auto GgxDielectricBsdf<kSampleSize>::evalRadianceAndPdf(
   return std::make_tuple(std::move(radiance), pdf);
 }
 
-template <uint kSampleSize>
-auto GgxDielectricBsdf<kSampleSize>::sample(
+/*!
+  */
+std::tuple<SampledDirection, SampledSpectra> GgxDielectricBsdf::sample(
     const Vector3* vin,
     const Vector3& normal,
-    const Wavelengths& wavelengths,
-    Sampler& sampler) const noexcept -> std::tuple<SampledDirection, Spectra>
+    const WavelengthSamples& wavelengths,
+    Sampler& sampler) const noexcept
 {
   // Sample a microfacet normal
   const auto m_normal = MicrofacetGgx::sampleNormal(roughness_,
@@ -162,7 +156,7 @@ auto GgxDielectricBsdf<kSampleSize>::sample(
       ? Microfacet::calcReflectionDirection(*vin, m_normal)
       : Microfacet::calcRefractionDirection(*vin, m_normal, n_, g);
 
-  Spectra weight{wavelengths};
+  SampledSpectra weight{wavelengths};
   const Float cos_no = zisc::dot(normal, vout.direction());
   if ((is_reflection && (0.0 < cos_no)) ||
       (!is_reflection && (cos_no < 0.0))) {
@@ -190,12 +184,9 @@ auto GgxDielectricBsdf<kSampleSize>::sample(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-bool GgxDielectricBsdf<kSampleSize>::wavelengthIsSelected() const noexcept
+bool GgxDielectricBsdf::wavelengthIsSelected() const noexcept
 {
   return true;
 }
 
 } // namespace nanairo
-
-#endif // NANAIRO_GGX_DIELECTRIC_BSDF_INL_HPP

@@ -99,9 +99,9 @@ RussianRoulette::RussianRoulette(const QJsonObject& settings) noexcept
 
 /*!
   */
-template <uint kSampleSize> inline
+inline
 RouletteResult RussianRoulette::operator()(const uint path,
-                                           const SampledSpectra<kSampleSize>& weight,
+                                           const SampledSpectra& weight,
                                            Sampler& sampler) const noexcept
 {
   return play(path, weight, sampler);
@@ -109,9 +109,9 @@ RouletteResult RussianRoulette::operator()(const uint path,
 
 /*!
   */
-template <uint kSampleSize> inline
+inline
 RouletteResult RussianRoulette::play(const uint path,
-                                     const SampledSpectra<kSampleSize>& weight,
+                                     const SampledSpectra& weight,
                                      Sampler& sampler) const noexcept
 {
   return (type_ == RouletteType::kMax)     ? playWithMax(weight, sampler) :
@@ -158,9 +158,9 @@ void RussianRoulette::initialize(const QJsonObject& settings) noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
+inline
 RouletteResult RussianRoulette::playWithAverage(
-    const SampledSpectra<kSampleSize>& weight,
+    const SampledSpectra& weight,
     Sampler& sampler) const noexcept
 {
   const Float average = weight.average();
@@ -173,9 +173,9 @@ RouletteResult RussianRoulette::playWithAverage(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
+inline
 RouletteResult RussianRoulette::playWithMax(
-    const SampledSpectra<kSampleSize>& weight,
+    const SampledSpectra& weight,
     Sampler& sampler) const noexcept
 {
   const Float max = weight.max();

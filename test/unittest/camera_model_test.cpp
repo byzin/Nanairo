@@ -33,6 +33,7 @@
 #include "NanairoCore/Geometry/transformation.hpp"
 // Test
 #include "sensor_test.hpp"
+#include "shader_model_test.hpp"
 #include "test.hpp"
 
 namespace  {
@@ -82,9 +83,7 @@ TEST(CameraModelTest, PinholeTest)
   camera.transform(nanairo::Transformation::makeIdentity());
 
   // Wavelength
-  nanairo::WavelengthSamples<1> wavelengths;
-  wavelengths[0] = nanairo::CoreConfig::shortestWavelength();
-  wavelengths.setPrimaryWavelength(0);
+  const auto wavelengths = makeTestWavelengthSamples();
 
   const char* sensor_name = "PinholeCamera";
   testSensorSampling(camera, wavelengths,

@@ -24,7 +24,7 @@ namespace nanairo {
 // Forward declaration
 class ClothSurface;
 class Sampler;
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -33,57 +33,51 @@ template <uint> class WavelengthSamples;
   \details
   No detailed.
   */
-template <uint kSampleSize>
-class MicrocylinderClothBrdf : public GlossyShaderModel<kSampleSize>
+class MicrocylinderClothBrdf : public GlossyShaderModel
 {
  public:
-  using Spectra = typename ShaderModel<kSampleSize>::Spectra;
-  using Wavelengths = typename ShaderModel<kSampleSize>::Wavelengths;
-
-
   //! Create a GGX dielectric BSDF
   MicrocylinderClothBrdf(const ClothSurface* surface,
-                         const Spectra& reflectance) noexcept;
+                         const SampledSpectra& reflectance) noexcept;
 
 
   //! Evaluate the pdf
   Float evalPdf(const Vector3* vin,
                 const Vector3* vout,
                 const Vector3& normal,
-                const Wavelengths& wavelengths) const noexcept override;
+                const WavelengthSamples& wavelengths) const noexcept override;
 
   //! Evaluate the radiance of the area sampling
-  Spectra evalRadiance(const Vector3* vin,
-                       const Vector3* vout,
-                       const Vector3& normal,
-                       const Wavelengths& wavelengths) const noexcept override;
-
-  //! Evaluate the radiance of the area sampling
-  std::tuple<Spectra, Float> evalRadianceAndPdf(
+  SampledSpectra evalRadiance(
       const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,
-      const Wavelengths& wavelengths) const noexcept override;
+      const WavelengthSamples& wavelengths) const noexcept override;
+
+  //! Evaluate the radiance of the area sampling
+  std::tuple<SampledSpectra, Float> evalRadianceAndPdf(
+      const Vector3* vin,
+      const Vector3* vout,
+      const Vector3& normal,
+      const WavelengthSamples& wavelengths) const noexcept override;
 
   //! Sample a reflection direction and evaluate a reflection weight
-  std::tuple<SampledDirection, Spectra> sample(
+  std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin,
       const Vector3& normal,
-      const Wavelengths& wavelengths,
+      const WavelengthSamples& wavelengths,
       Sampler& sampler) const noexcept override;
 
   //! Check if wavelength selection occured
   bool wavelengthIsSelected() const noexcept override;
 
  private:
-  Spectra reflectance_;
+  SampledSpectra reflectance_;
   const ClothSurface* surface_;
 };
 
 //! \} Core
 
 } // namespace nanairo
-
-#include "microcylinder_cloth_brdf-inl.hpp"
 
 #endif // NANAIRO_MICROCYLINDER_CLOTH_BRDF_HPP

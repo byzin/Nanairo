@@ -27,6 +27,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
+#include "NanairoCore/Sampling/sampled_spectra.hpp"
 
 namespace nanairo {
 
@@ -38,6 +39,31 @@ RgbSpectraImage::RgbSpectraImage(const uint width, const uint height) noexcept :
     SpectraImageInterface(width, height)
 {
   initialize();
+}
+
+/*!
+  \details
+  No detailed.
+  */
+void RgbSpectraImage::addContribution(
+    const uint x,
+    const uint y,
+    const SampledSpectra& contribution) noexcept
+{
+  volatile Float c = 0.0;
+  volatile Float tmp1 = 0.0;
+  volatile Float tmp2 = 0.0;
+
+  const uint pixel_index = widthResolution() * y + x;
+  auto& pixel = buffer_[pixel_index];
+  auto& compensation = compensation_[pixel_index];
+  for (uint index = 0; index < 3; ++index) {
+    c = compensation[index];
+    tmp1 = contribution.intensity(2 - index) - c;
+    tmp2 = pixel[index] + tmp1;
+    compensation[index] = (tmp2 - pixel[index]) - tmp1;
+    pixel[index] = tmp2;
+  }
 }
 
 /*!

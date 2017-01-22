@@ -12,6 +12,7 @@
 
 // Standard C++ library
 #include <atomic>
+#include <mutex>
 #include <thread>
 #include <vector>
 #include <utility>
@@ -26,8 +27,8 @@
 namespace nanairo {
 
 // Forward declaration
-template <uint> class KnnPhotonList;
-template <uint> class SampledSpectra;
+class KnnPhotonList;
+class SampledSpectra;
 class System;
 
 //! \addtogroup Core
@@ -37,15 +38,9 @@ class System;
   \details
   No detailed.
   */
-template <uint kSampleSize>
 class PhotonMap
 {
  public:
-  using MapNode = PhotonMapNode<kSampleSize>;
-  using PhotonList = KnnPhotonList<kSampleSize>;
-  using Spectra = SampledSpectra<kSampleSize>;
-
-
   //! Create a photon map
   PhotonMap(const System& system) noexcept;
 
@@ -63,17 +58,17 @@ class PhotonMap
   void search(const Point3& point,
               const Vector3& normal,
               const Float radius2,
-              PhotonList* photon_list) const noexcept;
+              KnnPhotonList* photon_list) const noexcept;
 
   //! Store a photon cache
   void store(const int thread_id,
              const Point3& point,
              const Vector3& vin,
-             const Spectra& photon_energy,
+             const SampledSpectra& photon_energy,
              const bool wavelength_is_selected) noexcept;
 
  private:
-  using NodeIterator = typename std::vector<MapNode*>::iterator;
+  using NodeIterator = typename std::vector<PhotonMapNode*>::iterator;
 
 
   //! Return the longest axis
@@ -104,17 +99,17 @@ class PhotonMap
   void testInsideCircle(const Point3& point,
                         const Vector3& normal,
                         const Float radius2,
-                        const MapNode* node,
-                        PhotonList* photon_list) const noexcept;
+                        const PhotonMapNode* node,
+                        KnnPhotonList* photon_list) const noexcept;
 
   //! Check if the multithreading is enabled
   static constexpr bool threadingIsEnabled() noexcept;
 
 
   std::mutex lock_;
-  std::vector<std::vector<MapNode>> thread_node_list_;
-  std::vector<MapNode*> node_list_;
-  std::vector<const MapNode*> tree_;
+  std::vector<std::vector<PhotonMapNode>> thread_node_list_;
+  std::vector<PhotonMapNode*> node_list_;
+  std::vector<const PhotonMapNode*> tree_;
   std::atomic<uint> node_counter_;
 };
 

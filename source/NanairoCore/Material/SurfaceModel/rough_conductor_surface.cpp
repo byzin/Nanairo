@@ -16,6 +16,7 @@
 #include <QJsonObject>
 #include <QString>
 // Zisc
+#include "zisc/aligned_memory_pool.hpp"
 #include "zisc/error.hpp"
 // Reflect
 #include "fresnel.hpp"
@@ -23,6 +24,8 @@
 #include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Material/Bxdf/ggx_conductor_brdf.hpp"
+#include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
@@ -36,6 +39,34 @@ RoughConductorSurface::RoughConductorSurface(
     const std::vector<const TextureModel*>& texture_list) noexcept
 {
   initialize(settings, texture_list);
+}
+
+ /*!
+  \details
+  No detailed.
+  */
+auto RoughConductorSurface::makeBxdf(
+    const Point2& texture_coordinate,
+    const bool /* is_reverse_face */,
+    const WavelengthSamples& wavelengths,
+    Sampler& /* sampler */,
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer
+{
+  // Get the roughness
+  constexpr Float min_roughness = 0.001;
+  Float roughness = roughness_->floatValue(texture_coordinate);
+  roughness = (min_roughness < roughness)
+      ? roughness * roughness
+      : min_roughness * min_roughness;
+  ZISC_ASSERT(zisc::isInClosedBounds(roughness, 0.0, 1.0),
+              "The roughness is out of the range [0, 1].");
+
+  const auto fresnel_0deg = sample(fresnel_0deg_, wavelengths);
+
+  // Make GGX BRDF
+  using Brdf = GgxConductorBrdf;
+  auto brdf = memory_pool.allocate<Brdf>(roughness, fresnel_0deg);
+  return ShaderPointer{brdf};
 }
 
 /*!

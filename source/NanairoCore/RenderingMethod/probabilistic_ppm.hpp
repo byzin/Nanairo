@@ -30,7 +30,7 @@ class Material;
 class Ray;
 class Sampler;
 class Scene;
-template <uint> class ShaderModel;
+class ShaderModel;
 class System;
 template <typename> class UniquePointer;
 class World;
@@ -42,15 +42,14 @@ class World;
   \details
   No detailed.
   */
-template <uint kSampleSize>
-class ProbabilisticPpm : public RenderingMethod<kSampleSize>
+class ProbabilisticPpm : public RenderingMethod
 {
  public:
-  using Method = RenderingMethod<kSampleSize>;
-  using Map = PhotonMap<kSampleSize>;
+  using Method = RenderingMethod;
+  using Map = PhotonMap;
   using Photon = Ray;
   using Spectra = typename Method::Spectra;
-  using Shader = ShaderModel<kSampleSize>;
+  using Shader = ShaderModel;
   using ShaderPointer = UniquePointer<Shader>;
   using Wavelengths = typename Method::Wavelengths;
 
@@ -73,7 +72,7 @@ class ProbabilisticPpm : public RenderingMethod<kSampleSize>
                            const Vector3& vin,
                            const IntersectionInfo& intersection,
                            const ShaderPointer& bxdf,
-                           const WavelengthSamples<kSampleSize>& wavelengths,
+                           const WavelengthSamples& wavelengths,
                            const bool wavelength_is_selected) noexcept;
 
   //! Evaluate implicit connection
@@ -144,7 +143,7 @@ class ProbabilisticPpm : public RenderingMethod<kSampleSize>
 
 
   Map photon_map_;
-  std::vector<typename Map::PhotonList> thread_photon_list_;
+  std::vector<KnnPhotonList> thread_photon_list_;
   Float radius2_;
   Float inverse_radius_;
   Float inverse_estimation_area_;
@@ -157,7 +156,5 @@ class ProbabilisticPpm : public RenderingMethod<kSampleSize>
 //! \} Core
 
 } // namespace nanairo
-
-#include "probabilistic_ppm-inl.hpp"
 
 #endif // NANAIRO_PROBABILISTIC_PPM_HPP

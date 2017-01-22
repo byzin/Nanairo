@@ -1,14 +1,11 @@
 /*!
-  \file lambert_brdf-inl.hpp
+  \file lambert_brdf.cpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
-
-#ifndef NANAIRO_LAMBERT_BRDF_INL_HPP
-#define NANAIRO_LAMBERT_BRDF_INL_HPP
 
 #include "lambert_brdf.hpp"
 // Standard C++ library
@@ -25,17 +22,11 @@
 
 namespace nanairo {
 
-// Forward declaration
-class SampledDirection;
-class Sampler;
-template <uint> class WavelengthSamples;
-
 /*!
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-LambertBrdf<kSampleSize>::LambertBrdf(const Spectra& reflectance) noexcept :
+LambertBrdf::LambertBrdf(const SampledSpectra& reflectance) noexcept :
     reflectance_{reflectance}
 {
 }
@@ -44,12 +35,11 @@ LambertBrdf<kSampleSize>::LambertBrdf(const Spectra& reflectance) noexcept :
   \details
   No detailed.
   */
-template <uint kSampleSize>
-Float LambertBrdf<kSampleSize>::evalPdf(
+Float LambertBrdf::evalPdf(
     const Vector3* /* vin */,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& /* wavelemgths */) const noexcept
+    const WavelengthSamples& /* wavelemgths */) const noexcept
 {
   constexpr Float k = 1.0 / zisc::kPi<Float>;
   const Float cos_no = zisc::dot(normal, *vout);
@@ -60,12 +50,11 @@ Float LambertBrdf<kSampleSize>::evalPdf(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-auto LambertBrdf<kSampleSize>::evalRadiance(
+SampledSpectra LambertBrdf::evalRadiance(
     const Vector3* /* vin */,
     const Vector3* /* vout */,
     const Vector3& /* normal */,
-    const Wavelengths& /* wavelemgths */) const noexcept -> Spectra
+    const WavelengthSamples& /* wavelemgths */) const noexcept
 {
   constexpr Float k = 1.0 / zisc::kPi<Float>;
   return k * reflectance_;
@@ -75,12 +64,11 @@ auto LambertBrdf<kSampleSize>::evalRadiance(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-auto LambertBrdf<kSampleSize>::evalRadianceAndPdf(
+std::tuple<SampledSpectra, Float> LambertBrdf::evalRadianceAndPdf(
     const Vector3* /* vin */,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& /* wavelemgths */) const noexcept -> std::tuple<Spectra, Float>
+    const WavelengthSamples& /* wavelemgths */) const noexcept
 {
   constexpr Float k = 1.0 / zisc::kPi<Float>;
   const Float cos_no = zisc::dot(normal, *vout);
@@ -92,12 +80,11 @@ auto LambertBrdf<kSampleSize>::evalRadianceAndPdf(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-auto LambertBrdf<kSampleSize>::sample(
+std::tuple<SampledDirection, SampledSpectra> LambertBrdf::sample(
     const Vector3* /* vin */,
     const Vector3& normal,
-    const Wavelengths& /* wavelemgths */,
-    Sampler& sampler) const noexcept -> std::tuple<SampledDirection, Spectra>
+    const WavelengthSamples& /* wavelemgths */,
+    Sampler& sampler) const noexcept
 {
   const auto vout = SampledDirection::sampleOnHemisphere<1>(normal, sampler);
   return std::make_tuple(std::move(vout), reflectance_);
@@ -107,12 +94,9 @@ auto LambertBrdf<kSampleSize>::sample(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-bool LambertBrdf<kSampleSize>::wavelengthIsSelected() const noexcept
+bool LambertBrdf::wavelengthIsSelected() const noexcept
 {
   return false;
 }
 
 } // namespace nanairo
-
-#endif // NANAIRO_LAMBERT_BRDF_INL_HPP

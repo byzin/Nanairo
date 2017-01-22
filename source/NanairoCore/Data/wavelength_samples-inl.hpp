@@ -12,6 +12,7 @@
 
 #include "wavelength_samples.hpp"
 // Zisc
+#include "zisc/error.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -22,8 +23,8 @@ namespace nanairo {
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-WavelengthSamples<kSampleSize>::WavelengthSamples() noexcept :
+inline
+WavelengthSamples::WavelengthSamples() noexcept :
     primary_index_{0}
 {
 }
@@ -32,9 +33,20 @@ WavelengthSamples<kSampleSize>::WavelengthSamples() noexcept :
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-uint16& WavelengthSamples<kSampleSize>::operator[](const uint index) noexcept
+inline
+constexpr uint WavelengthSamples::size() noexcept
 {
+  return CoreConfig::wavelengthSampleSize();
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+uint16& WavelengthSamples::operator[](const uint index) noexcept
+{
+  ZISC_ASSERT(zisc::isInBounds(index, 0u, size()), "The index is out of range.");
   return wavelengths_[index];
 }
 
@@ -42,9 +54,10 @@ uint16& WavelengthSamples<kSampleSize>::operator[](const uint index) noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-uint16 WavelengthSamples<kSampleSize>::operator[](const uint index) const noexcept
+inline
+uint16 WavelengthSamples::operator[](const uint index) const noexcept
 {
+  ZISC_ASSERT(zisc::isInBounds(index, 0u, size()), "The index is out of range.");
   return wavelengths_[index];
 }
 
@@ -52,8 +65,8 @@ uint16 WavelengthSamples<kSampleSize>::operator[](const uint index) const noexce
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-constexpr Float WavelengthSamples<kSampleSize>::primaryInverseProbability() noexcept
+inline
+constexpr Float WavelengthSamples::primaryInverseProbability() noexcept
 {
   return zisc::cast<Float>(size());
 }
@@ -62,8 +75,8 @@ constexpr Float WavelengthSamples<kSampleSize>::primaryInverseProbability() noex
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-uint WavelengthSamples<kSampleSize>::primaryWavelengthIndex() const noexcept
+inline
+uint WavelengthSamples::primaryWavelengthIndex() const noexcept
 {
   return zisc::cast<uint>(primary_index_);
 }
@@ -72,20 +85,10 @@ uint WavelengthSamples<kSampleSize>::primaryWavelengthIndex() const noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void WavelengthSamples<kSampleSize>::setPrimaryWavelength(const uint index) noexcept
+inline
+void WavelengthSamples::setPrimaryWavelength(const uint index) noexcept
 {
   primary_index_ = zisc::cast<uint16>(index);
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <uint kSampleSize> inline
-constexpr uint WavelengthSamples<kSampleSize>::size() noexcept
-{
-  return kSampleSize;
 }
 
 } // namespace nanairo

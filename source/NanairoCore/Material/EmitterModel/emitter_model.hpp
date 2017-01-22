@@ -25,10 +25,10 @@ namespace nanairo {
 
 // Forward declaration
 class Sampler;
-template <uint> class ShaderModel;
+class ShaderModel;
 class System;
 class TextureModel;
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -49,8 +49,7 @@ enum class EmitterType : int
 class EmitterModel
 {
  public:
-  template <uint kSampleSize>
-  using ShaderPointer = UniquePointer<ShaderModel<kSampleSize>>;
+  using ShaderPointer = UniquePointer<ShaderModel>;
 
 
   //! Create a emitter model
@@ -65,11 +64,10 @@ class EmitterModel
       const QJsonObject& settings,
       const std::vector<const TextureModel*>& texture_list) noexcept;
 
-  template <uint kSampleSize>
-  ShaderPointer<kSampleSize> makeLight(
-      const Point2& texture_coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const noexcept;
+  //! Make a light shader model
+  virtual ShaderPointer makeLight(const Point2& texture_coordinate,
+                                  const WavelengthSamples& wavelengths,
+                                  MemoryPool& memory_pool) const noexcept = 0;
 
   //! Return the radiant exitance
   Float radiantExitance() const noexcept;
@@ -84,13 +82,6 @@ class EmitterModel
  private:
   //! Initialize
   void initialize(const QJsonObject& settings) noexcept;
-
-  //! Make a non directional emitter
-  template <uint kSampleSize>
-  EmitterModel::ShaderPointer<kSampleSize> makeNonDirectionalLight(
-      const Point2& texture_coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const noexcept;
 
 
   Float radiant_exitance_;

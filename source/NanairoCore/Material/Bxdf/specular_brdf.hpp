@@ -22,7 +22,7 @@ namespace nanairo {
 
 // Forward declaration
 class Sampler;
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -31,36 +31,29 @@ template <uint> class WavelengthSamples;
   \details
   No detailed.
   */
-template <uint kSampleSize>
-class SpecularBrdf : public SpecularShaderModel<kSampleSize>
+class SpecularBrdf : public SpecularShaderModel
 {
  public:
-  using Spectra = typename ShaderModel<kSampleSize>::Spectra;
-  using Wavelengths = typename ShaderModel<kSampleSize>::Wavelengths;
-
-
   //! Create a specular BRDF
-  SpecularBrdf(const Spectra& fresnel_0deg) noexcept;
+  SpecularBrdf(const SampledSpectra& fresnel_0deg) noexcept;
 
 
   //! Evalute the weight of solid angle sampling
-  std::tuple<SampledDirection, Spectra> sample(
+  std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin,
       const Vector3& normal,
-      const Wavelengths& wavelengths,
+      const WavelengthSamples& wavelengths,
       Sampler& sampler) const noexcept override;
 
   //! Check if wavelength selection occured
   bool wavelengthIsSelected() const noexcept override;
 
  private:
-  const Spectra fresnel_0deg_;
+  const SampledSpectra fresnel_0deg_;
 };
 
 //! \} Core
 
 } // namespace nanairo
-
-#include "specular_brdf-inl.hpp"
 
 #endif // NANAIRO_SPECULAR_BRDF_HPP

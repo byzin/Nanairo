@@ -22,7 +22,6 @@ namespace nanairo {
   \details
   No detailed.
   */
-template <uint kSampleSize>
 class WavelengthSamples
 {
  public:
@@ -51,7 +50,7 @@ class WavelengthSamples
 
  private:
   uint16 primary_index_; //!< The index of primary wavelength
-  uint16 wavelengths_[kSampleSize];
+  uint16 wavelengths_[CoreConfig::wavelengthSampleSize()];
 };
 
 //! \} Core

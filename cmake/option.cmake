@@ -84,8 +84,8 @@ function(setCommandOptions)
   set(option_description "The resolution of wavelength. Select from 1 or 5 or 10.")
   setStringOption(NANAIRO_WAVELENGTH_RESOLUTION 10 ${option_description})
 
-  set(option_description "The sample size of wavelengths in a cycle of progressive monte calro ray tracing method.")
-  setStringOption(NANAIRO_WAVELENGTH_SAMPLE_SIZE 16 ${option_description})
+  set(option_description "The sample size of wavelengths in a cycle of progressive monte calro ray tracing method (It is must be 3).")
+  setStringOption(NANAIRO_WAVELENGTH_SAMPLE_SIZE 3 ${option_description})
 
   set(option_description "Enable only the explicit connection of path tracing.")
   setBooleanOption(NANAIRO_PATH_TRACING_EXPLICIT_CONNECTION_ONLY OFF ${option_description})

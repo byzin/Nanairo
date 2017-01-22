@@ -27,11 +27,11 @@ namespace nanairo {
 
 // Forward declaration
 class IntersectionInfo;
-template <uint> class SampledSpectra;
+class SampledSpectra;
 class Sampler;
 class Scene;
 class System;
-template <uint> class ShaderModel;
+class ShaderModel;
 class World;
 
 //! \addtogroup Core
@@ -41,13 +41,12 @@ class World;
   \details
   No detailed.
   */
-template <uint kSampleSize>
 class RenderingMethod
 {
  public:
-  using Spectra = SampledSpectra<kSampleSize>;
-  using Wavelengths = SampledWavelengths<kSampleSize>;
-  using Shader = ShaderModel<kSampleSize>;
+  using Spectra = SampledSpectra;
+  using Wavelengths = SampledWavelengths;
+  using Shader = ShaderModel;
   using ShaderPointer = UniquePointer<Shader>;
 
 
@@ -68,8 +67,9 @@ class RenderingMethod
   void clear() noexcept;
 
   //! Make rendering method
-  static RenderingMethod* makeMethod(System& system,
-                                     const QJsonObject& settings) noexcept;
+  static UniquePointer<RenderingMethod> makeMethod(
+      System& system,
+      const QJsonObject& settings) noexcept;
 
   //! Return the ray cast epsilon
   Float rayCastEpsilon() const noexcept;

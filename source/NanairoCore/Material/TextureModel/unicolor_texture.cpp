@@ -49,10 +49,32 @@ Float UnicolorTexture::floatValue(const Point2& /* coordinate */) const noexcept
   \details
   No detailed.
   */
+SampledSpectra UnicolorTexture::emissiveValue(
+    const Point2& /* coordinate */,
+    const WavelengthSamples& wavelengths) const noexcept
+{
+  return sample(*emissive_value_, wavelengths);
+}
+
+/*!
+  \details
+  No detailed.
+  */
 Float UnicolorTexture::reflectiveValue(const Point2& /* coordinate */,
                                        const uint16 wavelength) const noexcept
 {
   return reflective_value_->getByWavelength(wavelength);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+SampledSpectra UnicolorTexture::reflectiveValue(
+    const Point2& /* coordinate */,
+    const WavelengthSamples& wavelengths) const noexcept
+{
+  return sample(*reflective_value_, wavelengths);
 }
 
 /*!

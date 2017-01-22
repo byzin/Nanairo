@@ -28,8 +28,8 @@ namespace nanairo {
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-KnnPhotonList<kSampleSize>::KnnPhotonList() noexcept
+inline
+KnnPhotonList::KnnPhotonList() noexcept
 {
 }
 
@@ -37,8 +37,8 @@ KnnPhotonList<kSampleSize>::KnnPhotonList() noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto KnnPhotonList<kSampleSize>::operator[](const uint index) const noexcept
+inline
+auto KnnPhotonList::operator[](const uint index) const noexcept
     -> const PhotonPoint&
 {
   return photon_list_[index];
@@ -48,8 +48,8 @@ auto KnnPhotonList<kSampleSize>::operator[](const uint index) const noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void KnnPhotonList<kSampleSize>::clear() noexcept
+inline
+void KnnPhotonList::clear() noexcept
 {
   photon_list_.clear();
 }
@@ -58,9 +58,9 @@ void KnnPhotonList<kSampleSize>::clear() noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void KnnPhotonList<kSampleSize>::insert(const Float distance2,
-                                        const Cache* photon) noexcept
+inline
+void KnnPhotonList::insert(const Float distance2,
+                           const PhotonCache* photon) noexcept
 {
   auto compare = [](const PhotonPoint& a, const PhotonPoint& b)
   {
@@ -83,8 +83,8 @@ void KnnPhotonList<kSampleSize>::insert(const Float distance2,
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-Float KnnPhotonList<kSampleSize>::inverseLongestDistance() const noexcept
+inline
+Float KnnPhotonList::inverseLongestDistance() const noexcept
 {
   return zisc::invSqrt(std::get<0>(photon_list_.front()));
 }
@@ -93,8 +93,8 @@ Float KnnPhotonList<kSampleSize>::inverseLongestDistance() const noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-uint KnnPhotonList<kSampleSize>::k() const noexcept
+inline
+uint KnnPhotonList::k() const noexcept
 {
   return k_;
 }
@@ -103,8 +103,8 @@ uint KnnPhotonList<kSampleSize>::k() const noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void KnnPhotonList<kSampleSize>::setK(const uint k) noexcept
+inline
+void KnnPhotonList::setK(const uint k) noexcept
 {
   ZISC_ASSERT(0 < k, "The k is zero.");
   clear();
@@ -116,8 +116,8 @@ void KnnPhotonList<kSampleSize>::setK(const uint k) noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-uint KnnPhotonList<kSampleSize>::size() const noexcept
+inline
+uint KnnPhotonList::size() const noexcept
 {
   return zisc::cast<uint>(photon_list_.size());
 }

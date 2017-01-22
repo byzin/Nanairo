@@ -42,6 +42,29 @@ ClothSurface::ClothSurface(
   \details
   No detailed.
   */
+auto ClothSurface::makeBxdf(
+    const Point2& texture_coordinate,
+    const bool /* is_reverse_face */,
+    const WavelengthSamples& wavelengths,
+    Sampler& /* sampler */,
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer
+{
+  // Get the roughness
+  const auto  reflectance = reflectance_->reflectiveValue(texture_coordinate,
+                                                          wavelengths);
+  ZISC_ASSERT(reflectance.isAllInClosedBounds(0.0, 1.0),
+              "Reflectances isn't in the range [0, 1].");
+
+  // Make a microcylinder cloth BRDF
+  using Brdf = MicrocylinderClothBrdf;
+  auto brdf = memory_pool.allocate<Brdf>(this, reflectance);
+  return ShaderPointer{brdf};
+}
+
+/*!
+  \details
+  No detailed.
+  */
 SurfaceType ClothSurface::type() const noexcept
 {
   return SurfaceType::Cloth;

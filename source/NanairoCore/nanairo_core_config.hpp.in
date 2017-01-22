@@ -57,8 +57,6 @@ using Matrix3x3 = zisc::Matrix<Float, 3, 3>;
 
 // Sampling
 using SamplerType = @nanairo_core_sampler_type@;
-template <uint kSampleSize>
-using IntensitySamples = zisc::ArithmeticArray<Float, kSampleSize>;
 
 /*!
   \brief This class contains properties used in Core module
@@ -111,5 +109,12 @@ class CoreConfig
 } // namespace nanairo
 
 #include "NanairoCore/nanairo_core_config-inl.hpp"
+
+namespace nanairo {
+
+// Sampling
+using IntensitySamples = zisc::ArithmeticArray<Float, CoreConfig::wavelengthSampleSize()>;
+
+} // namespace nanairo
 
 #endif // NANAIRO_NANAIRO_CORE_CONFIG_HPP

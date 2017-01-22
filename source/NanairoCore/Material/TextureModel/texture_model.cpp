@@ -45,7 +45,6 @@ UniquePointer<TextureModel> TextureModel::makeTexture(
   using zisc::toHash32;
 
   TextureModel* texture = nullptr;
-
   const auto type = SceneValue::toString(settings, keyword::type);
   switch (keyword::toHash32(type)) {
     case toHash32(keyword::valueTexture): {
@@ -69,7 +68,6 @@ UniquePointer<TextureModel> TextureModel::makeTexture(
       break;
     }
   }
-
   return UniquePointer<TextureModel>{texture};
 }
 

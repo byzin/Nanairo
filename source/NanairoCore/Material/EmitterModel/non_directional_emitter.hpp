@@ -24,7 +24,7 @@ namespace nanairo {
 // Forward declaration
 class Sampler;
 class TextureModel;
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -43,11 +43,9 @@ class NonDirectionalEmitter : public EmitterModel
 
 
   //! Make non-directional light
-  template <uint kSampleSize>
-  ShaderPointer<kSampleSize> makeNonDirectionalLight(
-      const Point2& texture_coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const noexcept;
+  ShaderPointer makeLight(const Point2& texture_coordinate,
+                          const WavelengthSamples& wavelengths,
+                          MemoryPool& memory_pool) const noexcept override;
 
   //! Return the non-directional emitter type
   EmitterType type() const noexcept override;
@@ -64,7 +62,5 @@ class NonDirectionalEmitter : public EmitterModel
 //! \} Core
 
 } // namespace nanairo
-
-#include "non_directional_emitter-inl.hpp"
 
 #endif // NANAIRO_NON_DIRECTIONAL_EMITTER_HPP

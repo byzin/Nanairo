@@ -22,7 +22,7 @@ namespace nanairo {
 // Forward declaration
 class SampledDirection;
 class Sampler;
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -31,41 +31,36 @@ template <uint> class WavelengthSamples;
   \details
   No detailed.
   */
-template <uint kSampleSize>
-class NonDirectionalLight : public DiffuseShaderModel<kSampleSize>
+class NonDirectionalLight : public DiffuseShaderModel
 {
  public:
-  using Spectra = typename ShaderModel<kSampleSize>::Spectra;
-  using Wavelengths = typename ShaderModel<kSampleSize>::Wavelengths;
-
-  //! Create a non-directional light 
-  NonDirectionalLight(const Spectra& radiant_exitance) noexcept;
+  //! Create a non-directional light
+  NonDirectionalLight(const SampledSpectra& radiant_exitance) noexcept;
 
 
   //! Evaluate the radiance of area sampling
-  Spectra evalRadiance(const Vector3* vin,
-                           const Vector3* vout,
-                           const Vector3& normal,
-                           const Wavelengths& wavelengths) const noexcept override;
+  SampledSpectra evalRadiance(
+      const Vector3* vin,
+      const Vector3* vout,
+      const Vector3& normal,
+      const WavelengthSamples& wavelengths) const noexcept override;
 
   //! Sample a light ray direction and evaluate a ray weight
-  std::tuple<SampledDirection, Spectra> sample(
+  std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin,
       const Vector3& normal,
-      const Wavelengths& wavelengths,
+      const WavelengthSamples& wavelengths,
       Sampler& sampler) const noexcept override;
 
   //! Check is wavelength selection occured
   bool wavelengthIsSelected() const noexcept override;
 
  private:
-  const Spectra radiant_exitance_;
+  const SampledSpectra radiant_exitance_;
 };
 
 //! \} Core
 
 } // namespace nanairo
-
-#include "non_directional_light-inl.hpp"
 
 #endif // NANAIRO_NON_DIRECTIONAL_LIGHT_HPP

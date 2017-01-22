@@ -1,14 +1,11 @@
 /*!
-  \file specular_brdf-inl.hpp
+  \file specular_brdf.cpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
-
-#ifndef NANAIRO_SPECULAR_BRDF_INL_HPP
-#define NANAIRO_SPECULAR_BRDF_INL_HPP
 
 #include "specular_brdf.hpp"
 // Standard C++ library
@@ -30,8 +27,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-SpecularBrdf<kSampleSize>::SpecularBrdf(const Spectra& fresnel_0deg) noexcept :
+SpecularBrdf::SpecularBrdf(const SampledSpectra& fresnel_0deg) noexcept :
     fresnel_0deg_{fresnel_0deg}
 {
 }
@@ -40,12 +36,11 @@ SpecularBrdf<kSampleSize>::SpecularBrdf(const Spectra& fresnel_0deg) noexcept :
   \details
   No detailed.
   */
-template <uint kSampleSize>
-auto SpecularBrdf<kSampleSize>::sample(
+std::tuple<SampledDirection, SampledSpectra> SpecularBrdf::sample(
     const Vector3* vin,
     const Vector3& normal,
-    const Wavelengths& /* wavelengths */,
-    Sampler& /* sampler */) const noexcept -> std::tuple<SampledDirection, Spectra>
+    const WavelengthSamples& /* wavelengths */,
+    Sampler& /* sampler */) const noexcept
 {
   const Float cos_ni = -zisc::dot(normal, *vin);
   ZISC_ASSERT(zisc::isInClosedBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
@@ -58,12 +53,9 @@ auto SpecularBrdf<kSampleSize>::sample(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-bool SpecularBrdf<kSampleSize>::wavelengthIsSelected() const noexcept
+bool SpecularBrdf::wavelengthIsSelected() const noexcept
 {
   return false;
 }
 
 } // namespace nanairo
-
-#endif // NANAIRO_SPECULAR_BRDF_INL_HPP

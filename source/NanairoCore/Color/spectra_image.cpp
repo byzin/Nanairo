@@ -28,6 +28,7 @@
 #include "xyz_color_matching_function.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
+#include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Utility/file.hpp"
 
 namespace nanairo {
@@ -40,6 +41,32 @@ SpectraImage::SpectraImage(const uint width, const uint height) noexcept :
     SpectraImageInterface(width, height)
 {
   initialize();
+}
+
+/*!
+  \details
+  No detailed.
+  */
+void SpectraImage::addContribution(
+    const uint x,
+    const uint y,
+    const SampledSpectra& contribution) noexcept
+{
+  volatile Float c = 0.0;
+  volatile Float tmp1 = 0.0;
+  volatile Float tmp2 = 0.0;
+
+  const uint pixel_index = widthResolution() * y + x;
+  auto& pixel = buffer_[pixel_index];
+  auto& compensation = compensation_[pixel_index];
+  for (uint i = 0; i < SampledSpectra::size(); ++i) {
+    const uint index = getIndex(contribution.wavelength(i));
+    c = compensation[index];
+    tmp1 = contribution.intensity(i) - c;
+    tmp2 = pixel[index] + tmp1;
+    compensation[index] = (tmp2 - pixel[index]) - tmp1;
+    pixel[index] = tmp2;
+  }
 }
 
 /*!

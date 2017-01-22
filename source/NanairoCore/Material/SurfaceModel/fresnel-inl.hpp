@@ -95,13 +95,13 @@ SpectralDistribution Fresnel::evalFresnel0(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-SampledSpectra<kSampleSize> Fresnel::evalFresnel(
+inline
+SampledSpectra Fresnel::evalFresnel(
     const Float cos_theta,
-    const SampledSpectra<kSampleSize>& fresnel_0deg) noexcept
+    const SampledSpectra& fresnel_0deg) noexcept
 {
   const auto& wavelengths = fresnel_0deg.wavelengths();
-  const SampledSpectra<kSampleSize> one{wavelengths, 1.0};
+  const SampledSpectra one{wavelengths, 1.0};
   const Float tmp = zisc::power<5>(1.0 - cos_theta);
   const auto reflectance = fresnel_0deg + (one - fresnel_0deg) * tmp;
   ZISC_ASSERT(reflectance.isAllInBounds(0.0, 1.0), "Reflectances aren't [0, 1].");

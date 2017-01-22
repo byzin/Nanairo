@@ -24,6 +24,7 @@
 #include "NanairoCore/Material/Sensor/sensor.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
+#include "NanairoCore/Sampling/sampled_spectra.hpp"
 
 using nanairo::uint;
 
@@ -36,7 +37,7 @@ constexpr uint kLoopCount = 1'000'000'00;
   */
 void testSensorSampling(
     const nanairo::CameraModel& camera,
-    const nanairo::WavelengthSamples<1>& wavelengths,
+    const nanairo::WavelengthSamples& wavelengths,
     nanairo::Sampler& sampler,
     nanairo::MemoryPool& memory_pool,
     const char* sensor_name)
@@ -60,7 +61,7 @@ void testSensorSampling(
     if (is_hit) {
       const auto sensor = camera.makeSensor(x, y, wavelengths, memory_pool);
       const auto result = sensor->evalRadianceAndPdf(nullptr, &vout,
-                                                         normal, wavelengths);
+                                                     normal, wavelengths);
       const auto& f1 = std::get<0>(result);
       const auto& pdf1 = std::get<1>(result);
       const auto f2 =
@@ -87,7 +88,7 @@ void testSensorSampling(
   */
 void testSensorEnergyConservation(
     const nanairo::CameraModel& camera,
-    const nanairo::WavelengthSamples<1>& wavelengths,
+    const nanairo::WavelengthSamples& wavelengths,
     nanairo::Sampler& sampler,
     nanairo::MemoryPool& memory_pool,
     const char* sensor_name)
@@ -137,7 +138,7 @@ void testSensorEnergyConservation(
   */
 void testSensorImportanceSampling(
     const nanairo::CameraModel& camera,
-    const nanairo::WavelengthSamples<1>& wavelengths,
+    const nanairo::WavelengthSamples& wavelengths,
     nanairo::Sampler& sampler,
     nanairo::MemoryPool& memory_pool,
     const char* sensor_name)
@@ -160,8 +161,8 @@ void testSensorImportanceSampling(
       const auto& sampled_vout = std::get<0>(result1);
       const auto& weight = std::get<1>(result1);
       const auto& vout = sampled_vout.direction();
-      const auto result2 = sensor->evalRadianceAndPdf(nullptr, &vout, 
-                                                          normal, wavelengths);
+      const auto result2 = sensor->evalRadianceAndPdf(nullptr, &vout,
+                                                      normal, wavelengths);
       const auto& f = std::get<0>(result2);
       const auto& pdf = std::get<1>(result2);
       const Float cos_theta_no = dot(normal, vout);

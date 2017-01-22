@@ -1,14 +1,11 @@
 /*!
-  \file ggx_conductor_brdf-inl.hpp
+  \file ggx_conductor_brdf.cpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
-
-#ifndef NANAIRO_GGX_CONDUCTOR_BRDF_INL_HPP
-#define NANAIRO_GGX_CONDUCTOR_BRDF_INL_HPP
 
 #include "ggx_conductor_brdf.hpp"
 // Sstandard C++ library
@@ -29,10 +26,9 @@ namespace nanairo {
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-GgxConductorBrdf<kSampleSize>::GgxConductorBrdf(
+GgxConductorBrdf::GgxConductorBrdf(
     const Float roughness,
-    const Spectra& fresnel_0deg) noexcept :
+    const SampledSpectra& fresnel_0deg) noexcept :
         fresnel_0deg_{fresnel_0deg},
         roughness_{roughness}
 {
@@ -42,12 +38,11 @@ GgxConductorBrdf<kSampleSize>::GgxConductorBrdf(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-Float GgxConductorBrdf<kSampleSize>::evalPdf(
+Float GgxConductorBrdf::evalPdf(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& /* wavelengths */) const noexcept
+    const WavelengthSamples& /* wavelengths */) const noexcept
 {
   const Float pdf = MicrofacetGgx::evalReflectionPdf(roughness_, *vin, *vout, normal);
   return pdf;
@@ -57,12 +52,11 @@ Float GgxConductorBrdf<kSampleSize>::evalPdf(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-auto GgxConductorBrdf<kSampleSize>::evalRadiance(
+SampledSpectra GgxConductorBrdf::evalRadiance(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& /* wavelengths */) const noexcept -> Spectra
+    const WavelengthSamples& /* wavelengths */) const noexcept
 {
   const auto& r0 = fresnel_0deg_;
   const auto f = MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, normal, r0);
@@ -73,12 +67,11 @@ auto GgxConductorBrdf<kSampleSize>::evalRadiance(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-auto GgxConductorBrdf<kSampleSize>::evalRadianceAndPdf(
+std::tuple<SampledSpectra, Float> GgxConductorBrdf::evalRadianceAndPdf(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& /* wavelengths */) const noexcept -> std::tuple<Spectra, Float>
+    const WavelengthSamples& /* wavelengths */) const noexcept
 {
   const auto& r0 = fresnel_0deg_;
   Float pdf = 0.0;
@@ -91,12 +84,11 @@ auto GgxConductorBrdf<kSampleSize>::evalRadianceAndPdf(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-auto GgxConductorBrdf<kSampleSize>::sample(
+std::tuple<SampledDirection, SampledSpectra> GgxConductorBrdf::sample(
     const Vector3* vin,
     const Vector3& normal,
-    const Wavelengths& wavelengths,
-    Sampler& sampler) const noexcept -> std::tuple<SampledDirection, Spectra>
+    const WavelengthSamples& wavelengths,
+    Sampler& sampler) const noexcept
 {
   // Sample a microfacet normal
   const auto m_normal = MicrofacetGgx::sampleNormal(roughness_,
@@ -107,7 +99,7 @@ auto GgxConductorBrdf<kSampleSize>::sample(
   auto vout = Microfacet::calcReflectionDirection(*vin, m_normal);
   const Float cos_no = zisc::dot(normal, vout.direction());
 
-  Spectra weight{wavelengths};
+  SampledSpectra weight{wavelengths};
   if (0.0 < cos_no) {
     const Float cos_ni = -zisc::dot(normal, *vin),
                 cos_mi = -zisc::dot(m_normal.direction(), *vin);
@@ -137,12 +129,9 @@ auto GgxConductorBrdf<kSampleSize>::sample(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-bool GgxConductorBrdf<kSampleSize>::wavelengthIsSelected() const noexcept
+bool GgxConductorBrdf::wavelengthIsSelected() const noexcept
 {
   return false;
 }
 
 } // namespace nanairo
-
-#endif // NANAIRO_GGX_CONDUCTOR_BRDF_INL_HPP

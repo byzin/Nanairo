@@ -63,13 +63,12 @@ class MicrofacetGgx : public Microfacet
                                Float* pdf = nullptr) noexcept;
 
   //! Evaluate the GGX reflectance
-  template <uint kSampleSize>
-  static SampledSpectra<kSampleSize> evalReflectance(
+  static SampledSpectra evalReflectance(
       const Float roughness,
       const Vector3& vin,
       const Vector3& vout,
       const Vector3& normal,
-      const SampledSpectra<kSampleSize>& r0,
+      const SampledSpectra& r0,
       Float* pdf = nullptr) noexcept;
 
   //! Evaluate the reflection pdf for the conductor

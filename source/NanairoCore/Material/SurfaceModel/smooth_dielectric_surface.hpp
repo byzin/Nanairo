@@ -25,7 +25,7 @@ class QJsonObject;
 namespace nanairo {
 
 // Forward declaration
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -37,8 +37,7 @@ template <uint> class WavelengthSamples;
 class SmoothDielectricSurface : public SurfaceModel
 {
  public:
-  template <uint kSampleSize>
-  using ShaderPointer = SurfaceModel::ShaderPointer<kSampleSize>;
+  using ShaderPointer = SurfaceModel::ShaderPointer;
 
 
   //! Create a smooth dielectric surface
@@ -46,11 +45,12 @@ class SmoothDielectricSurface : public SurfaceModel
 
 
   //! Make a Fresnel BRDF
-  template <uint kSampleSize>
-  ShaderPointer<kSampleSize> makeSpecularBsdf(
+  ShaderPointer makeBxdf(
+      const Point2& texture_coordinate,
       const bool is_reverse_face,
-      const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const noexcept;
+      const WavelengthSamples& wavelengths,
+      Sampler& sampler,
+      MemoryPool& memory_pool) const noexcept override;
 
   //! Return the diffuse surface type
   SurfaceType type() const noexcept override;
@@ -66,7 +66,5 @@ class SmoothDielectricSurface : public SurfaceModel
 //! \} Core
 
 } // namespace nanairo
-
-#include "smooth_dielectric_surface-inl.hpp"
 
 #endif // NANAIRO_SMOOTH_DIELECTRIC_SURFACE_HPP

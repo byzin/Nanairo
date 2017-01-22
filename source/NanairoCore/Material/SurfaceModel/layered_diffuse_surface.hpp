@@ -26,9 +26,9 @@ namespace nanairo {
 
 // Forward declaration
 class Sampler;
-template <uint> class ShaderModel;
+class ShaderModel;
 class TextureModel;
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -40,8 +40,7 @@ template <uint> class WavelengthSamples;
 class LayeredDiffuseSurface : public SurfaceModel
 {
  public:
-  template <uint kSampleSize>
-  using ShaderPointer = SurfaceModel::ShaderPointer<kSampleSize>;
+  using ShaderPointer = SurfaceModel::ShaderPointer;
 
 
   //! Create a rough dielectric surface
@@ -51,12 +50,12 @@ class LayeredDiffuseSurface : public SurfaceModel
 
 
   //! Make a interfaced lambertian BRDF
-  template <uint kSampleSize>
-  ShaderPointer<kSampleSize> makeInterfacedLambertianBrdf(
+  ShaderPointer makeBxdf(
       const Point2& texture_coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths,
+      const bool is_reverse_face,
+      const WavelengthSamples& wavelengths,
       Sampler& sampler,
-      MemoryPool& memory_pool) const noexcept;
+      MemoryPool& memory_pool) const noexcept override;
 
   //! Return the rough dielectric surface type
   SurfaceType type() const noexcept override;
@@ -79,7 +78,5 @@ class LayeredDiffuseSurface : public SurfaceModel
 //! \} Core
 
 } // namespace nanairo
-
-#include "layered_diffuse_surface-inl.hpp"
 
 #endif // NANAIRO_LAYERED_DIFFUSE_SURFACE_HPP

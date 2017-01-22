@@ -21,9 +21,9 @@ namespace nanairo {
 
 // Forward declaration
 class CameraModel;
-template <uint> class SampledSpectra;
+class SampledSpectra;
 class Sampler;
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -32,14 +32,9 @@ template <uint> class WavelengthSamples;
   \details
   No detailed.
   */
-template <uint kSampleSize>
-class Sensor : public GlossyShaderModel<kSampleSize>
+class Sensor : public GlossyShaderModel
 {
  public:
-  using Spectra = typename ShaderModel<kSampleSize>::Spectra;
-  using Wavelengths = typename ShaderModel<kSampleSize>::Wavelengths;
-
-   
   //! Create a Camera sensor
   Sensor(const CameraModel* camera, const uint x, const uint y) noexcept;
 
@@ -49,27 +44,27 @@ class Sensor : public GlossyShaderModel<kSampleSize>
       const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,
-      const Wavelengths& wavelengths) const noexcept override;
+      const WavelengthSamples& wavelengths) const noexcept override;
 
   //! Evaluate the BRDF of the area sampling
-  Spectra evalRadiance(
+  SampledSpectra evalRadiance(
       const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,
-      const Wavelengths& wavelengths) const noexcept override;
+      const WavelengthSamples& wavelengths) const noexcept override;
 
   //! Evaluate the BRDF and pdf
-  std::tuple<Spectra, Float> evalRadianceAndPdf(
+  std::tuple<SampledSpectra, Float> evalRadianceAndPdf(
       const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,
-      const Wavelengths& wavelengths) const noexcept override;
+      const WavelengthSamples& wavelengths) const noexcept override;
 
   //! Sample a camera ray direction and evaluate a ray weight
-  std::tuple<SampledDirection, Spectra> sample(
+  std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin,
       const Vector3& normal, 
-      const Wavelengths& wavelengths,
+      const WavelengthSamples& wavelengths,
       Sampler& sampler) const noexcept override;
 
   //! Check is wavelength selection occured
@@ -91,7 +86,5 @@ class Sensor : public GlossyShaderModel<kSampleSize>
 //! \} Core
 
 } // namespace nanairo
-
-#include "sensor-inl.hpp"
 
 #endif // NANAIRO_SENSOR_HPP

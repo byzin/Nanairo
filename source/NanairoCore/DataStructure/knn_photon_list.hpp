@@ -27,12 +27,10 @@ namespace nanairo {
   \details
   No detailed.
   */
-template <uint kSampleSize>
 class KnnPhotonList
 {
  public:
-  using Cache = PhotonCache<kSampleSize>;
-  using PhotonPoint = std::tuple<Float, const Cache*>;
+  using PhotonPoint = std::tuple<Float, const PhotonCache*>;
 
 
   //! Create knn photon list
@@ -47,7 +45,7 @@ class KnnPhotonList
   void clear() noexcept;
 
   //! Insert a photon point if the distance is included in knn
-  void insert(const Float distance2, const Cache* photon) noexcept;
+  void insert(const Float distance2, const PhotonCache* photon) noexcept;
 
   //! Return the inverse longest distance of contents
   Float inverseLongestDistance() const noexcept;

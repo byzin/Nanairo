@@ -45,13 +45,13 @@ Float MicrofacetGgx::evalD(const Float roughness, const Float cos_nm) noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize>
-SampledSpectra<kSampleSize> MicrofacetGgx::evalReflectance(
+inline
+SampledSpectra MicrofacetGgx::evalReflectance(
     const Float roughness,
     const Vector3& vin,
     const Vector3& vout,
     const Vector3& normal,
-    const SampledSpectra<kSampleSize>& r0,
+    const SampledSpectra& r0,
     Float* pdf) noexcept
 {
   const auto& wavelengths = r0.wavelengths();
@@ -72,12 +72,12 @@ SampledSpectra<kSampleSize> MicrofacetGgx::evalReflectance(
   // Evaluate D
   const Float d = evalD(roughness, cos_nm);
   if (d == 0.0)
-    return SampledSpectra<kSampleSize>{wavelengths};
+    return SampledSpectra{wavelengths};
 
   // Evaluate G2(i, o, m)
   const Float g2 = evalG2(roughness, cos_ni, cos_no, cos_mi, cos_mo, cos_nm);
   if (g2 == 0.0)
-    return SampledSpectra<kSampleSize>{wavelengths};
+    return SampledSpectra{wavelengths};
 
   // Evaluate the fresnel reflectance
   const auto fresnel = Fresnel::evalFresnel(cos_mi, r0);

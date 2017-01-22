@@ -24,7 +24,7 @@ namespace nanairo {
 
 // Forward declaration
 class HdrImage;
-template <uint> class SampledSpectra;
+class SampledSpectra;
 class System;
 
 //! \addtogroup Core
@@ -55,10 +55,9 @@ class SpectraImageInterface
 
 
   //! Add radiance from a sample
-  template <uint kSampleSize>
-  void addContribution(const uint x,
-                       const uint y,
-                       const SampledSpectra<kSampleSize>& contribution) noexcept;
+  virtual void addContribution(const uint x,
+                               const uint y,
+                               const SampledSpectra& contribution) noexcept = 0;
 
   //! Clear the buffer value to 0
   virtual void clear() noexcept = 0;
@@ -84,20 +83,6 @@ class SpectraImageInterface
   uint width_,
        height_;
 };
-
-//! Add spectra contribution to image buffer
-template <uint kSampleSize>
-void addSpectraContribution(SpectraImageInterface* image,
-                            const uint x,
-                            const uint y,
-                            const SampledSpectra<kSampleSize>& contribution) noexcept;
-
-//! Add spectra contribution to image buffer
-template <uint kSampleSize>
-void addRgbContribution(SpectraImageInterface* image,
-                        const uint x,
-                        const uint y,
-                        const SampledSpectra<kSampleSize>& contribution) noexcept;
 
 //! \} Core
 

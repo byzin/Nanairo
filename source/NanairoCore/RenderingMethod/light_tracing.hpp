@@ -28,7 +28,7 @@ class Material;
 class Ray;
 class Sampler;
 class Scene;
-template <uint> class ShaderModel;
+class ShaderModel;
 class System;
 template <typename> class UniquePointer;
 
@@ -39,13 +39,12 @@ template <typename> class UniquePointer;
   \details
   No detailed.
   */
-template <uint kSampleSize>
-class LightTracing : public RenderingMethod<kSampleSize>
+class LightTracing : public RenderingMethod
 {
  public:
-  using Method = RenderingMethod<kSampleSize>;
+  using Method = RenderingMethod;
   using Spectra = typename Method::Spectra;
-  using Shader = ShaderModel<kSampleSize>;
+  using Shader = ShaderModel;
   using ShaderPointer = UniquePointer<Shader>;
   using Wavelengths = typename Method::Wavelengths;
 
@@ -105,7 +104,5 @@ class LightTracing : public RenderingMethod<kSampleSize>
 //! \} Core
 
 } // namespace nanairo
-
-#include "light_tracing-inl.hpp"
 
 #endif // NANAIRO_LIGHT_TRACING_HPP

@@ -30,8 +30,8 @@ namespace nanairo {
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-SampledSpectra<kSampleSize>::SampledSpectra() noexcept
+inline
+SampledSpectra::SampledSpectra() noexcept
 {
 }
 
@@ -39,8 +39,8 @@ SampledSpectra<kSampleSize>::SampledSpectra() noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-SampledSpectra<kSampleSize>::SampledSpectra(const Wavelengths& wavelengths) noexcept :
+inline
+SampledSpectra::SampledSpectra(const WavelengthSamples& wavelengths) noexcept :
     wavelengths_{&wavelengths}
 {
 }
@@ -49,9 +49,9 @@ SampledSpectra<kSampleSize>::SampledSpectra(const Wavelengths& wavelengths) noex
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-SampledSpectra<kSampleSize>::SampledSpectra(const Wavelengths& wavelengths,
-                                            const Float intensity) noexcept :
+inline
+SampledSpectra::SampledSpectra(const WavelengthSamples& wavelengths,
+                               const Float intensity) noexcept :
     wavelengths_{&wavelengths}
 {
   intensities_.fill(intensity);
@@ -61,21 +61,28 @@ SampledSpectra<kSampleSize>::SampledSpectra(const Wavelengths& wavelengths,
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-SampledSpectra<kSampleSize>::SampledSpectra(const Wavelengths& wavelengths,
-                                            const Intensities& intensities) noexcept :
+inline
+SampledSpectra::SampledSpectra(const WavelengthSamples& wavelengths,
+                               const IntensitySamples& intensities) noexcept :
     intensities_{intensities},
     wavelengths_{&wavelengths}
 {
 }
 
 /*!
+  */
+inline
+constexpr uint SampledSpectra::size() noexcept
+{
+  return CoreConfig::wavelengthSampleSize();
+}
+
+/*!
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator+(const Float scalar) const noexcept
-    -> SampledSpectra
+inline
+SampledSpectra SampledSpectra::operator+(const Float scalar) const noexcept
 {
   return *this + SampledSpectra{*wavelengths_, scalar};
 }
@@ -84,9 +91,9 @@ auto SampledSpectra<kSampleSize>::operator+(const Float scalar) const noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator+(const SampledSpectra& samples) const noexcept
-    -> SampledSpectra
+inline
+SampledSpectra SampledSpectra::operator+(
+    const SampledSpectra& samples) const noexcept
 {
   return SampledSpectra{*wavelengths_,  intensities_ + samples.intensities_};
 }
@@ -95,9 +102,8 @@ auto SampledSpectra<kSampleSize>::operator+(const SampledSpectra& samples) const
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator-(const Float scalar) const noexcept
-    -> SampledSpectra
+inline
+SampledSpectra SampledSpectra::operator-(const Float scalar) const noexcept
 {
   return *this - SampledSpectra{*wavelengths_, scalar};
 }
@@ -106,9 +112,9 @@ auto SampledSpectra<kSampleSize>::operator-(const Float scalar) const noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator-(const SampledSpectra& samples) const noexcept
-    -> SampledSpectra
+inline
+SampledSpectra SampledSpectra::operator-(
+    const SampledSpectra& samples) const noexcept
 {
   return SampledSpectra{*wavelengths_, intensities_ - samples.intensities_};
 }
@@ -117,9 +123,8 @@ auto SampledSpectra<kSampleSize>::operator-(const SampledSpectra& samples) const
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator*(const Float scalar) const noexcept
-    -> SampledSpectra
+inline
+SampledSpectra SampledSpectra::operator*(const Float scalar) const noexcept
 {
   return SampledSpectra{*wavelengths_, intensities_ * scalar};
 }
@@ -128,9 +133,9 @@ auto SampledSpectra<kSampleSize>::operator*(const Float scalar) const noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator*(const SampledSpectra& samples) const noexcept
-    -> SampledSpectra
+inline
+SampledSpectra SampledSpectra::operator*(
+    const SampledSpectra& samples) const noexcept
 {
   return SampledSpectra{*wavelengths_, intensities_ * samples.intensities_};
 }
@@ -139,9 +144,9 @@ auto SampledSpectra<kSampleSize>::operator*(const SampledSpectra& samples) const
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator/(const SampledSpectra& samples) const noexcept
-    -> SampledSpectra
+inline
+SampledSpectra SampledSpectra::operator/(
+    const SampledSpectra& samples) const noexcept
 {
   return SampledSpectra{*wavelengths_, intensities_ / samples.intensities_};
 }
@@ -150,9 +155,9 @@ auto SampledSpectra<kSampleSize>::operator/(const SampledSpectra& samples) const
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator+=(const SampledSpectra& samples) noexcept
-    -> SampledSpectra&
+inline
+SampledSpectra& SampledSpectra::operator+=(
+    const SampledSpectra& samples) noexcept
 {
   intensities_ += samples.intensities_;
   return *this;
@@ -162,9 +167,9 @@ auto SampledSpectra<kSampleSize>::operator+=(const SampledSpectra& samples) noex
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator-=(const SampledSpectra& samples) noexcept
-    -> SampledSpectra&
+inline
+SampledSpectra& SampledSpectra::operator-=(
+    const SampledSpectra& samples) noexcept
 {
   intensities_ -= samples.intensities_;
   return *this;
@@ -174,9 +179,9 @@ auto SampledSpectra<kSampleSize>::operator-=(const SampledSpectra& samples) noex
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::operator*=(const SampledSpectra& samples) noexcept
-    -> SampledSpectra&
+inline
+SampledSpectra& SampledSpectra::operator*=(
+    const SampledSpectra& samples) noexcept
 {
   intensities_ *= samples.intensities_;
   return *this;
@@ -186,43 +191,43 @@ auto SampledSpectra<kSampleSize>::operator*=(const SampledSpectra& samples) noex
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-Float SampledSpectra<kSampleSize>::average() const noexcept
+inline
+Float SampledSpectra::average() const noexcept
 {
   using zisc::cast;
 
-  constexpr Float averager = 1.0 / cast<Float>(kSampleSize);
+  constexpr Float averager = 1.0 / cast<Float>(size());
   return intensities_.sum() * averager;
 }
 
 /*!
   */
-template <uint kSampleSize> inline
-bool SampledSpectra<kSampleSize>::hasInf() const noexcept
+inline
+bool SampledSpectra::hasInf() const noexcept
 {
   return ::nanairo::hasInf(intensities_);
 }
 
 /*!
   */
-template <uint kSampleSize> inline
-bool SampledSpectra<kSampleSize>::hasNan() const noexcept
+inline
+bool SampledSpectra::hasNan() const noexcept
 {
   return ::nanairo::hasNan(intensities_);
 }
 
 /*!
   */
-template <uint kSampleSize> inline
-bool SampledSpectra<kSampleSize>::hasNegative() const noexcept
+inline
+bool SampledSpectra::hasNegative() const noexcept
 {
   return ::nanairo::hasNegative(intensities_);
 }
 
 /*!
   */
-template <uint kSampleSize> inline
-bool SampledSpectra<kSampleSize>::hasValue(const Float value) const noexcept
+inline
+bool SampledSpectra::hasValue(const Float value) const noexcept
 {
   return intensities_.hasValue(value);
 }
@@ -231,26 +236,26 @@ bool SampledSpectra<kSampleSize>::hasValue(const Float value) const noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-Float SampledSpectra<kSampleSize>::intensity(const uint index) const noexcept
+inline
+Float SampledSpectra::intensity(const uint index) const noexcept
 {
   return intensities_[index];
 }
 
 /*!
   */
-template <uint kSampleSize> inline
-bool SampledSpectra<kSampleSize>::isAllInBounds(const Float lower,
-                                                const Float upper) const noexcept
+inline
+bool SampledSpectra::isAllInBounds(const Float lower,
+                                   const Float upper) const noexcept
 {
   return intensities_.isAllInBounds(lower, upper);
 }
 
 /*!
   */
-template <uint kSampleSize> inline
-bool SampledSpectra<kSampleSize>::isAllInClosedBounds(const Float lower,
-                                                      const Float upper) const noexcept
+inline
+bool SampledSpectra::isAllInClosedBounds(const Float lower,
+                                         const Float upper) const noexcept
 {
   return intensities_.isAllInClosedBounds(lower, upper);
 }
@@ -259,8 +264,8 @@ bool SampledSpectra<kSampleSize>::isAllInClosedBounds(const Float lower,
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-bool SampledSpectra<kSampleSize>::isAllZero() const noexcept
+inline
+bool SampledSpectra::isAllZero() const noexcept
 {
   return intensities_.isAllZero();
 }
@@ -269,8 +274,8 @@ bool SampledSpectra<kSampleSize>::isAllZero() const noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-Float SampledSpectra<kSampleSize>::max() const noexcept
+inline
+Float SampledSpectra::max() const noexcept
 {
   return intensities_.max();
 }
@@ -279,8 +284,8 @@ Float SampledSpectra<kSampleSize>::max() const noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-uint16 SampledSpectra<kSampleSize>::wavelength(const uint index) const noexcept
+inline
+uint16 SampledSpectra::wavelength(const uint index) const noexcept
 {
   return (*wavelengths_)[index];
 }
@@ -289,8 +294,8 @@ uint16 SampledSpectra<kSampleSize>::wavelength(const uint index) const noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto SampledSpectra<kSampleSize>::wavelengths() const noexcept -> const Wavelengths&
+inline
+const WavelengthSamples& SampledSpectra::wavelengths() const noexcept
 {
   return *wavelengths_;
 }
@@ -299,9 +304,9 @@ auto SampledSpectra<kSampleSize>::wavelengths() const noexcept -> const Waveleng
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void SampledSpectra<kSampleSize>::setIntensity(const uint index, 
-                                               const Float intensity) noexcept
+inline
+void SampledSpectra::setIntensity(const uint index,
+                                  const Float intensity) noexcept
 {
   intensities_.set(index, intensity);
 }
@@ -310,9 +315,9 @@ void SampledSpectra<kSampleSize>::setIntensity(const uint index,
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-SampledSpectra<kSampleSize> operator*(const Float scalar,
-                                      const SampledSpectra<kSampleSize>& samples) noexcept
+inline
+SampledSpectra operator*(const Float scalar,
+                         const SampledSpectra& samples) noexcept
 {
   return samples * scalar;
 }
@@ -321,26 +326,26 @@ SampledSpectra<kSampleSize> operator*(const Float scalar,
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-SampledSpectra<kSampleSize> makeSampledSpectra(
-    const SampledWavelengths<kSampleSize>& sampled_wavelengths) noexcept
+inline
+SampledSpectra makeSampledSpectra(
+    const SampledWavelengths& sampled_wavelengths) noexcept
 {
-  return SampledSpectra<kSampleSize>{sampled_wavelengths.wavelengths(),
-                                     sampled_wavelengths.inverseProbabilities()};
+  return SampledSpectra{sampled_wavelengths.wavelengths(),
+                        sampled_wavelengths.inverseProbabilities()};
 }
 
 /*!
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-SampledSpectra<kSampleSize> sample(const SpectralDistribution& distribution,
-                                   const WavelengthSamples<kSampleSize>& wavelengths) noexcept
+inline
+SampledSpectra sample(const SpectralDistribution& distribution,
+                      const WavelengthSamples& wavelengths) noexcept
 {
-  IntensitySamples<kSampleSize> intensities;
-  for (uint index = 0; index < kSampleSize; ++index)
+  IntensitySamples intensities;
+  for (uint index = 0; index < SampledSpectra::size(); ++index)
     intensities.set(index, distribution.getByWavelength(wavelengths[index]));
-  return SampledSpectra<kSampleSize>{wavelengths, intensities};
+  return SampledSpectra{wavelengths, intensities};
 }
 
 } // namespace nanairo

@@ -12,6 +12,8 @@
 
 // Standard C++ library
 #include <cstdint>
+// Zisc
+#include "zisc/arithmetic_array.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
@@ -28,23 +30,17 @@ class Sampler;
   \details
   No detailed.
   */
-template <uint kSampleSize>
 class SampledWavelengths
 {
  public:
-  using Intensities = IntensitySamples<kSampleSize>;
-  using Wavelengths = WavelengthSamples<kSampleSize>;
-
-
   //! Create a sampled wavelengths
   SampledWavelengths() noexcept;
 
 
   //! Return the inverse probability array
-  const Intensities& inverseProbabilities() const noexcept;
+  const IntensitySamples& inverseProbabilities() const noexcept;
 
   //! Select primary wavelength randomly
-  template <uint kMax>
   void selectPrimaryWavelength(Sampler& sampler) noexcept;
 
   //! Set wavelength
@@ -56,11 +52,11 @@ class SampledWavelengths
   static constexpr uint size() noexcept;
 
   //! Return the wavelength array
-  const Wavelengths& wavelengths() const noexcept;
+  const WavelengthSamples& wavelengths() const noexcept;
 
  private:
-  Intensities inverse_probabilities_;
-  Wavelengths wavelengths_;
+  IntensitySamples inverse_probabilities_;
+  WavelengthSamples wavelengths_;
 };
 
 //! \} Core

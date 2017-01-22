@@ -43,18 +43,6 @@ CpuSceneRenderer::CpuSceneRenderer() noexcept
   */
 CpuSceneRenderer::~CpuSceneRenderer() noexcept
 {
-  if (system_->isRgbRenderingMode()) {
-    auto& sampler = rgbSampler();
-    auto& method = rgbRenderingMethod();
-    delete &sampler;
-    delete &method;
-  }
-  else {
-    auto& sampler = wavelengthSampler();
-    auto& method = renderingMethod();
-    delete &sampler;
-    delete &method;
-  }
 }
 
 /*!
@@ -95,10 +83,7 @@ void CpuSceneRenderer::handleCameraEvent() noexcept
   // Initialize memory
   auto& film = scene_->film();
   film.spectraBuffer().clear();
-  if (system_->isRgbRenderingMode())
-    rgbRenderingMethod().clear();
-  else
-    renderingMethod().clear();
+  renderingMethod().clear();
 }
 
 /*!
@@ -115,16 +100,11 @@ void CpuSceneRenderer::initializeRenderer(const QJsonObject& settings) noexcept
   const auto& world = scene_->world();
   const auto color_settings = SceneValue::toObject(settings, keyword::color);
   // Sampler
-  wavelength_sampler_ = system_->isRgbRenderingMode()
-      ? zisc::treatAs<void*>(new RgbWavelengthSampler{world, color_settings})
-      : zisc::treatAs<void*>(new SpectraWavelengthSampler{world, color_settings});
+  wavelength_sampler_ = new WavelengthSampler{world, color_settings};
   // Method
   const auto method_settings = SceneValue::toObject(settings,
                                                     keyword::renderingMethod);
-  rendering_method_ = system_->isRgbRenderingMode()
-      ? zisc::treatAs<void*>(RenderingMethod<3>::makeMethod(*system_, method_settings))
-      : zisc::treatAs<void*>(RenderingMethod<CoreConfig::wavelengthSampleSize()>::makeMethod(*system_, method_settings));
-
+  rendering_method_ = RenderingMethod::makeMethod(*system_, method_settings);
   // ToneMapping
   tone_mapping_operator_ = ToneMappingOperator::makeOperator(*system_,
                                                              color_settings);
@@ -142,58 +122,26 @@ void CpuSceneRenderer::initializeRenderer(const QJsonObject& settings) noexcept
 void CpuSceneRenderer::render(const quint64 /* cycle */) noexcept
 {
   auto& sampler = system_->globalSampler();
-  if (system_->isRgbRenderingMode()) {
-    const auto& wavelength_sampler = rgbSampler();
-    auto& method = rgbRenderingMethod();
-    const auto sampled_wavelengths = wavelength_sampler(sampler);
-    method.render(*system_, *scene_, sampled_wavelengths);
-  }
-  else {
-    const auto& wavelength_sampler = wavelengthSampler();
-    auto& method = renderingMethod();
-    const auto sampled_wavelengths = wavelength_sampler(sampler);
-    method.render(*system_, *scene_, sampled_wavelengths);
-  }
+  const auto& wavelength_sampler = wavelengthSampler();
+  auto& method = renderingMethod();
+  const auto sampled_wavelengths = wavelength_sampler(sampler);
+  method.render(*system_, *scene_, sampled_wavelengths);
 }
 
 /*!
   */
 inline
-auto CpuSceneRenderer::rgbRenderingMethod() const noexcept
-    -> const RgbRenderingMethod&
+const RenderingMethod& CpuSceneRenderer::renderingMethod() const noexcept
 {
-  ZISC_ASSERT(system_->isRgbRenderingMode(), "Rendering mode isn't RGB mode.");
-  return *zisc::treatAs<const RgbRenderingMethod*>(rendering_method_);
+  return *rendering_method_;
 }
 
 /*!
   */
 inline
-auto CpuSceneRenderer::rgbRenderingMethod() noexcept
-    -> RgbRenderingMethod&
+RenderingMethod& CpuSceneRenderer::renderingMethod() noexcept
 {
-  ZISC_ASSERT(system_->isRgbRenderingMode(), "Rendering mode isn't RGB mode.");
-  return *zisc::treatAs<RgbRenderingMethod*>(rendering_method_);
-}
-
-/*!
-  */
-inline
-auto CpuSceneRenderer::rgbSampler() const noexcept
-    -> const RgbWavelengthSampler&
-{
-  ZISC_ASSERT(system_->isRgbRenderingMode(), "Rendering mode isn't RGB mode.");
-  return *zisc::treatAs<const RgbWavelengthSampler*>(wavelength_sampler_);
-}
-
-/*!
-  */
-inline
-auto CpuSceneRenderer::rgbSampler() noexcept
-    -> RgbWavelengthSampler&
-{
-  ZISC_ASSERT(system_->isRgbRenderingMode(), "Rendering mode isn't RGB mode.");
-  return *zisc::treatAs<RgbWavelengthSampler*>(wavelength_sampler_);
+  return *rendering_method_;
 }
 
 /*!
@@ -209,41 +157,18 @@ void CpuSceneRenderer::toneMap() noexcept
 /*!
   */
 inline
-auto CpuSceneRenderer::renderingMethod() const noexcept
-    -> const SpectraRenderingMethod&
+const WavelengthSampler& CpuSceneRenderer::wavelengthSampler() const noexcept
 {
-  ZISC_ASSERT(!system_->isRgbRenderingMode(), "Rendering mode isn't Spectra mode.");
-  return *zisc::treatAs<const SpectraRenderingMethod*>(rendering_method_);
+  return *wavelength_sampler_;
 }
 
 /*!
   */
 inline
-auto CpuSceneRenderer::renderingMethod() noexcept
-    -> SpectraRenderingMethod&
+WavelengthSampler& CpuSceneRenderer::wavelengthSampler() noexcept
 {
-  ZISC_ASSERT(!system_->isRgbRenderingMode(), "Rendering mode isn't Spectra mode.");
-  return *zisc::treatAs<SpectraRenderingMethod*>(rendering_method_);
+  return *wavelength_sampler_;
 }
 
-/*!
-  */
-inline
-auto CpuSceneRenderer::wavelengthSampler() const noexcept
-    -> const SpectraWavelengthSampler&
-{
-  ZISC_ASSERT(!system_->isRgbRenderingMode(), "Rendering mode isn't Spectra mode.");
-  return *zisc::treatAs<const SpectraWavelengthSampler*>(wavelength_sampler_);
-}
-
-/*!
-  */
-inline
-auto CpuSceneRenderer::wavelengthSampler() noexcept
-    -> SpectraWavelengthSampler&
-{
-  ZISC_ASSERT(!system_->isRgbRenderingMode(), "Rendering mode isn't Spectra mode.");
-  return *zisc::treatAs<SpectraWavelengthSampler*>(wavelength_sampler_);
-}
 
 } // namespace nanairo

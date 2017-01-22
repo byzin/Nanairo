@@ -21,7 +21,7 @@ class QJsonObject;
 namespace nanairo {
 
 // Forward declaration
-template <uint> class SampledSpectra;
+class SampledSpectra;
 class Sampler;
 
 //! \addtogroup Core
@@ -67,16 +67,14 @@ class RussianRoulette
   RussianRoulette(const QJsonObject& settings) noexcept;
 
   //! Play russian roulette
-  template <uint kSampleSize>
   RouletteResult operator()(const uint path,
-                            const SampledSpectra<kSampleSize>& weight,
+                            const SampledSpectra& weight,
                             Sampler& sampler) const noexcept;
 
 
   //! Play russian roulette
-  template <uint kSampleSize>
   RouletteResult play(const uint path,
-                      const SampledSpectra<kSampleSize>& weight,
+                      const SampledSpectra& weight,
                       Sampler& sampler) const noexcept;
 
  private:
@@ -94,13 +92,11 @@ class RussianRoulette
   void initialize(const QJsonObject& settings) noexcept;
 
   //! Play russian roulette
-  template <uint kSampleSize>
-  RouletteResult playWithAverage(const SampledSpectra<kSampleSize>& weight,
+  RouletteResult playWithAverage(const SampledSpectra& weight,
                                  Sampler& sampler) const noexcept;
 
   //! Play russian roulette
-  template <uint kSampleSize>
-  RouletteResult playWithMax(const SampledSpectra<kSampleSize>& weight,
+  RouletteResult playWithMax(const SampledSpectra& weight,
                              Sampler& sampler) const noexcept;
 
   //! Play russian roulette

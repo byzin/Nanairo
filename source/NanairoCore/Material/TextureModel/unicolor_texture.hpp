@@ -24,9 +24,9 @@ class QJsonObject;
 namespace nanairo {
 
 // Forward declaration
-template <uint> class SampledSpectra;
+class SampledSpectra;
 class System;
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -46,16 +46,14 @@ class UnicolorTexture : public TextureModel
   Float floatValue(const Point2& coordinate) const noexcept override;
 
   //! Evaluate a emissive spectra at the texture coordinate
-  template <uint kSampleSize>
-  SampledSpectra<kSampleSize> emissiveValue(
+  SampledSpectra emissiveValue(
       const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
+      const WavelengthSamples& wavelengths) const noexcept override;
 
   //! Evaluate a reflective spectra at the texture coordinate
-  template <uint kSampleSize>
-  SampledSpectra<kSampleSize> reflectiveValue(
+  SampledSpectra reflectiveValue(
       const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
+      const WavelengthSamples& wavelengths) const noexcept override;
 
   //! Evaluate the reflective value by the wavelength at the texture coordinate
   Float reflectiveValue(const Point2& coordinate,
@@ -77,7 +75,5 @@ class UnicolorTexture : public TextureModel
 //! \} Core
 
 } // namespace nanairo
-
-#include "unicolor_texture-inl.hpp"
 
 #endif // NANAIRO_UNICOLOR_TEXTURE_HPP

@@ -31,10 +31,10 @@ namespace nanairo {
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void CameraModel::addContribution(const uint x, 
-                                  const uint y, 
-                                  const SampledSpectra<kSampleSize>& contribution) noexcept
+inline
+void CameraModel::addContribution(const uint x,
+                                  const uint y,
+                                  const SampledSpectra& contribution) noexcept
 {
   auto& spectra_buffer = film().spectraBuffer();
   spectra_buffer.addContribution(x, y, contribution);
@@ -64,15 +64,15 @@ const Film& CameraModel::film() const noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize>
+inline
 auto CameraModel::makeSensor(
     const uint x,
     const uint y,
-    const WavelengthSamples<kSampleSize>& /* wavelengths */,
-    MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
+    const WavelengthSamples& /* wavelengths */,
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
-  auto sensor = memory_pool.allocate<Sensor<kSampleSize>>(this, x, y);
-  return ShaderPointer<kSampleSize>{sensor};
+  auto sensor = memory_pool.allocate<Sensor>(this, x, y);
+  return ShaderPointer{sensor};
 }
 
 /*!

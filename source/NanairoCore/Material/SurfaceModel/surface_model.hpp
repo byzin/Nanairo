@@ -24,10 +24,10 @@ namespace nanairo {
 
 // Forward declaration
 class Sampler;
-template <uint> class ShaderModel;
+class ShaderModel;
 class SpectralDistribution;
 class TextureModel;
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -54,8 +54,7 @@ enum class SurfaceType : int
 class SurfaceModel
 {
  public:
-  template <uint kSampleSize>
-  using ShaderPointer = UniquePointer<ShaderModel<kSampleSize>>;
+  using ShaderPointer = UniquePointer<ShaderModel>;
 
 
   //! Finalize the surface model
@@ -63,13 +62,12 @@ class SurfaceModel
 
 
   //! Make BxDF
-  template <uint kSampleSize>
-  ShaderPointer<kSampleSize> makeBxdf(
+  virtual ShaderPointer makeBxdf(
       const Point2& texture_coordinate,
       const bool is_reverse_face,
-      const WavelengthSamples<kSampleSize>& wavelengths,
+      const WavelengthSamples& wavelengths,
       Sampler& sampler,
-      MemoryPool& memory_pool) const noexcept;
+      MemoryPool& memory_pool) const noexcept = 0;
 
   //! Make a surface scattering model
   static UniquePointer<SurfaceModel> makeSurface(
@@ -78,64 +76,10 @@ class SurfaceModel
 
   //! Return the surface type
   virtual SurfaceType type() const noexcept = 0;
-
- private:
-  //! Make a lambert BRDF
-  template <uint kSampleSize>
-  ShaderPointer<kSampleSize> makeLambertBrdf(
-      const Point2& texture_coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const noexcept;
-
-  //! Make a specular BSDF
-  template <uint kSampleSize>
-  ShaderPointer<kSampleSize> makeSpecularBsdf(
-      const bool is_reverse_face,
-      const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const noexcept;
-
-  //! Make a specular BRDF
-  template <uint kSampleSize>
-  ShaderPointer<kSampleSize> makeSpecularBrdf(
-      const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const noexcept;
-
-  //! Make a GGX dielectric BSDF
-  template <uint kSampleSize>
-  ShaderPointer<kSampleSize> makeGgxDielectricBsdf(
-      const Point2& texture_coordinate,
-      const bool is_reverse_face,
-      const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const noexcept;
-
-  //! Make a GGX conductor BRDF
-  template <uint kSampleSize>
-  ShaderPointer<kSampleSize> makeGgxConductorBrdf(
-      const Point2& texture_coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const noexcept;
-
-  //! Make a interfaced lambertian BRDF
-  template <uint kSampleSize>
-  ShaderPointer<kSampleSize> makeInterfacedLambertianBrdf(
-      const Point2& texture_coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths,
-      Sampler& sampler,
-      MemoryPool& memory_pool) const noexcept;
-
-  //! Make a microcylinder cloth BRDF
-  template <uint kSampleSize>
-  ShaderPointer<kSampleSize> makeMicrocylinderClothBrdf(
-      const Point2& texture_coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const noexcept;
-
 };
 
 //! \} Core
 
 } // namespace nanairo
-
-#include "surface_model-inl.hpp"
 
 #endif // NANAIRO_SURFACE_MODEL_HPP

@@ -25,10 +25,10 @@ namespace nanairo {
 
 // Forward decralation
 class Film;
-template <uint> class SampledSpectra;
+class SampledSpectra;
 class Sampler;
-template <uint> class ShaderModel;
-template <uint> class WavelengthSamples;
+class ShaderModel;
+class WavelengthSamples;
 
 //! \addtogroup Core 
 //! \{
@@ -50,8 +50,7 @@ enum class CameraType : int
 class CameraModel
 {
  public:
-  template <uint kSampleSize>
-  using ShaderPointer = UniquePointer<ShaderModel<kSampleSize>>;
+  using ShaderPointer = UniquePointer<ShaderModel>;
 
 
   //! Initialize the camera
@@ -62,10 +61,9 @@ class CameraModel
 
 
   //! Add ray radiance to film
-  template <uint kSampleSize>
   void addContribution(const uint x, 
                        const uint y, 
-                       const SampledSpectra<kSampleSize>& contribution) noexcept;
+                       const SampledSpectra& contribution) noexcept;
 
   //! Calculate the pdf
   virtual Float calcPdf(const Vector3& vout) const noexcept = 0;
@@ -88,11 +86,10 @@ class CameraModel
                                 uint* y) const noexcept = 0;
 
   //! Make a sensor
-  template <uint kSampleSize>
-  ShaderPointer<kSampleSize> makeSensor(
+  ShaderPointer makeSensor(
       const uint x,
       const uint y,
-      const WavelengthSamples<kSampleSize>& wavelengths,
+      const WavelengthSamples& wavelengths,
       MemoryPool& memory_pool) const noexcept;
 
   //! Return the camera normal

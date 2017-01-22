@@ -23,9 +23,9 @@ class QJsonObject;
 namespace nanairo {
 
 // Forward declaration
-template <uint> class SampledSpectra;
+class SampledSpectra;
 class System;
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -44,20 +44,18 @@ class ValueTexture : public TextureModel
   Float floatValue(const Point2& coordinate) const noexcept override;
 
   //! Evaluate a emissive spectra at the texture coordinate
-  template <uint kSampleSize>
-  SampledSpectra<kSampleSize> emissiveValue(
+  SampledSpectra emissiveValue(
       const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
+      const WavelengthSamples& wavelengths) const noexcept override;
 
   //! Evaluate the reflective value by the wavelength at the texture coordinate
   Float reflectiveValue(const Point2& coordinate,
                         const uint16 wavelength) const noexcept override;
 
   //! Evaluate a reflective spectra at the texture coordinate
-  template <uint kSampleSize>
-  SampledSpectra<kSampleSize> reflectiveValue(
+  SampledSpectra reflectiveValue(
       const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
+      const WavelengthSamples& wavelengths) const noexcept override;
 
   //! Return the value texture type
   TextureType type() const noexcept override;
@@ -74,7 +72,5 @@ class ValueTexture : public TextureModel
 //! \} Core
 
 } // namespace nanairo
-
-#include "value_texture-inl.hpp"
 
 #endif // NANAIRO_VALUE_TEXTURE_HPP

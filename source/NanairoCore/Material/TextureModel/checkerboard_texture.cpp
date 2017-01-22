@@ -26,6 +26,7 @@
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Color/xyz_color.hpp"
 #include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Utility/value.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 
@@ -57,6 +58,20 @@ Float CheckerboardTexture::floatValue(const Point2& coordinate) const noexcept
   \details
   No detailed.
   */
+SampledSpectra CheckerboardTexture::emissiveValue(
+    const Point2& coordinate,
+    const WavelengthSamples& wavelengths) const noexcept
+{
+  const auto x = zisc::cast<uint>(coordinate[0] * width_);
+  const auto y = zisc::cast<uint>(coordinate[1] * height_);
+  const uint index = (x ^ y) & 1;
+  return sample(*emissive_value_[index], wavelengths);
+}
+
+/*!
+  \details
+  No detailed.
+  */
 Float CheckerboardTexture::reflectiveValue(const Point2& coordinate,
                                            const uint16 wavelength) const noexcept
 {
@@ -64,6 +79,20 @@ Float CheckerboardTexture::reflectiveValue(const Point2& coordinate,
   const auto y = zisc::cast<uint>(coordinate[1] * height_);
   const uint index = (x ^ y) & 1;
   return reflective_value_[index]->getByWavelength(wavelength);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+SampledSpectra CheckerboardTexture::reflectiveValue(
+    const Point2& coordinate,
+    const WavelengthSamples& wavelengths) const noexcept
+{
+  const auto x = zisc::cast<uint>(coordinate[0] * width_);
+  const auto y = zisc::cast<uint>(coordinate[1] * height_);
+  const uint index = (x ^ y) & 1;
+  return sample(*reflective_value_[index], wavelengths);
 }
 
 /*!

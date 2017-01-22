@@ -1,14 +1,11 @@
 /*!
-  \file specular_bsdf-inl.hpp
+  \file specular_bsdf.cpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
-
-#ifndef NANAIRO_SPECULAR_BSDF_INL_HPP
-#define NANAIRO_SPECULAR_BSDF_INL_HPP
 
 #include "specular_bsdf.hpp"
 // Standard C++ library
@@ -27,15 +24,11 @@
 
 namespace nanairo {
 
-// Forward declaration
-class Sampler;
-
 /*!
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-SpecularBsdf<kSampleSize>::SpecularBsdf(const Float n) noexcept :
+SpecularBsdf::SpecularBsdf(const Float n) noexcept :
   n_{n}
 {
 }
@@ -44,12 +37,11 @@ SpecularBsdf<kSampleSize>::SpecularBsdf(const Float n) noexcept :
   \details
   No detailed.
   */
-template <uint kSampleSize>
-auto SpecularBsdf<kSampleSize>::sample(
+std::tuple<SampledDirection, SampledSpectra> SpecularBsdf::sample(
     const Vector3* vin,
     const Vector3& normal,
-    const Wavelengths& wavelengths,
-    Sampler& sampler) const noexcept -> std::tuple<SampledDirection, Spectra>
+    const WavelengthSamples& wavelengths,
+    Sampler& sampler) const noexcept
 {
   // Evaluate the fresnel term
   const Float cos_ni = -zisc::dot(normal, *vin);
@@ -69,7 +61,7 @@ auto SpecularBsdf<kSampleSize>::sample(
       ? Fresnel::calcReflectionDirection(*vin, normal)
       : Fresnel::calcRefractionDirection(*vin, normal, n_, g);
 
-  Spectra weight{wavelengths};
+  SampledSpectra weight{wavelengths};
   weight.setIntensity(wavelengths.primaryWavelengthIndex(), 1.0);
 
   return std::make_tuple(SampledDirection{vout, 1.0}, std::move(weight));
@@ -79,12 +71,9 @@ auto SpecularBsdf<kSampleSize>::sample(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-bool SpecularBsdf<kSampleSize>::wavelengthIsSelected() const noexcept
+bool SpecularBsdf::wavelengthIsSelected() const noexcept
 {
   return true;
 }
 
 } // namespace nanairo
-
-#endif // NANAIRO_SPECULAR_BSDF_INL_HPP

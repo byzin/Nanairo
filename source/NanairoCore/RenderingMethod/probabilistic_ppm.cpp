@@ -1,14 +1,11 @@
 /*!
-  \file probabilistic_ppm-inl.hpp
+  \file probabilistic_ppm.cpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
-
-#ifndef NANAIRO_PROBABILISTIC_PPM_INL_HPP
-#define NANAIRO_PROBABILISTIC_PPM_INL_HPP
 
 #include "probabilistic_ppm.hpp"
 // Standard C++ library
@@ -59,13 +56,11 @@ namespace nanairo {
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-ProbabilisticPpm<kSampleSize>::ProbabilisticPpm(
-    const System& system,
-    const QJsonObject& settings) noexcept :
-        RenderingMethod<kSampleSize>(system, settings),
-        photon_map_{system},
-        cycle_{0}
+ProbabilisticPpm::ProbabilisticPpm(const System& system,
+                                   const QJsonObject& settings) noexcept :
+    RenderingMethod(system, settings),
+    photon_map_{system},
+    cycle_{0}
 {
   initialize(system, settings);
 }
@@ -74,11 +69,9 @@ ProbabilisticPpm<kSampleSize>::ProbabilisticPpm(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-void ProbabilisticPpm<kSampleSize>::render(
-    System& system,
-    Scene& scene,
-    const Wavelengths& sampled_wavelengths) noexcept
+void ProbabilisticPpm::render(System& system,
+                              Scene& scene,
+                              const Wavelengths& sampled_wavelengths) noexcept
 {
   photon_map_.clear();
   updateRadius();
@@ -88,8 +81,8 @@ void ProbabilisticPpm<kSampleSize>::render(
 
 /*!
   */
-template <uint kSampleSize> inline
-Float ProbabilisticPpm<kSampleSize>::calcWeight(const Float t) const noexcept
+inline
+Float ProbabilisticPpm::calcWeight(const Float t) const noexcept
 {
   constexpr Float k = 1.1;
   constexpr Float inverse_k = 1.0 / k;
@@ -101,13 +94,12 @@ Float ProbabilisticPpm<kSampleSize>::calcWeight(const Float t) const noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize>
-auto ProbabilisticPpm<kSampleSize>::estimateRadiance(
+auto ProbabilisticPpm::estimateRadiance(
     const int thread_id,
     const Vector3& vin,
     const IntersectionInfo& intersection,
     const ShaderPointer& bxdf,
-    const WavelengthSamples<kSampleSize>& wavelengths,
+    const WavelengthSamples& wavelengths,
     const bool wavelength_is_selected) noexcept -> Spectra
 {
 
@@ -147,8 +139,8 @@ auto ProbabilisticPpm<kSampleSize>::estimateRadiance(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void ProbabilisticPpm<kSampleSize>::evalImplicitConnection(
+inline
+void ProbabilisticPpm::evalImplicitConnection(
     const Ray& ray,
     const IntersectionInfo& intersection,
     const Spectra& camera_contribution,
@@ -182,8 +174,8 @@ void ProbabilisticPpm<kSampleSize>::evalImplicitConnection(
 
 /*!
   */
-template <uint kSampleSize> inline
-constexpr uint ProbabilisticPpm<kSampleSize>::expectedMaxReflectionCount() noexcept
+inline
+constexpr uint ProbabilisticPpm::expectedMaxReflectionCount() noexcept
 {
   return 16;
 }
@@ -192,8 +184,8 @@ constexpr uint ProbabilisticPpm<kSampleSize>::expectedMaxReflectionCount() noexc
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto ProbabilisticPpm<kSampleSize>::generatePhoton(
+inline
+auto ProbabilisticPpm::generatePhoton(
     const World& world,
     Spectra* light_contribution,
     Sampler& sampler,
@@ -238,8 +230,8 @@ auto ProbabilisticPpm<kSampleSize>::generatePhoton(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-Ray ProbabilisticPpm<kSampleSize>::generateRay(
+inline
+Ray ProbabilisticPpm::generateRay(
     const CameraModel& camera,
     const uint x,
     const uint y,
@@ -263,9 +255,8 @@ Ray ProbabilisticPpm<kSampleSize>::generateRay(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-void ProbabilisticPpm<kSampleSize>::initialize(const System& system,
-                                               const QJsonObject& settings) noexcept
+void ProbabilisticPpm::initialize(const System& system,
+                                  const QJsonObject& settings) noexcept
 {
   using zisc::cast;
   auto& thread_pool = system.threadPool();
@@ -317,8 +308,8 @@ void ProbabilisticPpm<kSampleSize>::initialize(const System& system,
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-bool ProbabilisticPpm<kSampleSize>::surfaceHasPhotonMap(
+inline
+bool ProbabilisticPpm::surfaceHasPhotonMap(
     const ShaderPointer& bxdf) const noexcept
 {
   return (bxdf->type() == ShaderType::Diffuse) ||
@@ -329,8 +320,8 @@ bool ProbabilisticPpm<kSampleSize>::surfaceHasPhotonMap(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void ProbabilisticPpm<kSampleSize>::traceCameraPath(
+inline
+void ProbabilisticPpm::traceCameraPath(
     System& system,
     Scene& scene,
     const Wavelengths& sampled_wavelengths) noexcept
@@ -361,8 +352,7 @@ void ProbabilisticPpm<kSampleSize>::traceCameraPath(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-void ProbabilisticPpm<kSampleSize>::traceCameraPath(
+void ProbabilisticPpm::traceCameraPath(
     System& system,
     Scene& scene,
     const Wavelengths& sampled_wavelengths,
@@ -428,8 +418,7 @@ void ProbabilisticPpm<kSampleSize>::traceCameraPath(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-void ProbabilisticPpm<kSampleSize>::tracePhoton(
+void ProbabilisticPpm::tracePhoton(
     System& system,
     Scene& scene,
     const Wavelengths& sampled_wavelengths) noexcept
@@ -455,8 +444,7 @@ void ProbabilisticPpm<kSampleSize>::tracePhoton(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-void ProbabilisticPpm<kSampleSize>::tracePhoton(
+void ProbabilisticPpm::tracePhoton(
     System& system,
     Scene& scene,
     const Wavelengths& sampled_wavelengths,
@@ -519,8 +507,8 @@ void ProbabilisticPpm<kSampleSize>::tracePhoton(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void ProbabilisticPpm<kSampleSize>::updateRadius() noexcept
+inline
+void ProbabilisticPpm::updateRadius() noexcept
 {
   ++cycle_;
   const Float radius_scale = (zisc::cast<Float>(cycle_ - 1) + alpha_) /
@@ -533,5 +521,3 @@ void ProbabilisticPpm<kSampleSize>::updateRadius() noexcept
 }
 
 } // namespace nanairo
-
-#endif // NANAIRO_PROBABILISTIC_PPM_INL_HPP

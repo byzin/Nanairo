@@ -15,6 +15,7 @@
 #include <array>
 #include <cstdint>
 // Zisc
+#include "zisc/arithmetic_array.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "sampler.hpp"
@@ -30,18 +31,25 @@ class World;
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-SampledWavelengths<kSampleSize>::SampledWavelengths() noexcept
+inline
+SampledWavelengths::SampledWavelengths() noexcept
 {
+}
+
+/*!
+  */
+inline
+constexpr uint SampledWavelengths::size() noexcept
+{
+  return CoreConfig::wavelengthSampleSize();
 }
 
 /*!
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto SampledWavelengths<kSampleSize>::inverseProbabilities() const noexcept
-    -> const Intensities&
+inline
+const IntensitySamples& SampledWavelengths::inverseProbabilities() const noexcept
 {
   return inverse_probabilities_;
 }
@@ -50,11 +58,12 @@ auto SampledWavelengths<kSampleSize>::inverseProbabilities() const noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> template <uint kMax> inline
-void SampledWavelengths<kSampleSize>::selectPrimaryWavelength(Sampler& sampler) noexcept
+inline
+void SampledWavelengths::selectPrimaryWavelength(Sampler& sampler) noexcept
 {
   constexpr uint min = 0;
-  const uint selected_index = sampler.sample(min, kMax);
+  constexpr uint max = size();
+  const uint selected_index = sampler.sample(min, max);
   wavelengths_.setPrimaryWavelength(selected_index);
 }
 
@@ -62,29 +71,21 @@ void SampledWavelengths<kSampleSize>::selectPrimaryWavelength(Sampler& sampler) 
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void SampledWavelengths<kSampleSize>::set(const uint index, 
-                                          const uint16 wavelength,
-                                          const Float inverse_probability) noexcept
+inline
+void SampledWavelengths::set(const uint index,
+                             const uint16 wavelength,
+                             const Float inverse_probability) noexcept
 {
   wavelengths_[index] = wavelength;
   inverse_probabilities_[index] = inverse_probability;
 }
 
 /*!
-  */
-template <uint kSampleSize> inline
-constexpr uint SampledWavelengths<kSampleSize>::size() noexcept
-{
-  return kSampleSize;
-}
-
-/*!
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto SampledWavelengths<kSampleSize>::wavelengths() const noexcept -> const Wavelengths&
+inline
+const WavelengthSamples& SampledWavelengths::wavelengths() const noexcept
 {
   return wavelengths_;
 }

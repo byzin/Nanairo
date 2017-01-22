@@ -1,14 +1,11 @@
 /*!
-  \file microcylinder_cloth_brdf-inl.hpp
+  \file microcylinder_cloth_brdf.cpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
-
-#ifndef NANAIRO_MICROCYLINDER_CLOTH_BRDF_INL_HPP
-#define NANAIRO_MICROCYLINDER_CLOTH_BRDF_INL_HPP
 
 #include "microcylinder_cloth_brdf.hpp"
 // Standard C++ library
@@ -31,10 +28,9 @@ namespace nanairo {
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-MicrocylinderClothBrdf<kSampleSize>::MicrocylinderClothBrdf(
+MicrocylinderClothBrdf::MicrocylinderClothBrdf(
     const ClothSurface* surface,
-    const Spectra& reflectance) noexcept :
+    const SampledSpectra& reflectance) noexcept :
         reflectance_{reflectance},
         surface_{surface}
 {
@@ -44,12 +40,11 @@ MicrocylinderClothBrdf<kSampleSize>::MicrocylinderClothBrdf(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-Float MicrocylinderClothBrdf<kSampleSize>::evalPdf(
+Float MicrocylinderClothBrdf::evalPdf(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& /* wavelengths */) const noexcept
+    const WavelengthSamples& /* wavelengths */) const noexcept
 {
   const Float k_d = surface_->kD();
   const Float gamma_r = surface_->gammaR();
@@ -61,12 +56,11 @@ Float MicrocylinderClothBrdf<kSampleSize>::evalPdf(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto MicrocylinderClothBrdf<kSampleSize>::evalRadiance(
+SampledSpectra MicrocylinderClothBrdf::evalRadiance(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& /* wavelengths */) const noexcept -> Spectra
+    const WavelengthSamples& /* wavelengths */) const noexcept
 {
   const Float eta = surface_->eta();
   const Float k_d = surface_->kD();
@@ -81,12 +75,11 @@ auto MicrocylinderClothBrdf<kSampleSize>::evalRadiance(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-auto MicrocylinderClothBrdf<kSampleSize>::evalRadianceAndPdf(
+std::tuple<SampledSpectra, Float> MicrocylinderClothBrdf::evalRadianceAndPdf(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& /* wavelengths */) const noexcept -> std::tuple<Spectra, Float>
+    const WavelengthSamples& /* wavelengths */) const noexcept
 {
   const Float eta = surface_->eta();
   const Float k_d = surface_->kD();
@@ -100,12 +93,11 @@ auto MicrocylinderClothBrdf<kSampleSize>::evalRadianceAndPdf(
   return std::make_tuple(std::move(radiance), pdf);
 }
 
-template <uint kSampleSize>
-auto MicrocylinderClothBrdf<kSampleSize>::sample(
+std::tuple<SampledDirection, SampledSpectra> MicrocylinderClothBrdf::sample(
     const Vector3* vin,
     const Vector3& normal,
-    const Wavelengths& /* wavelengths */,
-    Sampler& sampler) const noexcept -> std::tuple<SampledDirection, Spectra>
+    const WavelengthSamples& /* wavelengths */,
+    Sampler& sampler) const noexcept
 {
   const Float eta = surface_->eta();
   const Float k_d = surface_->kD();
@@ -120,12 +112,9 @@ auto MicrocylinderClothBrdf<kSampleSize>::sample(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-bool MicrocylinderClothBrdf<kSampleSize>::wavelengthIsSelected() const noexcept
+bool MicrocylinderClothBrdf::wavelengthIsSelected() const noexcept
 {
   return false;
 }
 
 } // namespace nanairo
-
-#endif // NANAIRO_MICROCYLINDER_CLOTH_BRDF_INL_HPP

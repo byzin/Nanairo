@@ -22,6 +22,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
@@ -49,10 +50,32 @@ Float ValueTexture::floatValue(const Point2& /* coordinate */) const noexcept
   \details
   No detailed.
   */
+SampledSpectra ValueTexture::emissiveValue(
+    const Point2& /* coordinate */,
+    const WavelengthSamples& wavelengths) const noexcept
+{
+  return SampledSpectra{wavelengths, emissive_value_};
+}
+
+/*!
+  \details
+  No detailed.
+  */
 Float ValueTexture::reflectiveValue(const Point2& /* coordinate */,
                                     const uint16 /* wavelength */) const noexcept
 {
   return reflective_value_;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+SampledSpectra ValueTexture::reflectiveValue(
+    const Point2& /* coordinate */,
+    const WavelengthSamples& wavelengths) const noexcept
+{
+  return SampledSpectra{wavelengths, reflective_value_};
 }
 
 /*!

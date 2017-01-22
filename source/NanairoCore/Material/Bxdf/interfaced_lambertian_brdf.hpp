@@ -23,7 +23,7 @@ namespace nanairo {
 
 // Forward declaration
 class Sampler;
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -32,15 +32,10 @@ template <uint> class WavelengthSamples;
   \details
   No detailed.
   */
-template <uint kSampleSize>
-class InterfacedLambertianBrdf : public GlossyShaderModel<kSampleSize>
+class InterfacedLambertianBrdf : public GlossyShaderModel
 {
  public:
-  using Spectra = typename ShaderModel<kSampleSize>::Spectra;
-  using Wavelengths = typename ShaderModel<kSampleSize>::Wavelengths;
-
-
-  //! Create a interfaced lambertian BRDF 
+  //! Create a interfaced lambertian BRDF
   InterfacedLambertianBrdf(const Float k_d,
                            const Float roughness,
                            const Float n,
@@ -52,26 +47,27 @@ class InterfacedLambertianBrdf : public GlossyShaderModel<kSampleSize>
   Float evalPdf(const Vector3* vin,
                 const Vector3* vout,
                 const Vector3& normal,
-                const Wavelengths& wavelengths) const noexcept override;
+                const WavelengthSamples& wavelengths) const noexcept override;
 
   //! Evaluate the radiance of the area sampling
-  Spectra evalRadiance(const Vector3* vin,
-                       const Vector3* vout,
-                       const Vector3& normal,
-                       const Wavelengths& wavelengths) const noexcept override;
-
-  //! Evaluate the radiance of the area sampling
-  std::tuple<Spectra, Float> evalRadianceAndPdf(
+  SampledSpectra evalRadiance(
       const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,
-      const Wavelengths& wavelengths) const noexcept override;
+      const WavelengthSamples& wavelengths) const noexcept override;
+
+  //! Evaluate the radiance of the area sampling
+  std::tuple<SampledSpectra, Float> evalRadianceAndPdf(
+      const Vector3* vin,
+      const Vector3* vout,
+      const Vector3& normal,
+      const WavelengthSamples& wavelengths) const noexcept override;
 
   //! Sample a reflection direction and evaluate a reflection weight
-  std::tuple<SampledDirection, Spectra> sample(
+  std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin,
       const Vector3& normal,
-      const Wavelengths& wavelengths,
+      const WavelengthSamples& wavelengths,
       Sampler& sampler) const noexcept override;
 
   //! Check if wavelength selection occured
@@ -88,7 +84,5 @@ class InterfacedLambertianBrdf : public GlossyShaderModel<kSampleSize>
 //! \} Core
 
 } // namespace nanairo
-
-#include "interfaced_lambertian_brdf-inl.hpp"
 
 #endif // NANAIRO_INTERFACED_LAMBERTIAN_BRDF_HPP

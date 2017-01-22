@@ -19,7 +19,7 @@
 namespace nanairo {
 
 // Forward declaration
-template <uint> class SampledWavelengths;
+class SampledWavelengths;
 class SpectralDistribution;
 
 //! \addtogroup Core 
@@ -29,25 +29,22 @@ class SpectralDistribution;
   \details
   No detailed.
   */
-template <uint kSampleSize>
 class SampledSpectra
 {
  public:
-  using Intensities = IntensitySamples<kSampleSize>;
-  using Wavelengths = WavelengthSamples<kSampleSize>;
-
-
   //! Create samples
   SampledSpectra() noexcept;
 
   //! Create samples
-  SampledSpectra(const Wavelengths& wavelengths) noexcept;
+  SampledSpectra(const WavelengthSamples& wavelengths) noexcept;
 
   //! Create samples
-  SampledSpectra(const Wavelengths& wavelengths, const Float intensity) noexcept;
+  SampledSpectra(const WavelengthSamples& wavelengths,
+                 const Float intensity) noexcept;
 
   //! Create samples
-  SampledSpectra(const Wavelengths& wavelengths, const Intensities& intensities) noexcept;
+  SampledSpectra(const WavelengthSamples& wavelengths,
+                 const IntensitySamples& intensities) noexcept;
 
 
   //! Apply addition operation
@@ -115,10 +112,7 @@ class SampledSpectra
   Float max() const noexcept;
 
   //! Get the number of samples
-  static constexpr uint size() noexcept 
-  {
-    return kSampleSize;
-  }
+  static constexpr uint size() noexcept;
 
   //! Set the intensity by the index
   void setIntensity(const uint index, const Float intensity) noexcept;
@@ -127,30 +121,24 @@ class SampledSpectra
   uint16 wavelength(const uint index) const noexcept;
 
   //! Get the sampled wavelength array
-  const Wavelengths& wavelengths() const noexcept;
+  const WavelengthSamples& wavelengths() const noexcept;
 
  private:
-  Intensities intensities_;
-  const Wavelengths* wavelengths_;
+  IntensitySamples intensities_;
+  const WavelengthSamples* wavelengths_;
 };
 
 //! Multiply each sample with a scalar
-template <uint kSampleSize>
-SampledSpectra<kSampleSize> operator*(const Float scalar, 
-                                      const SampledSpectra<kSampleSize>& samples) noexcept;
+SampledSpectra operator*(const Float scalar,
+                         const SampledSpectra& samples) noexcept;
 
 //! Make a sampled spectra
-template <uint kSampleSize>
-SampledSpectra<kSampleSize> makeSampledSpectra(
-    const SampledWavelengths<kSampleSize>& sampled_wavelengths) noexcept;
-
-//! Return the sqrt of sample
-//SampledSpectra sqrt(const SampledSpectra& samples);
+SampledSpectra makeSampledSpectra(
+    const SampledWavelengths& sampled_wavelengths) noexcept;
 
 //! Return the sampled spectra
-template <uint kSampleSize>
-SampledSpectra<kSampleSize> sample(const SpectralDistribution& distribution,
-                                   const WavelengthSamples<kSampleSize>& wavelengths) noexcept;
+SampledSpectra sample(const SpectralDistribution& distribution,
+                      const WavelengthSamples& wavelengths) noexcept;
 
 //! \} Core
 

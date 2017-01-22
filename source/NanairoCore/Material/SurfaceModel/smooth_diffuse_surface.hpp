@@ -24,10 +24,10 @@ class QJsonObject;
 namespace nanairo {
 
 // Forward declaration
-template <uint> class ShaderModel;
+class ShaderModel;
 class SpectralDistribution;
 class TextureModel;
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -39,8 +39,7 @@ template <uint> class WavelengthSamples;
 class SmoothDiffuseSurface : public SurfaceModel
 {
  public:
-  template <uint kSampleSize>
-  using ShaderPointer = SurfaceModel::ShaderPointer<kSampleSize>;
+  using ShaderPointer = SurfaceModel::ShaderPointer;
 
 
   //! Create a smooth diffuse surface
@@ -50,11 +49,12 @@ class SmoothDiffuseSurface : public SurfaceModel
 
 
   //! Make Lambert BRDF
-  template <uint kSampleSize>
-  ShaderPointer<kSampleSize> makeLambertBrdf(
+  ShaderPointer makeBxdf(
       const Point2& texture_coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths,
-      MemoryPool& memory_pool) const noexcept;
+      const bool is_reverse_face,
+      const WavelengthSamples& wavelengths,
+      Sampler& sampler,
+      MemoryPool& memory_pool) const noexcept override;
 
   //! Return the diffuse surface type
   SurfaceType type() const noexcept override;
@@ -71,7 +71,5 @@ class SmoothDiffuseSurface : public SurfaceModel
 //! \} Core
 
 } // namespace nanairo
-
-#include "smooth_diffuse_surface-inl.hpp"
 
 #endif // NANAIRO_SMOOTH_DIFFUSE_SURFACE_HPP

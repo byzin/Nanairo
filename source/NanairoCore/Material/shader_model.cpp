@@ -1,14 +1,11 @@
 /*!
-  \file shader_model-inl.hpp
+  \file shader_model.cpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
-
-#ifndef NANAIRO_SHADER_MODEL_INL_HPP
-#define NANAIRO_SHADER_MODEL_INL_HPP
 
 #include "shader_model.hpp"
 // Standard C++ library
@@ -18,8 +15,9 @@
 #include "zisc/error.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
+#include "NanairoCore/Sampling/sampled_spectra.hpp"
+#include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 
 namespace nanairo {
 
@@ -32,8 +30,7 @@ class SurfaceModel;
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-ShaderModel<kSampleSize>::ShaderModel() noexcept
+ShaderModel::ShaderModel() noexcept
 {
 }
 
@@ -41,8 +38,7 @@ ShaderModel<kSampleSize>::ShaderModel() noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void ShaderModel<kSampleSize>::operator delete(void*) noexcept
+void ShaderModel::operator delete(void*) noexcept
 {
 }
 
@@ -50,8 +46,7 @@ void ShaderModel<kSampleSize>::operator delete(void*) noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void* ShaderModel<kSampleSize>::operator new(std::size_t, void* memory) noexcept
+void* ShaderModel::operator new(std::size_t, void* memory) noexcept
 {
   return memory;
 }
@@ -60,12 +55,11 @@ void* ShaderModel<kSampleSize>::operator new(std::size_t, void* memory) noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize>
-Float ShaderModel<kSampleSize>::evalPdf(
+Float ShaderModel::evalPdf(
     const Vector3* /* vin */, 
     const Vector3* /* vout */,
     const Vector3& /* normal */,
-    const Wavelengths& /* wavelengths */) const noexcept
+    const WavelengthSamples& /* wavelengths */) const noexcept
 {
   zisc::raiseError("The evalPdf function is not implemented.");
   return 0.0;
@@ -75,47 +69,42 @@ Float ShaderModel<kSampleSize>::evalPdf(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-auto ShaderModel<kSampleSize>::evalRadiance(
+SampledSpectra ShaderModel::evalRadiance(
     const Vector3* /* vin */, 
     const Vector3* /* vout */,
     const Vector3& /* normal */,
-    const Wavelengths& wavelengths) const noexcept -> Spectra
+    const WavelengthSamples& wavelengths) const noexcept
 {
   zisc::raiseError("The evalPdf function is not implemented.");
-  return Spectra{wavelengths};
+  return SampledSpectra{wavelengths};
 }
 
 /*!
   \details
   No detailed.
   */
-template <uint kSampleSize>
-auto ShaderModel<kSampleSize>::evalRadianceAndPdf(
+std::tuple<SampledSpectra, Float> ShaderModel::evalRadianceAndPdf(
     const Vector3* /* vin */,
     const Vector3* /* vout */,
     const Vector3& /* normal */,
-    const Wavelengths& wavelengths) const noexcept -> std::tuple<Spectra, Float>
+    const WavelengthSamples& wavelengths) const noexcept
 {
   zisc::raiseError("The evalRadianceAndPdf function is not implemented.");
-  return std::make_tuple(Spectra{wavelengths}, 0.0);
+  return std::make_tuple(SampledSpectra{wavelengths}, 0.0);
 }
 
 /*!
   \details
   No detailed.
   */
-template <uint kSampleSize>
-auto ShaderModel<kSampleSize>::sample(
+std::tuple<SampledDirection, SampledSpectra> ShaderModel::sample(
     const Vector3* /* vin */,
     const Vector3& /* normal */,
-    const Wavelengths& wavelengths,
-    Sampler& /* sampler */) const noexcept -> std::tuple<SampledDirection, Spectra>
+    const WavelengthSamples& wavelengths,
+    Sampler& /* sampler */) const noexcept
 {
   zisc::raiseError("The sample function is not implemented.");
-  return std::make_tuple(SampledDirection{}, Spectra{wavelengths});
+  return std::make_tuple(SampledDirection{}, SampledSpectra{wavelengths});
 }
 
 } // namespace nanairo
-
-#endif // NANAIRO_SHADER_MODEL_INL_HPP

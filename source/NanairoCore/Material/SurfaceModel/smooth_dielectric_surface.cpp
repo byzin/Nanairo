@@ -12,11 +12,15 @@
 #include <QJsonObject>
 #include <QString>
 // Zisc
+#include "zisc/aligned_memory_pool.hpp"
 #include "zisc/error.hpp"
 // Nanairo
 #include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Material/Bxdf/specular_bsdf.hpp"
+#include "NanairoCore/Material/TextureModel/texture_model.hpp"
+#include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
@@ -28,6 +32,27 @@ namespace nanairo {
 SmoothDielectricSurface::SmoothDielectricSurface(const QJsonObject& settings) noexcept
 {
   initialize(settings);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+auto SmoothDielectricSurface::makeBxdf(
+    const Point2& /* texture_coordinate */,
+    const bool is_reverse_face,
+    const WavelengthSamples& wavelengths,
+    Sampler& /* sampler */,
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer
+{
+  const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];
+  const Float n = (is_reverse_face)
+      ? 1.0 / eta_.getByWavelength(wavelength)
+      : eta_.getByWavelength(wavelength);
+
+  using Bsdf = SpecularBsdf;
+  auto bsdf = memory_pool.allocate<Bsdf>(n);
+  return ShaderPointer{bsdf};
 }
 
 /*!

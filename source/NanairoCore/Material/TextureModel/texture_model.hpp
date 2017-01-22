@@ -23,10 +23,10 @@ class QJsonObject;
 namespace nanairo {
 
 // Forward declaration
-template <uint> class SampledSpectra;
+class SampledSpectra;
 class SpectralDistribution;
 class System;
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -58,10 +58,9 @@ class TextureModel
   virtual Float floatValue(const Point2& coordinate) const noexcept = 0;
 
   //! Evaluate emissive spectra at the texture coordinate
-  template <uint kSampleSize>
-  SampledSpectra<kSampleSize> emissiveValue(
+  virtual SampledSpectra emissiveValue(
       const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
+      const WavelengthSamples& wavelengths) const noexcept = 0;
 
   //! Make a texture
   static UniquePointer<TextureModel> makeTexture(
@@ -73,68 +72,16 @@ class TextureModel
                                 const uint16 wavelength) const noexcept = 0;
 
   //! Evaluate reflective spectra at the texture coordinate
-  template <uint kSampleSize>
-  SampledSpectra<kSampleSize> reflectiveValue(
+  virtual SampledSpectra reflectiveValue(
       const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
+      const WavelengthSamples& wavelengths) const noexcept = 0;
 
   //! Return the texture type
   virtual TextureType type() const noexcept = 0;
-
- protected:
-   //! Evaluate emissive spectra at the texture coordinate
-  template <uint kSampleSize>
-  SampledSpectra<kSampleSize> getValueEmissiveValue(
-      const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
-
-  //! Evaluate reflective spectra at the texture coordinate
-  template <uint kSampleSize>
-  SampledSpectra<kSampleSize> getValueReflectiveValue(
-      const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
-
-   //! Evaluate emissive spectra at the texture coordinate
-  template <uint kSampleSize>
-  SampledSpectra<kSampleSize> getUnicolorEmissiveValue(
-      const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
-
-  //! Evaluate reflective spectra at the texture coordinate
-  template <uint kSampleSize>
-  SampledSpectra<kSampleSize> getUnicolorReflectiveValue(
-      const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
-
-   //! Evaluate emissive spectra at the texture coordinate
-  template <uint kSampleSize>
-  SampledSpectra<kSampleSize> getCheckerboardEmissiveValue(
-      const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
-
-  //! Evaluate reflective spectra at the texture coordinate
-  template <uint kSampleSize>
-  SampledSpectra<kSampleSize> getCheckerboardReflectiveValue(
-      const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
-
-   //! Evaluate emissive spectra at the texture coordinate
-  template <uint kSampleSize>
-  SampledSpectra<kSampleSize> getImageEmissiveValue(
-      const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
-
-  //! Evaluate reflective spectra at the texture coordinate
-  template <uint kSampleSize>
-  SampledSpectra<kSampleSize> getImageReflectiveValue(
-      const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
 };
 
 //! \} Core
 
 } // namespace nanairo
-
-#include "texture_model-inl.hpp"
 
 #endif // NANAIRO_TEXTURE_MODEL_HPP

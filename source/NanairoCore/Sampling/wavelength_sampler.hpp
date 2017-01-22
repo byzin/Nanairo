@@ -25,7 +25,6 @@ class World;
 /*!
   \brief Spectra wavelength sampler
   */
-template <uint kSampleSize>
 class WavelengthSampler
 {
  public:
@@ -33,20 +32,23 @@ class WavelengthSampler
   WavelengthSampler(const World& world, const QJsonObject& settings) noexcept;
 
   //! Sample wavelengths
-  SampledWavelengths<kSampleSize> operator()(Sampler& sampler) const noexcept;
+  SampledWavelengths operator()(Sampler& sampler) const noexcept;
 
 
   //! Sample wavelengths
-  SampledWavelengths<kSampleSize> sample(Sampler& sampler) const noexcept;
+  SampledWavelengths sample(Sampler& sampler) const noexcept;
+
+  //! Sample RGB wavelengths
+  static SampledWavelengths sampleRgb(Sampler& sampler) noexcept;
 
   //! Sample wavelengths regularly
-  static SampledWavelengths<kSampleSize> sampleRegularly(Sampler& sampler) noexcept;
+  static SampledWavelengths sampleRegularly(Sampler& sampler) noexcept;
 
   //! Sample wavelengths randomly
-  static SampledWavelengths<kSampleSize> sampleRandomly(Sampler& sampler) noexcept;
+  static SampledWavelengths sampleRandomly(Sampler& sampler) noexcept;
 
   //! Sample wavelengths using stratified sampling method
-  static SampledWavelengths<kSampleSize> sampleStratified(Sampler& sampler) noexcept;
+  static SampledWavelengths sampleStratified(Sampler& sampler) noexcept;
 
  private:
   enum class SamplerType : int

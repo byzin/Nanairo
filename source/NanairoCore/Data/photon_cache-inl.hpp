@@ -23,11 +23,11 @@ namespace nanairo {
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-PhotonCache<kSampleSize>::PhotonCache(const Spectra& energy,
-                                      const Point3& point,
-                                      const Vector3& vin,
-                                      const bool wavelength_is_selected) :
+inline
+PhotonCache::PhotonCache(const SampledSpectra& energy,
+                         const Point3& point,
+                         const Vector3& vin,
+                         const bool wavelength_is_selected) :
     energy_{energy},
     point_{point},
     vin_{vin},
@@ -39,8 +39,8 @@ PhotonCache<kSampleSize>::PhotonCache(const Spectra& energy,
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-const Vector3& PhotonCache<kSampleSize>::incidentDirection() const
+inline
+const Vector3& PhotonCache::incidentDirection() const
 {
   return vin_;
 }
@@ -49,8 +49,8 @@ const Vector3& PhotonCache<kSampleSize>::incidentDirection() const
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-const Point3& PhotonCache<kSampleSize>::point() const
+inline
+const Point3& PhotonCache::point() const
 {
   return point_;
 }
@@ -59,8 +59,8 @@ const Point3& PhotonCache<kSampleSize>::point() const
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto PhotonCache<kSampleSize>::energy() const -> const Spectra&
+inline
+const SampledSpectra& PhotonCache::energy() const
 {
   return energy_;
 }
@@ -69,8 +69,8 @@ auto PhotonCache<kSampleSize>::energy() const -> const Spectra&
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-bool PhotonCache<kSampleSize>::wavelengthIsSelected() const
+inline
+bool PhotonCache::wavelengthIsSelected() const
 {
   return wavelength_is_selected_;
 }

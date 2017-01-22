@@ -37,12 +37,11 @@ class Microcylinder
                        const Float gamma_v) noexcept;
 
   //! Evaluate the reflectance
-  template <uint kSampleSize>
-  static SampledSpectra<kSampleSize> evalReflectance(
+  static SampledSpectra evalReflectance(
       const Vector3& vin,
       const Vector3& vout,
       const Vector3& normal,
-      const SampledSpectra<kSampleSize>& albedo,
+      const SampledSpectra& albedo,
       const Float n,
       const Float k_d,
       const Float gamma_r,
@@ -51,11 +50,10 @@ class Microcylinder
       Float* pdf = nullptr) noexcept;
 
   //! Sample a direction
-  template <uint kSampleSize>
-  static std::tuple<SampledDirection, SampledSpectra<kSampleSize>>
+  static std::tuple<SampledDirection, SampledSpectra>
   sample(const Vector3& vin,
          const Vector3& normal,
-         const SampledSpectra<kSampleSize>& albedo,
+         const SampledSpectra& albedo,
          const Float n,
          const Float k_d,
          const Float gamma_r,
@@ -125,13 +123,12 @@ class Microcylinder
                        const Float gamma_v) noexcept;
 
   //! Evaluate the reflectance
-  template <uint kSampleSize>
-  static SampledSpectra<kSampleSize> calcReflectance(
+  static SampledSpectra calcReflectance(
       const Float theta_i,
       const Float phi_i,
       const Float theta_o,
       const Float phi_o,
-      const SampledSpectra<kSampleSize>& albedo,
+      const SampledSpectra& albedo,
       const Float n,
       const Float k_d,
       const Float gamma_r,

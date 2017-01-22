@@ -20,7 +20,7 @@
 namespace nanairo {
 
 // Forward declaration
-template <uint> class PhotonCache;
+class PhotonCache;
 
 //! \addtogroup Core
 //! \{
@@ -29,7 +29,6 @@ template <uint> class PhotonCache;
   \details
   No detailed.
   */
-template <uint kSampleSize>
 class PhotonMapNode
 {
  public:
@@ -42,24 +41,21 @@ class PhotonMapNode
   };
 
 
-  using Spectra = SampledSpectra<kSampleSize>;
-  using Cache = PhotonCache<kSampleSize>;
-
   //! Create a photon map node
-  PhotonMapNode(const Spectra& energy,
+  PhotonMapNode(const SampledSpectra& energy,
                 const Point3& point,
                 const Vector3& vin,
                 const bool wavelength_is_selected) noexcept;
 
   //! Create a photon map node
-  PhotonMapNode(const Cache& cache) noexcept;
+  PhotonMapNode(const PhotonCache& cache) noexcept;
 
   //! Create a photon map node
   PhotonMapNode(PhotonMapNode&& other) noexcept;
 
 
   //! Return the photon cache of the node
-  const Cache& cache() const noexcept;
+  const PhotonCache& cache() const noexcept;
 
   //! Return the type of node
   NodeType nodeType() const noexcept;
@@ -74,7 +70,7 @@ class PhotonMapNode
   void setNodeType(const uint type) noexcept;
 
  private:
-  Cache cache_;
+  PhotonCache cache_;
   NodeType type_;
 };
 

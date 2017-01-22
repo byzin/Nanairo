@@ -12,6 +12,7 @@
 #include <QJsonObject>
 #include <QString>
 // Zisc
+#include "zisc/aligned_memory_pool.hpp"
 #include "zisc/error.hpp"
 // Nanairo
 #include "fresnel.hpp"
@@ -19,6 +20,8 @@
 #include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Material/Bxdf/specular_brdf.hpp"
+#include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 #include "NanairoCore/Utility/value.hpp"
 
@@ -31,6 +34,24 @@ namespace nanairo {
 SmoothConductorSurface::SmoothConductorSurface(const QJsonObject& settings) noexcept
 {
   initialize(settings);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+auto SmoothConductorSurface::makeBxdf(
+    const Point2& /* texture_coordinate */,
+    const bool /* is_reverse_face */,
+    const WavelengthSamples& wavelengths,
+    Sampler& /* sampler */,
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer
+{
+  const auto fresnel_0deg = sample(fresnel_0deg_, wavelengths);
+
+  using Brdf = SpecularBrdf;
+  auto brdf = memory_pool.allocate<Brdf>(fresnel_0deg);
+  return ShaderPointer{brdf};
 }
 
 /*!

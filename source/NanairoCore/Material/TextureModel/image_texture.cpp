@@ -31,6 +31,7 @@
 #include "NanairoCore/Color/color_space.hpp"
 #include "NanairoCore/Color/rgb_color.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
@@ -62,6 +63,20 @@ Float ImageTexture::floatValue(const Point2& coordinate) const noexcept
   \details
   No detailed.
   */
+SampledSpectra ImageTexture::emissiveValue(
+    const Point2& coordinate,
+    const WavelengthSamples& wavelengths) const noexcept
+{
+  const auto x = zisc::cast<uint>(coordinate[0] * width_);
+  const auto y = zisc::cast<uint>(coordinate[1] * height_);
+  const uint index = width_resolution_ * y + x;
+  return sample(emissive_value_table_[color_index_[index]], wavelengths);
+}
+
+/*!
+  \details
+  No detailed.
+  */
 Float ImageTexture::reflectiveValue(const Point2& coordinate,
                                     const uint16 wavelength) const noexcept
 {
@@ -69,6 +84,20 @@ Float ImageTexture::reflectiveValue(const Point2& coordinate,
   const auto y = zisc::cast<uint>(coordinate[1] * height_);
   const uint index = width_resolution_ * y + x;
   return reflective_value_table_[color_index_[index]].getByWavelength(wavelength);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+SampledSpectra ImageTexture::reflectiveValue(
+    const Point2& coordinate,
+    const WavelengthSamples& wavelengths) const noexcept
+{
+  const auto x = zisc::cast<uint>(coordinate[0] * width_);
+  const auto y = zisc::cast<uint>(coordinate[1] * height_);
+  const uint index = width_resolution_ * y + x;
+  return sample(reflective_value_table_[color_index_[index]], wavelengths);
 }
 
 /*!

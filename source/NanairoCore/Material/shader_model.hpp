@@ -22,10 +22,10 @@ namespace nanairo {
 // Forward declaration
 //class IntersectionInfo;
 class SampledDirection;
-template <uint> class SampledSpectra;
+class SampledSpectra;
 class Sampler;
 class SurfaceModel;
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -46,14 +46,9 @@ enum class ShaderType : int
  \details
  No detailed.
   */
-template <uint kSampleSize>
 class ShaderModel
 {
  public:
-  using Spectra = SampledSpectra<kSampleSize>;
-  using Wavelengths = WavelengthSamples<kSampleSize>;
-
-
   //! Create a shader model
   ShaderModel() noexcept;
 
@@ -73,27 +68,27 @@ class ShaderModel
       const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,
-      const Wavelengths& wavelengths) const noexcept;
+      const WavelengthSamples& wavelengths) const noexcept;
 
   //! Evaluate the radiance
-  virtual Spectra evalRadiance(
+  virtual SampledSpectra evalRadiance(
       const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,
-      const Wavelengths& wavelengths) const noexcept;
+      const WavelengthSamples& wavelengths) const noexcept;
 
   //! Evaluate the radiance and pdf
-  virtual std::tuple<Spectra, Float> evalRadianceAndPdf(
+  virtual std::tuple<SampledSpectra, Float> evalRadianceAndPdf(
       const Vector3* vin,
       const Vector3* vout,
       const Vector3& normal,
-      const Wavelengths& wavelengths) const noexcept;
+      const WavelengthSamples& wavelengths) const noexcept;
 
   //! Sample a reflection direction and evaluate a reflection weight
-  virtual std::tuple<SampledDirection, Spectra> sample(
+  virtual std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin, 
       const Vector3& normal,
-      const Wavelengths& wavelengths,
+      const WavelengthSamples& wavelengths,
       Sampler& sampler) const noexcept;
 
   //! Return the shader type
@@ -110,8 +105,7 @@ class ShaderModel
   \details
   No detailed.
   */
-template <uint kSampleSize>
-class DiffuseShaderModel : public ShaderModel<kSampleSize>
+class DiffuseShaderModel : public ShaderModel
 {
  public:
   //! Return the diffuse type
@@ -125,8 +119,7 @@ class DiffuseShaderModel : public ShaderModel<kSampleSize>
   \details
   No detailed.
   */
-template <uint kSampleSize>
-class SpecularShaderModel : public ShaderModel<kSampleSize>
+class SpecularShaderModel : public ShaderModel
 {
  public:
   //! Return the specular type
@@ -140,8 +133,7 @@ class SpecularShaderModel : public ShaderModel<kSampleSize>
   \details
   No detailed.
   */
-template <uint kSampleSize>
-class GlossyShaderModel : public ShaderModel<kSampleSize>
+class GlossyShaderModel : public ShaderModel
 {
  public:
   //! Return the glossy type
@@ -154,7 +146,5 @@ class GlossyShaderModel : public ShaderModel<kSampleSize>
 //! \} Core
 
 } // namespace nanairo
-
-#include "shader_model-inl.hpp"
 
 #endif // NANAIRO_SHADER_MODEL_HPP

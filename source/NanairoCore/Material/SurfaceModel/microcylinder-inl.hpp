@@ -44,12 +44,12 @@ Float Microcylinder::evalPdf(const Vector3& vin,
 
 /*!
   */
-template <uint kSampleSize> inline
-SampledSpectra<kSampleSize> Microcylinder::evalReflectance(
+inline
+SampledSpectra Microcylinder::evalReflectance(
     const Vector3& vin,
     const Vector3& vout,
     const Vector3& normal,
-    const SampledSpectra<kSampleSize>& albedo,
+    const SampledSpectra& albedo,
     const Float n,
     const Float k_d,
     const Float gamma_r,
@@ -75,11 +75,11 @@ SampledSpectra<kSampleSize> Microcylinder::evalReflectance(
 
 /*!
   */
-template <uint kSampleSize> inline
-std::tuple<SampledDirection, SampledSpectra<kSampleSize>>
+inline
+std::tuple<SampledDirection, SampledSpectra>
 Microcylinder::sample(const Vector3& vin,
                       const Vector3& normal,
-                      const SampledSpectra<kSampleSize>& albedo,
+                      const SampledSpectra& albedo,
                       const Float n,
                       const Float k_d,
                       const Float gamma_r,
@@ -275,13 +275,13 @@ Float Microcylinder::calcPdf(const Float theta_i,
 
 /*!
   */
-template <uint kSampleSize> inline
-SampledSpectra<kSampleSize> Microcylinder::calcReflectance(
+inline
+SampledSpectra Microcylinder::calcReflectance(
     const Float theta_i,
     const Float phi_i,
     const Float theta_o,
     const Float phi_o,
-    const SampledSpectra<kSampleSize>& albedo,
+    const SampledSpectra& albedo,
     const Float n,
     const Float k_d,
     const Float gamma_r,
@@ -294,8 +294,7 @@ SampledSpectra<kSampleSize> Microcylinder::calcReflectance(
   // Calculate the reflectance
   const Float fresnel = calcFresnelReflectance(theta_i, phi_i, theta_o, phi_o, n);
   const Float f_r = evalSurfaceScattering(theta_i, phi_i, theta_o, phi_o, gamma_r);
-  SampledSpectra<kSampleSize> reflectance{albedo.wavelengths(),
-                                          fresnel * f_r * k};
+  SampledSpectra reflectance{albedo.wavelengths(), fresnel * f_r * k};
   if (fresnel != 1.0) {
     const Float f_v = evalVolumeScattering(theta_i, phi_i, theta_o, phi_o,
                                            n, k_d, gamma_v);

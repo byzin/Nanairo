@@ -1,14 +1,11 @@
 /*!
-  \file sensor-inl.hpp
+  \file sensor.cpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
-
-#ifndef NANAIRO_SENSOR_INL_HPP
-#define NANAIRO_SENSOR_INL_HPP
 
 #include "sensor.hpp"
 // Standard C++ library
@@ -27,18 +24,13 @@
 
 namespace nanairo {
 
-// Forward declaration
-class Sampler;
-template <uint> class WavelengthSamples;
-
 /*!
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-Sensor<kSampleSize>::Sensor(const CameraModel* camera,
-                            const uint x,
-                            const uint y) noexcept :
+Sensor::Sensor(const CameraModel* camera,
+               const uint x,
+               const uint y) noexcept :
     camera_{camera},
     x_{x},
     y_{y}
@@ -50,12 +42,11 @@ Sensor<kSampleSize>::Sensor(const CameraModel* camera,
   \details
   No detailed.
   */
-template <uint kSampleSize>
-Float Sensor<kSampleSize>::evalPdf(
+Float Sensor::evalPdf(
     const Vector3* /* vin */,
     const Vector3* vout,
     const Vector3& /* normal */,
-    const Wavelengths& /* wavelengths */) const noexcept
+    const WavelengthSamples& /* wavelengths */) const noexcept
 {
   ZISC_ASSERT(vout != nullptr, "The vout is NULL.");
   const Float pdf = camera().calcPdf(*vout);
@@ -66,49 +57,46 @@ Float Sensor<kSampleSize>::evalPdf(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-auto Sensor<kSampleSize>::evalRadiance(
+SampledSpectra Sensor::evalRadiance(
     const Vector3* /* vin */,
     const Vector3* vout,
     const Vector3& /* normal */,
-    const Wavelengths& wavelengths) const noexcept -> Spectra
+    const WavelengthSamples& wavelengths) const noexcept
 {
   ZISC_ASSERT(vout != nullptr, "The vout is NULL.");
   const Float f = camera().calcRadiance(*vout);
-  return Spectra{wavelengths, f};
+  return SampledSpectra{wavelengths, f};
 }
 
 /*!
   \details
   No detailed.
   */
-template <uint kSampleSize>
-auto Sensor<kSampleSize>::evalRadianceAndPdf(
+std::tuple<SampledSpectra, Float> Sensor::evalRadianceAndPdf(
     const Vector3* /* vin */,
     const Vector3* vout,
     const Vector3& /* normal */,
-    const Wavelengths& wavelengths) const noexcept -> std::tuple<Spectra, Float>
+    const WavelengthSamples& wavelengths) const noexcept
 {
   ZISC_ASSERT(vout != nullptr, "The vout is NULL.");
   const auto result = camera().calcRadianceAndPdf(*vout);
   const Float f = std::get<0>(result);
   const Float pdf = std::get<1>(result);
-  return std::make_tuple(Spectra{wavelengths, f}, pdf);
+  return std::make_tuple(SampledSpectra{wavelengths, f}, pdf);
 }
 
 /*!
   \details
   No detailed.
   */
-template <uint kSampleSize>
-auto Sensor<kSampleSize>::sample(
+std::tuple<SampledDirection, SampledSpectra> Sensor::sample(
     const Vector3* /* vin */,
     const Vector3& /* normal */,
-    const Wavelengths& wavelengths,
-    Sampler& /* sampler */) const noexcept -> std::tuple<SampledDirection, Spectra>
+    const WavelengthSamples& wavelengths,
+    Sampler& /* sampler */) const noexcept
 {
   const auto vout = camera().sampleDirection(x_, y_);
-  const auto weight = Spectra{wavelengths, 1.0};
+  const auto weight = SampledSpectra{wavelengths, 1.0};
   return std::make_tuple(vout, weight);
 }
 
@@ -116,8 +104,7 @@ auto Sensor<kSampleSize>::sample(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-bool Sensor<kSampleSize>::wavelengthIsSelected() const noexcept
+bool Sensor::wavelengthIsSelected() const noexcept
 {
   return false;
 }
@@ -126,8 +113,8 @@ bool Sensor<kSampleSize>::wavelengthIsSelected() const noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-const CameraModel& Sensor<kSampleSize>::camera() const noexcept
+inline
+const CameraModel& Sensor::camera() const noexcept
 {
   return *camera_;
 }
@@ -136,12 +123,8 @@ const CameraModel& Sensor<kSampleSize>::camera() const noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void Sensor<kSampleSize>::initialize(const uint /* x */,
-                                     const uint /* y */) noexcept
+void Sensor::initialize(const uint /* x */, const uint /* y */) noexcept
 {
 }
 
 } // namespace nanairo
-
-#endif // _NANAIRO_SENSOR_INL_HPP_

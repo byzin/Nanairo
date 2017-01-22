@@ -1,14 +1,11 @@
 /*!
-  \file light_tracing-inl.hpp
+  \file light_tracing.cpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
-
-#ifndef NANAIRO_LIGHT_TRACING_INL_HPP
-#define NANAIRO_LIGHT_TRACING_INL_HPP
 
 #include "light_tracing.hpp"
 // Standard C++ library
@@ -58,10 +55,9 @@ namespace nanairo {
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-LightTracing<kSampleSize>::LightTracing(const System& system,
-                                        const QJsonObject& settings) noexcept :
-    RenderingMethod<kSampleSize>(system, settings)
+LightTracing::LightTracing(const System& system,
+                           const QJsonObject& settings) noexcept :
+    RenderingMethod(system, settings)
 {
   initialize(system, settings);
 }
@@ -70,10 +66,9 @@ LightTracing<kSampleSize>::LightTracing(const System& system,
   \details
   No detailed.
   */
-template <uint kSampleSize>
-void LightTracing<kSampleSize>::render(System& system,
-                                       Scene& scene,
-                                       const Wavelengths& sampled_wavelengths) noexcept
+void LightTracing::render(System& system,
+                          Scene& scene,
+                          const Wavelengths& sampled_wavelengths) noexcept
 {
   traceLightPath(system, scene, sampled_wavelengths);
 }
@@ -82,8 +77,7 @@ void LightTracing<kSampleSize>::render(System& system,
   \details
   No detailed.
   */
-template <uint kSampleSize>
-void LightTracing<kSampleSize>::evalExplicitConnection(
+void LightTracing::evalExplicitConnection(
     const World& world,
     const Vector3* vin,
     const ShaderPointer& bxdf,
@@ -155,13 +149,12 @@ void LightTracing<kSampleSize>::evalExplicitConnection(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-Ray LightTracing<kSampleSize>::generateRay(const World& world,
-                                           Spectra* light_contribution,
-                                           const Spectra& ray_weight,
-                                           CameraModel& camera,
-                                           Sampler& sampler,
-                                           MemoryPool& memory_pool) noexcept
+Ray LightTracing::generateRay(const World& world,
+                              Spectra* light_contribution,
+                              const Spectra& ray_weight,
+                              CameraModel& camera,
+                              Sampler& sampler,
+                              MemoryPool& memory_pool) noexcept
 {
   const auto& wavelengths = light_contribution->wavelengths();
   // Sample a light point
@@ -208,25 +201,25 @@ Ray LightTracing<kSampleSize>::generateRay(const World& world,
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void LightTracing<kSampleSize>::addLightContribution(
-    CameraModel& camera,
-    const uint x,
-    const uint y,
-    const Spectra& contribution) noexcept
+inline
+void LightTracing::addLightContribution(CameraModel& camera,
+                                        const uint x,
+                                        const uint y,
+                                        const Spectra& contribution) noexcept
 {
-  std::unique_lock<std::mutex> locker{lock_};
-  camera.addContribution(x, y, contribution);
+  {
+    std::unique_lock<std::mutex> locker{lock_};
+    camera.addContribution(x, y, contribution);
+  }
 }
 
 /*!
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void LightTracing<kSampleSize>::initialize(
-    const System& /* system */,
-    const QJsonObject& /* settings */) noexcept
+inline
+void LightTracing::initialize(const System& /* system */,
+                              const QJsonObject& /* settings */) noexcept
 {
 }
 
@@ -234,8 +227,8 @@ void LightTracing<kSampleSize>::initialize(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void LightTracing<kSampleSize>::traceLightPath(
+inline
+void LightTracing::traceLightPath(
     System& system,
     Scene& scene,
     const Wavelengths& sampled_wavelengths) noexcept
@@ -267,12 +260,10 @@ void LightTracing<kSampleSize>::traceLightPath(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-void LightTracing<kSampleSize>::traceLightPath(
-    System& system,
-    Scene& scene,
-    const Wavelengths& sampled_wavelengths,
-    const int thread_id) noexcept
+void LightTracing::traceLightPath(System& system,
+                                  Scene& scene,
+                                  const Wavelengths& sampled_wavelengths,
+                                  const int thread_id) noexcept
 {
   // System
   auto& sampler = system.threadSampler(thread_id);
@@ -333,5 +324,3 @@ void LightTracing<kSampleSize>::traceLightPath(
 }
 
 } // namespace nanairo
-
-#endif // _NANAIRO_LIGHT_TRACING_INL_HPP_

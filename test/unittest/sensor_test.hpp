@@ -21,21 +21,21 @@
   */
 void testSensorSampling(
     const nanairo::CameraModel& camera,
-    const nanairo::WavelengthSamples<1>& wavelengths,
+    const nanairo::WavelengthSamples& wavelengths,
     nanairo::Sampler& sampler,
     nanairo::MemoryPool& memory_pool,
     const char* sensor_name);
 
 void testSensorEnergyConservation(
     const nanairo::CameraModel& camera,
-    const nanairo::WavelengthSamples<1>& wavelengths,
+    const nanairo::WavelengthSamples& wavelengths,
     nanairo::Sampler& sampler,
     nanairo::MemoryPool& memory_pool,
     const char* sensor_name);
 
 void testSensorImportanceSampling(
     const nanairo::CameraModel& camera,
-    const nanairo::WavelengthSamples<1>& wavelengths,
+    const nanairo::WavelengthSamples& wavelengths,
     nanairo::Sampler& sampler,
     nanairo::MemoryPool& memory_pool,
     const char* sensor_name);

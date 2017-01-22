@@ -25,9 +25,9 @@ class QJsonObject;
 namespace nanairo {
 
 // Forward declaration
-template <uint> class SampledSpectra;
+class SampledSpectra;
 class System;
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -47,20 +47,18 @@ class ImageTexture : public TextureModel
   Float floatValue(const Point2& coordinate) const noexcept override;
 
   //! Evaluate the reflective spectra at the coordinate
-  template <uint kSampleSize>
-  SampledSpectra<kSampleSize> emissiveValue(
+  SampledSpectra emissiveValue(
       const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelength) const noexcept;
+      const WavelengthSamples& wavelength) const noexcept override;
 
   //! Evaluate the reflective value by the wavelength at the texture coordinate
   Float reflectiveValue(const Point2& coordinate, 
                         const uint16 wavelength) const noexcept override;
 
   //! Evaluate the reflective spectra at the coordinate
-  template <uint kSampleSize>
-  SampledSpectra<kSampleSize> reflectiveValue(
+  SampledSpectra reflectiveValue(
       const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelength) const noexcept;
+      const WavelengthSamples& wavelength) const noexcept override;
 
   //! Return the image texture type
   TextureType type() const noexcept override;
@@ -90,7 +88,5 @@ class ImageTexture : public TextureModel
 //! \} Core
 
 } // namespace nanairo
-
-#include "image_texture-inl.hpp"
 
 #endif // NANAIRO_IMAGE_TEXTURE_HPP

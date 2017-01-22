@@ -88,7 +88,7 @@ TEST(SamplingWavelengthsTest, RegularSamplingTest)
   using namespace nanairo;
   auto wavelength_sampler = [](Sampler& sampler)
   {
-    using WSampler = WavelengthSampler<CoreConfig::wavelengthSampleSize()>;
+    using WSampler = WavelengthSampler;
     return WSampler::sampleRegularly(sampler);
   };
   testUniformWavelengthSampler(wavelength_sampler);
@@ -99,7 +99,7 @@ TEST(SamplingWavelengthsTest, RandomSamplingTest)
   using namespace nanairo;
   auto wavelength_sampler = [](Sampler& sampler)
   {
-    using WSampler = WavelengthSampler<CoreConfig::wavelengthSampleSize()>;
+    using WSampler = WavelengthSampler;
     return WSampler::sampleRandomly(sampler);
   };
   testUniformWavelengthSampler(wavelength_sampler);
@@ -110,7 +110,7 @@ TEST(SamplingWavelengthsTest, StratifiedSamplingTest)
   using namespace nanairo;
   auto wavelength_sampler = [](Sampler& sampler)
   {
-    using WSampler = WavelengthSampler<CoreConfig::wavelengthSampleSize()>;
+    using WSampler = WavelengthSampler;
     return WSampler::sampleStratified(sampler);
   };
   testUniformWavelengthSampler(wavelength_sampler);

@@ -23,9 +23,6 @@
 
 namespace nanairo {
 
-// Forward declaration
-template <uint> class SampledSpectra;
-
 /*!
   \details
   No detailed.
@@ -35,36 +32,6 @@ SpectraImageInterface::SpectraImageInterface(const uint width, const uint height
     width_{width},
     height_{height}
 {
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <uint kSampleSize> inline
-void SpectraImageInterface::addContribution(
-    const uint x,
-    const uint y,
-    const SampledSpectra<kSampleSize>& contribution) noexcept
-{
-  using zisc::cast;
-
-  const auto image_type = type();
-  switch (image_type) {
-   case SpectraImageType::Spectra: {
-    addSpectraContribution(this, x, y, contribution);
-    break;
-   }
-   case SpectraImageType::Rgb: {
-    addRgbContribution(this, x, y, contribution);
-    break;
-   }
-   default: {
-    zisc::raiseError("SpectraImageError: (type=", cast<int>(image_type),
-                     " addContribution method is not implemented.");
-    break;
-   }
-  }
 }
 
 /*!

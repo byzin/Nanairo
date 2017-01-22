@@ -26,6 +26,7 @@
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
+#include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Material/SurfaceModel/surface_model.hpp"
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Material/TextureModel/value_texture.hpp"
@@ -33,6 +34,7 @@
 #include "NanairoCore/Data/wavelength_samples.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
+#include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 /*!
@@ -60,13 +62,25 @@ nanairo::UniquePointer<nanairo::TextureModel> makeTestValueTexture(
 }
 
 /*!
+  */
+nanairo::WavelengthSamples makeTestWavelengthSamples()
+{
+  nanairo::WavelengthSamples wavelengths;
+  wavelengths[0] = nanairo::CoreConfig::shortestWavelength();
+  wavelengths[1] = nanairo::CoreConfig::shortestWavelength();
+  wavelengths[2] = nanairo::CoreConfig::shortestWavelength();
+  wavelengths.setPrimaryWavelength(0);
+  return wavelengths;
+}
+
+/*!
   \details
   No detailed.
   */
 void testBxdfSampling(
     const nanairo::SurfaceModel& surface,
     const nanairo::IntersectionInfo& intersection,
-    const nanairo::WavelengthSamples<1>& wavelengths,
+    const nanairo::WavelengthSamples& wavelengths,
     nanairo::Sampler& sampler,
     nanairo::MemoryPool& memory_pool,
     const char* bxdf_name,
@@ -136,7 +150,7 @@ void testBxdfSampling(
 void testBxdfImportanceSampling(
     const nanairo::SurfaceModel& surface,
     const nanairo::IntersectionInfo& intersection,
-    const nanairo::WavelengthSamples<1>& wavelengths,
+    const nanairo::WavelengthSamples& wavelengths,
     nanairo::Sampler& sampler,
     nanairo::MemoryPool& memory_pool,
     const char* bxdf_name)
@@ -186,7 +200,7 @@ void testBxdfImportanceSampling(
 void testBxdfEnergyConservation(
     const nanairo::SurfaceModel& surface,
     const nanairo::IntersectionInfo& intersection,
-    const nanairo::WavelengthSamples<1>& wavelengths,
+    const nanairo::WavelengthSamples& wavelengths,
     nanairo::Sampler& sampler,
     nanairo::MemoryPool& memory_pool,
     const char* bxdf_name)
@@ -251,7 +265,7 @@ void testBxdfEnergyConservation(
 void testBxdfHelmholtzReciprocity(
     const nanairo::SurfaceModel& surface,
     const nanairo::IntersectionInfo& intersection,
-    const nanairo::WavelengthSamples<1>& wavelengths,
+    const nanairo::WavelengthSamples& wavelengths,
     nanairo::Sampler& sampler,
     nanairo::MemoryPool& memory_pool,
     const char* bxdf_name)

@@ -16,18 +16,11 @@
 #include <limits>
 #include <tuple>
 #include <utility>
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
 // Nanairo
-#include "NanairoCommon/keyword.hpp"
-#include "path_tracing.hpp"
-#include "light_tracing.hpp"
-#include "probabilistic_ppm.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/world.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
@@ -35,6 +28,7 @@
 #include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/DataStructure/bvh.hpp"
 #include "NanairoCore/Sampling/russian_roulette.hpp"
+#include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
@@ -49,24 +43,10 @@ class System;
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-RenderingMethod<kSampleSize>::RenderingMethod(const System& /* system */,
-                                              const QJsonObject& settings) noexcept :
-    clear_function_{},
-    russian_roulette_{settings},
-    ray_cast_epsilon_{0.0}
-{
-  initialize(settings);
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <uint kSampleSize> inline
-void RenderingMethod<kSampleSize>::operator()(System& system,
-                                              Scene& scene,
-                                              const Wavelengths& sampled_wavelengths) noexcept
+inline
+void RenderingMethod::operator()(System& system,
+                                 Scene& scene,
+                                 const Wavelengths& sampled_wavelengths) noexcept
 {
   render(system, scene, sampled_wavelengths);
 }
@@ -75,8 +55,8 @@ void RenderingMethod<kSampleSize>::operator()(System& system,
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void RenderingMethod<kSampleSize>::clear() noexcept
+inline
+void RenderingMethod::clear() noexcept
 {
   if (clear_function_)
     clear_function_();
@@ -86,52 +66,16 @@ void RenderingMethod<kSampleSize>::clear() noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto RenderingMethod<kSampleSize>::makeMethod(System& system,
-                                              const QJsonObject& settings) noexcept
-    -> RenderingMethod*
-{
-  using zisc::toHash32;
-
-  RenderingMethod* method = nullptr;
-
-  const auto type = SceneValue::toString(settings, keyword::type);
-  switch (keyword::toHash32(type)) {
-   case toHash32(keyword::pathTracing): {
-    method = new PathTracing<kSampleSize>{system, settings};
-    break;
-   }
-   case toHash32(keyword::lightTracing): {
-    method = new LightTracing<kSampleSize>{system, settings};
-    break;
-   }
-   case toHash32(keyword::probabilisticPpm):
-    method = new ProbabilisticPpm<kSampleSize>{system, settings};
-    break;
-   default: {
-    zisc::raiseError("RenderingMethodError: Unsupported type is speficied.");
-    break;
-   }
-  }
-  return method;
-}
-
-
-/*!
-  \details
-  No detailed.
-  */
-template <uint kSampleSize> inline
-Float RenderingMethod<kSampleSize>::rayCastEpsilon() const noexcept
+inline
+Float RenderingMethod::rayCastEpsilon() const noexcept
 {
   return ray_cast_epsilon_;
 }
 
 /*!
   */
-template <uint kSampleSize> inline
-Float RenderingMethod<kSampleSize>::calcShadowRayDistance(
-    const Float diff2) const noexcept
+inline
+Float RenderingMethod::calcShadowRayDistance(const Float diff2) const noexcept
 {
   constexpr Float distance_epsilon = 0.000001;
   constexpr Float extension = 1.0 + distance_epsilon;
@@ -143,11 +87,10 @@ Float RenderingMethod<kSampleSize>::calcShadowRayDistance(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-IntersectionInfo RenderingMethod<kSampleSize>::castRay(
-    const World& world,
-    const Ray& ray,
-    const Float max_distance) const noexcept
+inline
+IntersectionInfo RenderingMethod::castRay(const World& world,
+                                          const Ray& ray,
+                                          const Float max_distance) const noexcept
 {
   const auto& bvh = world.bvh();
   return bvh.castRay(ray, max_distance);
@@ -155,10 +98,10 @@ IntersectionInfo RenderingMethod<kSampleSize>::castRay(
 
 /*!
   */
-template <uint kSampleSize> inline
-Ray RenderingMethod<kSampleSize>::makeShadowRay(const Point3& source,
-                                                const Point3& dest,
-                                                const Vector3& normal) const noexcept
+inline
+Ray RenderingMethod::makeShadowRay(const Point3& source,
+                                   const Point3& dest,
+                                   const Vector3& normal) const noexcept
 {
   const auto ray_epsilon = rayCastEpsilon() * normal;
   ZISC_ASSERT(!isZeroVector(ray_epsilon), "Ray epsilon is zero vector.");
@@ -171,11 +114,10 @@ Ray RenderingMethod<kSampleSize>::makeShadowRay(const Point3& source,
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-RouletteResult RenderingMethod<kSampleSize>::playRussianRoulette(
-    const uint path,
-    const Spectra& weight,
-    Sampler& sampler) const noexcept
+inline
+RouletteResult RenderingMethod::playRussianRoulette(const uint path,
+                                                    const Spectra& weight,
+                                                    Sampler& sampler) const noexcept
 {
   return russian_roulette_(path, weight, sampler);
 }
@@ -184,8 +126,8 @@ RouletteResult RenderingMethod<kSampleSize>::playRussianRoulette(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void RenderingMethod<kSampleSize>::setClearFunction(
+inline
+void RenderingMethod::setClearFunction(
     std::function<void ()>&& clear_function) noexcept
 {
   clear_function_ = std::move(clear_function);
@@ -195,28 +137,15 @@ void RenderingMethod<kSampleSize>::setClearFunction(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void RenderingMethod<kSampleSize>::initialize(const QJsonObject& settings) noexcept
-{
-  // Ray cast epsilon
-  ray_cast_epsilon_ = SceneValue::toFloat<Float>(settings, keyword::rayCastEpsilon);
-  ZISC_ASSERT(0.0 < ray_cast_epsilon_, "Ray cast epsilon is negative.");
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <uint kSampleSize> inline
-Ray RenderingMethod<kSampleSize>::sampleNextRay(
-    const uint length,
-    const Ray& ray,
-    const ShaderPointer& bxdf,
-    const IntersectionInfo& intersection,
-    Spectra* ray_weight,
-    Spectra* next_ray_weight,
-    Sampler& sampler,
-    Float* inverse_direction_pdf) const noexcept
+inline
+Ray RenderingMethod::sampleNextRay(const uint length,
+                                   const Ray& ray,
+                                   const ShaderPointer& bxdf,
+                                   const IntersectionInfo& intersection,
+                                   Spectra* ray_weight,
+                                   Spectra* next_ray_weight,
+                                   Sampler& sampler,
+                                   Float* inverse_direction_pdf) const noexcept
 {
   ZISC_ASSERT(ray_weight != nullptr, "The ray_weight is null.");
   ZISC_ASSERT(next_ray_weight != nullptr, "The next_ray_weight is null.");
@@ -256,8 +185,8 @@ Ray RenderingMethod<kSampleSize>::sampleNextRay(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void RenderingMethod<kSampleSize>::updateSelectedWavelengthInfo(
+inline
+void RenderingMethod::updateSelectedWavelengthInfo(
     const ShaderPointer& bxdf,
     Spectra* weight,
     bool* wavelength_is_selected) const noexcept

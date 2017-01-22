@@ -1,14 +1,11 @@
 /*!
-  \file interfaced_lambertian_brdf-inl.hpp
+  \file interfaced_lambertian_brdf.cpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2016 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
-
-#ifndef NANAIRO_INTERFACED_LAMBERTIAN_BRDF_INL_HPP
-#define NANAIRO_INTERFACED_LAMBERTIAN_BRDF_INL_HPP
 
 #include "interfaced_lambertian_brdf.hpp"
 // Standard C++ library
@@ -30,8 +27,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-InterfacedLambertianBrdf<kSampleSize>::InterfacedLambertianBrdf(
+InterfacedLambertianBrdf::InterfacedLambertianBrdf(
     const Float k_d,
     const Float roughness,
     const Float n,
@@ -49,12 +45,11 @@ InterfacedLambertianBrdf<kSampleSize>::InterfacedLambertianBrdf(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-Float InterfacedLambertianBrdf<kSampleSize>::evalPdf(
+Float InterfacedLambertianBrdf::evalPdf(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& /* wavelengths */) const noexcept
+    const WavelengthSamples& /* wavelengths */) const noexcept
 {
   return LayeredDiffuse::evalPdf(roughness_, *vin, *vout, normal, n_, k_d_, ri_);
 }
@@ -63,16 +58,15 @@ Float InterfacedLambertianBrdf<kSampleSize>::evalPdf(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto InterfacedLambertianBrdf<kSampleSize>::evalRadiance(
+SampledSpectra InterfacedLambertianBrdf::evalRadiance(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& wavelengths) const noexcept -> Spectra
+    const WavelengthSamples& wavelengths) const noexcept
 {
   const Float f = LayeredDiffuse::evalReflectance(roughness_, *vin, *vout, normal,
                                                   n_, k_d_, ri_, *sampler_);
-  Spectra radiance{wavelengths};
+  SampledSpectra radiance{wavelengths};
   radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
   return radiance;
 }
@@ -81,32 +75,32 @@ auto InterfacedLambertianBrdf<kSampleSize>::evalRadiance(
   \details
   No detailed.
   */
-template <uint kSampleSize>
-auto InterfacedLambertianBrdf<kSampleSize>::evalRadianceAndPdf(
+std::tuple<SampledSpectra, Float> InterfacedLambertianBrdf::evalRadianceAndPdf(
     const Vector3* vin,
     const Vector3* vout,
     const Vector3& normal,
-    const Wavelengths& wavelengths) const noexcept -> std::tuple<Spectra, Float>
+    const WavelengthSamples& wavelengths) const noexcept
 {
   Float pdf = 0.0;
   const Float f = LayeredDiffuse::evalReflectance(roughness_, *vin, *vout, normal,
                                                   n_, k_d_, ri_, *sampler_, &pdf);
-  Spectra radiance{wavelengths};
+  SampledSpectra radiance{wavelengths};
   radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
   return std::make_tuple(std::move(radiance), pdf);
 }
 
-template <uint kSampleSize>
-auto InterfacedLambertianBrdf<kSampleSize>::sample(
+/*!
+  */
+std::tuple<SampledDirection, SampledSpectra> InterfacedLambertianBrdf::sample(
     const Vector3* vin,
     const Vector3& normal,
-    const Wavelengths& wavelengths,
-    Sampler& sampler) const noexcept -> std::tuple<SampledDirection, Spectra>
+    const WavelengthSamples& wavelengths,
+    Sampler& sampler) const noexcept
 {
   const auto result = LayeredDiffuse::sample(roughness_, *vin, normal,
                                              n_, k_d_, ri_, sampler);
   const Float w = std::get<1>(result);
-  Spectra weight{wavelengths};
+  SampledSpectra weight{wavelengths};
   weight.setIntensity(wavelengths.primaryWavelengthIndex(), w);
   return std::make_tuple(std::move(std::get<0>(result)), std::move(weight));
 }
@@ -115,12 +109,9 @@ auto InterfacedLambertianBrdf<kSampleSize>::sample(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-bool InterfacedLambertianBrdf<kSampleSize>::wavelengthIsSelected() const noexcept
+bool InterfacedLambertianBrdf::wavelengthIsSelected() const noexcept
 {
   return true;
 }
 
 } // namespace nanairo
-
-#endif // NANAIRO_INTERFACED_LAMBERTIAN_BRDF_INL_HPP

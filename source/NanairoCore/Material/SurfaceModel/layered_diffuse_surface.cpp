@@ -17,6 +17,7 @@
 #include <QJsonObject>
 #include <QString>
 // Zisc
+#include "zisc/aligned_memory_pool.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
 // Nanairo
@@ -26,6 +27,8 @@
 #include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Material/TextureModel/texture_model.hpp"
+#include "NanairoCore/Material/Bxdf/interfaced_lambertian_brdf.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
@@ -40,6 +43,42 @@ LayeredDiffuseSurface::LayeredDiffuseSurface(
 {
   initialize(settings, texture_list);
 }
+
+/*!
+  \details
+  No detailed.
+  */
+auto LayeredDiffuseSurface::makeBxdf(
+    const Point2& texture_coordinate,
+    const bool /* is_reverse_face */,
+    const WavelengthSamples& wavelengths,
+    Sampler& sampler,
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer
+{
+  // Get the roughness
+  constexpr Float min_roughness = 0.001;
+  Float roughness = roughness_->floatValue(texture_coordinate);
+  roughness = (min_roughness < roughness)
+      ? roughness * roughness
+      : min_roughness * min_roughness;
+  ZISC_ASSERT(zisc::isInClosedBounds(roughness, 0.0, 1.0),
+              "The roughness is out of the range [0, 1].");
+
+  // Evaluate the refractive index
+  const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];
+  const Float n = eta_.getByWavelength(wavelength);
+  const Float ri = ri_.getByWavelength(wavelength);
+
+  // Get the reflectance
+  const Float k_d = reflectance_->reflectiveValue(texture_coordinate, wavelength);
+  ZISC_ASSERT(zisc::isInClosedBounds(k_d, 0.0, 1.0), "Reflectance isn't [0, 1].");
+
+  // Make a interfaced lambertian BRDF
+  using Brdf = InterfacedLambertianBrdf;
+  auto brdf = memory_pool.allocate<Brdf>(k_d, roughness, n, ri, sampler);
+  return ShaderPointer{brdf};
+}
+
 
 /*!
   \details

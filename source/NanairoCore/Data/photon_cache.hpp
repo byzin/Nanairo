@@ -25,15 +25,11 @@ namespace nanairo {
   \details
   No detailed.
   */
-template <uint kSampleSize>
 class PhotonCache
 {
  public:
-  using Spectra = SampledSpectra<kSampleSize>;
-
-
   //! Create a photon cache
-  PhotonCache(const Spectra& energy,
+  PhotonCache(const SampledSpectra& energy,
               const Point3& point,
               const Vector3& vin,
               const bool wavelength_is_selected);
@@ -46,13 +42,13 @@ class PhotonCache
   const Point3& point() const;
 
   //! Return the cached radiance
-  const Spectra& energy() const;
+  const SampledSpectra& energy() const;
 
   //! Check if wavelength selection occured
   bool wavelengthIsSelected() const;
 
  private:
-  const Spectra energy_;
+  const SampledSpectra energy_;
   const Point3 point_;
   const Vector3 vin_;
   bool wavelength_is_selected_;

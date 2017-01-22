@@ -72,44 +72,6 @@ Float ClothSurface::rho() const noexcept
   return rho_;
 }
 
-/*!
-  \details
-  No detailed.
-  */
-template <uint kSampleSize> inline
-auto ClothSurface::makeMicrocylinderClothBrdf(
-    const Point2& texture_coordinate,
-    const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
-{
-  // Get the roughness
-  const auto  reflectance = reflectance_->reflectiveValue(texture_coordinate,
-                                                          wavelengths);
-  ZISC_ASSERT(reflectance.isAllInClosedBounds(0.0, 1.0),
-              "Reflectances isn't in the range [0, 1].");
-
-  // Make a microcylinder cloth BSDF
-  using Brdf = MicrocylinderClothBrdf<kSampleSize>;
-  auto bsdf = memory_pool.allocate<Brdf>(this, reflectance);
-  return ShaderPointer<kSampleSize>(bsdf);
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <uint kSampleSize> inline
-auto SurfaceModel::makeMicrocylinderClothBrdf(
-    const Point2& texture_coordinate,
-    const WavelengthSamples<kSampleSize>& wavelengths,
-    MemoryPool& memory_pool) const noexcept -> ShaderPointer<kSampleSize>
-{
-  auto s = zisc::cast<const ClothSurface*>(this);
-  return s->makeMicrocylinderClothBrdf(texture_coordinate,
-                                       wavelengths,
-                                       memory_pool);
-}
-
 } // namespace nanairo
 
 #endif // NANAIRO_CLOTH_SURFACE_INL_HPP

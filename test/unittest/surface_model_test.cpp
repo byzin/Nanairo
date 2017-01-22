@@ -31,6 +31,7 @@
 #include "NanairoCore/Data/wavelength_samples.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
+#include "NanairoCore/Material/SurfaceModel/cloth_surface.hpp"
 #include "NanairoCore/Material/SurfaceModel/layered_diffuse_surface.hpp"
 #include "NanairoCore/Material/SurfaceModel/rough_conductor_surface.hpp"
 #include "NanairoCore/Material/SurfaceModel/smooth_diffuse_surface.hpp"
@@ -97,9 +98,7 @@ TEST(SurfaceModelTest, SmoothDiffuseSurfaceTest)
   const IntersectionInfo intersection{point, normal, nullptr, false};
 
   // Wavelengths
-  WavelengthSamples<1> wavelengths;
-  wavelengths[0] = CoreConfig::shortestWavelength();
-  wavelengths.setPrimaryWavelength(0);
+  const auto wavelengths = makeTestWavelengthSamples();
 
   constexpr char brdf_name[] = "Lambert BRDF";
   testBxdfSampling(*surface, intersection, wavelengths, 
@@ -142,9 +141,7 @@ TEST(SurfaceModelTest, RoughConductorSurfaceTest)
     const IntersectionInfo intersection{point, normal, nullptr, false};
 
     // Wavelengths
-    WavelengthSamples<1> wavelengths;
-    wavelengths[0] = CoreConfig::shortestWavelength();
-    wavelengths.setPrimaryWavelength(0);
+    const auto wavelengths = makeTestWavelengthSamples();
 
     constexpr char brdf_name[] = "GGX conductor";
     testBxdfSampling(*surface, intersection, wavelengths, 
@@ -190,9 +187,7 @@ TEST(SurfaceModelTest, LayeredDiffuseSurfaceTest)
     const IntersectionInfo intersection{point, normal, nullptr, false};
 
     // Wavelengths
-    WavelengthSamples<1> wavelengths;
-    wavelengths[0] = CoreConfig::shortestWavelength();
-    wavelengths.setPrimaryWavelength(0);
+    const auto wavelengths = makeTestWavelengthSamples();
 
     constexpr char brdf_name[] = "Interfaced lambertian";
     testBxdfSampling(*surface, intersection, wavelengths, 
@@ -231,9 +226,7 @@ TEST(SurfaceModelTest, ClothSurfaceTest)
   const IntersectionInfo intersection{point, normal, nullptr, false};
 
   // Wavelengths
-  WavelengthSamples<1> wavelengths;
-  wavelengths[0] = CoreConfig::shortestWavelength();
-  wavelengths.setPrimaryWavelength(0);
+  const auto wavelengths = makeTestWavelengthSamples();
 
   constexpr char brdf_name[] = "Microcylinder cloth BRDF";
   testBxdfSampling(*surface, intersection, wavelengths, 

@@ -25,9 +25,9 @@ namespace nanairo {
 
 /*!
   */
-template <uint kSampleSize> inline
-PhotonMapNode<kSampleSize>::PhotonMapNode(
-    const Spectra& energy,
+inline
+PhotonMapNode::PhotonMapNode(
+    const SampledSpectra& energy,
     const Point3& point,
     const Vector3& vin,
     const bool wavelength_is_selected) noexcept :
@@ -40,8 +40,8 @@ PhotonMapNode<kSampleSize>::PhotonMapNode(
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-PhotonMapNode<kSampleSize>::PhotonMapNode(const Cache& cache) noexcept :
+inline
+PhotonMapNode::PhotonMapNode(const PhotonCache& cache) noexcept :
     cache_{cache},
     type_{NodeType::kXAxisSplit}
 {
@@ -49,8 +49,8 @@ PhotonMapNode<kSampleSize>::PhotonMapNode(const Cache& cache) noexcept :
 
 /*!
   */
-template <uint kSampleSize> inline
-PhotonMapNode<kSampleSize>::PhotonMapNode(PhotonMapNode&& other) noexcept :
+inline
+PhotonMapNode::PhotonMapNode(PhotonMapNode&& other) noexcept :
     cache_{std::move(other.cache_)},
     type_{other.type_}
 {
@@ -60,8 +60,8 @@ PhotonMapNode<kSampleSize>::PhotonMapNode(PhotonMapNode&& other) noexcept :
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto PhotonMapNode<kSampleSize>::cache() const noexcept -> const Cache&
+inline
+const PhotonCache& PhotonMapNode::cache() const noexcept
 {
   return cache_;
 }
@@ -70,8 +70,8 @@ auto PhotonMapNode<kSampleSize>::cache() const noexcept -> const Cache&
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-auto PhotonMapNode<kSampleSize>::nodeType() const noexcept -> NodeType
+inline
+auto PhotonMapNode::nodeType() const noexcept -> NodeType
 {
   return type_;
 }
@@ -80,8 +80,8 @@ auto PhotonMapNode<kSampleSize>::nodeType() const noexcept -> NodeType
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-const Point3& PhotonMapNode<kSampleSize>::point() const noexcept
+inline
+const Point3& PhotonMapNode::point() const noexcept
 {
   return cache_.point();
 }
@@ -90,16 +90,16 @@ const Point3& PhotonMapNode<kSampleSize>::point() const noexcept
   \details
   No detailed.
   */
-template <uint kSampleSize> inline
-void PhotonMapNode<kSampleSize>::setNodeType(const NodeType type) noexcept
+inline
+void PhotonMapNode::setNodeType(const NodeType type) noexcept
 {
   type_ = type;
 }
 
 /*!
   */
-template <uint kSampleSize> inline
-void PhotonMapNode<kSampleSize>::setNodeType(const uint type) noexcept
+inline
+void PhotonMapNode::setNodeType(const uint type) noexcept
 {
   switch (type) {
    case zisc::cast<uint>(NodeType::kXAxisSplit): {

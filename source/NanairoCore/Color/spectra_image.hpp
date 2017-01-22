@@ -29,7 +29,7 @@ namespace nanairo {
 
 // Forward declaration
 class HdrImage;
-template <uint> class SampledSpectra;
+class SampledSpectra;
 class System;
 
 //! \addtogroup Core
@@ -47,11 +47,9 @@ class SpectraImage : public SpectraImageInterface
 
 
   //! Add radiance from a sample
-  template <uint kSampleSize>
-  void addSpectraContribution(
-      const uint x,
-      const uint y,
-      const SampledSpectra<kSampleSize>& contribution) noexcept;
+  void addContribution(const uint x,
+                       const uint y,
+                       const SampledSpectra& contribution) noexcept override;
 
   //! Clear the spectra image buffer to 0
   void clear() noexcept override;
@@ -61,7 +59,7 @@ class SpectraImage : public SpectraImageInterface
 
   //! Convert the spectra image to the HDR image
   void toHdrImage(System& system,
-                  const quint64 cycle, 
+                  const quint64 cycle,
                   HdrImage* hdr_image) const noexcept override;
 
   //! Return the spectra image type
@@ -79,7 +77,5 @@ class SpectraImage : public SpectraImageInterface
 //! \} Core
 
 } // namespace nanairo
-
-#include "spectra_image-inl.hpp"
 
 #endif // NANAIRO_SPECTRA_IMAGE_HPP

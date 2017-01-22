@@ -26,6 +26,7 @@
 #include "Utility/unique_pointer.hpp"
 
 // Forward declaration
+class QJsonArray;
 class QJsonObject;
 
 namespace nanairo {

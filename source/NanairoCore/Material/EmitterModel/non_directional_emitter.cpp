@@ -14,14 +14,18 @@
 #include <QJsonObject>
 #include <QString>
 // Zisc
+#include "zisc/aligned_memory_pool.hpp"
 #include "zisc/error.hpp"
 // Nanairo
 #include "emitter_model.hpp"
 #include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Material/Light/non_directional_light.hpp"
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
+#include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -35,6 +39,23 @@ NonDirectionalEmitter::NonDirectionalEmitter(
         : EmitterModel(settings)
 {
   initialize(settings, texture_list);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+auto NonDirectionalEmitter::makeLight(
+    const Point2& texture_coordinate,
+    const WavelengthSamples& wavelengths,
+    MemoryPool& memory_pool) const noexcept -> ShaderPointer
+{
+  const auto color = color_->emissiveValue(texture_coordinate, wavelengths);
+  const auto radiant_exitance = color * radiantExitance();
+
+  using Light = NonDirectionalLight;
+  auto light = memory_pool.allocate<Light>(radiant_exitance);
+  return ShaderPointer{light};
 }
 
 /*!

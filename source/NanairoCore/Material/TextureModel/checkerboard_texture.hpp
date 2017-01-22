@@ -25,9 +25,9 @@ class QString;
 namespace nanairo {
 
 // Forward declaration
-template <uint> class SampledSpectra;
+class SampledSpectra;
 class System;
-template <uint> class WavelengthSamples;
+class WavelengthSamples;
 
 //! \addtogroup Core
 //! \{
@@ -47,20 +47,18 @@ class CheckerboardTexture : public TextureModel
   Float floatValue(const Point2& coordinate) const noexcept override;
 
   //! Evaluate the emissive spectra at the coordinate
-  template <uint kSampleSize>
-  SampledSpectra<kSampleSize> emissiveValue(
+  SampledSpectra emissiveValue(
       const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
+      const WavelengthSamples& wavelengths) const noexcept override;
 
   //! Evaluate the reflective value by the wavelength at the texture coordinate
   Float reflectiveValue(const Point2& coordinate, 
                         const uint16 wavelength) const noexcept override;
 
   //! Evaluate the reflective spectra at the coordinate
-  template <uint kSampleSize>
-  SampledSpectra<kSampleSize> reflectiveValue(
+  SampledSpectra reflectiveValue(
       const Point2& coordinate,
-      const WavelengthSamples<kSampleSize>& wavelengths) const noexcept;
+      const WavelengthSamples& wavelengths) const noexcept override;
 
   //! Return the checkerboard texture type
   TextureType type() const noexcept override;
@@ -80,7 +78,5 @@ class CheckerboardTexture : public TextureModel
 //! \} Core
 
 } // namespace nanairo
-
-#include "checkerboard_texture-inl.hpp"
 
 #endif // NANAIRO_CHECKERBOARD_TEXTURE_HPP
