@@ -51,7 +51,7 @@ Vector3 Fresnel::calcRefractionDirection(const Vector3& vin,
                                          const Float g) noexcept
 {
   const Float cos_ni = -zisc::dot(normal, vin);
-  const auto vout = (vin + (cos_ni - g) * normal) * (1.0 / n);
+  const auto vout = (vin + (cos_ni - g) * normal) * zisc::invert(n);
   ZISC_ASSERT(isUnitVector(vout), "The vout isn't unit vector.");
   return vout;
 }

@@ -23,8 +23,8 @@ namespace nanairo {
   No detailed.
   */
 inline
-YxyColor::YxyColor() noexcept :
-    Color(0.0, 0.0, 0.0)
+constexpr YxyColor::YxyColor() noexcept :
+    Color()
 {
 }
 
@@ -33,7 +33,7 @@ YxyColor::YxyColor() noexcept :
   No detailed.
   */
 inline
-YxyColor::YxyColor(const Float Y, const Float x, const Float y) noexcept :
+constexpr YxyColor::YxyColor(const Float Y, const Float x, const Float y) noexcept :
     Color(Y, x, y)
 {
 }
@@ -43,7 +43,7 @@ YxyColor::YxyColor(const Float Y, const Float x, const Float y) noexcept :
   No detailed.
   */
 inline
-Float& YxyColor::x() noexcept
+constexpr Float& YxyColor::x() noexcept
 {
   return color_[1];
 }
@@ -53,7 +53,7 @@ Float& YxyColor::x() noexcept
   No detailed.
   */
 inline
-const Float& YxyColor::x() const noexcept
+constexpr const Float& YxyColor::x() const noexcept
 {
   return color_[1];
 }
@@ -63,7 +63,7 @@ const Float& YxyColor::x() const noexcept
   No detailed.
   */
 inline
-Float& YxyColor::y() noexcept
+constexpr Float& YxyColor::y() noexcept
 {
   return color_[2];
 }
@@ -73,7 +73,7 @@ Float& YxyColor::y() noexcept
   No detailed.
   */
 inline
-const Float& YxyColor::y() const noexcept
+constexpr const Float& YxyColor::y() const noexcept
 {
   return color_[2];
 }
@@ -83,7 +83,7 @@ const Float& YxyColor::y() const noexcept
   No detailed.
   */
 inline
-Float& YxyColor::Y() noexcept
+constexpr Float& YxyColor::Y() noexcept
 {
   return color_[0];
 }
@@ -93,7 +93,7 @@ Float& YxyColor::Y() noexcept
   No detailed.
   */
 inline
-const Float& YxyColor::Y() const noexcept
+constexpr const Float& YxyColor::Y() const noexcept
 {
   return color_[0];
 }

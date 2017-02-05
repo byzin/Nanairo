@@ -151,7 +151,7 @@ std::tuple<SampledDirection, SampledSpectra> GgxDielectricBsdf::sample(
       : 1.0; // Perfect reflection
 
   // Determine a reflection or a refraction
-  const bool is_reflection = (sampler.sample(0.0, 1.0) < fresnel);
+  const bool is_reflection = (sampler.sample() < fresnel);
   auto vout = (is_reflection)
       ? Microfacet::calcReflectionDirection(*vin, m_normal)
       : Microfacet::calcRefractionDirection(*vin, m_normal, n_, g);

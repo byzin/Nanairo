@@ -18,9 +18,6 @@
 
 namespace nanairo {
 
-// Forward decralation
-class XyzColor;
-
 //! \addtogroup Core
 //! \{
 
@@ -32,32 +29,29 @@ class YxyColor : public Color<3>
 {
  public:
   //! Create Yxy
-  YxyColor() noexcept;
+  constexpr YxyColor() noexcept;
 
   //! Create Yxy
-  YxyColor(const Float Y, const Float x, const Float y) noexcept;
+  constexpr YxyColor(const Float Y, const Float x, const Float y) noexcept;
 
 
   //! Return the x element reference
-  Float& x() noexcept;
+  constexpr Float& x() noexcept;
 
   //! Return the x element reference
-  const Float& x() const noexcept;
+  constexpr const Float& x() const noexcept;
 
   //! Return the y element reference
-  Float& y() noexcept;
+  constexpr Float& y() noexcept;
 
   //! Return the y element reference
-  const Float& y() const noexcept;
+  constexpr const Float& y() const noexcept;
 
   //! Return the Y element reference
-  Float& Y() noexcept;
+  constexpr Float& Y() noexcept;
 
   //! Return the Y element reference
-  const Float& Y() const noexcept;
-
-  //! Convert to XYZ
-  XyzColor toXyz() const noexcept;
+  constexpr const Float& Y() const noexcept;
 };
 
 //! \} Core

@@ -59,7 +59,7 @@ SampledMicrocylinderDir SampledMicrocylinderDir::sample(const Vector3& vin,
   const Float pdf = std::get<2>(result);
   ZISC_ASSERT(isUnitVector(vout), "The sampled vout isn't unit vector.");
   // Calculate the direction pdf
-  return SampledMicrocylinderDir{SampledDirection{vout, 1.0 / pdf},
+  return SampledMicrocylinderDir{SampledDirection{vout, zisc::invert(pdf)},
                                  theta_i,
                                  phi_i,
                                  theta_o,
@@ -78,7 +78,7 @@ std::tuple<Float, Float, Float> SampledMicrocylinderDir::sampleAngles(
     Sampler& sampler) noexcept
 {
   constexpr Float p = 0.5;
-  const bool is_surface_reflection = sampler.sample(0.0, 1.0) < p;
+  const bool is_surface_reflection = sampler.sample() < p;
   auto result = (is_surface_reflection)
       ? sampleSurfaceAngles(theta_i, phi_i, gamma_r, sampler)
       : sampleVolumeAngles(theta_i, phi_i, k_d, gamma_v, sampler);
@@ -103,7 +103,7 @@ std::tuple<Float, Float> SampledMicrocylinderDir::sampleAzimuthalAngle(
     const Float phi_i,
     Sampler& sampler) noexcept
 {
-  const Float u = sampler.sample(0.0, 1.0);
+  const Float u = sampler.sample();
   const Float phi_o = zisc::asin(2.0 * u - 1.0);
   const Float pdf = Microcylinder::evalAzimuthalAnglePdf(phi_i, phi_o);
   return std::make_tuple(phi_o, pdf);
@@ -137,7 +137,7 @@ std::tuple<Float, Float> SampledMicrocylinderDir::sampleSurfaceLongitudinalAngle
   constexpr Float half_pi = 0.5 * zisc::kPi<Float>;
   const Float a = zisc::atan((half_pi - theta_i) / gamma);
   const Float b = zisc::atan((-half_pi - theta_i) / gamma);
-  const Float u = sampler.sample(0.0, 1.0);
+  const Float u = sampler.sample();
   const Float theta_o = gamma * zisc::tan(u * (a - b) + b) + theta_i;
   const Float pdf =
       gamma / ((zisc::power<2>(theta_i - theta_o) + zisc::power<2>(gamma)) *
@@ -171,7 +171,7 @@ sampleVolumeIsotropicLongitudinalAngle(
     const Float theta_i,
     Sampler& sampler) noexcept
 {
-  const Float u = sampler.sample(0.0, 1.0);
+  const Float u = sampler.sample();
   const Float theta_o = zisc::asin(2.0 * u - 1.0);
   const Float pdf = Microcylinder::evalVolumeIsotropicLongitudinalAnglePdf(theta_i,
                                                                            theta_o);
@@ -188,7 +188,7 @@ std::tuple<Float, Float> SampledMicrocylinderDir::sampleVolumeLongitudinalAngle(
     Sampler& sampler) noexcept
 {
   ZISC_ASSERT(zisc::isInClosedBounds(k_d, 0.0, 1.0), "The k_d isn't [0, 1].");
-  const bool is_isotropic_reflection = sampler.sample(0.0, 1.0) < k_d;
+  const bool is_isotropic_reflection = sampler.sample() < k_d;
   auto result = (is_isotropic_reflection)
       ? sampleVolumeIsotropicLongitudinalAngle(theta_i, sampler)
       : sampleSurfaceLongitudinalAngle(theta_i, gamma, sampler);

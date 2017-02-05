@@ -40,7 +40,7 @@ Float LightSourceSampler::getPdf(const Object* light_source) const noexcept
 inline
 const LightSourceReference& LightSourceSampler::sample(Sampler& sampler) const noexcept
 {
-  const Float y = sampler.sample(0.0, 1.0);
+  const Float y = sampler.sample();
   const auto sampled_lihgt_source = cdf_->inverseFunction(y);
   return *sampled_lihgt_source;
 }

@@ -75,43 +75,113 @@ endfunction(checkCompilerHasCxx14Features)
 
 #
 function(setCompilerOption)
-  set(option_description "Clang uses libc++ instead of libstdc++.")
+  set(option_description "Clang uses libc++ instead of libstdc++ (if compiler supports).")
   setBooleanOption(Z_CLANG_USES_LIBCXX OFF ${option_description})
 
-  set(option_description "Enable C++ sanitizer (Address).")
+  set(option_description "Enable C++ sanitizer (Address) (if compiler supports).")
   setBooleanOption(Z_ENABLE_SANITIZER OFF ${option_description})
 endfunction(setCompilerOption)
 
 
-# Get compile options
-function(getCompilerOption cxx_compile_flags cxx_linker_flags cxx_definitions)
+function(getClangCompilerOption cxx_compile_flags cxx_linker_flags cxx_definitions)
   set(compile_flags "")
   set(linker_flags "")
   set(definitions "")
-  # libc++
+  list(APPEND compile_flags -fconstexpr-steps=${max_constexpr_step})
   if(Z_CLANG_USES_LIBCXX)
-    if(Z_CLANG)
-      list(APPEND compile_flags -stdlib=libc++)
-      list(APPEND linker_flags -stdlib=libc++)
-    else()
-      message(WARNING "The compiler doesn't support libc++.")
-    endif()
+    list(APPEND compile_flags -stdlib=libc++)
+    list(APPEND linker_flags -stdlib=libc++)
   endif()
-  # Sanitizer
   if(Z_ENABLE_SANITIZER)
-    if(Z_CLANG OR Z_GCC)
-      list(APPEND compile_flags -fsanitize=address -fno-omit-frame-pointer)
-      list(APPEND linker_flags -fsanitize=address)
-    else()
-      message(WARNING "The compiler doesn't support sanitizer.")
-    endif()
+    list(APPEND compile_flags -fsanitize=address -fno-omit-frame-pointer)
+    list(APPEND linker_flags -fsanitize=address)
   endif()
-
   # Output variables
   set(${cxx_compile_flags} ${compile_flags} PARENT_SCOPE)
   set(${cxx_linker_flags} ${linker_flags} PARENT_SCOPE)
+  set(${cxx_definitions} ${definitions} PARENT_SCOPE)
+endfunction(getClangCompilerOption)
+
+
+function(getGccCompilerOption cxx_compile_flags cxx_linker_flags cxx_definitions)
+  set(compile_flags "")
+  set(linker_flags "")
+  set(definitions "")
+  if(Z_ENABLE_SANITIZER)
+    list(APPEND compile_flags -fsanitize=address -fno-omit-frame-pointer)
+    list(APPEND linker_flags -fsanitize=address)
+  endif()
+  # Output variables
+  set(${cxx_compile_flags} ${compile_flags} PARENT_SCOPE)
+  set(${cxx_linker_flags} ${linker_flags} PARENT_SCOPE)
+  set(${cxx_definitions} ${definitions} PARENT_SCOPE)
+endfunction(getGccCompilerOption)
+
+
+# Get compile options
+function(getCompilerOption cxx_compile_flags cxx_linker_flags cxx_definitions)
+  math(EXPR max_constexpr_step "1 << 24")
+  # Options
+  if (Z_CLANG)
+    getClangCompilerOption(compile_flags linker_flags definitions)
+  elseif(Z_GCC)
+    getGccCompilerOption(compile_flags linker_flags definitions)
+  endif()
+  # Output variables
+  set(${cxx_compile_flags} ${compile_flags} PARENT_SCOPE)
+  set(${cxx_linker_flags} ${linker_flags} PARENT_SCOPE)
+  set(${cxx_definitions} ${definitions} PARENT_SCOPE)
 endfunction(getCompilerOption)
 
+
+function(getClangWarningOption compiler_warning_flags)
+  set(warning_flags "")
+  if(Z_VISUAL_STUDIO)
+    list(APPEND warning_flags /W4
+                              -Wno-microsoft-enum-value
+                              -Qunused-arguments
+                              )
+  else()
+    list(APPEND warning_flags -Werror
+                              -Weverything
+                              -Wno-c++98-compat
+                              -Wno-c++98-compat-pedantic
+                              )
+  endif()
+  # Output variables
+  set(${compiler_warning_flags} ${warning_flags} PARENT_SCOPE)
+endfunction(getClangWarningOption)
+
+function(getGccWarningOption compiler_warning_flags)
+  set(warning_flags "")
+  list(APPEND warning_flags -pedantic
+                            -Wall
+                            -Wextra
+                            -Wcast-align
+                            -Wcast-qual
+                            -Wctor-dtor-privacy
+                            -Wdisabled-optimization
+                            -Wformat=2
+                            -Winit-self
+                            -Wlogical-op
+                            -Wmissing-declarations
+                            -Wmissing-include-dirs
+                            -Wnoexcept -Wold-style-cast
+                            -Woverloaded-virtual
+                            -Wredundant-decls
+                            -Wshadow
+                            -Wsign-conversion
+                            -Wsign-promo
+                            -Wstrict-null-sentinel
+                            -Wstrict-overflow=5
+                            -Wswitch-default
+                            -Wundef
+                            -Werror
+                            -Wno-unused
+                            )
+  # Output variables
+  set(${compiler_warning_flags} ${warning_flags} PARENT_SCOPE)
+endfunction(getGccWarningOption)
 
 #
 function(getCxxWarningOption compiler_warning_flags)
@@ -119,44 +189,11 @@ function(getCxxWarningOption compiler_warning_flags)
   set(environment "${CMAKE_SYSTEM_NAME} ${CMAKE_CXX_COMPILER_ID} ${compiler_version}")
 
   # Clang
-  if(Z_VISUAL_STUDIO AND Z_CLANG)
-    set(warning_flags /W4
-                      -Wno-microsoft-enum-value
-                      -Qunused-arguments
-                      )
-  elseif(Z_CLANG)
-    set(warning_flags -Werror
-                      -Weverything
-                      -Wno-c++98-compat
-                      -Wno-c++98-compat-pedantic
-                      )
+  if(Z_CLANG)
+    getClangWarningOption(warning_flags)
   # GCC
   elseif(Z_GCC)
-    set(warning_flags -pedantic
-                      -Wall
-                      -Wextra
-                      -Wcast-align
-                      -Wcast-qual
-                      -Wctor-dtor-privacy
-                      -Wdisabled-optimization
-                      -Wformat=2
-                      -Winit-self
-                      -Wlogical-op
-                      -Wmissing-declarations
-                      -Wmissing-include-dirs
-                      -Wnoexcept -Wold-style-cast
-                      -Woverloaded-virtual
-                      -Wredundant-decls
-                      -Wshadow
-                      -Wsign-conversion
-                      -Wsign-promo
-                      -Wstrict-null-sentinel
-                      -Wstrict-overflow=5
-                      -Wswitch-default
-                      -Wundef
-                      -Werror
-                      -Wno-unused
-                      )
+    getGccWarningOption(warning_flags)
   else()
     message(WARNING "${environment}: Warning option isn't supported.")
   endif()

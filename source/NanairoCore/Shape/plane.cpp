@@ -122,8 +122,8 @@ bool Plane::testIntersection(const Ray& ray,
 std::tuple<SampledPoint, Vector3, Point2> Plane::samplePoint(
     Sampler& sampler) const noexcept
 {
-  const Float u = sampler.sample(0.0, 1.0);
-  const Float v = sampler.sample(0.0, 1.0);
+  const Float u = sampler.sample();
+  const Float v = sampler.sample();
   const auto point = top_left_ + u * axis1_ + v * axis2_;
   return std::make_tuple(SampledPoint{point, surfaceArea()}, normal_, Point2{u, v});
 }
@@ -142,8 +142,8 @@ void Plane::transform(const Matrix4x4& matrix) noexcept
   square_height_ = axis2_.squareNorm();
   ZISC_ASSERT(0.0 < square_width_, "The width of the plane is minus.");
   ZISC_ASSERT(0.0 < square_height_, "The height of the plane is minus.");
-  inverse_square_width_ = 1.0 / square_width_;
-  inverse_square_height_ = 1.0 / square_height_;
+  inverse_square_width_ = zisc::invert(square_width_);
+  inverse_square_height_ = zisc::invert(square_height_);
   normal_ = cross(axis2_, axis1_).normalized();
   ZISC_ASSERT(isUnitVector(normal_), "Normal isn't unit vector.");
 

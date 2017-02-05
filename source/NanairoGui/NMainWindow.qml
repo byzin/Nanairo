@@ -152,6 +152,18 @@ ApplicationWindow {
 
       MenuItem {
         enabled: !isRenderingMode
+        text: Nanairo.colorCheckerSpectrumScene
+        onTriggered: loadPresetSceneData(text)
+      }
+
+      MenuItem {
+        enabled: !isRenderingMode
+        text: Nanairo.colorCheckerSRgbScene
+        onTriggered: loadPresetSceneData(text)
+      }
+
+      MenuItem {
+        enabled: !isRenderingMode
         text: Nanairo.raytracingCamp4Scene
         onTriggered: loadPresetSceneData(text)
       }

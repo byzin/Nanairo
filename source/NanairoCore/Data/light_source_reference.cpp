@@ -11,6 +11,7 @@
 // Standard C++ library
 #include <vector>
 // Zisc
+#include "zisc/math.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "object.hpp"
@@ -41,7 +42,7 @@ void LightSourceReference::initialize(const Float total_flux) noexcept
   const Float flux = light_source_->shape().surfaceArea() *
                      light_source_->material().emitter().radiantExitance();
   weight_ = flux / total_flux;
-  inverse_weight_ = 1.0 / weight_;
+  inverse_weight_ = zisc::invert(weight_);
 }
 
 } // namespace nanairo

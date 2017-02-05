@@ -82,7 +82,7 @@ Float SampledDirection::inversePdf() const noexcept
 inline
 Float SampledDirection::pdf() const noexcept
 {
-  return 1.0 / inverse_pdf_;
+  return zisc::invert(inverse_pdf_);
 }
 
 /*!
@@ -128,7 +128,7 @@ void SampledDirection::setInversePdf(const Float inverse_pdf) noexcept
 inline
 void SampledDirection::setPdf(const Float pdf) noexcept
 {
-  inverse_pdf_ = (pdf != 0.0) ? (1.0 / pdf) : 0.0;
+  inverse_pdf_ = (pdf != 0.0) ? zisc::invert(pdf) : 0.0;
 }
 
 /*!
@@ -142,10 +142,10 @@ SampledDirection SampledDirection::SampledDirection::sampleOnHemisphere(
   using zisc::cast;
 
   // Calculate phi and theta using inverse function method
-  const Float u1 = sampler.sample(0.0, 1.0);
-  const Float u2 = sampler.sample(0.0, 1.0);
+  const Float u1 = sampler.sample();
+  const Float u2 = sampler.sample();
 
-  constexpr Float exponent = 1.0 / cast<Float>(kCosineWeight + 1);
+  constexpr Float exponent = zisc::invert(cast<Float>(kCosineWeight + 1));
   const Float cos_theta = zisc::pow(1.0 - u1, exponent);
   const Float sin_theta = zisc::sqrt(1.0 - cos_theta * cos_theta);
   const Float phi = 2.0 * zisc::kPi<Float> * (u2 - 0.5);

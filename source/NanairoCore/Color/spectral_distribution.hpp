@@ -39,6 +39,13 @@ class System;
 class SpectralDistribution
 {
  public:
+  enum class ColorType : int
+  {
+    kEmissive,
+    kReflective
+  };
+
+
   //! Create empty distribution
   SpectralDistribution() noexcept;
 
@@ -132,38 +139,18 @@ class SpectralDistribution
   Float min() const noexcept;
 
   //! Make a emissive spectra
-  static std::unique_ptr<SpectralDistribution> makeEmissive(
-      const System& system,
-      const QJsonObject& settings) noexcept;
+  static SpectralDistribution makeEmissive(const System& system,
+                                           const QJsonObject& settings) noexcept;
 
   //! Make a reflectance spectra
-  static std::unique_ptr<SpectralDistribution> makeReflective(
-      const System& system,
-      const QJsonObject& settings) noexcept;
-
-  //!
-  static SpectralDistribution makeEmissiveSpectra(
-      const QJsonObject& settings) noexcept;
-
-  //!
-  static SpectralDistribution makeReflectiveSpectra(
-      const QJsonObject& settings) noexcept;
+  static SpectralDistribution makeReflective(const System& system,
+                                             const QJsonObject& settings) noexcept;
 
   //! Make a spectral property
-  static SpectralDistribution makeSpectra(
-      const QJsonObject& settings) noexcept;
+  static SpectralDistribution makeSpectra(const QJsonObject& settings) noexcept;
 
   //! Make a spectral property
-  static SpectralDistribution makeSpectra(
-      const QString& file_path) noexcept;
-
-  //! Convert RGB to RGB spectra
-  static SpectralDistribution toRgbSpectra(
-      const RgbColor& color) noexcept;
-
-  //! Convert RGB to spectra
-  static SpectralDistribution toSpectra(const System& system,
-                                        const RgbColor& color) noexcept;
+  static SpectralDistribution makeSpectra(const QString& file_path) noexcept;
 
   //! Return the normalized distribution
   SpectralDistribution normalized() const noexcept;
@@ -183,11 +170,18 @@ class SpectralDistribution
   //! Get sum of intensities
   Float sum() const noexcept;
 
-  //! Return the emissive xyz color
-  XyzColor toEmissiveXyz(const System& system) const noexcept;
+  //! Convert RGB to RGB spectra
+  static SpectralDistribution toRgbSpectra(const RgbColor& color) noexcept;
 
-  //! Return the nanairoive xyz color
-  XyzColor toReflectiveXyz(const System& system) const noexcept;
+  //! Convert RGB to spectra
+  static SpectralDistribution toSpectra(const System& system,
+                                        const RgbColor& color) noexcept;
+
+  //! Return the xyz color converted from the spectra to
+  XyzColor toXyzForEmitter(const System& system) const noexcept;
+
+  //! Return the xyz color converted from the spectra to
+  XyzColor toXyzForReflector(const System& system) const noexcept;
 
  private:
   //!
@@ -196,19 +190,30 @@ class SpectralDistribution
   //!
   static zisc::LinearInterp<Float> loadSpectraData(const QString& file_path) noexcept;
 
+  //! Make a spectra
+  template <ColorType type>
+  static SpectralDistribution makeColor(const System& system,
+                                        const QJsonObject& settings) noexcept;
+
   //!
   static RgbColor makeRgb(const System& system,
                           const QJsonObject& settings) noexcept;
 
   //!
-  static SpectralDistribution toEmissiveRgbSpectra(
+  template <ColorType type>
+  static SpectralDistribution toRgbSpectra(
       const System& system,
       const SpectralDistribution& spectra) noexcept;
 
-  static SpectralDistribution toReflectiveRgbSpectra(
+  //! 
+  template <ColorType type>
+  static XyzColor toXyz(
       const System& system,
       const SpectralDistribution& spectra) noexcept;
 
+  //! Return the xyz color converted from the spectra to
+  template <ColorType type>
+  XyzColor toXyz(const System& system) const noexcept;
 
   zisc::ArithmeticArray<Float, CoreConfig::spectraSize()> distribution_;
 };

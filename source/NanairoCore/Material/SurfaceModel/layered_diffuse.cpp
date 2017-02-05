@@ -236,7 +236,7 @@ SampledDirection LayeredDiffuse::sampleReflectionDirection(const Float roughness
   const Float ps = rs / (rs + rb); // The probability of glossy term
   // Sample a reflection direction
   SampledDirection sampled_vout;
-  const Float u = sampler.sample(0.0, 1.0);
+  const Float u = sampler.sample();
   if (u < ps) { // Glossy term sampling
     const auto m_normal = MicrofacetGgx::sampleNormal(roughness,
                                                       vin,

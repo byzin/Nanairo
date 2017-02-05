@@ -17,9 +17,11 @@
 #include <QtGlobal>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/math.hpp"
 #include "zisc/thread_pool.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
+#include "color_conversion.hpp"
 #include "color_space.hpp"
 #include "hdr_image.hpp"
 #include "rgb_color.hpp"
@@ -103,7 +105,7 @@ void RgbSpectraImage::toHdrImage(System& system,
 {
   using zisc::cast;
 
-  const Float averager = 1.0 / cast<Float>(cycle);
+  const Float averager = zisc::invert(cast<Float>(cycle));
   auto to_hdr_image = [this, &system, hdr_image, averager](const int thread_id)
   {
     // Set the calculation range
@@ -113,8 +115,9 @@ void RgbSpectraImage::toHdrImage(System& system,
     // Write to HDR image buffer
     const auto to_xyz_matrix = getRgbToXyzMatrix(system.colorSpace());
     for (uint index = begin; index < end; ++index) {
-      const RgbColor rgb{averager * buffer_[index].data()};
-      (*hdr_image)[index] = rgb.toXyz(to_xyz_matrix);
+      const auto rgb = averager * buffer_[index].data();
+      const RgbColor rgb_color{rgb[0], rgb[1], rgb[2]};
+      (*hdr_image)[index] = ColorConversion::toXyz(rgb_color, to_xyz_matrix);
     }
   };
   auto& thread_pool = system.threadPool();

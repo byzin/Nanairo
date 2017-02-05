@@ -62,8 +62,8 @@ function(setCommandOptions)
   set(option_description "Set max FPS")
   setStringOption(NANAIRO_MAX_FPS 50 ${option_description})
 
-  set(option_description "Select 32bit random number generator from \"PCG\", \"XSadd\", \"dSFMT\", \"Xorshift\"")
-  setStringOption(NANAIRO_SAMPLER "PCG" ${option_description})
+  set(option_description "Select 64bit random number generator from \"Xorshift128+\", \"SplitMix64\", \"PCG\", \"Xoroshiro128+\"")
+  setStringOption(NANAIRO_SAMPLER "Xoroshiro128+" ${option_description})
 
   set(option_description "The hash key which is used as the default random seed")
   setStringOption(NANAIRO_RANDOM_SEED_KEY "NanairoRenderer" ${option_description})

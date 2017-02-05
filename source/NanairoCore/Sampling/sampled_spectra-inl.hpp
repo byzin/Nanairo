@@ -196,7 +196,7 @@ Float SampledSpectra::average() const noexcept
 {
   using zisc::cast;
 
-  constexpr Float averager = 1.0 / cast<Float>(size());
+  constexpr Float averager = zisc::invert(cast<Float>(size()));
   return intensities_.sum() * averager;
 }
 

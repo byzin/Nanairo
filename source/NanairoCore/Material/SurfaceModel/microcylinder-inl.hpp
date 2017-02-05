@@ -13,6 +13,7 @@
 #include "microcylinder.hpp"
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/const_math.hpp"
 #include "zisc/math.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -362,7 +363,7 @@ Float Microcylinder::evalUnitGaussian(const Float mu,
                                       const Float rho,
                                       const Float x) noexcept
 {
-  constexpr Float root_pi = zisc::squareRoot(2.0 * zisc::kPi<Float>);
+  constexpr Float root_pi = zisc::constant::sqrt(2.0 * zisc::kPi<Float>);
   return evalGaussian(mu, rho, x) / (root_pi * rho);
 }
 
@@ -383,7 +384,7 @@ Float Microcylinder::evalVolumeScattering(const Float theta_i,
     const Float theta_d = calcEffectiveAngle(theta_i, theta_o);
     const Float phi_d = phi_i - phi_o;
     const Float cos_n = zisc::cos(theta_d) * zisc::cos(0.5 * phi_d);
-    const Float inv_n = 1.0 / n;
+    const Float inv_n = zisc::invert(n);
     const Float sin_m = inv_n * zisc::sqrt(1.0 - zisc::power<2>(cos_n));
     const Float cos_m = zisc::sqrt(1.0 - zisc::power<2>(sin_m));
     ZISC_ASSERT(zisc::isInClosedBounds(cos_m, 0.0, 1.0),

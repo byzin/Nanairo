@@ -13,6 +13,8 @@
 #include "spectral_distribution.hpp"
 // Zisc
 #include "zisc/arithmetic_array.hpp"
+#include "zisc/error.hpp"
+#include "zisc/math.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Utility/value.hpp"
@@ -89,8 +91,7 @@ SpectralDistribution SpectralDistribution::operator*(
 inline
 SpectralDistribution SpectralDistribution::operator/(const Float scalar) const noexcept
 {
-  const Float inverse = 1.0 / scalar;
-  return SpectralDistribution{distribution_ * inverse};
+  return SpectralDistribution{distribution_ * zisc::invert(scalar)};
 }
 
 /*!
@@ -310,7 +311,8 @@ Float SpectralDistribution::min() const noexcept
 inline
 SpectralDistribution SpectralDistribution::normalized() const noexcept
 {
-  const Float k = 1.0 / sum();
+  const Float s = sum();
+  const Float k = (0.0 < s) ? zisc::invert(s) : 0.0;
   return (*this) * k;
 }
 

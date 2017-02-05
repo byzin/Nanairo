@@ -15,6 +15,7 @@
 #include <QString>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/math.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "texture_model.hpp"
@@ -96,8 +97,8 @@ void ValueTexture::initialize(const System& system,
 {
   // Emissive value
   emissive_value_ = system.isRgbRenderingMode()
-      ? 1.0 / 3.0
-      : 1.0 / CoreConfig::spectraSize();
+      ? zisc::invert(3.0)
+      : zisc::invert(zisc::cast<Float>(CoreConfig::spectraSize()));
   // Reflective value and float value
   reflective_value_ = SceneValue::toFloat<Float>(settings, keyword::value);
   ZISC_ASSERT(zisc::isInClosedBounds(reflective_value_, 0.0, 1.0),

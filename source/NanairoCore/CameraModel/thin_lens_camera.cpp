@@ -11,6 +11,7 @@
 //#include <QSettings>
 //#include <QString>
 //// Zisc
+//#include "zisc/math.hpp"
 //#include "zisc/utility.hpp"
 //#include "zisc/unit.hpp"
 //// Reflect
@@ -123,7 +124,7 @@
 //  key = prefix + "/" + keyword::angle_of_view;
 //  const double angle_of_view = value<double>(settings, key);
 //  const double theta = zisc::toRadian(angle_of_view * 0.5);
-//  const auto distance = Vector3{0.0, 0.0, 1.0} * (1.0 / std::tan(theta));
+//  const auto distance = Vector3{0.0, 0.0, 1.0} * (zisc::invert(std::tan(theta)));
 //
 //  const auto d = distance * (focal_distance  / (distance.norm() - focal_distance));
 //  const double y = (d.norm() - focal_distance) / focal_distance;

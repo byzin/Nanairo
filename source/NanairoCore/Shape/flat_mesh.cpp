@@ -122,8 +122,8 @@ bool FlatMesh::testIntersection(const Ray& ray,
   */
 std::tuple<SampledPoint, Vector3, Point2> FlatMesh::samplePoint(Sampler& sampler) const noexcept
 {
-  Float u = sampler.sample(0.0, 1.0);
-  Float v = sampler.sample(0.0, 1.0);
+  Float u = sampler.sample();
+  Float v = sampler.sample();
   if (1.0 < (u + v)) {
     u = 1.0 - u;
     v = 1.0 - v;

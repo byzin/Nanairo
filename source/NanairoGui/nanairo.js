@@ -189,6 +189,8 @@ var roughDielectricTestScene = "SurfaceTest-RoughDielectric";
 var roughConductorTestScene = "SurfaceTest-RoughConductor";
 var layeredDiffuseTestScene = "SurfaceTest-LayeredDiffuse";
 var clothTestScene = "SurfaceTest-Cloth";
+var colorCheckerSpectrumScene = "ColorChecker-Spectrum";
+var colorCheckerSRgbScene = "ColorChecker-sRGB";
 var raytracingCamp4Scene = "RaytracingCamp4";
 // Tab item
 var tabItemWidth = 960;

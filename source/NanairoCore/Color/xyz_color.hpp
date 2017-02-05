@@ -20,10 +20,6 @@
 
 namespace nanairo {
 
-// Forward decralation
-class RgbColor;
-class YxyColor;
-
 //! \addtogroup Core
 //! \{
 
@@ -35,38 +31,29 @@ class XyzColor : public Color<3>
 {
  public:
   //! Initialize XYZ color with 0
-  XyzColor() noexcept;
+  constexpr XyzColor() noexcept;
 
   //! Create XYZ color
-  XyzColor(const Float x, const Float y, const Float z) noexcept;
+  constexpr XyzColor(const Float x, const Float y, const Float z) noexcept;
 
-  //! Create XYZ color
-  XyzColor(const zisc::ArithmeticArray<Float, 3>& color) noexcept;
-
-
-  //! Convert XYZ to RGB.
-  RgbColor toRgb(const Matrix3x3& to_rgb_matrix) const noexcept;
-
-  //! Convert XYZ to Yxy.
-  YxyColor toYxy() const noexcept;
 
   //! Return the x element reference
-  Float& x() noexcept;
+  constexpr Float& x() noexcept;
 
   //! Return the x element reference
-  const Float& x() const noexcept;
+  constexpr const Float& x() const noexcept;
 
   //! Return the y element reference
-  Float& y() noexcept;
+  constexpr Float& y() noexcept;
 
   //! Return the y element reference
-  const Float& y() const noexcept;
+  constexpr const Float& y() const noexcept;
 
   //! Return the z element reference
-  Float& z() noexcept;
+  constexpr Float& z() noexcept;
 
   //! Return the z element reference
-  const Float& z() const noexcept;
+  constexpr const Float& z() const noexcept;
 };
 
 //! \} Color

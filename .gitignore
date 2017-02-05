@@ -48,6 +48,7 @@
 !/source/NanairoCore/Color/
 !/source/NanairoCore/Color/*.hpp
 !/source/NanairoCore/Color/*.cpp
+!/source/NanairoCore/Color/*.py.in
 !/source/NanairoCore/Data/
 !/source/NanairoCore/Data/*.hpp
 !/source/NanairoCore/Data/*.cpp

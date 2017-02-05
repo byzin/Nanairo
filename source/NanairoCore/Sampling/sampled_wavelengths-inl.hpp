@@ -15,6 +15,7 @@
 #include <array>
 #include <cstdint>
 // Zisc
+#include "zisc/error.hpp"
 #include "zisc/arithmetic_array.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -61,9 +62,12 @@ const IntensitySamples& SampledWavelengths::inverseProbabilities() const noexcep
 inline
 void SampledWavelengths::selectPrimaryWavelength(Sampler& sampler) noexcept
 {
-  constexpr uint min = 0;
-  constexpr uint max = size();
-  const uint selected_index = sampler.sample(min, max);
+  using zisc::cast;
+
+  constexpr Float n = cast<Float>(size());
+  const uint selected_index = cast<uint>(n * sampler.sample());
+  ZISC_ASSERT(zisc::isInBounds(selected_index, 0u, size()),
+              "The sampled index is out of range.");
   wavelengths_.setPrimaryWavelength(selected_index);
 }
 

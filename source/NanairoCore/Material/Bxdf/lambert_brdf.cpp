@@ -41,7 +41,7 @@ Float LambertBrdf::evalPdf(
     const Vector3& normal,
     const WavelengthSamples& /* wavelemgths */) const noexcept
 {
-  constexpr Float k = 1.0 / zisc::kPi<Float>;
+  constexpr Float k = zisc::invert(zisc::kPi<Float>);
   const Float cos_no = zisc::dot(normal, *vout);
   return k * cos_no;
 }
@@ -56,7 +56,7 @@ SampledSpectra LambertBrdf::evalRadiance(
     const Vector3& /* normal */,
     const WavelengthSamples& /* wavelemgths */) const noexcept
 {
-  constexpr Float k = 1.0 / zisc::kPi<Float>;
+  constexpr Float k = zisc::invert(zisc::kPi<Float>);
   return k * reflectance_;
 }
 
@@ -70,7 +70,7 @@ std::tuple<SampledSpectra, Float> LambertBrdf::evalRadianceAndPdf(
     const Vector3& normal,
     const WavelengthSamples& /* wavelemgths */) const noexcept
 {
-  constexpr Float k = 1.0 / zisc::kPi<Float>;
+  constexpr Float k = zisc::invert(zisc::kPi<Float>);
   const Float cos_no = zisc::dot(normal, *vout);
   ZISC_ASSERT(zisc::isInBounds(cos_no, 0.0, 1.0), "cos_no isn't [0, 1].");
   return std::make_tuple(k * reflectance_, k * cos_no);;

@@ -26,17 +26,20 @@ class Sampler
 {
  public:
   //! Initialize a sampler
-  Sampler(const uint32 seed) noexcept;
+  Sampler(const uint64 seed) noexcept;
 
 
-  //! Sample a random number x uniformly satisfing min <= x < max
-  template <typename Arithmetic>
-  Arithmetic sample(const Arithmetic min, const Arithmetic max) noexcept;
+  //! Sample a [0, 1) float random number
+  Float sample() noexcept;
 
   //! Set seed
-  void setSeed(const uint32 seed) noexcept;
+  void setSeed(const uint64 seed) noexcept;
 
  private:
+  //! Initialize sampler
+  void initialize(const uint64 seed) noexcept;
+
+
   SamplerType sampler_;
 };
 

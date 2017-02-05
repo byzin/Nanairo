@@ -267,7 +267,7 @@ Float PathTracing::calcMisWeight(const Float pdf1,
                                  const Float inverse_pdf2) const noexcept
 {
   const Float p = zisc::power<CoreConfig::misHeuristicBeta()>(pdf1 * inverse_pdf2);
-  return 1.0 / (p + 1.0);
+  return zisc::invert(p + 1.0);
 }
 
 /*!

@@ -14,6 +14,7 @@
 #include <QJsonObject>
 #include <QString>
 // Zisc
+#include "zisc/math.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCommon/keyword.hpp"
@@ -46,8 +47,8 @@ void Film::initialize(const System& system, const QJsonObject& /* settings */) n
   // Image resolution
   const auto width = system.imageWidthResolution();
   const auto height = system.imageHeightResolution();
-  inverse_width_ = 1.0 / cast<Float>(width);
-  inverse_height_ = 1.0 / cast<Float>(height);
+  inverse_width_ = zisc::invert(cast<Float>(width));
+  inverse_height_ = zisc::invert(cast<Float>(height));
 
   // Initialize buffer
   if (system.isRgbRenderingMode())

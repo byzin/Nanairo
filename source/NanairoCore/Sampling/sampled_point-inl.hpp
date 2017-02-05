@@ -11,6 +11,8 @@
 #define NANAIRO_SAMPLED_POINT_INL_HPP
 
 #include "sampled_point.hpp"
+// Zisc
+#include "zisc/math.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Geometry/point.hpp"
@@ -65,7 +67,7 @@ const Point3& SampledPoint::point() const noexcept
 inline
 Float SampledPoint::pdf() const noexcept
 {
-  return 1.0 / inverse_pdf_;
+  return zisc::invert(inverse_pdf_);
 }
 
 /*!
@@ -95,7 +97,7 @@ void SampledPoint::setPoint(const Point3& point) noexcept
 inline
 void SampledPoint::setPdf(const Float pdf) noexcept
 {
-  inverse_pdf_ = 1.0 / pdf;
+  inverse_pdf_ = zisc::invert(pdf);
 }
 
 } // namespace nanairo

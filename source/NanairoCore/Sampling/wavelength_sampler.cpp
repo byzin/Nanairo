@@ -86,7 +86,7 @@ SampledWavelengths WavelengthSampler::sampleRandomly(Sampler& sampler) noexcept
   std::array<uint16, sample_size> wavelengths;
   for (uint i = 0; i < sample_size; ++i) {
     const Float position = cast<Float>(CoreConfig::spectraSize()) *
-                           sampler.sample(0.0, 1.0);
+                           sampler.sample();
     const uint index = cast<uint>(position);
     const uint16 wavelength = getWavelength(index);
     wavelengths[i] = wavelength;
@@ -113,7 +113,7 @@ SampledWavelengths WavelengthSampler::sampleRegularly(Sampler& sampler) noexcept
   constexpr Float inverse_probability = interval;
 
   SampledWavelengths sampled_wavelengths;
-  const Float offset = sampler.sample(0.0, 1.0);
+  const Float offset = sampler.sample();
   for (uint i = 0; i < sample_size; ++i) {
     const uint index = cast<uint>(interval * (cast<Float>(i) + offset));
     const uint16 wavelength = getWavelength(index);
@@ -135,7 +135,7 @@ SampledWavelengths WavelengthSampler::sampleStratified(Sampler& sampler) noexcep
 
   SampledWavelengths sampled_wavelengths;
   for (uint i = 0; i < sample_size; ++i) {
-    const Float position = interval * (cast<Float>(i) + sampler.sample(0.0, 1.0));
+    const Float position = interval * (cast<Float>(i) + sampler.sample());
     const uint index = cast<uint>(position);
     const uint16 wavelength = getWavelength(index);
     sampled_wavelengths.set(i, wavelength, inverse_probability);

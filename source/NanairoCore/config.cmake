@@ -11,18 +11,18 @@ set(__nanairo_core_root__ ${CMAKE_CURRENT_LIST_DIR})
 
 # Set the sampler type
 function(getCoreSamplerType sampler_header_path sampler_type)
-  if(NANAIRO_SAMPLER STREQUAL "PCG")
-    set(header_path "zisc/pcg_engine.hpp")
-    set(type "zisc::PcgMcgRxsMXs32")
-  elseif(NANAIRO_SAMPLER STREQUAL "XSadd")
-    set(header_path "zisc/xsadd_engine.hpp")
-    set(type "zisc::XsaddEngine")
-  elseif(NANAIRO_SAMPLER STREQUAL "dSFMT")
-    set(header_path "zisc/dsfmt_engine.hpp")
-    set(type "zisc::Dsfmt19937")
-  elseif(NANAIRO_SAMPLER STREQUAL "Xorshift")
+  if(NANAIRO_SAMPLER STREQUAL "Xorshift128+")
     set(header_path "zisc/xorshift_engine.hpp")
-    set(type "zisc::XorshiftEngine")
+    set(type "zisc::Xorshift128Plus")
+  elseif(NANAIRO_SAMPLER STREQUAL "SplitMix64")
+    set(header_path "zisc/split_mix64_engine.hpp")
+    set(type "zisc::SplitMix64Engine")
+  elseif(NANAIRO_SAMPLER STREQUAL "PCG")
+    set(header_path "zisc/pcg_engine.hpp")
+    set(type "zisc::PcgMcgRxsMXs")
+  elseif(NANAIRO_SAMPLER STREQUAL "Xoroshiro128+")
+    set(header_path "zisc/xoroshiro128_plus_engine.hpp")
+    set(type "zisc::Xoroshiro128PlusEngine")
   else()
     message(FATAL_ERROR "${NANAIRO_SAMPLER} is invalid sampler type.")
   endif()
@@ -32,6 +32,32 @@ function(getCoreSamplerType sampler_header_path sampler_type)
   set(${sampler_header_path} ${header_path} PARENT_SCOPE)
   set(${sampler_type} ${type} PARENT_SCOPE)
 endfunction(getCoreSamplerType)
+
+
+# Compute the spectral transport parameters
+function(computeSpectralTransportParameters resource_dir script_file_dir parameter_file)
+  # Initialize python environment
+  find_package(PythonInterp 3.6 REQUIRED)
+  message(STATUS "PythonInterp path: ${PYTHON_EXECUTABLE}")
+  # Copy resources
+  set(cmf_x_bar_file "cie_sco_2degree_xbar.csv")
+  set(cmf_y_bar_file "cie_sco_2degree_ybar.csv")
+  set(cmf_z_bar_file "cie_sco_2degree_zbar.csv")
+  file(COPY ${resource_dir}/${cmf_x_bar_file}
+            ${resource_dir}/${cmf_y_bar_file}
+            ${resource_dir}/${cmf_z_bar_file}
+       DESTINATION ${script_file_dir})
+  # Compute paramenters
+  configure_file(${__nanairo_core_root__}/Color/spectral_transport.py.in
+                 ${script_file_dir}/spectral_transport.py)
+  add_custom_command(
+      OUTPUT ${script_file_dir}/${parameter_file}
+      COMMAND ${PYTHON_EXECUTABLE} spectral_transport.py -o ${parameter_file}
+      DEPENDS ${script_file_dir}/spectral_transport.py
+      WORKING_DIRECTORY ${script_file_dir}
+      COMMENT "Compute spectral transport parameters."
+      VERBATIM)
+endfunction(computeSpectralTransportParameters)
 
 
 # Make Nanairo Core config file
@@ -93,6 +119,13 @@ function(getNanairoCore core_source_files core_definitions)
   findNanairoSourceFiles(${__nanairo_core_root__} source_files)
   # Definitions
   set(definitions "")
+  # SpectralTransport
+  set(cmf_resource_dir ${PROJECT_SOURCE_DIR}/resources/spectrum/observer)
+  set(script_file_dir ${PROJECT_BINARY_DIR}/include/NanairoCore/Color)
+  set(parameter_file spectral_transport_parameters.hpp)
+  file(MAKE_DIRECTORY ${script_file_dir})
+  computeSpectralTransportParameters(${cmf_resource_dir} ${script_file_dir} ${parameter_file})
+  list(APPEND source_files ${script_file_dir}/${parameter_file})
   # Config file
   set(config_file_path
       ${PROJECT_BINARY_DIR}/include/NanairoCore/nanairo_core_config.hpp)

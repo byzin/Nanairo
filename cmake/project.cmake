@@ -162,6 +162,7 @@ function(buildNanairo)
                           ${exec_path}
                           ${PROJECT_NAME}
                        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-                       COMMENT "Creating the symlink to \"${exec_path}\".")
+                       COMMENT "Creating the symlink to \"${exec_path}\"."
+                       VERBATIM)
   endif()
 endfunction(buildNanairo)

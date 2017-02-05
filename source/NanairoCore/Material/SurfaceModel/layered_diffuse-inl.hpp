@@ -38,7 +38,7 @@ inline
 Float LayeredDiffuse::evalBodyPdf(const Float cos_no) noexcept
 {
   ZISC_ASSERT(0.0 <= cos_no, "The cos(no) is minus.");
-  constexpr Float t = 1.0 / zisc::kPi<Float>;
+  constexpr Float t = zisc::invert(zisc::kPi<Float>);
   const Float pdf = t * cos_no;
   return pdf;
 }

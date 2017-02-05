@@ -17,6 +17,7 @@
 #include <vector>
 #include <utility>
 // Zisc
+#include "zisc/math.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "aabb.hpp"
@@ -149,9 +150,9 @@ std::vector<MortonCode> makeMortonCodeList(std::vector<BvhNode>& leaf_node_list)
                                              leaf_node_list.cend());
   const auto& min_point = scene_box.minPoint();
   const auto range = scene_box.maxPoint() - min_point;
-  const Float inverse_x = 1.0 / range[0];
-  const Float inverse_y = 1.0 / range[1];
-  const Float inverse_z = 1.0 / range[2];
+  const Float inverse_x = zisc::invert(range[0]);
+  const Float inverse_y = zisc::invert(range[1]);
+  const Float inverse_z = zisc::invert(range[2]);
 
   // Sort by the morton code
   std::vector<MortonCode> morton_code_list;

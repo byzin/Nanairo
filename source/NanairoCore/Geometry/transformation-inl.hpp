@@ -15,6 +15,7 @@
 #include <cmath>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/math.hpp"
 #include "zisc/matrix.hpp"
 // Nanairo
 #include "vector.hpp"
@@ -35,7 +36,7 @@ Matrix3x3 Transformation::makeChangeOfBasisFromLocal(const Vector3& normal) noex
   Vector3 b1{-1.0,  0.0,  0.0};
   Vector3 b2{ 0.0, -1.0,  0.0};
   if (-0.999999 < n[2]) {
-    const Float t = 1.0 / (1.0 + n[2]);
+    const Float t = zisc::invert(1.0 + n[2]);
     // b1 vector
     b1[0] = 1.0 - (n[0] * n[0] * t);
     b1[1] = -n[0] * n[1] * t;
@@ -65,7 +66,7 @@ Matrix3x3 Transformation::makeChangeOfBasisToLocal(const Vector3& normal) noexce
   Vector3 b1{-1.0,  0.0,  0.0};
   Vector3 b2{ 0.0, -1.0,  0.0};
   if (-0.999999 < n[2]) {
-    const Float t = 1.0 / (1.0 + n[2]);
+    const Float t = zisc::invert(1.0 + n[2]);
     // b1 vector
     b1[0] = 1.0 - (n[0] * n[0] * t);
     b1[1] = -n[0] * n[1] * t;

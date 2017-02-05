@@ -43,6 +43,7 @@ Version: 0.0.2
 **Color**
 
 * Spectra (point sampling) [[thesis](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.68.1533)]
+* Spectral transport from RGB [[thesis](http://dl.acm.org/citation.cfm?id=2853793)]
 
 **Geometry**
 
@@ -63,11 +64,16 @@ Version: 0.0.2
 
 ### Build tools ###
 
-* CMake (version 3.4 or later) [[CMake](http://www.cmake.org/)]
+* CMake (version 3.4 or later) [[page](http://www.cmake.org/)]
+* Python (version 3.6 or later) [[page](https://www.python.org/)]
+    - NumPy [[page](http://www.numpy.org/)]
+    - SciPy [[page](https://www.scipy.org/)]
+    - Matplotlib
+    - Colour [[page](http://colour-science.org/)]
 
 ### Dependency Library ###
 
-* Qt (version 5.6.0 or later) [[Qt Project](http://qt-project.org/)]
+* Qt (version 5.6.0 or later) [[page](http://qt-project.org/)]
 
 ## Usage ##
 Please see [wiki](https://github.com/byzin/Nanairo/wiki/Home "NanairoWiki").

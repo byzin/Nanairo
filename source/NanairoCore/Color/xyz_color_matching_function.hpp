@@ -10,6 +10,9 @@
 #ifndef NANAIRO_XYZ_COLOR_MATCHING_FUNCTION_HPP
 #define NANAIRO_XYZ_COLOR_MATCHING_FUNCTION_HPP
 
+// Standard C++ library
+#include <array>
+#include <memory>
 // Zisc
 #include "zisc/arithmetic_array.hpp"
 // Nanairo
@@ -36,37 +39,37 @@ class XyzColorMatchingFunction
   XyzColorMatchingFunction(const QJsonObject& settings) noexcept;
 
 
-  //! In the emissive case, convert spectrums to XYZ using color matching function.
-  XyzColor toXyzInEmissiveCase(const SpectralDistribution& spectra) const noexcept;
+  //! Return the standard illuminant
+  const SpectralDistribution& illuminant() const noexcept;
 
-  //! In the nanairoive or transmissive case, convert spectrums to XYZ
-  XyzColor toXyzInReflectiveCase(const SpectralDistribution& spectra) const noexcept;
+  //! Convert spectrums to XYZ for emitter.
+  XyzColor toXyzForEmitter(const SpectralDistribution& spectra) const noexcept;
 
-  //! Return the x bar
+  //! Convert spectrums to XYZ for reflector.
+  XyzColor toXyzForReflector(const SpectralDistribution& spectra) const noexcept;
+
+  //! Return the observer x bar
   const SpectralDistribution& xBar() const noexcept;
 
-  //! Return the y bar
+  //! Return the observer y bar
   const SpectralDistribution& yBar() const noexcept;
 
-  //! Return the z bar
+  //! Return the observer z bar
   const SpectralDistribution& zBar() const noexcept;
 
  private:
   //! Initialize
   void initialize(const QJsonObject& settings) noexcept;
 
-  //! Set standard illuminant
-  void setStandardIlluminant(const QJsonObject& settings) noexcept;
+  //! Load standard illuminant
+  void loadStandardIlluminant(const QJsonObject& settings) const noexcept;
 
   //! Set standard obverser
-  void setStandardObserver(const QJsonObject& settings) noexcept;
+  void loadStandardObserver(const QJsonObject& settings) const noexcept;
 
 
-  SpectralDistribution standard_illuminant_;
-  SpectralDistribution x_bar_,
-                       y_bar_,
-                       z_bar_;
-  Float k_;
+  std::unique_ptr<SpectralDistribution> illuminant_;
+  std::array<std::unique_ptr<SpectralDistribution>, 3> bar_;
 };
 
 //! \} Core

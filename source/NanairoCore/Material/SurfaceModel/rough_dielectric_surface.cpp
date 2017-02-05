@@ -18,6 +18,7 @@
 // Zisc
 #include "zisc/aligned_memory_pool.hpp"
 #include "zisc/error.hpp"
+#include "zisc/math.hpp"
 // Nanairo
 #include "fresnel.hpp"
 #include "surface_model.hpp"
@@ -64,7 +65,7 @@ auto RoughDielectricSurface::makeBxdf(
   // Evaluate the refractive index
   const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];
   const Float n = (is_reverse_face)
-      ? 1.0 / eta_.getByWavelength(wavelength)
+      ? zisc::invert(eta_.getByWavelength(wavelength))
       : eta_.getByWavelength(wavelength);
 
   // Make GGX BSDF

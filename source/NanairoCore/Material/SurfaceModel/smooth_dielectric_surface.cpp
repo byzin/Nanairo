@@ -14,6 +14,7 @@
 // Zisc
 #include "zisc/aligned_memory_pool.hpp"
 #include "zisc/error.hpp"
+#include "zisc/math.hpp"
 // Nanairo
 #include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -47,7 +48,7 @@ auto SmoothDielectricSurface::makeBxdf(
 {
   const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];
   const Float n = (is_reverse_face)
-      ? 1.0 / eta_.getByWavelength(wavelength)
+      ? zisc::invert(eta_.getByWavelength(wavelength))
       : eta_.getByWavelength(wavelength);
 
   using Bsdf = SpecularBsdf;

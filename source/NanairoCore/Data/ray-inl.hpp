@@ -13,6 +13,8 @@
 #include "ray.hpp"
 // Standard C++ library
 #include <limits>
+// Zisc
+#include "zisc/math.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Geometry/point.hpp"
@@ -102,9 +104,9 @@ inline
 void Ray::setInverseDirection() noexcept
 {
   constexpr Float max = std::numeric_limits<Float>::max();
-  inverse_direction_[0] = (direction_[0] != 0.0) ? (1.0 / direction_[0]) : max;
-  inverse_direction_[1] = (direction_[1] != 0.0) ? (1.0 / direction_[1]) : max;
-  inverse_direction_[2] = (direction_[2] != 0.0) ? (1.0 / direction_[2]) : max;
+  inverse_direction_[0] = (direction_[0] != 0.0) ? zisc::invert(direction_[0]) : max;
+  inverse_direction_[1] = (direction_[1] != 0.0) ? zisc::invert(direction_[1]) : max;
+  inverse_direction_[2] = (direction_[2] != 0.0) ? zisc::invert(direction_[2]) : max;
   sign_[0] = (inverse_direction_[0] < 0.0) ? 1 : 0;
   sign_[1] = (inverse_direction_[1] < 0.0) ? 1 : 0;
   sign_[2] = (inverse_direction_[2] < 0.0) ? 1 : 0;

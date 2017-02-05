@@ -86,7 +86,7 @@ void KnnPhotonList::insert(const Float distance2,
 inline
 Float KnnPhotonList::inverseLongestDistance() const noexcept
 {
-  return zisc::invSqrt(std::get<0>(photon_list_.front()));
+  return zisc::invert(zisc::sqrt(std::get<0>(photon_list_.front())));
 }
 
 /*!

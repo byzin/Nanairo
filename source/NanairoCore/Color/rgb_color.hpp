@@ -10,21 +10,13 @@
 #ifndef NANAIRO_RGB_COLOR_HPP
 #define NANAIRO_RGB_COLOR_HPP
 
-// Qt
-#include <QColor>
 // Zisc
 #include "zisc/arithmetic_array.hpp"
 // Nanairo
 #include "color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 
-// Forward declaration
-class QColor;
-
 namespace nanairo {
-
-//! Forward decralation
-class XyzColor;
 
 //! \addtogroup Core
 //! \{
@@ -41,12 +33,6 @@ class RgbColor : public Color<3>
 
   //! Create RGB
   RgbColor(const Float red, const Float green, const Float blur) noexcept;
-
-  //! Create RGB
-  RgbColor(const QColor& color) noexcept;
-
-  //! Create RGB
-  RgbColor(const zisc::ArithmeticArray<Float, 3>& color) noexcept;
 
 
   //! Apply gamma correction
@@ -69,12 +55,6 @@ class RgbColor : public Color<3>
 
   //! Return the red element reference.
   const Float& red() const noexcept;
-
-  //! Convert RGB to Qt RGB format
-  QRgb toQRgb() const noexcept;
-
-  //! Convert RGB to XYZ.
-  XyzColor toXyz(const Matrix3x3& to_xyz_matrix) const noexcept;
 };
 
 //! \} Core

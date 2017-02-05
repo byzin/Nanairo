@@ -85,8 +85,8 @@ inline
 Float ProbabilisticPpm::calcWeight(const Float t) const noexcept
 {
   constexpr Float k = 1.1;
-  constexpr Float inverse_k = 1.0 / k;
-  constexpr Float normalizer = 1.0 / (1.0 - (2.0 / (3.0 * k)));
+  constexpr Float inverse_k = zisc::invert(k);
+  constexpr Float normalizer = zisc::invert(1.0 - (2.0 / (3.0 * k)));
   return normalizer * (1.0 - t * inverse_k);
 }
 
@@ -267,8 +267,8 @@ void ProbabilisticPpm::initialize(const System& system,
     if (num_of_photons < thread_pool.numOfThreads())
       qWarning("  PPPM warning: The num of photons is less than the num of threads.");
     num_of_thread_photons_ = num_of_photons / thread_pool.numOfThreads();
-    photon_power_scale_ = 1.0 /
-                          cast<Float>(num_of_thread_photons_ * thread_pool.numOfThreads());
+    photon_power_scale_ = 
+        zisc::invert(cast<Float>(num_of_thread_photons_ * thread_pool.numOfThreads()));
     qInfo("  PPPM num of photons: %ld", cast<long int>(num_of_thread_photons_));
   }
   {
@@ -514,9 +514,9 @@ void ProbabilisticPpm::updateRadius() noexcept
   const Float radius_scale = (zisc::cast<Float>(cycle_ - 1) + alpha_) /
                              zisc::cast<Float>(cycle_);
   radius2_ = radius_scale * radius2_;
-  inverse_radius_ = zisc::invSqrt(radius2_);
+  inverse_radius_ = zisc::invert(zisc::sqrt(radius2_));
 
-  constexpr Float k = 1.0 / zisc::kPi<Float>;
+  constexpr Float k = zisc::invert(zisc::kPi<Float>);
   inverse_estimation_area_ = k / radius2_;
 }
 

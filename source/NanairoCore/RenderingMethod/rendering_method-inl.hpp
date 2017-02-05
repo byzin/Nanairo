@@ -168,7 +168,7 @@ Ray RenderingMethod::sampleNextRay(const uint length,
   if (!roulette_result.result())
     return Ray{};
   // Update ray weight
-  const Float inverse_probability = 1.0 / roulette_result.probability();
+  const Float inverse_probability = zisc::invert(roulette_result.probability());
   *ray_weight = *ray_weight * inverse_probability;
   *next_ray_weight = next_weight * inverse_probability;
 

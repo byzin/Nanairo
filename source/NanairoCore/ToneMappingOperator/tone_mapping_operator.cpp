@@ -15,6 +15,7 @@
 #include <QString>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/math.hpp"
 #include "zisc/matrix.hpp"
 #include "zisc/thread_pool.hpp"
 #include "zisc/utility.hpp"
@@ -24,6 +25,7 @@
 #include "uncharted2_filmic.hpp"
 #include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/system.hpp"
+#include "NanairoCore/Color/color_conversion.hpp"
 #include "NanairoCore/Color/color_space.hpp"
 #include "NanairoCore/Color/hdr_image.hpp"
 #include "NanairoCore/Color/yxy_color.hpp"
@@ -73,16 +75,16 @@ void ToneMappingOperator::map(System& system,
       // Set black if the radiance isn't positive
       if (0.0 < hdr_image[index].y()) {
         // Tone mapping
-        auto yxy = hdr_image[index].toYxy();
+        auto yxy = ColorConversion::toYxy(hdr_image[index]);
         const Float l = tonemap(exposure() * yxy.Y());
         yxy.Y() = zisc::clamp(l, 0.0, 1.0);
-        const auto xyz = yxy.toXyz();
+        const auto xyz = ColorConversion::toXyz(yxy);
         // Convert XYZ to RGB
-        auto rgb = xyz.toRgb(getXyzToRgbMatrix(system.colorSpace()));
+        auto rgb = ColorConversion::toRgb(xyz, getXyzToRgbMatrix(system.colorSpace()));
         rgb.clampAll(0.0, 1.0);
         rgb.correctGamma(inverseGamma());
         // Set RGB to the pixel
-        pixel_array[index] = rgb.toQRgb();
+        pixel_array[index] = ColorConversion::toQRgb(rgb);
       }
       else {
         const QColor background_color{Qt::black};
@@ -106,7 +108,7 @@ void ToneMappingOperator::initialize(const System& system,
                                      const QJsonObject& settings) noexcept
 {
   // Gamma
-  inverse_gamma_ = 1.0 / system.gamma();
+  inverse_gamma_ = zisc::invert(system.gamma());
   // Exposure
   exposure_ = SceneValue::toFloat<Float>(settings, keyword::exposure);
 }

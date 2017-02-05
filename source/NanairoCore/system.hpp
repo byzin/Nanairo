@@ -27,7 +27,6 @@ namespace nanairo {
 
 // Forward declaration
 class XyzColorMatchingFunction;
-class RgbColorMatchingFunction;
 class Sampler;
 
 //! \addtogroup Core
@@ -93,9 +92,6 @@ class System
   //! Check if the renderer is RGB rendering mode
   bool isRgbRenderingMode() const noexcept;
 
-  //! Return the RGB color matching function
-  const RgbColorMatchingFunction& rgbColorMatchingFunction() const noexcept;
-
   //! Return the XYZ color matching function
   const XyzColorMatchingFunction& xyzColorMatchingFunction() const noexcept;
 
@@ -107,7 +103,6 @@ class System
   std::vector<Sampler> sampler_list_;
   std::vector<MemoryPool> memory_pool_list_;
   UniquePointer<zisc::ThreadPool> thread_pool_;
-  UniquePointer<RgbColorMatchingFunction> rgb_color_matching_function_;
   UniquePointer<XyzColorMatchingFunction> xyz_color_matching_function_;
   Float gamma_;
   uint image_width_resolution_,

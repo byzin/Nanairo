@@ -11,6 +11,9 @@
 #define NANAIRO_SAMPLER_INL_HPP
 
 #include "sampler.hpp"
+// Zisc
+#include "zisc/split_mix64_engine.hpp"
+#include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 
@@ -21,19 +24,10 @@ namespace nanairo {
   No detailed.
   */
 inline
-Sampler::Sampler(const uint32 seed) noexcept :
-    sampler_{seed}
+Sampler::Sampler(const uint64 seed) noexcept :
+    sampler_{}
 {
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <typename Arithmetic> inline
-Arithmetic Sampler::sample(const Arithmetic min, const Arithmetic max) noexcept
-{ 
-  return sampler_.generate(min, max);
+  initialize(seed);
 }
 
 /*!
@@ -41,9 +35,29 @@ Arithmetic Sampler::sample(const Arithmetic min, const Arithmetic max) noexcept
   No detailed.
   */
 inline
-void Sampler::setSeed(const uint32 seed) noexcept
+Float Sampler::sample() noexcept
+{
+  return zisc::cast<Float>(sampler_.generate01());
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+void Sampler::setSeed(const uint64 seed) noexcept
 {
   sampler_.setSeed(seed);
+}
+
+/*!
+  */
+inline
+void Sampler::initialize(const uint64 seed) noexcept
+{
+  zisc::SplitMix64Engine seeder{seed};
+  const uint64 s = seeder.generate();
+  setSeed(s);
 }
 
 } // namespace nanairo

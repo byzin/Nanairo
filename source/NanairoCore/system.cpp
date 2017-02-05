@@ -18,7 +18,6 @@
 #include "zisc/thread_pool.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
-#include "Color/rgb_color_matching_function.hpp"
 #include "Color/xyz_color_matching_function.hpp"
 #include "NanairoCommon/keyword.hpp"
 #include "Sampling/sampler.hpp"
@@ -63,11 +62,11 @@ void System::initialize(const QJsonObject& settings) noexcept
     qInfo("  Threads: %d", num_of_threads);
 
     // Random number generator
-    const auto random_seed = SceneValue::toInt<uint32>(node,
+    const auto random_seed = SceneValue::toInt<uint64>(node,
                                                        keyword::randomSeed);
     sampler_list_.reserve(num_of_threads + 1);
     for (uint i = 0; i < (num_of_threads + 1); ++i)
-      sampler_list_.emplace_back(random_seed + cast<uint32>(i));
+      sampler_list_.emplace_back(random_seed + cast<uint64>(i));
 
     // Memory pool
     memory_pool_list_.resize(num_of_threads + 1);
@@ -94,7 +93,6 @@ void System::initialize(const QJsonObject& settings) noexcept
     gamma_ = SceneValue::toFloat<Float>(node, keyword::gamma);
     qInfo("  Gamma: %f", zisc::cast<float>(gamma_));
     // Color matching function
-    rgb_color_matching_function_ = new RgbColorMatchingFunction{};
     xyz_color_matching_function_ = new XyzColorMatchingFunction{node};
   };
   const auto color_settings = SceneValue::toObject(settings, keyword::color);

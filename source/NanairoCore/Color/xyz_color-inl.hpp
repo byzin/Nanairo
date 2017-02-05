@@ -14,8 +14,6 @@
 // Zisc
 #include "zisc/arithmetic_array.hpp"
 // Nanairo
-#include "rgb_color.hpp"
-#include "yxy_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 
 namespace nanairo {
@@ -25,7 +23,8 @@ namespace nanairo {
   No detailed.
   */
 inline
-XyzColor::XyzColor() noexcept
+constexpr XyzColor::XyzColor() noexcept :
+    Color()
 {
 }
 
@@ -34,7 +33,7 @@ XyzColor::XyzColor() noexcept
   No detailed.
   */
 inline
-XyzColor::XyzColor(const Float x, const Float y, const Float z) noexcept :
+constexpr XyzColor::XyzColor(const Float x, const Float y, const Float z) noexcept :
     Color(x, y, z)
 {
 }
@@ -44,17 +43,7 @@ XyzColor::XyzColor(const Float x, const Float y, const Float z) noexcept :
   No detailed.
   */
 inline
-XyzColor::XyzColor(const zisc::ArithmeticArray<Float, 3>& color) noexcept :
-    Color(color)
-{
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-Float& XyzColor::x() noexcept
+constexpr Float& XyzColor::x() noexcept
 {
   return color_[0];
 }
@@ -64,7 +53,7 @@ Float& XyzColor::x() noexcept
   No detailed.
   */
 inline
-const Float& XyzColor::x() const noexcept
+constexpr const Float& XyzColor::x() const noexcept
 {
   return color_[0];
 }
@@ -74,7 +63,7 @@ const Float& XyzColor::x() const noexcept
   No detailed.
   */
 inline
-Float& XyzColor::y() noexcept
+constexpr Float& XyzColor::y() noexcept
 {
   return color_[1];
 }
@@ -84,7 +73,7 @@ Float& XyzColor::y() noexcept
   No detailed.
   */
 inline
-const Float& XyzColor::y() const noexcept
+constexpr const Float& XyzColor::y() const noexcept
 {
   return color_[1];
 }
@@ -94,7 +83,7 @@ const Float& XyzColor::y() const noexcept
   No detailed.
   */
 inline
-Float& XyzColor::z() noexcept
+constexpr Float& XyzColor::z() noexcept
 {
   return color_[2];
 }
@@ -104,7 +93,7 @@ Float& XyzColor::z() noexcept
   No detailed.
   */
 inline
-const Float& XyzColor::z() const noexcept
+constexpr const Float& XyzColor::z() const noexcept
 {
   return color_[2];
 }

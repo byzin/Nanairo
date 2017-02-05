@@ -56,7 +56,7 @@ std::tuple<SampledDirection, SampledSpectra> SpecularBsdf::sample(
               "Fresnel reflectance isn't [0, 1].");
 
   // Determine a reflection or a refraction
-  const bool is_reflection = (sampler.sample(0.0, 1.0) < fresnel);
+  const bool is_reflection = (sampler.sample() < fresnel);
   const auto vout = (is_reflection)
       ? Fresnel::calcReflectionDirection(*vin, normal)
       : Fresnel::calcRefractionDirection(*vin, normal, n_, g);

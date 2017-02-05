@@ -13,6 +13,9 @@
 #include "xyz_color_matching_function.hpp"
 // Zisc
 #include "zisc/arithmetic_array.hpp"
+#include "zisc/compensated_summation.hpp"
+#include "zisc/const_math.hpp"
+#include "zisc/utility.hpp"
 // Nanairo
 #include "spectral_distribution.hpp"
 #include "xyz_color.hpp"
@@ -25,13 +28,9 @@ namespace nanairo {
   No detailed.
   */
 inline
-XyzColor XyzColorMatchingFunction::toXyzInEmissiveCase(
-    const SpectralDistribution& spectra) const noexcept
+const SpectralDistribution& XyzColorMatchingFunction::illuminant() const noexcept
 {
-  auto x = x_bar_ * spectra;
-  auto y = y_bar_ * spectra;
-  auto z = z_bar_ * spectra;
-  return XyzColor{x.sum(), y.sum(), z.sum()};
+  return *illuminant_;
 }
 
 /*!
@@ -39,13 +38,18 @@ XyzColor XyzColorMatchingFunction::toXyzInEmissiveCase(
   No detailed.
   */
 inline
-XyzColor XyzColorMatchingFunction::toXyzInReflectiveCase(
+XyzColor XyzColorMatchingFunction::toXyzForEmitter(
     const SpectralDistribution& spectra) const noexcept
 {
-  auto x = x_bar_ * spectra * standard_illuminant_;
-  auto y = y_bar_ * spectra * standard_illuminant_;
-  auto z = z_bar_ * spectra * standard_illuminant_;
-  return XyzColor{k_ * x.sum(), k_ * y.sum(), k_ * z.sum()};
+  XyzColor xyz;
+  for (uint color = 0; color < 3; ++color) {
+    const auto& bar = *bar_[color];
+    zisc::CompensatedSummation<Float> s{0.0};
+    for (uint i = 0; i < CoreConfig::spectraSize(); ++i)
+      s.add(bar[i] * spectra[i]);
+    xyz[color] = s.get();
+  }
+  return xyz;
 }
 
 /*!
@@ -55,7 +59,7 @@ XyzColor XyzColorMatchingFunction::toXyzInReflectiveCase(
 inline
 const SpectralDistribution& XyzColorMatchingFunction::xBar() const noexcept
 {
-  return x_bar_;
+  return *bar_[0];
 }
 
 /*!
@@ -65,7 +69,7 @@ const SpectralDistribution& XyzColorMatchingFunction::xBar() const noexcept
 inline
 const SpectralDistribution& XyzColorMatchingFunction::yBar() const noexcept
 {
-  return y_bar_;
+  return *bar_[1];
 }
 
 /*!
@@ -75,7 +79,7 @@ const SpectralDistribution& XyzColorMatchingFunction::yBar() const noexcept
 inline
 const SpectralDistribution& XyzColorMatchingFunction::zBar() const noexcept
 {
-  return z_bar_;
+  return *bar_[2];
 }
 
 } // namespace nanairo

@@ -28,6 +28,7 @@
 #include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
+#include "NanairoCore/Color/color_conversion.hpp"
 #include "NanairoCore/Color/color_space.hpp"
 #include "NanairoCore/Color/rgb_color.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
@@ -136,21 +137,18 @@ void ImageTexture::initialize(const System& system,
   */
 void ImageTexture::initializeEmissiveValueTable() noexcept
 {
-  // Calc the average energy of the texture
-  Float energy = 0.0;
-  {
-    zisc::CompensatedSummation<Float> e;
-    for (const auto index : color_index_) {
-      const auto& spectra = reflective_value_table_[index];
-      e.add(spectra.sum());
-    }
-    energy = e.get() / zisc::cast<Float>(color_index_.size());
-  }
-  // Scale by the average energy
+  // Scale by max energy
+  Float max_energy = 0.0;
+  for (const auto& spectra : reflective_value_table_)
+    max_energy = zisc::max(max_energy, spectra.sum());
+  const Float k = (max_energy != 0.0) ? zisc::invert(max_energy) : 0.0;
   const uint table_size = zisc::cast<uint>(reflective_value_table_.size());
   emissive_value_table_.resize(table_size);
-  for (uint i = 0; i < table_size; ++i)
-    emissive_value_table_[i] = reflective_value_table_[i] * energy;
+  for (uint i = 0; i < table_size; ++i) {
+    const auto& spectra = reflective_value_table_[i];
+    const Float energy = spectra.sum();
+    emissive_value_table_[i] = spectra.normalized() * (k * energy);
+  }
 }
 
 /*!
@@ -197,9 +195,9 @@ void ImageTexture::initializeReflectiveValueTable(const System& system,
   reflective_value_table_.resize(size);
   const auto to_xyz_matrix = getRgbToXyzMatrix(system.colorSpace());
   for (uint i = 0; i < size; ++i) {
-    auto rgb = RgbColor{QColor{color_table[i]}};
+    auto rgb = ColorConversion::toRgb(QColor{color_table[i]});
     rgb.correctGamma(gamma);
-    const Float y = rgb.toXyz(to_xyz_matrix).y();
+    const Float y = ColorConversion::toXyz(rgb, to_xyz_matrix).y();
     float_table_[i] = zisc::clamp(y, 0.0, 1.0);
     reflective_value_table_[i] = system.isRgbRenderingMode()
         ? SpectralDistribution::toRgbSpectra(rgb)

@@ -113,26 +113,30 @@ void CheckerboardTexture::initialize(const System& system,
 {
   using zisc::cast;
 
-  const auto resolution = SceneValue::toArray(settings, keyword::imageResolution);
-  const auto width = SceneValue::toInt<int>(resolution[0]);
-  width_ = cast<Float>(width) - std::numeric_limits<Float>::epsilon();
-  const auto height = SceneValue::toInt<int>(resolution[1]);
-  height_ = cast<Float>(height) - std::numeric_limits<Float>::epsilon();
+  {
+    const auto resolution = SceneValue::toArray(settings, keyword::imageResolution);
+    const auto width = SceneValue::toInt<int>(resolution[0]);
+    width_ = cast<Float>(width) - std::numeric_limits<Float>::epsilon();
+    const auto height = SceneValue::toInt<int>(resolution[1]);
+    height_ = cast<Float>(height) - std::numeric_limits<Float>::epsilon();
+  }
 
   const auto color1_settings = SceneValue::toObject(settings, keyword::color1);
   const auto color2_settings = SceneValue::toObject(settings, keyword::color2);
   // Emissive values
-  emissive_value_[0] = SpectralDistribution::makeEmissive(system, color1_settings);
-  emissive_value_[1] = SpectralDistribution::makeEmissive(system, color2_settings);
+  emissive_value_[0] = std::make_unique<SpectralDistribution>(
+      SpectralDistribution::makeEmissive(system, color1_settings));
+  emissive_value_[1] = std::make_unique<SpectralDistribution>(
+      SpectralDistribution::makeEmissive(system, color2_settings));
   // Reflective values
-  reflective_value_[0] = SpectralDistribution::makeReflective(system,
-                                                              color1_settings);
-  reflective_value_[1] = SpectralDistribution::makeReflective(system,
-                                                              color2_settings);
+  reflective_value_[0] = std::make_unique<SpectralDistribution>(
+      SpectralDistribution::makeReflective(system, color1_settings));
+  reflective_value_[1] = std::make_unique<SpectralDistribution>(
+      SpectralDistribution::makeReflective(system, color2_settings));
   // Float values
-  float_value_[0] = reflective_value_[0]->toReflectiveXyz(system).y();
+  float_value_[0] = reflective_value_[0]->toXyzForReflector(system).y();
   float_value_[0] = zisc::clamp(float_value_[0], 0.0, 1.0);
-  float_value_[1] = reflective_value_[1]->toReflectiveXyz(system).y();
+  float_value_[1] = reflective_value_[1]->toXyzForReflector(system).y();
   float_value_[1] = zisc::clamp(float_value_[1], 0.0, 1.0);
 }
 

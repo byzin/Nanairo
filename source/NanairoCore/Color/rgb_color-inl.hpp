@@ -11,8 +11,6 @@
 #define NANAIRO_RGB_COLOR_INL_HPP
 
 #include "rgb_color.hpp"
-// Qt
-#include <QColor>
 // Zisc
 #include "zisc/math.hpp"
 #include "zisc/arithmetic_array.hpp"
@@ -38,28 +36,6 @@ RgbColor::RgbColor() noexcept
 inline
 RgbColor::RgbColor(const Float red, const Float green, const Float blue) noexcept :
     Color(red, green, blue)
-{
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-RgbColor::RgbColor(const QColor& color) noexcept :
-    Color(zisc::cast<Float>(color.red()) * (1.0 / 255.0),
-          zisc::cast<Float>(color.green()) * (1.0 / 255.0),
-          zisc::cast<Float>(color.blue()) * (1.0 / 255.0))
-{
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-RgbColor::RgbColor(const zisc::ArithmeticArray<Float, 3>& color) noexcept :
-    Color(color)
 {
 }
 
@@ -133,20 +109,6 @@ inline
 const Float& RgbColor::red() const noexcept
 {
   return color_[0];
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-QRgb RgbColor::toQRgb() const noexcept
-{
-  using zisc::cast;
-
-  constexpr Float scale = 255.0;
-  const auto qt_color = scale * color_;
-  return qRgb(cast<int>(qt_color[0]), cast<int>(qt_color[1]), cast<int>(qt_color[2]));
 }
 
 } // namespace nanairo

@@ -170,7 +170,7 @@ bool SmoothedMesh::testIntersection(const Ray& ray,
   const auto k = e1.squareNorm();
   if (k == 0.0)
     return false;
-  e1 = e1 * zisc::invSqrt(k);
+  e1 = e1 * zisc::invert(zisc::sqrt(k));
   const auto e2 = zisc::cross(e3, e1);
 
   const std::array<Float, 5> a = {{
@@ -221,8 +221,8 @@ bool SmoothedMesh::testIntersection(const Ray& ray,
 std::tuple<SampledPoint, Vector3, Point2> SmoothedMesh::samplePoint(
     Sampler& sampler) const noexcept
 {
-  Float u = sampler.sample(0.0, 1.0);
-  Float v = sampler.sample(0.0, 1.0);
+  Float u = sampler.sample();
+  Float v = sampler.sample();
   if (1.0 < (u + v)) {
     u = 1.0 - u;
     v = 1.0 - v;
@@ -333,7 +333,7 @@ bool calcSurfaceParameter(const std::array<Float, 5>& a,
     for (uint i = 0; i < n_eta; ++i) {
       if (inverse_eta_list[i] < 1.0)
         continue;
-      const auto e = 1.0 / inverse_eta_list[i];
+      const auto e = zisc::invert(inverse_eta_list[i]);
       const Float x = -(a[0] + (a[1] + a[4] * e) * e) / (a[2] + a[3] * e);
       if (x < 0.0 || e < x)
         continue;

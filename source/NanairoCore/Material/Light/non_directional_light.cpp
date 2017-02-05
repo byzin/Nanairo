@@ -40,7 +40,7 @@ SampledSpectra NonDirectionalLight::evalRadiance(
     const Vector3& /* normal */,
     const WavelengthSamples& /* wavelengths */) const noexcept
 {
-  constexpr Float k = 1.0 / zisc::kPi<Float>;
+  constexpr Float k = zisc::invert(zisc::kPi<Float>);
   return k * radiant_exitance_;
 }
 

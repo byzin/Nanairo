@@ -165,7 +165,7 @@ RouletteResult RussianRoulette::playWithAverage(
 {
   const Float average = weight.average();
   const Float probability = zisc::min(1.0, average);
-  const bool result = sampler.sample(0.0, 1.0) < probability;
+  const bool result = sampler.sample() < probability;
   return RouletteResult{result, result ? probability : 1.0 - probability};
 }
 
@@ -180,7 +180,7 @@ RouletteResult RussianRoulette::playWithMax(
 {
   const Float max = weight.max();
   const Float probability = zisc::min(1.0, max);
-  const bool result = sampler.sample(0.0, 1.0) < probability;
+  const bool result = sampler.sample() < probability;
   return RouletteResult{result, result ? probability : 1.0 - probability};
 }
 

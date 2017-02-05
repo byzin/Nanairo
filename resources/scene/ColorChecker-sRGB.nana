@@ -1,0 +1,1663 @@
+{
+    "Bvh": {
+        "OptimizationLoopCount": 2,
+        "TreeletSize": 9,
+        "Type": "AgglomerativeTreeletRestructuringBvh"
+    },
+    "Color": {
+        "ColorMode": "RGB",
+        "ColorSpace": "sRGB (D65)",
+        "Exposure": 1,
+        "Gamma": 2.2,
+        "StandardIllumination": "CIE D65",
+        "StandardObserver": "CIE 2deg color matching function",
+        "ToneMapping": "Reinhard",
+        "WavelengthSampling": "Regular sampling"
+    },
+    "EmitterModel": [
+        {
+            "EmissiveColorIndex": 2,
+            "Name": "Emitter",
+            "RadiantExitance": 256,
+            "Type": "NonDirectionalEmitter"
+        }
+    ],
+    "Object": [
+        {
+            "AngleOfView": 70,
+            "CameraType": "PinholeCamera",
+            "Enabled": true,
+            "GroupLevel": 0,
+            "Jittering": true,
+            "Name": "Camera",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -0.5,
+                        -1
+                    ]
+                },
+                {
+                    "Angle": 10,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "CameraObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 0,
+            "Name": "World",
+            "Transformation": [
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "Floor",
+            "ShapeType": "PlaneObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -1.5,
+                        0.75
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        3,
+                        1,
+                        4.5
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "LeftWall",
+            "ShapeType": "PlaneObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        1.5,
+                        0,
+                        0.75
+                    ]
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        3,
+                        1,
+                        4.5
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "RightWall",
+            "ShapeType": "PlaneObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -1.5,
+                        0,
+                        0.75
+                    ]
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": -90,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        3,
+                        1,
+                        4.5
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "BackWall",
+            "ShapeType": "PlaneObject",
+            "Smoothing": false,
+            "SurfaceIndex": 1,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        3
+                    ]
+                },
+                {
+                    "Angle": -90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        3,
+                        1,
+                        3
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "Ceiling",
+            "ShapeType": "PlaneObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        1.5,
+                        0.75
+                    ]
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        3,
+                        1,
+                        4.5
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 1,
+            "IsEmissiveObject": true,
+            "Name": "Light1",
+            "ShapeType": "PlaneObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        1.49,
+                        1.5
+                    ]
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 1,
+            "IsEmissiveObject": true,
+            "Name": "Light2",
+            "ShapeType": "PlaneObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        1.49,
+                        -0.5,
+                        1
+                    ]
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.5,
+                        1,
+                        0.5
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "ColorChecker",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -1,
+                        1.5
+                    ]
+                },
+                {
+                    "Angle": -45,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "CheckerBoard",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 2,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        1.83,
+                        0.025,
+                        1.23
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard1",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 3,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.75,
+                        0.0175,
+                        0.45
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard2",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 4,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.45,
+                        0.0175,
+                        0.45
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard3",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 5,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.15,
+                        0.0175,
+                        0.45
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard4",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 6,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.15,
+                        0.0175,
+                        0.45
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard5",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 7,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.45,
+                        0.0175,
+                        0.45
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard6",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 8,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.75,
+                        0.0175,
+                        0.45
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard7",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 9,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.75,
+                        0.0175,
+                        0.15
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard8",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 10,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.45,
+                        0.0175,
+                        0.15
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard9",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 11,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.15,
+                        0.0175,
+                        0.15
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard10",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 12,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.15,
+                        0.0175,
+                        0.15
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard11",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 13,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.45,
+                        0.0175,
+                        0.15
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard12",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 14,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.75,
+                        0.0175,
+                        0.15
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard13",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 15,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.75,
+                        0.0175,
+                        -0.15
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard14",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 16,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.45,
+                        0.0175,
+                        -0.15
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard15",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 17,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.15,
+                        0.0175,
+                        -0.15
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard16",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 18,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.15,
+                        0.0175,
+                        -0.15
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard17",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 19,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.45,
+                        0.0175,
+                        -0.15
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard18",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 20,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.75,
+                        0.0175,
+                        -0.15
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard19",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 21,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.75,
+                        0.0175,
+                        -0.45
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard20",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 22,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.45,
+                        0.0175,
+                        -0.45
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard21",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 23,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.15,
+                        0.0175,
+                        -0.45
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard22",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 24,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.15,
+                        0.0175,
+                        -0.45
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard23",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 25,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.45,
+                        0.0175,
+                        -0.45
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "ColorBoard24",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 26,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.75,
+                        0.0175,
+                        -0.45
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.27,
+                        0.01,
+                        0.27
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        }
+    ],
+    "RenderingMethod": {
+        "PathLength": 3,
+        "RayCastEpsilon": 1e-07,
+        "RussianRoulette": "Reflectance (Max)",
+        "Type": "PathTracing"
+    },
+    "Scene": {
+        "SceneName": "ColorChecker-sRGB"
+    },
+    "SurfaceModel": [
+        {
+            "Name": "CheckerboardSurface1",
+            "ReflectanceIndex": 0,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "CheckerboardSurface2",
+            "ReflectanceIndex": 1,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "BoardSurface",
+            "ReflectanceIndex": 3,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color1Surface",
+            "ReflectanceIndex": 4,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color2Surface",
+            "ReflectanceIndex": 5,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color3Surface",
+            "ReflectanceIndex": 6,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color4Surface",
+            "ReflectanceIndex": 7,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color5Surface",
+            "ReflectanceIndex": 8,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color6Surface",
+            "ReflectanceIndex": 9,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color7Surface",
+            "ReflectanceIndex": 10,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color8Surface",
+            "ReflectanceIndex": 11,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color9Surface",
+            "ReflectanceIndex": 12,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color10Surface",
+            "ReflectanceIndex": 13,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color11Surface",
+            "ReflectanceIndex": 14,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color12Surface",
+            "ReflectanceIndex": 15,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color13Surface",
+            "ReflectanceIndex": 16,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color14Surface",
+            "ReflectanceIndex": 17,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color15Surface",
+            "ReflectanceIndex": 18,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color16Surface",
+            "ReflectanceIndex": 19,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color17Surface",
+            "ReflectanceIndex": 20,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color18Surface",
+            "ReflectanceIndex": 21,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color19Surface",
+            "ReflectanceIndex": 22,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color20Surface",
+            "ReflectanceIndex": 23,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color21Surface",
+            "ReflectanceIndex": 24,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color22Surface",
+            "ReflectanceIndex": 25,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color23Surface",
+            "ReflectanceIndex": 26,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "Color24Surface",
+            "ReflectanceIndex": 27,
+            "Type": "SmoothDiffuseSurface"
+        }
+    ],
+    "System": {
+        "ImageResolution": [
+            960,
+            540
+        ],
+        "NumOfThreads": 4,
+        "Power2CycleSaving": true,
+        "RandomSeed": 123456789,
+        "SavingInterval": 3600000,
+        "TerminationCycle": 0
+    },
+    "TextureModel": [
+        {
+            "Color1": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.7529411764705882,
+                    0.7529411764705882,
+                    0.7529411764705882
+                ]
+            },
+            "Color2": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.25098039215686274,
+                    0.25098039215686274,
+                    0.25098039215686274
+                ]
+            },
+            "ImageResolution": [
+                15,
+                20
+            ],
+            "Name": "CheckerboardTexture1",
+            "Type": "CheckerboardTexture"
+        },
+        {
+            "Color1": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.7529411764705882,
+                    0.7529411764705882,
+                    0.7529411764705882
+                ]
+            },
+            "Color2": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.25098039215686274,
+                    0.25098039215686274,
+                    0.25098039215686274
+                ]
+            },
+            "ImageResolution": [
+                15,
+                15
+            ],
+            "Name": "CheckerboardTexture2",
+            "Type": "CheckerboardTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
+            },
+            "Name": "EmitterTexture",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.2515602349889372,
+                    0.2515602349889372,
+                    0.2515602349889372
+                ]
+            },
+            "Name": "BoardTexture",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.4549019607843137,
+                    0.3176470588235294,
+                    0.2627450980392157
+                ]
+            },
+            "Name": "Color1",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.7725490196078432,
+                    0.596078431372549,
+                    0.5176470588235295
+                ]
+            },
+            "Name": "Color2",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.3764705882352941,
+                    0.48627450980392156,
+                    0.6235294117647059
+                ]
+            },
+            "Name": "Color3",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.3411764705882353,
+                    0.42745098039215684,
+                    0.2549019607843137
+                ]
+            },
+            "Name": "Color4",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.5215686274509804,
+                    0.5098039215686274,
+                    0.7019607843137254
+                ]
+            },
+            "Name": "Color5",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.396078431372549,
+                    0.7490196078431373,
+                    0.6745098039215687
+                ]
+            },
+            "Name": "Color6",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.8549019607843137,
+                    0.49411764705882355,
+                    0.1607843137254902
+                ]
+            },
+            "Name": "Color7",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.29411764705882354,
+                    0.3568627450980392,
+                    0.6588235294117647
+                ]
+            },
+            "Name": "Color8",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.7725490196078432,
+                    0.34509803921568627,
+                    0.39215686274509803
+                ]
+            },
+            "Name": "Color9",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.3686274509803922,
+                    0.22745098039215686,
+                    0.42745098039215684
+                ]
+            },
+            "Name": "Color10",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.6274509803921569,
+                    0.7450980392156863,
+                    0.23529411764705882
+                ]
+            },
+            "Name": "Color11",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.8941176470588236,
+                    0.6431372549019608,
+                    0.16862745098039217
+                ]
+            },
+            "Name": "Color12",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.18823529411764706,
+                    0.23137254901960785,
+                    0.592156862745098
+                ]
+            },
+            "Name": "Color13",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.26666666666666666,
+                    0.5882352941176471,
+                    0.2823529411764706
+                ]
+            },
+            "Name": "Color14",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.7019607843137254,
+                    0.1843137254901961,
+                    0.22745098039215686
+                ]
+            },
+            "Name": "Color15",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.9215686274509803,
+                    0.788235294117647,
+                    0.10980392156862745
+                ]
+            },
+            "Name": "Color16",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.7450980392156863,
+                    0.32941176470588235,
+                    0.592156862745098
+                ]
+            },
+            "Name": "Color17",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0,
+                    0.5333333333333333,
+                    0.6588235294117647
+                ]
+            },
+            "Name": "Color18",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.9529411764705882,
+                    0.9568627450980393,
+                    0.9529411764705882
+                ]
+            },
+            "Name": "Color19",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.792156862745098,
+                    0.792156862745098,
+                    0.792156862745098
+                ]
+            },
+            "Name": "Color20",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.6352941176470588,
+                    0.6352941176470588,
+                    0.6352941176470588
+                ]
+            },
+            "Name": "Color21",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.4823529411764706,
+                    0.4823529411764706,
+                    0.4823529411764706
+                ]
+            },
+            "Name": "Color22",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.3333333333333333,
+                    0.3333333333333333,
+                    0.3333333333333333
+                ]
+            },
+            "Name": "Color23",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.19215686274509805,
+                    0.19607843137254902,
+                    0.19215686274509805
+                ]
+            },
+            "Name": "Color24",
+            "Type": "UnicolorTexture"
+        }
+    ]
+}

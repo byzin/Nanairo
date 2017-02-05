@@ -185,7 +185,7 @@ Vector3 MicrofacetGgx::Smith::sampleMicrofacetNormal(const Float roughness,
   constexpr Float threshold = 0.99999999;
   if (cos_theta < threshold) {
     const Float sin_theta = zisc::sqrt(1.0 - cos_theta * cos_theta);
-    const Float inverse_sin_theta = 1.0 / sin_theta;
+    const Float inverse_sin_theta = zisc::invert(sin_theta);
     cos_phi = vin_dash[0] * inverse_sin_theta;
     sin_phi = vin_dash[1] * inverse_sin_theta;
   }
@@ -208,8 +208,8 @@ std::tuple<Float, Float> MicrofacetGgx::GgxMethod<kMethod>::smithSampleSlopeXY(
     const Float cos_theta,
     Sampler& sampler) noexcept
 {
-  const Float u1 = sampler.sample(0.0, 1.0);
-  const Float u2 = sampler.sample(0.0, 1.0);
+  const Float u1 = sampler.sample();
+  const Float u2 = sampler.sample();
 
   // Special case (normal incidence)
   constexpr Float threshold = 0.99999999;
@@ -220,18 +220,18 @@ std::tuple<Float, Float> MicrofacetGgx::GgxMethod<kMethod>::smithSampleSlopeXY(
   }
 
   // Precomputations
-  const Float tan_theta2 = 1.0 / (cos_theta * cos_theta) - 1.0;
+  const Float tan_theta2 = zisc::invert(cos_theta * cos_theta) - 1.0;
   const Float tan_theta = zisc::sqrt(tan_theta2);
 
   // Sample slope_x
   const Float a = u1 * (1.0 + zisc::sqrt(1.0 + tan_theta2)) - 1.0;
   const Float b = tan_theta;
-  const Float tmp = 1.0 / (a * a - 1.0);
+  const Float tmp = zisc::invert(a * a - 1.0);
   const Float c = b * tmp;
   const Float d = zisc::sqrt(c * c - (a * a - b * b) * tmp);
   const Float slope_x1 = c - d;
   const Float slope_x2 = c + d;
-  const Float slope_x = (a < 0.0 || (1.0 / tan_theta) < slope_x2)
+  const Float slope_x = (a < 0.0 || zisc::invert(tan_theta) < slope_x2)
       ? slope_x1
       : slope_x2;
 
@@ -272,7 +272,7 @@ Vector3 MicrofacetGgx::VCavity::sampleMicrofacetNormal(const Float roughness,
   const Vector3 m_normal2{-m_normal1[0], -m_normal1[1], m_normal1[2]};
   const Float cos_m1 = zisc::clamp(zisc::dot(m_normal1, vin), 0.0, 1.0);
   const Float cos_m2 = zisc::clamp(zisc::dot(m_normal2, vin), 0.0, 1.0);
-  const Float u = sampler.sample(0.0, 1.0);
+  const Float u = sampler.sample();
   const auto m_normal = ((cos_m2 / (cos_m1 + cos_m2)) < u)
       ? m_normal1
       : m_normal2;
@@ -286,8 +286,8 @@ Vector3 MicrofacetGgx::GgxMethod<kMethod>::vcavitySampleMicrofacetNormal(
     const Float roughness,
     Sampler& sampler) noexcept
 {
-  const Float u1 = sampler.sample(0.0, 1.0);
-  const Float u2 = sampler.sample(0.0, 1.0);
+  const Float u1 = sampler.sample();
+  const Float u2 = sampler.sample();
 
   const Float theta = zisc::atan(roughness * zisc::sqrt(u1 / (1.0 - u1)));
   const Float phi = 2.0 * zisc::kPi<Float> * (u2 - 0.5);

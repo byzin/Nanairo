@@ -53,7 +53,7 @@ PinholeCamera::PinholeCamera(const QJsonObject& settings) noexcept :
 Float PinholeCamera::calcPdf(const Vector3& vout) const noexcept
 {
   const Float cos_theta_no = zisc::dot(normal(), vout);
-  const Float pdf = 1.0 / (filmArea() * zisc::power<3>(cos_theta_no));
+  const Float pdf = zisc::invert(filmArea() * zisc::power<3>(cos_theta_no));
   ZISC_ASSERT(0.0 < pdf, "The pdf is minus.");
   return pdf;
 }
@@ -63,7 +63,7 @@ Float PinholeCamera::calcPdf(const Vector3& vout) const noexcept
 Float PinholeCamera::calcRadiance(const Vector3& vout) const noexcept
 {
   const Float cos_theta_no = zisc::dot(normal(), vout);
-  const Float f = 1.0 / (filmArea() * zisc::power<4>(cos_theta_no));
+  const Float f = zisc::invert(filmArea() * zisc::power<4>(cos_theta_no));
   ZISC_ASSERT(0.0 < f, "The radiance is minus.");
   return f;
 }
@@ -74,7 +74,7 @@ std::tuple<Float, Float> PinholeCamera::calcRadianceAndPdf(
     const Vector3& vout) const noexcept
 {
   const Float cos_theta_no = zisc::dot(normal(), vout);
-  const Float f = 1.0 / (filmArea() * zisc::power<4>(cos_theta_no));
+  const Float f = zisc::invert(filmArea() * zisc::power<4>(cos_theta_no));
   const Float pdf = f * cos_theta_no;
   ZISC_ASSERT(0.0 < f, "The radiance is minus.");
   ZISC_ASSERT(0.0 < pdf, "The pdf is minus.");
@@ -223,8 +223,8 @@ void PinholeCamera::initializeFilm() noexcept
   film_axis2_ = h * film_axis2_.normalized();
   square_axis1_ = film_axis1_.squareNorm();
   square_axis2_ = film_axis2_.squareNorm();
-  inverse_square_axis1_ = 1.0 / square_axis1_;
-  inverse_square_axis2_ = 1.0 / square_axis2_;
+  inverse_square_axis1_ = zisc::invert(square_axis1_);
+  inverse_square_axis2_ = zisc::invert(square_axis2_);
 
   film_area_ = w * h;
 }
@@ -242,8 +242,8 @@ void PinholeCamera::transform(const Matrix4x4& matrix) noexcept
 
   square_axis1_ = film_axis1_.squareNorm();
   square_axis2_ = film_axis2_.squareNorm();
-  inverse_square_axis1_ = 1.0 / square_axis1_;
-  inverse_square_axis2_ = 1.0 / square_axis2_;
+  inverse_square_axis1_ = zisc::invert(square_axis1_);
+  inverse_square_axis2_ = zisc::invert(square_axis2_);
 
   setNormal((pinhole_position_ - film_position_).normalized());
   film_position_ = pinhole_position_ - normal();

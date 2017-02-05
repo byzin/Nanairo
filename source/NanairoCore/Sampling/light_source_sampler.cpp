@@ -13,6 +13,7 @@
 // Zisc
 #include "zisc/compensated_summation.hpp"
 #include "zisc/cumulative_distribution_function.hpp"
+#include "zisc/math.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/light_source_reference.hpp"
@@ -58,7 +59,7 @@ void LightSourceSampler::initialize(
                       object->material().emitter().radiantExitance();
     total_flux.add(flux);
   }
-  inverse_total_flux_ = 1.0 / total_flux.get();
+  inverse_total_flux_ = zisc::invert(total_flux.get());
 }
 
 } // namespace nanairo

@@ -9,6 +9,7 @@
 #include "color.hpp"
 // Zisc
 #include "zisc/arithmetic_array.hpp"
+#include "zisc/math.hpp"
 #include "zisc/type_traits.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -21,17 +22,8 @@ namespace nanairo {
   No detailed.
   */
 template <uint kN> inline
-Color<kN>::Color() noexcept
-{
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <uint kN> template <typename ...Types> inline
-Color<kN>::Color(const Types ...elements) noexcept :
-    color_{elements...}
+constexpr Color<kN>::Color() noexcept :
+    color_{}
 {
 }
 
@@ -40,8 +32,9 @@ Color<kN>::Color(const Types ...elements) noexcept :
   No detailed.
   */
 template <uint kN> inline
-Color<kN>::Color(const zisc::ArithmeticArray<Float, kN>& color) noexcept :
-    color_{color}
+constexpr Color<kN>::Color(const Float c1,
+                           const Float c2) noexcept :
+    color_{c1, c2}
 {
 }
 
@@ -50,7 +43,32 @@ Color<kN>::Color(const zisc::ArithmeticArray<Float, kN>& color) noexcept :
   No detailed.
   */
 template <uint kN> inline
-Float& Color<kN>::operator[](const uint index) noexcept
+constexpr Color<kN>::Color(const Float c1,
+                           const Float c2,
+                           const Float c3) noexcept :
+    color_{c1, c2, c3}
+{
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <uint kN> inline
+constexpr Color<kN>::Color(const Float c1,
+                           const Float c2,
+                           const Float c3,
+                           const Float c4) noexcept :
+    color_{c1, c2, c3, c4}
+{
+}
+
+/*!
+  \details
+  No detailed.
+  */
+template <uint kN> inline
+constexpr Float& Color<kN>::operator[](const uint index) noexcept
 {
   return color_[index];
 }
@@ -60,7 +78,7 @@ Float& Color<kN>::operator[](const uint index) noexcept
   No detailed.
   */
 template <uint kN> inline
-const Float& Color<kN>::operator[](const uint index) const noexcept
+constexpr const Float& Color<kN>::operator[](const uint index) const noexcept
 {
   return color_[index];
 }
@@ -70,7 +88,7 @@ const Float& Color<kN>::operator[](const uint index) const noexcept
   No detailed.
   */
 template <uint kN> inline
-void Color<kN>::clampAll(const Float minimum, const Float maximum) noexcept
+constexpr void Color<kN>::clampAll(const Float minimum, const Float maximum) noexcept
 {
   color_.clampAll(minimum, maximum);
 }
@@ -80,7 +98,7 @@ void Color<kN>::clampAll(const Float minimum, const Float maximum) noexcept
   No detailed.
   */
 template <uint kN> inline
-const zisc::ArithmeticArray<Float, kN>& Color<kN>::data() const noexcept
+constexpr const zisc::ArithmeticArray<Float, kN>& Color<kN>::data() const noexcept
 {
   return color_;
 }
@@ -90,7 +108,7 @@ const zisc::ArithmeticArray<Float, kN>& Color<kN>::data() const noexcept
   No detailed.
   */
 template <uint kN> inline
-bool Color<kN>::isAllInBounds(const Float lower, const Float upper) const noexcept
+constexpr bool Color<kN>::isAllInBounds(const Float lower, const Float upper) const noexcept
 {
   return color_.isAllInBounds(lower, upper);
 }
@@ -100,7 +118,7 @@ bool Color<kN>::isAllInBounds(const Float lower, const Float upper) const noexce
   No detailed.
   */
 template <uint kN> inline
-bool Color<kN>::isAllZero() const noexcept
+constexpr bool Color<kN>::isAllZero() const noexcept
 {
   return color_.isAllZero();
 }
@@ -110,7 +128,7 @@ bool Color<kN>::isAllZero() const noexcept
   No detailed.
   */
 template <uint kN> inline
-Float Color<kN>::max() const noexcept
+constexpr Float Color<kN>::max() const noexcept
 {
   return color_.max();
 }
@@ -118,7 +136,7 @@ Float Color<kN>::max() const noexcept
 /*!
   */
 template <uint kN> inline
-Float Color<kN>::min() const noexcept
+constexpr Float Color<kN>::min() const noexcept
 {
   return color_.min();
 }
@@ -128,9 +146,10 @@ Float Color<kN>::min() const noexcept
   No detailed.
   */
 template <uint kN> inline
-void Color<kN>::scale() noexcept
+constexpr void Color<kN>::scale() noexcept
 {
-  const Float scale_factor = 1.0 / max();
+  const Float s = max();
+  const Float scale_factor = (s != 0.0) ? zisc::invert(s) : 0.0;
   color_ = color_ * scale_factor;
 }
 
@@ -139,9 +158,10 @@ void Color<kN>::scale() noexcept
   No detailed.
   */
 template <typename Type, zisc::EnableIfBaseOf<Color<3>, Type>> inline
-Type operator*(const Type& color, const Float scalar) noexcept
+constexpr Type operator*(const Type& color, const Float scalar) noexcept
 {
-  return Type{color.data() * scalar};
+  const auto c = color.data() * scalar;
+  return Type{c[0], c[1], c[2]};
 }
 
 /*!
@@ -149,7 +169,7 @@ Type operator*(const Type& color, const Float scalar) noexcept
   No detailed.
   */
 template <typename Type, zisc::EnableIfBaseOf<Color<3>, Type>> inline
-Type operator*(const Float scalar, const Type& color) noexcept
+constexpr Type operator*(const Float scalar, const Type& color) noexcept
 {
   return color * scalar;
 }

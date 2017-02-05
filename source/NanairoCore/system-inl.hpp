@@ -172,16 +172,6 @@ bool System::isRgbRenderingMode() const noexcept
   No detailed.
   */
 inline
-const RgbColorMatchingFunction& System::rgbColorMatchingFunction() const noexcept
-{
-  return *rgb_color_matching_function_;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
 const XyzColorMatchingFunction& System::xyzColorMatchingFunction() const noexcept
 {
   return *xyz_color_matching_function_;

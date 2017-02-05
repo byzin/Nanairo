@@ -103,7 +103,7 @@ constexpr uint CoreConfig::wavelengthResolution() noexcept
 inline
 constexpr uint CoreConfig::spectraSize() noexcept
 {
-  constexpr uint spectra_size = wavelengthRange() / wavelengthResolution();
+  constexpr uint spectra_size = wavelengthRange() / wavelengthResolution() + 1;
   return spectra_size;
 }
 
