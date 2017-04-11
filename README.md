@@ -65,7 +65,7 @@ Version: 0.0.2
 ### Build tools ###
 
 * CMake (version 3.4 or later) [[page](http://www.cmake.org/)]
-* Python (version 3.6 or later) [[page](https://www.python.org/)]
+* Python (version 3.5 or later) [[page](https://www.python.org/)]
     - NumPy [[page](http://www.numpy.org/)]
     - SciPy [[page](https://www.scipy.org/)]
     - Matplotlib

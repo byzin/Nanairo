@@ -37,7 +37,7 @@ endfunction(getCoreSamplerType)
 # Compute the spectral transport parameters
 function(computeSpectralTransportParameters resource_dir script_file_dir parameter_file)
   # Initialize python environment
-  find_package(PythonInterp 3.6 REQUIRED)
+  find_package(PythonInterp 3.5 REQUIRED)
   message(STATUS "PythonInterp path: ${PYTHON_EXECUTABLE}")
   # Copy resources
   set(cmf_x_bar_file "cie_sco_2degree_xbar.csv")
