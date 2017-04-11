@@ -65,7 +65,7 @@ Version: 0.0.2
 ### Build tools ###
 
 * CMake (version 3.4 or later) [[page](http://www.cmake.org/)]
-* Python (version 3.5 or later) [[page](https://www.python.org/)]
+* Python3 (version 3.5 or later) [[page](https://www.python.org/)]
     - NumPy [[page](http://www.numpy.org/)]
     - SciPy [[page](https://www.scipy.org/)]
     - Matplotlib
@@ -102,6 +102,9 @@ Building step is tested in the following environments
 To build Nanairo, you need to add the Qt qmake path to **$PATH**.  
 ``% export PATH=${qmake_path}:$PATH``  
 For example, on Mac, qmake path is maybe ``${qt_root}/${qt_version}/clang_64/bin``  
+
+#### Python environment setup ####
+Please see [wiki](https://github.com/byzin/Nanairo/wiki/Python-environment-setup "Python environment setup") for details.
 
 ### Build ###
 Please see [wiki](https://github.com/byzin/Nanairo/wiki/Home "NanairoWiki")
