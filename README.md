@@ -18,23 +18,23 @@ Version: 0.0.2
 
 * Path tracing
 * Light tracing
-* Progressive photon mapping [[thesis](http://www.cgg.unibe.ch/publications/2011/progressive-photon-mapping-a-probabilistic-approach)]
+* Progressive photon mapping [[paper](http://www.cgg.unibe.ch/publications/2011/progressive-photon-mapping-a-probabilistic-approach)]
 
 **BVH**
 
-* Binary radix tree [[thesis](https://research.nvidia.com/publication/maximizing-parallelism-construction-bvhs-octrees-and-k-d-trees)]
-* Approximate agglomerative clustering [[thesis](http://graphics.cs.cmu.edu/projects/aac/)]
-* Agglomerative treelet restructuring [[thesis](http://dl.acm.org/citation.cfm?doid=2790060.2790065)]
+* Binary radix tree [[paper](https://research.nvidia.com/publication/maximizing-parallelism-construction-bvhs-octrees-and-k-d-trees)]
+* Approximate agglomerative clustering [[paper](http://graphics.cs.cmu.edu/projects/aac/)]
+* Agglomerative treelet restructuring [[paper](http://dl.acm.org/citation.cfm?doid=2790060.2790065)]
 
 **Surface**
 
 * Smooth diffuse surface (Lambert BRDF)
 * Smooth conductor surface (Fresnel BRDF)
 * Smooth dielectric surface (Fresnel BSDF)
-* Rough conductor surface (GGX BRDF) [[thesis](https://hal.inria.fr/hal-00996995v2)]
-* Rough dielectric surface (GGX BSDF) [[thesis](https://hal.inria.fr/hal-00996995v2)]
-* Layered diffuse surface (Interfaced Lambertian BRDF) [[thesis](https://hal-unilim.archives-ouvertes.fr/hal-01246612/)]
-* Cloth surface (Microcylinder cloth BRDF) [[thesis](http://dl.acm.org/citation.cfm?id=2451240)]
+* Rough conductor surface (GGX BRDF) [[paper](https://hal.inria.fr/hal-00996995v2)]
+* Rough dielectric surface (GGX BSDF) [[paper](https://hal.inria.fr/hal-00996995v2)]
+* Layered diffuse surface (Interfaced Lambertian BRDF) [[paper](https://hal-unilim.archives-ouvertes.fr/hal-01246612/)]
+* Cloth surface (Microcylinder cloth BRDF) [[paper](http://dl.acm.org/citation.cfm?id=2451240)]
 
 **Camera**
 
@@ -42,17 +42,17 @@ Version: 0.0.2
 
 **Color**
 
-* Spectra (point sampling) [[thesis](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.68.1533)]
-* Spectral transport from RGB [[thesis](http://dl.acm.org/citation.cfm?id=2853793)]
+* Spectra (point sampling) [[paper](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.68.1533)]
+* Spectral transport from RGB [[paper](http://dl.acm.org/citation.cfm?id=2853793)]
 
 **Geometry**
 
 * Triangle meshes (support Wavefront .obj file)
-* Nagata patch (normal interpolation) [[thesis](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.129.9689)], ray intersection [[thesis](https://www.osapublishing.org/ao/abstract.cfm?uri=ao-49-18-3442)]
+* Nagata patch (normal interpolation) [[paper](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.129.9689)], ray intersection [[paper](https://www.osapublishing.org/ao/abstract.cfm?uri=ao-49-18-3442)]
 
 **Tone mappling**
 
-* Reinhard [[thesis](https://www.cs.utah.edu/~reinhard/cdrom/)]
+* Reinhard [[paper](https://www.cs.utah.edu/~reinhard/cdrom/)]
 * Filmic
 * Uncharted2
 
