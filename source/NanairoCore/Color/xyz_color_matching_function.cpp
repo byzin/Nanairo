@@ -47,13 +47,12 @@ XyzColor XyzColorMatchingFunction::toXyzForReflector(
     const SpectralDistribution& spectra) const noexcept
 {
   XyzColor xyz;
-  const auto& illum = illuminant();
-  const Float k = 1.0 / (illum * yBar()).sum();
+  const Float k = 1.0 / yBar().sum();
   for (uint color = 0; color < 3; ++color) {
     const auto& bar = *bar_[color];
     zisc::CompensatedSummation<Float> s{0.0};
     for (uint i = 0; i < CoreConfig::spectraSize(); ++i)
-      s.add(illum[i] * bar[i] * spectra[i]);
+      s.add(bar[i] * spectra[i]);
     xyz[color] = k * s.get();
   }
   return xyz;

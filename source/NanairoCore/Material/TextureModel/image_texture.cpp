@@ -131,6 +131,9 @@ void ImageTexture::initialize(const System& system,
   initializeReflectiveValueTable(system, image, system.gamma());
   // Initialize emissive value
   initializeEmissiveValueTable();
+  // Clamp reflectance
+  for (auto& reflectance : reflective_value_table_)
+    reflectance.clampAll(0.0, 1.0);
 }
 
 /*!
@@ -202,8 +205,6 @@ void ImageTexture::initializeReflectiveValueTable(const System& system,
     reflective_value_table_[i] = system.isRgbRenderingMode()
         ? SpectralDistribution::toRgbSpectra(rgb)
         : SpectralDistribution::toSpectra(system, rgb);
-    ZISC_ASSERT(reflective_value_table_[i].isAllInClosedBounds(0.0, 1.0),
-                "Texture value must be [0, 1].");
   }
 }
 
