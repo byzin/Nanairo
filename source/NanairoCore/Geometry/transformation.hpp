@@ -11,6 +11,7 @@
 #define NANAIRO_TRANSFORMATION_HPP
 
 // Standard C++ library
+#include <tuple>
 #include <vector>
 // Zisc
 #include "zisc/matrix.hpp"
@@ -35,6 +36,10 @@ using Matrix4x4 = zisc::Matrix<Float, 4, 4>;
 class Transformation
 {
  public:
+  //! Make axises of orthogonal basis from a normal
+  static std::tuple<Vector3, Vector3> makeAxisesOfBasis(
+      const Vector3& normal) noexcept;
+
   //! Make a change of basis matrix for converting to the standard basis
   static Matrix3x3 makeChangeOfBasisFromLocal(const Vector3& normal) noexcept;
 

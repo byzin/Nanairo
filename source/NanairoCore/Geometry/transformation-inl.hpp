@@ -13,6 +13,7 @@
 #include "transformation.hpp"
 // Standard C++ library
 #include <cmath>
+#include <tuple>
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
@@ -24,6 +25,23 @@
 namespace nanairo {
 
 /*!
+  */
+inline
+std::tuple<Vector3, Vector3> Transformation::makeAxisesOfBasis(
+    const Vector3& normal) noexcept
+{
+  const auto& n = normal;
+  ZISC_ASSERT(isUnitVector(n), "The normal isn't unit vector.");
+  const Float sign = (n[2] < 0.0) ? -1.0 : 1.0;
+  ZISC_ASSERT((sign + n[2]) != 0.0, "Zero division is occured.");
+  const Float a = -zisc::invert(sign + n[2]);
+  const Float b = n[0] * n[1] * a;
+  const Vector3 b1{1.0 + sign * zisc::power<2>(n[0]) * a, sign * b, -sign * n[0]};
+  const Vector3 b2{b, sign + zisc::power<2>(n[1]) * a, -n[1]};
+  return std::make_tuple(b1, b2);
+}
+
+/*!
   \details
   Make a change of basis matrix for converting from the standard basis 
   using "Building an Orthonormal Basis from a 3D Unit Vector Without Normalization".
@@ -32,22 +50,9 @@ inline
 Matrix3x3 Transformation::makeChangeOfBasisFromLocal(const Vector3& normal) noexcept
 {
   const auto& n = normal;
-
-  Vector3 b1{-1.0,  0.0,  0.0};
-  Vector3 b2{ 0.0, -1.0,  0.0};
-  if (-0.999999 < n[2]) {
-    const Float t = zisc::invert(1.0 + n[2]);
-    // b1 vector
-    b1[0] = 1.0 - (n[0] * n[0] * t);
-    b1[1] = -n[0] * n[1] * t;
-    b1[2] = -n[0];
-    ZISC_ASSERT(isUnitVector(b1), "The b1 vector isn't a unit vector.");
-    // b2 vector
-    b2[0] = b1[1];
-    b2[1] = 1.0 - (n[1] * n[1] * t);
-    b2[2] = -n[1];
-    ZISC_ASSERT(isUnitVector(b2), "The b2 vector isn't a unit vector.");
-  }
+  const auto axises = makeAxisesOfBasis(n);
+  const auto& b1 = std::get<0>(axises);
+  const auto& b2 = std::get<1>(axises);
   return Matrix3x3{b1[0], b2[0], n[0],
                    b1[1], b2[1], n[1],
                    b1[2], b2[2], n[2]};
@@ -62,22 +67,9 @@ inline
 Matrix3x3 Transformation::makeChangeOfBasisToLocal(const Vector3& normal) noexcept
 {
   const auto& n = normal;
-
-  Vector3 b1{-1.0,  0.0,  0.0};
-  Vector3 b2{ 0.0, -1.0,  0.0};
-  if (-0.999999 < n[2]) {
-    const Float t = zisc::invert(1.0 + n[2]);
-    // b1 vector
-    b1[0] = 1.0 - (n[0] * n[0] * t);
-    b1[1] = -n[0] * n[1] * t;
-    b1[2] = -n[0];
-    ZISC_ASSERT(isUnitVector(b1), "The b1 vector must be a unit vector.");
-    // b2 vector
-    b2[0] = b1[1];
-    b2[1] = 1.0 - (n[1] * n[1] * t);
-    b2[2] = -n[1];
-    ZISC_ASSERT(isUnitVector(b2), "The b2 vector must be a unit vector.");
-  }
+  const auto axises = makeAxisesOfBasis(n);
+  const auto& b1 = std::get<0>(axises);
+  const auto& b2 = std::get<1>(axises);
   return Matrix3x3{b1[0], b1[1], b1[2],
                    b2[0], b2[1], b2[2],
                     n[0],  n[1],  n[2]};

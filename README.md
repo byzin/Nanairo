@@ -49,6 +49,7 @@ Version: 0.0.2
 
 * Triangle meshes (support Wavefront .obj file)
 * Nagata patch (normal interpolation) [[paper](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.129.9689)], ray intersection [[paper](https://www.osapublishing.org/ao/abstract.cfm?uri=ao-49-18-3442)]
+* Orthonormal basis [[paper](http://jcgt.org/published/0006/01/01/)]
 
 **Tone mappling**
 
