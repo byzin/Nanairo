@@ -32,12 +32,9 @@ include(${PROJECT_SOURCE_DIR}/cmake/compiler.cmake)
 setCompilerOption()
 getCompilerOption(cxx_compiler_flags cxx_linker_flags cxx_definitions)
 
-# Libraries
+# Common libraries
 # Thread
 find_package(Threads REQUIRED)
-# Qt5
-include(${PROJECT_SOURCE_DIR}/cmake/qt5.cmake)
-findQt5(5.6 Core Gui Qml Quick)
 # Zisc
 include(${PROJECT_SOURCE_DIR}/source/zisc/source/zisc/config.cmake)
 loadZisc(zisc_source_files
@@ -46,24 +43,11 @@ loadZisc(zisc_source_files
          zisc_linker_flags
          zisc_definitions)
 
-# Copy resources
+# Copy resources to the build directory
 file(COPY ${PROJECT_SOURCE_DIR}/resources/image
           ${PROJECT_SOURCE_DIR}/resources/models 
           ${PROJECT_SOURCE_DIR}/resources/spectrum
      DESTINATION ${PROJECT_BINARY_DIR}/resources)
-
-# Common
-## Load Nanairo modules
-include(${PROJECT_SOURCE_DIR}/cmake/keyword.cmake)
-getNanairoKeywords(nanairo_keyword_list)
-# NanairoCommon
-include(${PROJECT_SOURCE_DIR}/source/NanairoCommon/config.cmake)
-getNanairoCommon(common_source_files)
-# NanairoCore
-include(${PROJECT_SOURCE_DIR}/source/NanairoCore/config.cmake)
-getNanairoCore(core_source_files core_definitions)
-# Build
-buildNanairo()
 
 # Document
 if(${NANAIRO_BUILD_DOCUMENTS})
@@ -71,11 +55,23 @@ if(${NANAIRO_BUILD_DOCUMENTS})
   buildDocuments()
 endif()
 
-# Unit tests
-if(${NANAIRO_BUILD_TESTS})
-  include(${PROJECT_SOURCE_DIR}/test/config.cmake)
-  buildUnitTest()
+buildNanairoCore(core_library core_definitions)
+# buildNanairoSimpleRenderer()
+
+# Applicatino
+if(${NANAIRO_BUILD_APP})
+  # Library
+  include(${PROJECT_SOURCE_DIR}/cmake/qt5.cmake)
+  findQt5(5.7 Core Gui Qml Quick)
+  # Nanairo app
+  buildNanairoApp()
+  # Packaging
+  include(${PROJECT_SOURCE_DIR}/cmake/packaging.cmake)
+  setupPackInfo()
 endif()
 
-include(${PROJECT_SOURCE_DIR}/cmake/packaging.cmake)
-setupPackInfo()
+# Unit tests
+# if(${NANAIRO_BUILD_TESTS})
+#   include(${PROJECT_SOURCE_DIR}/test/config.cmake)
+#   buildUnitTest()
+# endif()

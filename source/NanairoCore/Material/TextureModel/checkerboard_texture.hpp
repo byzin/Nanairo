@@ -11,16 +11,14 @@
 #define NANAIRO_CHECKERBOARD_TEXTURE_HPP
 
 // Standard C++ library
+#include <array>
 #include <cstddef>
 #include <memory>
 // Nanairo
 #include "texture_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
-
-// Forward declaration
-class QJsonObject;
-class QString;
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -40,39 +38,54 @@ class CheckerboardTexture : public TextureModel
 {
  public:
   //! Create a checkerboard texture
-  CheckerboardTexture(const System& system, const QJsonObject& settings) noexcept;
+  CheckerboardTexture(const System& system,
+                      const SettingNodeBase* settings) noexcept;
 
 
-  //! Evaluate a float value at the coordinate
-  Float floatValue(const Point2& coordinate) const noexcept override;
-
-  //! Evaluate the emissive spectra at the coordinate
+  //! Evaluate the emissive spectra at the uv coordinate
   SampledSpectra emissiveValue(
-      const Point2& coordinate,
+      const Point2& uv,
       const WavelengthSamples& wavelengths) const noexcept override;
 
-  //! Evaluate the reflective value by the wavelength at the texture coordinate
-  Float reflectiveValue(const Point2& coordinate, 
-                        const uint16 wavelength) const noexcept override;
+  //! Evaluate a gray scale value at the uv coordinate
+  Float grayScaleValue(const Point2& uv) const noexcept override;
 
-  //! Evaluate the reflective spectra at the coordinate
+  //! Evaluate the reflective value by the wavelength at the uv coordinate
+  Float reflectiveValue(
+      const Point2& uv, 
+      const uint16 wavelength) const noexcept override;
+
+  //! Evaluate the reflective spectra at the uv coordinate
   SampledSpectra reflectiveValue(
-      const Point2& coordinate,
+      const Point2& uv,
+      const WavelengthSamples& wavelengths) const noexcept override;
+
+  //! Evaluate the spectra value by the wavelength at the uv coordinate
+  Float spectraValue(
+      const Point2& uv, 
+      const uint16 wavelength) const noexcept override;
+
+  //! Evaluate the spectra at the uv coordinate
+  SampledSpectra spectraValue(
+      const Point2& uv,
       const WavelengthSamples& wavelengths) const noexcept override;
 
   //! Return the checkerboard texture type
   TextureType type() const noexcept override;
 
  private:
+  //! Get the checkerboard index
+  uint getIndex(const Point2& uv) const noexcept;
+
   //! Initialize
-  void initialize(const System& system, const QJsonObject& settings) noexcept;
+  void initialize(const System& system, const SettingNodeBase* settings) noexcept;
 
 
-  std::unique_ptr<SpectralDistribution> emissive_value_[2];
-  std::unique_ptr<SpectralDistribution> reflective_value_[2];
-  Float float_value_[2];
-  Float width_,
-        height_;
+  std::array<std::unique_ptr<SpectralDistribution>, 2> spectra_value_;
+  std::array<std::unique_ptr<SpectralDistribution>, 2> emissive_value_;
+  std::array<std::unique_ptr<SpectralDistribution>, 2> reflective_value_;
+  std::array<Float, 2> gray_scale_value_;
+  std::array<Float, 2> resolution_;
 };
 
 //! \} Core

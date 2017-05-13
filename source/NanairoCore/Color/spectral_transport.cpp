@@ -25,7 +25,7 @@
 #include "xyz_color_matching_function.hpp"
 #include "yxy_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Color/spectral_transport_parameters.hpp"
+#include "NanairoCore/Color/SpectralTransportParameter/spectral_transport_parameters.hpp"
 
 namespace nanairo {
 

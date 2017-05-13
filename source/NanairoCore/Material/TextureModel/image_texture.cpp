@@ -12,12 +12,8 @@
 #include <cmath>
 #include <cstddef>
 #include <iterator>
+#include <limits>
 #include <vector>
-// Qt
-#include <QColor>
-#include <QImage>
-#include <QJsonObject>
-#include <QString>
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/compensated_summation.hpp"
@@ -25,17 +21,19 @@
 #include "zisc/utility.hpp"
 // Nanairo
 #include "texture_model.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Color/color_conversion.hpp"
 #include "NanairoCore/Color/color_space.hpp"
+#include "NanairoCore/Color/ldr_image.hpp"
 #include "NanairoCore/Color/rgb_color.hpp"
+#include "NanairoCore/Color/rgba_32.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
-#include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Sampling/sampled_spectra.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
+#include "NanairoCore/Setting/texture_setting_node.hpp"
 
 namespace nanairo {
 
@@ -43,7 +41,8 @@ namespace nanairo {
   \details
   No detailed.
   */
-ImageTexture::ImageTexture(const System& system, const QJsonObject& settings) noexcept
+ImageTexture::ImageTexture(const System& system,
+                           const SettingNodeBase* settings) noexcept
 {
   initialize(system, settings);
 }
@@ -52,39 +51,33 @@ ImageTexture::ImageTexture(const System& system, const QJsonObject& settings) no
   \details
   No detailed.
   */
-Float ImageTexture::floatValue(const Point2& coordinate) const noexcept
-{
-  const auto x = zisc::cast<uint>(coordinate[0] * width_);
-  const auto y = zisc::cast<uint>(coordinate[1] * height_);
-  const uint index = width_resolution_ * y + x;
-  return float_table_[color_index_[index]];
-}
-
-/*!
-  \details
-  No detailed.
-  */
 SampledSpectra ImageTexture::emissiveValue(
-    const Point2& coordinate,
+    const Point2& uv,
     const WavelengthSamples& wavelengths) const noexcept
 {
-  const auto x = zisc::cast<uint>(coordinate[0] * width_);
-  const auto y = zisc::cast<uint>(coordinate[1] * height_);
-  const uint index = width_resolution_ * y + x;
-  return sample(emissive_value_table_[color_index_[index]], wavelengths);
+  const uint index = getPixelIndex(uv);
+  return sample(emissive_value_table_[color_index_table_[index]], wavelengths);
 }
 
 /*!
   \details
   No detailed.
   */
-Float ImageTexture::reflectiveValue(const Point2& coordinate,
+Float ImageTexture::grayScaleValue(const Point2& uv) const noexcept
+{
+  const uint index = getPixelIndex(uv);
+  return gray_scale_table_[color_index_table_[index]];
+}
+
+/*!
+  \details
+  No detailed.
+  */
+Float ImageTexture::reflectiveValue(const Point2& uv,
                                     const uint16 wavelength) const noexcept
 {
-  const auto x = zisc::cast<uint>(coordinate[0] * width_);
-  const auto y = zisc::cast<uint>(coordinate[1] * height_);
-  const uint index = width_resolution_ * y + x;
-  return reflective_value_table_[color_index_[index]].getByWavelength(wavelength);
+  const uint index = getPixelIndex(uv);
+  return reflective_value_table_[color_index_table_[index]].getByWavelength(wavelength);
 }
 
 /*!
@@ -92,13 +85,34 @@ Float ImageTexture::reflectiveValue(const Point2& coordinate,
   No detailed.
   */
 SampledSpectra ImageTexture::reflectiveValue(
-    const Point2& coordinate,
+    const Point2& uv,
     const WavelengthSamples& wavelengths) const noexcept
 {
-  const auto x = zisc::cast<uint>(coordinate[0] * width_);
-  const auto y = zisc::cast<uint>(coordinate[1] * height_);
-  const uint index = width_resolution_ * y + x;
-  return sample(reflective_value_table_[color_index_[index]], wavelengths);
+  const uint index = getPixelIndex(uv);
+  return sample(reflective_value_table_[color_index_table_[index]], wavelengths);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+Float ImageTexture::spectraValue(const Point2& uv,
+                                 const uint16 wavelength) const noexcept
+{
+  const uint index = getPixelIndex(uv);
+  return reflective_value_table_[color_index_table_[index]].getByWavelength(wavelength);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+SampledSpectra ImageTexture::spectraValue(
+    const Point2& uv,
+    const WavelengthSamples& wavelengths) const noexcept
+{
+  const uint index = getPixelIndex(uv);
+  return sample(reflective_value_table_[color_index_table_[index]], wavelengths);
 }
 
 /*!
@@ -107,7 +121,17 @@ SampledSpectra ImageTexture::reflectiveValue(
   */
 TextureType ImageTexture::type() const noexcept
 {
-  return TextureType::Image;
+  return TextureType::kImage;
+}
+
+/*!
+  */
+inline
+uint ImageTexture::getPixelIndex(const Point2& uv) const noexcept
+{
+  const auto x = zisc::cast<uint>(uv[0] * zisc::cast<Float>(resolution_[0]));
+  const auto y = zisc::cast<uint>(uv[1] * zisc::cast<Float>(resolution_[1]));
+  return x + y * resolution_[0];
 }
 
 /*!
@@ -115,96 +139,68 @@ TextureType ImageTexture::type() const noexcept
   No detailed.
   */
 void ImageTexture::initialize(const System& system,
-                              const QJsonObject& settings) noexcept
+                              const SettingNodeBase* settings) noexcept
 {
-  using zisc::cast;
-  // Initialize image resolution
-  const auto image_file_path = SceneValue::toString(settings,
-                                                    keyword::imageFilePath);
-  const QImage image{image_file_path};
-  const int width = image.width();
-  const int height = image.height();
-  width_resolution_ = cast<uint>(width);
-  width_ = cast<Float>(width);
-  height_ = cast<Float>(height);
-  // Initialize reflective value
-  initializeReflectiveValueTable(system, image, system.gamma());
-  // Initialize emissive value
-  initializeEmissiveValueTable();
-  // Clamp reflectance
-  for (auto& reflectance : reflective_value_table_)
-    reflectance.clampAll(0.0, 1.0);
-}
+  const auto texture_settings = castNode<TextureSettingNode>(settings);
 
-/*!
-  */
-void ImageTexture::initializeEmissiveValueTable() noexcept
-{
-  // Scale by max energy
-  Float max_energy = 0.0;
-  for (const auto& spectra : reflective_value_table_)
-    max_energy = zisc::max(max_energy, spectra.sum());
-  const Float k = (max_energy != 0.0) ? zisc::invert(max_energy) : 0.0;
-  const uint table_size = zisc::cast<uint>(reflective_value_table_.size());
-  emissive_value_table_.resize(table_size);
-  for (uint i = 0; i < table_size; ++i) {
-    const auto& spectra = reflective_value_table_[i];
-    const Float energy = spectra.sum();
-    emissive_value_table_[i] = spectra.normalized() * (k * energy);
+  const auto& parameters = texture_settings->imageTextureParameters();
+  {
+    resolution_ = parameters.image_.resolution();
   }
+  initializeTables(system, parameters.image_);
 }
 
 /*!
   \details
   No detailed.
   */
-void ImageTexture::initializeReflectiveValueTable(const System& system,
-                                                  const QImage& image,
-                                                  const Float gamma) noexcept
+void ImageTexture::initializeTables(const System& system, const LdrImage& image)
+    noexcept
 {
-  using zisc::cast;
+  uint table_size = resolution_[0] * resolution_[1];
 
-  const int width = image.width();
-  const int height = image.height();
-  uint size = cast<uint>(width * height);
   // Make a color table
-  std::vector<QRgb> color_table;
-  color_table.resize(size);
-  for (int y = 0; y < height; ++y) {
-    for (int x = 0; x < width; ++x) {
-      const uint index = y * width + x;
-      color_table[index] = image.pixel(x, y);
-    }
-  }
+  auto color_table = image.data();
   std::sort(color_table.begin(), color_table.end());
   auto table_end = std::unique(color_table.begin(), color_table.end());
   zisc::toBinaryTree(color_table.begin(), table_end);
+
   // Make a color index table
-  auto get_color_index = [&color_table, &table_end](const QRgb color)
   {
-    auto position = zisc::searchBinaryTree(color_table.begin(), table_end, color);
-    return cast<uint>(std::distance(color_table.begin(), position));
-  };
-  color_index_.resize(size);
-  for (int y = 0; y < height; ++y) {
-    for (int x = 0; x < width; ++x) {
-      const int index = width * y + x;
-      color_index_[index] = get_color_index(image.pixel(x, y));
+    color_index_table_.resize(table_size);
+    auto table_begin = color_table.begin();
+    for (uint index = 0; index < table_size; ++index) {
+      auto position = zisc::searchBinaryTree(table_begin, table_end, image[index]);
+      const auto color_index = std::distance(table_begin, position);
+      color_index_table_[index] = zisc::cast<uint>(color_index);
     }
   }
-  // Make a reflective value table
-  size = cast<uint>(std::distance(color_table.begin(), table_end));
-  float_table_.resize(size);
-  reflective_value_table_.resize(size);
+
+  // Make a value tables
+  table_size = zisc::cast<uint>(std::distance(color_table.begin(), table_end));
+  emissive_value_table_.resize(table_size);
+  reflective_value_table_.resize(table_size);
+  gray_scale_table_.resize(table_size);
   const auto to_xyz_matrix = getRgbToXyzMatrix(system.colorSpace());
-  for (uint i = 0; i < size; ++i) {
-    auto rgb = ColorConversion::toRgb(QColor{color_table[i]});
-    rgb.correctGamma(gamma);
-    const Float y = ColorConversion::toXyz(rgb, to_xyz_matrix).y();
-    float_table_[i] = zisc::clamp(y, 0.0, 1.0);
-    reflective_value_table_[i] = system.isRgbRenderingMode()
-        ? SpectralDistribution::toRgbSpectra(rgb)
-        : SpectralDistribution::toSpectra(system, rgb);
+  for (uint index = 0; index < table_size; ++index) {
+    auto rgb = ColorConversion::toFloatRgb(color_table[index]);
+    rgb.correctGamma(system.gamma());
+    rgb.clampAll(std::numeric_limits<Float>::epsilon(), rgb.max());
+    // Float value
+    {
+      const Float y = ColorConversion::toXyz(rgb, to_xyz_matrix).y();
+      gray_scale_table_[index] = zisc::clamp(y, 0.0, 1.0);
+    }
+    // Spectra values
+    {
+      SpectralDistribution value;
+      value.setByWavelength(CoreConfig::blueWavelength(), rgb.blue());
+      value.setByWavelength(CoreConfig::greenWavelength(), rgb.green());
+      value.setByWavelength(CoreConfig::redWavelength(), rgb.red());
+      value = value.computeSystemColor(system);
+      emissive_value_table_[index] = value.toEmissiveColor();
+      reflective_value_table_[index] = value.toReflectiveColor();
+    }
   }
 }
 

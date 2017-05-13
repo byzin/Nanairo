@@ -29,11 +29,12 @@
 #include "zisc/error.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
-#include "NanairoCommon/nanairo_common_config.hpp"
+#include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoGui/gui_engine.hpp"
-#include "NanairoRenderer/cui_renderer_manager.hpp"
-#include "NanairoRenderer/renderer_parameter.hpp"
-#include "NanairoRenderer/scene_document.hpp"
+#include "NanairoGui/nanairo_gui_config.hpp"
+#include "NanairoGui/Renderer/cui_renderer_manager.hpp"
+#include "NanairoGui/Renderer/renderer_parameter.hpp"
+#include "NanairoGui/Renderer/scene_document.hpp"
 
 namespace {
 
@@ -57,12 +58,13 @@ void initializeQtRandomSeed() noexcept;
   */
 int main(int argc, char** argv)
 {
-  using nanairo::CommonConfig;
+  using nanairo::CoreConfig;
+  using nanairo::GuiConfig;
 
   // Initialize application
   QScopedPointer<QGuiApplication> application{new QGuiApplication{argc, argv}};
-  QCoreApplication::setApplicationName(CommonConfig::applicationName().c_str());
-  QCoreApplication::setApplicationVersion(CommonConfig::versionString().c_str());
+  QCoreApplication::setApplicationName(GuiConfig::applicationName().c_str());
+  QCoreApplication::setApplicationVersion(CoreConfig::versionString().c_str());
   const auto options = processCommandLineOptions(*application);
 
   // Initialize Qt

@@ -13,16 +13,15 @@
 // Standard C++ library
 #include <cstddef>
 #include <vector>
+// Zisc
+#include "zisc/algorithm.hpp"
 // Nanairo
 #include "bvh_node.hpp"
 #include "bvh_tree_node.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/object.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
-
-// Forward declaration
-class QJsonObject;
-class QString;
 
 namespace nanairo {
 
@@ -35,6 +34,15 @@ class System;
 //! \addtogroup Core
 //! \{
 
+enum class BvhType : uint32
+{
+  kBinaryRadixTree            = zisc::toHash32("BinaryRadixTree"),
+  kApproximateAgglomerativeClustering
+                              = zisc::toHash32("ApproximateAgglomerativeClustering"),
+  kAgglomerativeTreeletRestructuring
+                              = zisc::toHash32("AgglomerativeTreeletRestructuring")
+};
+
 /*!
   \details
   No detailed.
@@ -43,7 +51,7 @@ class Bvh
 {
  public:
   //! Initialize BVH
-  Bvh(const QJsonObject& settings) noexcept;
+  Bvh(const SettingNodeBase* settings) noexcept;
 
   //! Finalize BVH
   virtual ~Bvh() noexcept;
@@ -59,7 +67,7 @@ class Bvh
   void construct(System& system, std::vector<Object>&& object_list) noexcept;
 
   //! Make BVH
-  static UniquePointer<Bvh> makeBvh(const QJsonObject& settings) noexcept;
+  static UniquePointer<Bvh> makeBvh(const SettingNodeBase* settings) noexcept;
 
   //! Return the object list
   const std::vector<Object>& objectList() const noexcept;

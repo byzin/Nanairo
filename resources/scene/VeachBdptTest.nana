@@ -9,8 +9,6 @@
         "ColorSpace": "sRGB (D65)",
         "Exposure": 1,
         "Gamma": 2.2,
-        "StandardIllumination": "CIE D65",
-        "StandardObserver": "CIE 2deg color matching function",
         "ToneMapping": "Reinhard",
         "WavelengthSampling": "Regular sampling"
     },
@@ -69,10 +67,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Floor",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -100,10 +98,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "LeftWall",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -138,10 +136,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "RightWall",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -176,10 +174,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "BackWall",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -214,10 +212,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Ceiling",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -252,11 +250,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Table",
             "ObjectFilePath": "resources/models/VeachTable.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -284,11 +282,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Egg",
             "ObjectFilePath": "resources/models/VeachEgg.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 2,
             "Transformation": [
@@ -333,11 +331,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Stand",
             "ObjectFilePath": "resources/models/VeachStand.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 1,
             "Transformation": [
@@ -356,10 +354,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 2,
             "IsEmissiveObject": true,
             "Name": "Light",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -428,11 +426,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 3,
             "IsEmissiveObject": false,
             "Name": "SpotSide",
             "ObjectFilePath": "resources/models/Primitives/DirectionalCylinderHoleSide.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -442,11 +440,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 3,
             "IsEmissiveObject": false,
             "Name": "SpotBottom",
             "ObjectFilePath": "resources/models/Primitives/DirectionalCylinderHoleUpDownSide.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -456,10 +454,10 @@
         {
             "EmitterIndex": 1,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 2,
             "IsEmissiveObject": true,
             "Name": "Light",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -486,8 +484,6 @@
         }
     ],
     "RenderingMethod": {
-        "NumOfLightRays": 100000,
-        "NumOfLightRaysIsSameAsImageResolution": true,
         "PathLength": 3,
         "RayCastEpsilon": 1e-07,
         "RussianRoulette": "Reflectance (Max)",
@@ -503,17 +499,17 @@
             "Type": "SmoothDiffuseSurface"
         },
         {
-            "InnerExtinction": "resources/spectrum/conductor/Cu extinction coefficient.csv",
-            "InnerRefractiveIndex": "resources/spectrum/conductor/Cu refractive index.csv",
+            "InnerExtinction": 6,
+            "InnerRefractiveIndex": 5,
             "Name": "RoughCopper",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 4,
             "RoughnessIndex": 1,
             "Type": "RoughConductorSurface"
         },
         {
-            "InnerRefractiveIndex": "resources/spectrum/dielectric/SiO2.csv",
+            "InnerRefractiveIndex": 7,
             "Name": "EggGlass",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 4,
             "Type": "SmoothDielectricSurface"
         }
     ],
@@ -556,6 +552,38 @@
                 "Value": "resources/spectrum/illuminant/cornell_box_light.csv"
             },
             "Name": "EmitterTexture2",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/dielectric/Air.csv"
+            },
+            "Name": "AirRefractiveIndex",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/conductor/Cu refractive index.csv"
+            },
+            "Name": "CuRefractiveIndex",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/conductor/Cu extinction coefficient.csv"
+            },
+            "Name": "CuExtinction",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/dielectric/SiO2.csv"
+            },
+            "Name": "SiO2RefractiveIndex",
             "Type": "UnicolorTexture"
         }
     ]

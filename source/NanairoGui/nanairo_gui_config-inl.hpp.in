@@ -19,6 +19,24 @@ namespace nanairo {
 /*!
   */
 inline
+std::string GuiConfig::applicationName() noexcept
+{
+  return std::string{"@PROJECT_NAME@"};
+}
+
+/*!
+  */
+inline
+constexpr int GuiConfig::maxFps() noexcept
+{
+  constexpr int max_fps = @NANAIRO_MAX_FPS@;
+  static_assert(0 < max_fps, "Max FPS is minus.");
+  return max_fps;
+}
+
+/*!
+  */
+inline
 std::string GuiConfig::randomSeedKey() noexcept
 {
   return std::string{"@NANAIRO_RANDOM_SEED_KEY@"};

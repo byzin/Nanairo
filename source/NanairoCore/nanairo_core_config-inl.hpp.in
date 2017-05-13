@@ -13,6 +13,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 // Standard C++ library
 #include <cstdint>
+#include <string>
 #include <type_traits>
 
 namespace nanairo {
@@ -42,6 +43,24 @@ constexpr uint16 CoreConfig::redWavelength() noexcept
 {
   constexpr uint16 red_wavelength = 700;
   return red_wavelength;
+}
+
+/*!
+  */
+inline
+constexpr uint CoreConfig::imageHeightMin() noexcept
+{
+  constexpr uint image_height_min = 240;
+  return image_height_min;
+}
+
+/*!
+  */
+inline
+constexpr uint CoreConfig::imageWidthMin() noexcept
+{
+  constexpr uint image_width_min = 320;
+  return image_width_min;
 }
 
 /*!
@@ -150,6 +169,42 @@ constexpr bool CoreConfig::pathTracingImplicitConnectionIsEnabled() noexcept
 {
   constexpr bool implicit_connection_is_enabled = @NANAIRO_PATH_TRACING_IMPLICIT_CONNECTION_IS_ENABLED@;
   return implicit_connection_is_enabled;
+}
+
+/*!
+  \return The version text of the application
+  */
+inline
+std::string CoreConfig::versionString() noexcept
+{
+  return std::string{"@nanairo_version@"};
+}
+
+/*!
+  \return The major number of the version
+  */
+inline
+constexpr int CoreConfig::versionMajor() noexcept
+{
+  return @nanairo_version_major@;
+}
+
+/*!
+  \return The minor number of the version
+  */
+inline
+constexpr int CoreConfig::versionMinor() noexcept
+{
+  return @nanairo_version_minor@;
+}
+
+/*!
+  \return The patch number of the version
+  */
+inline
+constexpr int CoreConfig::versionPatch() noexcept
+{
+  return @nanairo_version_patch@;
 }
 
 } // namespace nanairo

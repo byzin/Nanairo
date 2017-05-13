@@ -12,25 +12,19 @@
 #include <cstddef>
 #include <functional>
 #include <vector>
-// Qt
-#include <QByteArray>
-#include <QFile>
-#include <QtGlobal>
 // Zisc
+#include "zisc/error.hpp"
 #include "zisc/math.hpp"
 #include "zisc/thread_pool.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
-#include "color_space.hpp"
 #include "hdr_image.hpp"
-#include "rgb_color.hpp"
 #include "spectral_distribution.hpp"
 #include "xyz_color.hpp"
 #include "xyz_color_matching_function.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
-#include "NanairoCore/Utility/file.hpp"
 
 namespace nanairo {
 
@@ -86,24 +80,15 @@ void SpectraImage::clear() noexcept
   \details
   No detailed.
   */
-void SpectraImage::save(const quint64 /* cycle */,
-                        const QString& /* file_path */) const noexcept
-{
-  ZISC_ASSERT(false, "Not implemented.");
-}
-
-/*!
-  \details
-  No detailed.
-  */
 void SpectraImage::toHdrImage(System& system,
-                              const quint64 cycle,
+                              const uint64 cycle,
                               HdrImage* hdr_image) const noexcept
 {
+  ZISC_ASSERT(hdr_image != nullptr, "The HDR image is null.");
+
   using zisc::cast;
 
   const Float averager = zisc::invert(cast<Float>(cycle));
-
   auto to_hdr_image = [this, &system, hdr_image, averager](const int thread_id)
   {
     // Set the calculation range
@@ -126,9 +111,9 @@ void SpectraImage::toHdrImage(System& system,
   \details
   No detailed.
   */
-SpectraImageType SpectraImage::type() const noexcept
+RenderingColorMode SpectraImage::type() const noexcept
 {
-  return SpectraImageType::Spectra;
+  return RenderingColorMode::kSpectra;
 }
 
 /*!

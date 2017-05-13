@@ -16,16 +16,14 @@
 // Nanairo
 #include "surface_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
-
-// Forward declaration
-class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
-class ShaderModel;
-class SpectralDistribution;
+class IntersectionInfo;
+class Sampler;
 class TextureModel;
 class WavelengthSamples;
 
@@ -44,14 +42,13 @@ class SmoothDiffuseSurface : public SurfaceModel
 
   //! Create a smooth diffuse surface
   SmoothDiffuseSurface(
-      const QJsonObject& settings,
+      const SettingNodeBase* settings,
       const std::vector<const TextureModel*>& texture_list) noexcept;
 
 
   //! Make Lambert BRDF
   ShaderPointer makeBxdf(
-      const Point2& texture_coordinate,
-      const bool is_reverse_face,
+      const IntersectionInfo& info,
       const WavelengthSamples& wavelengths,
       Sampler& sampler,
       MemoryPool& memory_pool) const noexcept override;
@@ -61,7 +58,7 @@ class SmoothDiffuseSurface : public SurfaceModel
 
  private:
   //! Initialize
-  void initialize(const QJsonObject& settings,
+  void initialize(const SettingNodeBase* settings,
                   const std::vector<const TextureModel*>& texture_list) noexcept;
 
 

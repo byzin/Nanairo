@@ -12,14 +12,14 @@
 
 // Standard C++ library
 #include <tuple>
+// Zisc
+#include "zisc/algorithm.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
-
-// Forward declaration
-class QJsonObject;
 
 namespace nanairo {
 
@@ -37,10 +37,10 @@ class WavelengthSamples;
   \details
   No detailed.
   */
-enum class CameraType : int
+enum class CameraType : uint32
 {
-  Pinhole = 0,
-  ThinLens
+  kPinhole                     = zisc::toHash32("Pinhole"),
+  kThinLens                    = zisc::toHash32("ThinLens")
 };
 
 /*!
@@ -54,7 +54,7 @@ class CameraModel
 
 
   //! Initialize the camera
-  CameraModel(const QJsonObject& settings) noexcept;
+  CameraModel(const SettingNodeBase* settings) noexcept;
 
   //! Finalize the camera
   virtual ~CameraModel() noexcept;
@@ -105,7 +105,7 @@ class CameraModel
   const Vector2& jittering() const noexcept;
 
   //! Make a camera
-  static UniquePointer<CameraModel> makeModel(const QJsonObject& settings) noexcept;
+  static UniquePointer<CameraModel> makeModel(const SettingNodeBase* settings) noexcept;
 
   //! Return the camera position
   virtual const Point3& position() const noexcept = 0;
@@ -155,7 +155,7 @@ class CameraModel
 
  private:
   //! Initialize
-  void initialize(const QJsonObject& settings) noexcept;
+  void initialize(const SettingNodeBase* settings) noexcept;
 
   //! Initialize camera film
   virtual void initializeFilm() noexcept = 0;

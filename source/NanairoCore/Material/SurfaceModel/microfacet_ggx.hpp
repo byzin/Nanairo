@@ -68,7 +68,8 @@ class MicrofacetGgx : public Microfacet
       const Vector3& vin,
       const Vector3& vout,
       const Vector3& normal,
-      const SampledSpectra& r0,
+      const SampledSpectra& n,
+      const SampledSpectra& eta,
       Float* pdf = nullptr) noexcept;
 
   //! Evaluate the reflection pdf for the conductor

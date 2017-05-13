@@ -23,11 +23,8 @@
 #include "Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "Sampling/light_source_sampler.hpp"
+#include "Setting/setting_node_base.hpp"
 #include "Utility/unique_pointer.hpp"
-
-// Forward declaration
-class QJsonArray;
-class QJsonObject;
 
 namespace nanairo {
 
@@ -47,7 +44,7 @@ class World
 {
  public:
   //! Initialize the world
-  World(System& system, const QJsonObject& settings) noexcept;
+  World(System& system, const SettingNodeBase* settings) noexcept;
 
   //! Finalize the world
   ~World() noexcept;
@@ -70,39 +67,58 @@ class World
 
  private:
   //! Initialize world
-  void initialize(System& system, const QJsonObject& settings) noexcept;
+  void initialize(
+      System& system,
+      const SettingNodeBase* settings) noexcept;
 
   //! Initialize emitter list
-  void initializeEmitter(System& system, const QJsonArray& settings) noexcept;
+  void initializeEmitter(
+      System& system,
+      const SettingNodeBase* settings,
+      const std::vector<const TextureModel*>& texture_list) noexcept;
 
   //! Initialize Objects
-  std::vector<Object> initializeObject(System& system, 
-                                       const QJsonArray& settings) noexcept;
+  std::vector<Object> initializeObject(
+      System& system, 
+      const SettingNodeBase* settings) noexcept;
 
   //! Initialize the world information of light sources
   void initializeWorldLightSource() noexcept;
 
   //! Initialize surface scattering list
-  void initializeSurface(System& system, const QJsonArray& settings) noexcept;
+  void initializeSurface(
+      System& system,
+      const SettingNodeBase* settings,
+      const std::vector<const TextureModel*>& texture_list) noexcept;
 
   //! Initialize texture list
-  void initializeTexture(System& system, const QJsonArray& settings) noexcept;
+  void initializeTexture(
+      System& system,
+      const SettingNodeBase* settings) noexcept;
 
   //! Make objects
-  std::list<std::future<std::vector<Object>>> makeObjects(
+  std::vector<std::vector<Object>> makeObjects(
       System& system,
-      const QJsonArray& settings) const noexcept;
+      const SettingNodeBase* settings) const noexcept;
+
+  //! Make objects
+  void makeObjects(
+      System& system,
+      const SettingNodeBase* settings,
+      Matrix4x4 transformation,
+      std::list<std::future<std::vector<Object>>>& results) const noexcept;
 
   //! Make a single object
-  std::vector<Object> makeSingleObject(
-      const QJsonObject& settings,
-      const Matrix4x4& transformation) const noexcept;
+  void makeSingleObject(
+      System& system,
+      const SettingNodeBase* settings,
+      const Matrix4x4& transformation,
+      std::list<std::future<std::vector<Object>>>& results) const noexcept;
 
   void makeGroupObject(
       System& system,
-      const QJsonArray& settings,
+      const SettingNodeBase* settings,
       const Matrix4x4& transformation,
-      int& index,
       std::list<std::future<std::vector<Object>>>& results) const noexcept;
 
 

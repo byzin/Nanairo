@@ -68,6 +68,9 @@ function(setCommandOptions)
   set(option_description "The hash key which is used as the default random seed")
   setStringOption(NANAIRO_RANDOM_SEED_KEY "NanairoRenderer" ${option_description})
 
+  set(option_description "Build Nanairo application. It requires Qt.")
+  setBooleanOption(NANAIRO_BUILD_APP ON ${option_description})
+
   set(option_description "Build unit tests")
   setBooleanOption(NANAIRO_BUILD_TESTS OFF ${option_description})
 
@@ -75,13 +78,13 @@ function(setCommandOptions)
   math(EXPR __memory_size__ "1 << 15")
   setStringOption(NANAIRO_MEMORY_POOL_SIZE ${__memory_size__} ${option_description})
 
-  set(option_description "The shortest wavelength of the spectra range")
+  set(option_description "The shortest wavelength of the spectra range. Select from [360, 380].")
   setStringOption(NANAIRO_SHORTEST_WAVELENGTH 380 ${option_description})
 
-  set(option_description "The longest wavelength of the spectra range")
+  set(option_description "The longest wavelength of the spectra range. Select from [780, 830].")
   setStringOption(NANAIRO_LONGEST_WAVELENGTH 780 ${option_description})
 
-  set(option_description "The resolution of wavelength. Select from 1 or 5 or 10.")
+  set(option_description "The resolution of wavelength. Select from [1, 5, 10].")
   setStringOption(NANAIRO_WAVELENGTH_RESOLUTION 10 ${option_description})
 
   set(option_description "The sample size of wavelengths in a cycle of progressive monte calro ray tracing method (It is must be 3).")

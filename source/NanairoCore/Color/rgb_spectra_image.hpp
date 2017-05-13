@@ -13,12 +13,11 @@
 // Standard C++ library
 #include <cstddef>
 #include <vector>
-// Qt
-#include <QtGlobal>
 // Nanairo
 #include "rgb_color.hpp"
 #include "spectra_image_interface.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/system.hpp"
 
 namespace nanairo {
 
@@ -49,16 +48,13 @@ class RgbSpectraImage : public SpectraImageInterface
   //! Clear RGB image buffer
   void clear() noexcept override;
 
-  //! Save the RGB buffer
-  void save(const quint64 cycle, const QString& file_path) const noexcept override;
-
   //! Convert RGB to XYZ
   void toHdrImage(System& system,
-                  const quint64 cycle,
+                  const uint64 cycle,
                   HdrImage* hdr_image) const noexcept override;
 
   //! Return the rgb spectra image type
-  SpectraImageType type() const noexcept override;
+  RenderingColorMode type() const noexcept override;
 
  private:
   //! Initialize

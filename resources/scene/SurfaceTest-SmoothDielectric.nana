@@ -9,8 +9,6 @@
         "ColorSpace": "sRGB (D65)",
         "Exposure": 1,
         "Gamma": 2.2,
-        "StandardIllumination": "CIE D65",
-        "StandardObserver": "CIE 2deg color matching function",
         "ToneMapping": "Reinhard",
         "WavelengthSampling": "Regular sampling"
     },
@@ -61,10 +59,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Floor",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -92,10 +90,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "LeftWall",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -137,10 +135,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "RightWall",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -182,10 +180,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "BackWall",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 1,
             "Transformation": [
@@ -220,10 +218,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Ceiling",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -263,99 +261,12 @@
             "Type": "SingleObject"
         },
         {
-            "Enabled": true,
-            "GroupLevel": 1,
-            "Name": "Orb",
-            "Transformation": [
-                {
-                    "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0,
-                        -1.5,
-                        0
-                    ]
-                },
-                {
-                    "Angle": 15,
-                    "Axis": "Y Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
-                },
-                {
-                    "Angle": 180,
-                    "Axis": "Y Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
-                }
-            ],
-            "Type": "GroupObject"
-        },
-        {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
-            "GroupLevel": 2,
-            "IsEmissiveObject": false,
-            "Name": "Base",
-            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
-            "Smoothing": false,
-            "SurfaceIndex": 3,
-            "Transformation": [
-            ],
-            "Type": "SingleObject"
-        },
-        {
-            "EmitterIndex": 0,
-            "Enabled": true,
-            "ShapeType": "MeshObject",
-            "GroupLevel": 2,
-            "IsEmissiveObject": false,
-            "Name": "InnerSphere",
-            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
-            "Smoothing": false,
-            "SurfaceIndex": 3,
-            "Transformation": [
-            ],
-            "Type": "SingleObject"
-        },
-        {
-            "EmitterIndex": 0,
-            "Enabled": true,
-            "ShapeType": "MeshObject",
-            "GroupLevel": 2,
-            "IsEmissiveObject": false,
-            "Name": "OuterSphere",
-            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
-            "Smoothing": false,
-            "SurfaceIndex": 3,
-            "Transformation": [
-            ],
-            "Type": "SingleObject"
-        },
-        {
-            "EmitterIndex": 0,
-            "Enabled": true,
-            "ShapeType": "MeshObject",
-            "GroupLevel": 2,
-            "IsEmissiveObject": false,
-            "Name": "Equation",
-            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
-            "Smoothing": false,
-            "SurfaceIndex": 3,
-            "Transformation": [
-            ],
-            "Type": "SingleObject"
-        },
-        {
-            "EmitterIndex": 0,
-            "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": true,
             "Name": "Light1",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 2,
             "Transformation": [
@@ -381,10 +292,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": true,
             "Name": "Light2",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 2,
             "Transformation": [
@@ -415,6 +326,1062 @@
                 }
             ],
             "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "Orb1",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.9,
+                        -1.5,
+                        -0.2
+                    ]
+                },
+                {
+                    "Angle": 15,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Base",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 3,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "InnerSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 3,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "OuterSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 3,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Equation",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 3,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "Orb2",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.3,
+                        -1.5,
+                        -0.2
+                    ]
+                },
+                {
+                    "Angle": 15,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Base",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 4,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "InnerSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 4,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "OuterSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 4,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Equation",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 4,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "Orb3",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.3,
+                        -1.5,
+                        -0.2
+                    ]
+                },
+                {
+                    "Angle": 15,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Base",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 5,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "InnerSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 5,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "OuterSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 5,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Equation",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 5,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "Orb4",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.9,
+                        -1.5,
+                        -0.2
+                    ]
+                },
+                {
+                    "Angle": 15,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Base",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 6,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "InnerSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 6,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "OuterSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 6,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Equation",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 6,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "Orb5",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.9,
+                        -1.5,
+                        0.4
+                    ]
+                },
+                {
+                    "Angle": 15,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Base",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 7,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "InnerSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 7,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "OuterSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 7,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Equation",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 7,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "Orb6",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.3,
+                        -1.5,
+                        0.4
+                    ]
+                },
+                {
+                    "Angle": 15,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Base",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 8,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "InnerSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 8,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "OuterSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 8,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Equation",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 8,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "Orb7",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.3,
+                        -1.5,
+                        0.4
+                    ]
+                },
+                {
+                    "Angle": 15,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Base",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 9,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "InnerSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 9,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "OuterSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 9,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Equation",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 9,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "Orb8",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.9,
+                        -1.5,
+                        0.4
+                    ]
+                },
+                {
+                    "Angle": 15,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Base",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 10,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "InnerSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 10,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "OuterSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 10,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Equation",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 10,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "Orb9",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.6,
+                        -1.5,
+                        1
+                    ]
+                },
+                {
+                    "Angle": 15,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Base",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 11,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "InnerSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 11,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "OuterSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 11,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Equation",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 11,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "Orb10",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -1.5,
+                        1
+                    ]
+                },
+                {
+                    "Angle": 15,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Base",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 12,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "InnerSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 12,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "OuterSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 12,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Equation",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 12,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "Orb11",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.6,
+                        -1.5,
+                        1
+                    ]
+                },
+                {
+                    "Angle": 15,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Base",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 13,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "InnerSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 13,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "OuterSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 13,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Equation",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 13,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
         }
     ],
     "RenderingMethod": {
@@ -424,7 +1391,7 @@
         "Type": "PathTracing"
     },
     "Scene": {
-        "SceneName": "SurfaceTest-SmoothDielectric"
+        "SceneName": "SurfaceTest-RoughDielectric"
     },
     "SurfaceModel": [
         {
@@ -443,10 +1410,81 @@
             "Type": "SmoothDiffuseSurface"
         },
         {
-            "InnerRefractiveIndex": "resources/spectrum/dielectric/SiO2.csv",
-            "Name": "TestSurface",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
-            "Type": "SmoothDielectricSurface"
+            "InnerRefractiveIndex": 16,
+            "Name": "TestSurface1",
+            "OuterRefractiveIndex": 15,
+            "RoughnessIndex": 4,
+            "Type": "RoughDielectricSurface"
+        },
+        {
+            "InnerRefractiveIndex": 16,
+            "Name": "TestSurface2",
+            "OuterRefractiveIndex": 15,
+            "RoughnessIndex": 5,
+            "Type": "RoughDielectricSurface"
+        },
+        {
+            "InnerRefractiveIndex": 16,
+            "Name": "TestSurface3",
+            "OuterRefractiveIndex": 15,
+            "RoughnessIndex": 6,
+            "Type": "RoughDielectricSurface"
+        },
+        {
+            "InnerRefractiveIndex": 16,
+            "Name": "TestSurface4",
+            "OuterRefractiveIndex": 15,
+            "RoughnessIndex": 7,
+            "Type": "RoughDielectricSurface"
+        },
+        {
+            "InnerRefractiveIndex": 16,
+            "Name": "TestSurface5",
+            "OuterRefractiveIndex": 15,
+            "RoughnessIndex": 8,
+            "Type": "RoughDielectricSurface"
+        },
+        {
+            "InnerRefractiveIndex": 16,
+            "Name": "TestSurface6",
+            "OuterRefractiveIndex": 15,
+            "RoughnessIndex": 9,
+            "Type": "RoughDielectricSurface"
+        },
+        {
+            "InnerRefractiveIndex": 16,
+            "Name": "TestSurface7",
+            "OuterRefractiveIndex": 15,
+            "RoughnessIndex": 10,
+            "Type": "RoughDielectricSurface"
+        },
+        {
+            "InnerRefractiveIndex": 16,
+            "Name": "TestSurface8",
+            "OuterRefractiveIndex": 15,
+            "RoughnessIndex": 11,
+            "Type": "RoughDielectricSurface"
+        },
+        {
+            "InnerRefractiveIndex": 16,
+            "Name": "TestSurface9",
+            "OuterRefractiveIndex": 15,
+            "RoughnessIndex": 12,
+            "Type": "RoughDielectricSurface"
+        },
+        {
+            "InnerRefractiveIndex": 16,
+            "Name": "TestSurface10",
+            "OuterRefractiveIndex": 15,
+            "RoughnessIndex": 13,
+            "Type": "RoughDielectricSurface"
+        },
+        {
+            "InnerRefractiveIndex": 16,
+            "Name": "TestSurface11",
+            "OuterRefractiveIndex": 15,
+            "RoughnessIndex": 14,
+            "Type": "RoughDielectricSurface"
         }
     ],
     "System": {
@@ -521,6 +1559,77 @@
             "Name": "EmitterSurfaceTexture",
             "Type": "ValueTexture",
             "Value": 0.8
+        },
+        {
+            "Name": "TestSurfaceRoughness1",
+            "Type": "ValueTexture",
+            "Value": 1e-07
+        },
+        {
+            "Name": "TestSurfaceRoughness2",
+            "Type": "ValueTexture",
+            "Value": 0.1
+        },
+        {
+            "Name": "TestSurfaceRoughness3",
+            "Type": "ValueTexture",
+            "Value": 0.2
+        },
+        {
+            "Name": "TestSurfaceRoughness4",
+            "Type": "ValueTexture",
+            "Value": 0.3
+        },
+        {
+            "Name": "TestSurfaceRoughness5",
+            "Type": "ValueTexture",
+            "Value": 0.4
+        },
+        {
+            "Name": "TestSurfaceRoughness6",
+            "Type": "ValueTexture",
+            "Value": 0.5
+        },
+        {
+            "Name": "TestSurfaceRoughness7",
+            "Type": "ValueTexture",
+            "Value": 0.6
+        },
+        {
+            "Name": "TestSurfaceRoughness8",
+            "Type": "ValueTexture",
+            "Value": 0.7
+        },
+        {
+            "Name": "TestSurfaceRoughness9",
+            "Type": "ValueTexture",
+            "Value": 0.8
+        },
+        {
+            "Name": "TestSurfaceRoughness10",
+            "Type": "ValueTexture",
+            "Value": 0.9
+        },
+        {
+            "Name": "TestSurfaceRoughness11",
+            "Type": "ValueTexture",
+            "Value": 1
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/dielectric/Air.csv"
+            },
+            "Name": "AirRefractiveIndex",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/dielectric/SiO2.csv"
+            },
+            "Name": "SiO2RefractiveIndex",
+            "Type": "UnicolorTexture"
         }
     ]
 }

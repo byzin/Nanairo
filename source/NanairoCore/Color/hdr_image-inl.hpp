@@ -13,6 +13,8 @@
 #include "hdr_image.hpp"
 // Standard C++ library
 #include <vector>
+// Zisc
+#include "zisc/utility.hpp"
 // Nanairo
 #include "xyz_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -26,7 +28,7 @@ namespace nanairo {
 inline
 XyzColor& HdrImage::operator[](const uint index) noexcept
 {
-  return buffer_[index];
+  return get(index);
 }
 
 /*!
@@ -36,6 +38,53 @@ XyzColor& HdrImage::operator[](const uint index) noexcept
 inline
 const XyzColor& HdrImage::operator[](const uint index) const noexcept
 {
+  return get(index);
+}
+
+/*!
+  */
+inline
+std::vector<XyzColor>& HdrImage::data() noexcept
+{
+  return buffer_;
+}
+
+/*!
+  */
+inline
+const std::vector<XyzColor>& HdrImage::data() const noexcept
+{
+  return buffer_;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+XyzColor& HdrImage::get(const uint index) noexcept
+{
+  return buffer_[index];
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+const XyzColor& HdrImage::get(const uint index) const noexcept
+{
+  return buffer_[index];
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+XyzColor& HdrImage::get(const uint x, const uint y) noexcept
+{
+  const uint index = toIndex(x, y);
   return buffer_[index];
 }
 
@@ -46,7 +95,7 @@ const XyzColor& HdrImage::operator[](const uint index) const noexcept
 inline
 const XyzColor& HdrImage::get(const uint x, const uint y) const noexcept
 {
-  const uint index = x + y * width_;
+  const uint index = toIndex(x, y);
   return buffer_[index];
 }
 
@@ -63,9 +112,25 @@ uint HdrImage::heightResolution() const noexcept
 /*!
   */
 inline
+std::size_t HdrImage::memorySize() const noexcept
+{
+  return zisc::cast<std::size_t>(sizeof(buffer_[0]) * buffer_.size());
+}
+
+/*!
+  */
+inline
 uint HdrImage::numOfPixels() const noexcept
 {
   return widthResolution() * heightResolution();
+}
+
+/*!
+  */
+inline
+uint HdrImage::size() const noexcept
+{
+  return zisc::cast<uint>(buffer_.size());
 }
 
 /*!
@@ -75,7 +140,7 @@ uint HdrImage::numOfPixels() const noexcept
 inline
 void HdrImage::set(const uint x, const uint y, const XyzColor& color) noexcept
 {
-  const uint index = x + y * width_;
+  const uint index = toIndex(x, y);
   buffer_[index] = color;
 }
 
@@ -87,6 +152,14 @@ inline
 uint HdrImage::widthResolution() const noexcept
 {
   return width_;
+}
+
+/*!
+  */
+inline
+uint HdrImage::toIndex(const uint x, const uint y) const noexcept
+{
+  return x + y * widthResolution();
 }
 
 } // namespace nanairo

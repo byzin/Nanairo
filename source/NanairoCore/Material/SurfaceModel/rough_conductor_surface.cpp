@@ -12,21 +12,21 @@
 #include <cstddef>
 #include <utility>
 #include <vector>
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zisc
 #include "zisc/aligned_memory_pool.hpp"
 #include "zisc/error.hpp"
+#include "zisc/math.hpp"
+#include "zisc/utility.hpp"
 // Reflect
 #include "fresnel.hpp"
 #include "surface_model.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Material/Bxdf/ggx_conductor_brdf.hpp"
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
+#include "NanairoCore/Setting/surface_setting_node.hpp"
 
 namespace nanairo {
 
@@ -35,7 +35,7 @@ namespace nanairo {
   No detailed.
   */
 RoughConductorSurface::RoughConductorSurface(
-    const QJsonObject& settings,
+    const SettingNodeBase* settings,
     const std::vector<const TextureModel*>& texture_list) noexcept
 {
   initialize(settings, texture_list);
@@ -46,26 +46,28 @@ RoughConductorSurface::RoughConductorSurface(
   No detailed.
   */
 auto RoughConductorSurface::makeBxdf(
-    const Point2& texture_coordinate,
-    const bool /* is_reverse_face */,
+    const IntersectionInfo& info,
     const WavelengthSamples& wavelengths,
     Sampler& /* sampler */,
     MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
-  // Get the roughness
-  constexpr Float min_roughness = 0.001;
-  Float roughness = roughness_->floatValue(texture_coordinate);
-  roughness = (min_roughness < roughness)
-      ? roughness * roughness
-      : min_roughness * min_roughness;
-  ZISC_ASSERT(zisc::isInClosedBounds(roughness, 0.0, 1.0),
-              "The roughness is out of the range [0, 1].");
+  const auto& uv = info.textureCoordinate();
 
-  const auto fresnel_0deg = sample(fresnel_0deg_, wavelengths);
+  // Evaluate the roughness
+  const Float roughness = evalRoughness(roughness_, uv);
+  // Evaluate the refractive index
+  const auto n = evalRefractiveIndex(outer_refractive_index_,
+                                     inner_refractive_index_,
+                                     uv,
+                                     wavelengths);
+  const auto eta = evalRefractiveIndex(outer_refractive_index_,
+                                       inner_extinction_,
+                                       uv,
+                                       wavelengths);
 
   // Make GGX BRDF
   using Brdf = GgxConductorBrdf;
-  auto brdf = memory_pool.allocate<Brdf>(roughness, fresnel_0deg);
+  auto brdf = memory_pool.allocate<Brdf>(roughness, n, eta);
   return ShaderPointer{brdf};
 }
 
@@ -75,7 +77,7 @@ auto RoughConductorSurface::makeBxdf(
   */
 SurfaceType RoughConductorSurface::type() const noexcept
 {
-  return SurfaceType::RoughConductor;
+  return SurfaceType::kRoughConductor;
 }
 
 /*!
@@ -83,32 +85,28 @@ SurfaceType RoughConductorSurface::type() const noexcept
   No detailed.
   */
 void RoughConductorSurface::initialize(
-    const QJsonObject& settings,
+    const SettingNodeBase* settings,
     const std::vector<const TextureModel*>& texture_list) noexcept
 {
-  const auto texture_index = SceneValue::toInt<uint>(settings,
-                                                     keyword::roughnessIndex);
-  roughness_ = texture_list[texture_index];
+  const auto surface_settings = castNode<SurfaceSettingNode>(settings);
 
-  const auto outer_refractive_index_settings =
-      SceneValue::toString(settings, keyword::outerRefractiveIndex);
-  const auto n1 = SpectralDistribution::makeSpectra(outer_refractive_index_settings);
-  ZISC_ASSERT(!n1.hasValue(0.0), "The n1 contains zero value.");
-  ZISC_ASSERT(!n1.hasNegative(), "The n1 contains negative value.");
-
-  const auto inner_refractive_index_settings =
-      SceneValue::toString(settings, keyword::innerRefractiveIndex);
-  const auto n2 = SpectralDistribution::makeSpectra(inner_refractive_index_settings);
-  ZISC_ASSERT(!n2.hasNegative(), "The n2 contains negative value.");
-
-  const auto inner_extinction_settings =
-      SceneValue::toString(settings, keyword::innerExtinction);
-  const auto k2 = SpectralDistribution::makeSpectra(inner_extinction_settings);
-  ZISC_ASSERT(!k2.hasNegative(), "The k2 contains negative value.");
-
-  const auto eta = n2 / n1;
-  const auto eta_k = k2 / n1;
-  fresnel_0deg_ = Fresnel::evalFresnel0(eta, eta_k);
+  const auto& parameters = surface_settings->roughConductorParameters();
+  {
+    const auto index = parameters.outer_refractive_index_;
+    outer_refractive_index_ = texture_list[index];
+  }
+  {
+    const auto index = parameters.inner_refractive_index_;
+    inner_refractive_index_ = texture_list[index];
+  }
+  {
+    const auto index = parameters.inner_extinction_index_;
+    inner_extinction_ = texture_list[index];
+  }
+  {
+    const auto index = parameters.roughness_index_;
+    roughness_ = texture_list[index];
+  }
 }
 
 } // namespace nanairo

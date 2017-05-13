@@ -9,8 +9,6 @@
         "ColorSpace": "sRGB (D65)",
         "Exposure": 1,
         "Gamma": 2.2,
-        "StandardIllumination": "CIE D65",
-        "StandardObserver": "CIE 2deg color matching function",
         "ToneMapping": "Reinhard",
         "WavelengthSampling": "Regular sampling"
     },
@@ -68,10 +66,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Floor",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -99,10 +97,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "LeftWall",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -144,10 +142,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "RightWall",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -189,12 +187,12 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "BackWall",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
-            "SurfaceIndex": 2,
+            "SurfaceIndex": 1,
             "Transformation": [
                 {
                     "Enabled": true,
@@ -227,10 +225,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Ceiling",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -272,13 +270,13 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Ring1",
             "ObjectFilePath": "resources/models/Ring.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
-            "SurfaceIndex": 1,
+            "SurfaceIndex": 2,
             "Transformation": [
                 {
                     "Enabled": true,
@@ -295,13 +293,13 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Ring2",
             "ObjectFilePath": "resources/models/Ring.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
-            "SurfaceIndex": 1,
+            "SurfaceIndex": 2,
             "Transformation": [
                 {
                     "Enabled": true,
@@ -325,10 +323,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": true,
             "Name": "Light",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -377,16 +375,16 @@
             "Type": "SmoothDiffuseSurface"
         },
         {
-            "InnerExtinction": "resources/spectrum/conductor/Al extinction coefficient.csv",
-            "InnerRefractiveIndex": "resources/spectrum/conductor/Al refractive index.csv",
-            "Name": "MirrorSurface",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
-            "Type": "SmoothConductorSurface"
-        },
-        {
             "Name": "CheckerboardSurface2",
             "ReflectanceIndex": 1,
             "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "InnerExtinction": 5,
+            "InnerRefractiveIndex": 4,
+            "Name": "MetalSurface",
+            "OuterRefractiveIndex": 3,
+            "Type": "SmoothConductorSurface"
         }
     ],
     "System": {
@@ -455,6 +453,30 @@
                 "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
             },
             "Name": "EmitterTexture",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/dielectric/Air.csv"
+            },
+            "Name": "AirRefractiveIndex",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/conductor/Al refractive index.csv"
+            },
+            "Name": "AlRefractiveIndex",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/conductor/Al extinction coefficient.csv"
+            },
+            "Name": "AlExtinction",
             "Type": "UnicolorTexture"
         }
     ]

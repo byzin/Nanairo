@@ -10,6 +10,8 @@
 #include "hdr_image.hpp"
 // Standard C++ library
 #include <vector>
+// Zisc
+#include "zisc/utility.hpp"
 // Nanairo
 #include "xyz_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -25,15 +27,6 @@ HdrImage::HdrImage(const uint width, const uint height) noexcept :
     height_{height}
 {
   initialize();
-}
-
-/*!
-  \details
-  No detailed.
-  */
-uint HdrImage::bufferMemorySize() const noexcept
-{
-  return width_ * height_ * sizeof(XyzColor);
 }
 
 /*!

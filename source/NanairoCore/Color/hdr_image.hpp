@@ -11,6 +11,7 @@
 #define NANAIRO_HDR_IMAGE_HPP
 
 // Standard C++ library
+#include <cstddef>
 #include <vector>
 // Nanairo
 #include "xyz_color.hpp"
@@ -31,6 +32,7 @@ class HdrImage
   //! Create a hdr image
   HdrImage(const uint width, const uint height) noexcept;
 
+
   //! Returh the pixel color by index
   XyzColor& operator[](const uint index) noexcept;
 
@@ -38,8 +40,20 @@ class HdrImage
   const XyzColor& operator[](const uint index) const noexcept;
 
 
-  //! Return the buffer memory size
-  uint bufferMemorySize() const noexcept;
+  //! Return the buffer data
+  std::vector<XyzColor>& data() noexcept;
+
+  //! Return the buffer data
+  const std::vector<XyzColor>& data() const noexcept;
+
+  //! Return the pixel color by index
+  XyzColor& get(const uint index) noexcept;
+
+  //! Return the pixel color by index
+  const XyzColor& get(const uint index) const noexcept;
+
+  //! Return the pixel color
+  XyzColor& get(const uint x, const uint y) noexcept;
 
   //! Return the pixel color
   const XyzColor& get(const uint x, const uint y) const noexcept;
@@ -47,8 +61,14 @@ class HdrImage
   //! Return the height resolution
   uint heightResolution() const noexcept;
 
+  //! Return the buffer memory size
+  std::size_t memorySize() const noexcept;
+
   //! Return the num of pixels
   uint numOfPixels() const noexcept;
+
+  //! Return the buffer length
+  uint size() const noexcept;
 
   //! Set pixel color
   void set(const uint x, const uint y, const XyzColor& color) noexcept;
@@ -60,6 +80,8 @@ class HdrImage
   //! Initialize
   void initialize() noexcept;
 
+  //! Convert a XY coordinate to a index
+  uint toIndex(const uint x, const uint y) const noexcept;
 
   std::vector<XyzColor> buffer_;
   uint width_,

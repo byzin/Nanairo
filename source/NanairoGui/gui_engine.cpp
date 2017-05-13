@@ -15,8 +15,8 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 // Nanairo
-#include "Utility/gui_renderer_manager.hpp"
-#include "Utility/rendered_image_provider.hpp"
+#include "rendered_image_provider.hpp"
+#include "Renderer/gui_renderer_manager.hpp"
 
 namespace nanairo {
 

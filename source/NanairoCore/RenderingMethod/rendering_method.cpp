@@ -13,15 +13,11 @@
 #include <limits>
 #include <tuple>
 #include <utility>
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
 // Nanairo
-#include "NanairoCommon/keyword.hpp"
 #include "path_tracing.hpp"
 #include "light_tracing.hpp"
 #include "probabilistic_ppm.hpp"
@@ -34,6 +30,8 @@
 #include "NanairoCore/Sampling/russian_roulette.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Setting/rendering_method_setting_node.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
@@ -47,7 +45,7 @@ class System;
   No detailed.
   */
 RenderingMethod::RenderingMethod(const System& /* system */,
-                                 const QJsonObject& settings) noexcept :
+                                 const SettingNodeBase* settings) noexcept :
     clear_function_{},
     russian_roulette_{settings},
     ray_cast_epsilon_{0.0}
@@ -61,22 +59,24 @@ RenderingMethod::RenderingMethod(const System& /* system */,
   */
 UniquePointer<RenderingMethod> RenderingMethod::makeMethod(
     System& system,
-    const QJsonObject& settings) noexcept
+    const SettingNodeBase* settings) noexcept
 {
-  using zisc::toHash32;
+  ZISC_ASSERT(settings != nullptr, "The setting node is null.");
+  ZISC_ASSERT(settings->type() == SettingNodeType::kRenderingMethod,
+              "Wrong setting node is specified.");
+  const auto method_settings = zisc::cast<const RenderingMethodSettingNode*>(settings);
 
   RenderingMethod* method = nullptr;
-  const auto type = SceneValue::toString(settings, keyword::type);
-  switch (keyword::toHash32(type)) {
-   case toHash32(keyword::pathTracing): {
+  switch (method_settings->methodType()) {
+   case RenderingMethodType::kPathTracing: {
     method = new PathTracing{system, settings};
     break;
    }
-   case toHash32(keyword::lightTracing): {
+   case RenderingMethodType::kLightTracing: {
     method = new LightTracing{system, settings};
     break;
    }
-   case toHash32(keyword::probabilisticPpm):
+   case RenderingMethodType::kProbabilisticPpm:
     method = new ProbabilisticPpm{system, settings};
     break;
    default: {
@@ -91,11 +91,18 @@ UniquePointer<RenderingMethod> RenderingMethod::makeMethod(
   \details
   No detailed.
   */
-void RenderingMethod::initialize(const QJsonObject& settings) noexcept
+void RenderingMethod::initialize(const SettingNodeBase* settings) noexcept
 {
+  ZISC_ASSERT(settings != nullptr, "The setting node is null.");
+  ZISC_ASSERT(settings->type() == SettingNodeType::kRenderingMethod,
+              "Wrong setting node is specified.");
+  const auto method_settings = zisc::cast<const RenderingMethodSettingNode*>(settings);
+
   // Ray cast epsilon
-  ray_cast_epsilon_ = SceneValue::toFloat<Float>(settings, keyword::rayCastEpsilon);
-  ZISC_ASSERT(0.0 < ray_cast_epsilon_, "Ray cast epsilon is negative.");
+  {
+    ray_cast_epsilon_ = zisc::cast<Float>(method_settings->rayCastEpsilon());
+    ZISC_ASSERT(0.0 < ray_cast_epsilon_, "Ray cast epsilon is negative.");
+  }
 }
 
 } // namespace nanairo

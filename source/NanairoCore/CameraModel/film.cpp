@@ -10,19 +10,17 @@
 #include "film.hpp"
 // Standard C++ library
 #include <utility>
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zisc
+#include "zisc/error.hpp"
 #include "zisc/math.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Color/rgb_spectra_image.hpp"
 #include "NanairoCore/Color/spectra_image.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
+#include "NanairoCore/Setting/camera_setting_node.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
@@ -31,7 +29,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-Film::Film(const System& system, const QJsonObject& settings) noexcept
+Film::Film(const System& system, const SettingNodeBase* settings) noexcept
 {
   initialize(system, settings);
 }
@@ -40,7 +38,7 @@ Film::Film(const System& system, const QJsonObject& settings) noexcept
   \details
   No detailed.
   */
-void Film::initialize(const System& system, const QJsonObject& /* settings */) noexcept
+void Film::initialize(const System& system, const SettingNodeBase* /* settings */) noexcept
 {
   using zisc::cast;
 
@@ -51,10 +49,20 @@ void Film::initialize(const System& system, const QJsonObject& /* settings */) n
   inverse_height_ = zisc::invert(cast<Float>(height));
 
   // Initialize buffer
-  if (system.isRgbRenderingMode())
+  switch (system.colorMode()) {
+   case RenderingColorMode::kRgb: {
     spectra_buffer_ = new RgbSpectraImage{width, height};
-  else
+    break;
+   }
+   case RenderingColorMode::kSpectra: {
     spectra_buffer_ = new SpectraImage{width, height};
+    break;
+   }
+   default: {
+    zisc::raiseError("SystemError: Unsupported color mode is specified.");
+    break;
+   }
+  }
 }
 
 } // namespace nanairo

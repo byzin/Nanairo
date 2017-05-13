@@ -14,10 +14,8 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectra_image_interface.hpp"
 #include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
-
-// Forward declaration
-class QJsonObject;
 
 namespace nanairo {
 
@@ -36,7 +34,7 @@ class Film
 {
  public:
   //! Create film
-  Film(const System& system, const QJsonObject& settings) noexcept;
+  Film(const System& system, const SettingNodeBase* settings) noexcept;
 
 
   //! Return the aspect ratio of image
@@ -62,7 +60,7 @@ class Film
 
  private:
   //! Initialize
-  void initialize(const System& system, const QJsonObject& settings) noexcept;
+  void initialize(const System& system, const SettingNodeBase* settings) noexcept;
 
 
   UniquePointer<SpectraImageInterface> spectra_buffer_; //!< The buffer of spectra

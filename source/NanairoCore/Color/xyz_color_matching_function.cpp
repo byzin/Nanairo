@@ -9,22 +9,18 @@
 
 #include "xyz_color_matching_function.hpp"
 // Standard C++ library
+#include <array>
 #include <memory>
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zisc
-#include "zisc/algorithm.hpp"
 #include "zisc/arithmetic_array.hpp"
 #include "zisc/math.hpp"
 #include "zisc/error.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "spectral_distribution.hpp"
-#include "spectral_transport.hpp"
-#include "NanairoCommon/keyword.hpp"
+#include "xyz_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Utility/value.hpp"
 
 namespace nanairo {
 
@@ -32,13 +28,30 @@ namespace nanairo {
   \details
   No detailed.
   */
-XyzColorMatchingFunction::XyzColorMatchingFunction(const QJsonObject& settings) noexcept :
-    illuminant_{std::make_unique<SpectralDistribution>()},
+XyzColorMatchingFunction::XyzColorMatchingFunction() noexcept :
     bar_{{std::make_unique<SpectralDistribution>(),
           std::make_unique<SpectralDistribution>(),
           std::make_unique<SpectralDistribution>()}}
 {
-  initialize(settings);
+  initialize();
+}
+
+/*!
+  \details
+  No detailed.
+  */
+XyzColor XyzColorMatchingFunction::toXyzForEmitter(
+    const SpectralDistribution& spectra) const noexcept
+{
+  XyzColor xyz;
+  for (uint color = 0; color < 3; ++color) {
+    const auto& bar = *bar_[color];
+    zisc::CompensatedSummation<Float> s{0.0};
+    for (uint i = 0; i < CoreConfig::spectraSize(); ++i)
+      s.add(bar[i] * spectra[i]);
+    xyz[color] = s.get();
+  }
+  return xyz;
 }
 
 /*!
@@ -47,7 +60,7 @@ XyzColor XyzColorMatchingFunction::toXyzForReflector(
     const SpectralDistribution& spectra) const noexcept
 {
   XyzColor xyz;
-  const Float k = 1.0 / yBar().sum();
+  const Float k = zisc::invert(yBar().sum());
   for (uint color = 0; color < 3; ++color) {
     const auto& bar = *bar_[color];
     zisc::CompensatedSummation<Float> s{0.0};
@@ -62,68 +75,87 @@ XyzColor XyzColorMatchingFunction::toXyzForReflector(
   \details
   No detailed.
   */
-void XyzColorMatchingFunction::initialize(const QJsonObject& settings) noexcept
+void XyzColorMatchingFunction::initialize() noexcept
 {
-  loadStandardIlluminant(settings);
-  loadStandardObserver(settings);
-}
-
-/*!
-  \details
-  No detailed.
-  */
-void XyzColorMatchingFunction::loadStandardIlluminant(
-    const QJsonObject& settings) const noexcept
-{
-  using zisc::toHash32;
-
-  const auto illuminant_name = SceneValue::toString(settings,
-                                                    keyword::standardIllumination);
-  switch (keyword::toHash32(illuminant_name)) {
-   case toHash32(keyword::cieD65): {
-    *illuminant_ = SpectralDistribution::makeSpectra(":/spectrum/illuminant/cie_si_d65.csv");
-    break;
-   }
-   case toHash32(keyword::cieA): {
-    *illuminant_ = SpectralDistribution::makeSpectra(":/spectrum/illuminant/cie_si_a.csv");
-    break;
-   }
-   default: {
-    zisc::raiseError("XyzColorMatchingFunctionError: Unsupported standard illuminant.");
-    break;
-   }
+  {
+    auto& x_bar = xBar();
+    for (uint i = 0; i < CoreConfig::spectraSize(); ++i) {
+      const Float x = calcX(getWavelength(i));
+      x_bar.set(i, x);
+    }
+  }
+  {
+    auto& y_bar = yBar();
+    for (uint i = 0; i < CoreConfig::spectraSize(); ++i) {
+      const Float y = calcY(getWavelength(i));
+      y_bar.set(i, y);
+    }
+  }
+  {
+    auto& z_bar = zBar();
+    for (uint i = 0; i < CoreConfig::spectraSize(); ++i) {
+      const Float z = calcZ(getWavelength(i));
+      z_bar.set(i, z);
+    }
   }
 }
 
 /*!
-  \details
-  No detailed.
   */
-void XyzColorMatchingFunction::loadStandardObserver(
-    const QJsonObject& settings) const noexcept
+Float XyzColorMatchingFunction::calcValue(const Float wavelength,
+                                          const Float alpha,
+                                          const Float beta,
+                                          const Float gamma,
+                                          const Float delta) const noexcept
 {
-  using zisc::toHash32;
+  const Float w_diff = wavelength - beta;
+  const Float t = w_diff * ((w_diff < 0.0) ? gamma : delta);
+  return alpha * zisc::exp(-0.5 * zisc::power<2>(t));
+}
 
-  const auto observer_name = SceneValue::toString(settings,
-                                                  keyword::standardObserver);
-  switch (keyword::toHash32(observer_name)) {
-   case toHash32(keyword::cie2Deg): {
-    *bar_[0] = SpectralDistribution::makeSpectra(":/spectrum/observer/cie_sco_2degree_xbar.csv");
-    *bar_[1] = SpectralDistribution::makeSpectra(":/spectrum/observer/cie_sco_2degree_ybar.csv");
-    *bar_[2] = SpectralDistribution::makeSpectra(":/spectrum/observer/cie_sco_2degree_zbar.csv");
-    break;
-   }
-   case toHash32(keyword::cie10Deg): {
-    *bar_[0] = SpectralDistribution::makeSpectra(":/spectrum/observer/cie_sco_10degree_xbar.csv");
-    *bar_[1] = SpectralDistribution::makeSpectra(":/spectrum/observer/cie_sco_10degree_ybar.csv");
-    *bar_[2] = SpectralDistribution::makeSpectra(":/spectrum/observer/cie_sco_10degree_zbar.csv");
-    break;
-   }
-   default: {
-    zisc::raiseError("XyzColorMatchingFunctionError: Unsupported standard observer.");
-    break;
-   }
-  }
+/*!
+  */
+Float XyzColorMatchingFunction::calcX(const Float wavelength) const noexcept
+{
+  constexpr uint n = 3;
+  constexpr Float alpha[n] = {0.362, 1.056, -0.065};
+  constexpr Float beta[n] = {442.0, 599.8, 501.1};
+  constexpr Float gamma[n] = {0.0624, 0.0264, 0.0490};
+  constexpr Float delta[n] = {0.0374, 0.0323, 0.0382};
+  Float x = 0.0;
+  for (uint i = 0; i < n; ++i)
+    x += calcValue(wavelength, alpha[i], beta[i], gamma[i], delta[i]);
+  return x;
+}
+
+/*!
+  */
+Float XyzColorMatchingFunction::calcY(const Float wavelength) const noexcept
+{
+  constexpr uint n = 2;
+  constexpr Float alpha[n] = {0.821, 0.286};
+  constexpr Float beta[n] = {568.8, 530.9};
+  constexpr Float gamma[n] = {0.0213, 0.0613};
+  constexpr Float delta[n] = {0.0247, 0.0322};
+  Float y = 0.0;
+  for (uint i = 0; i < n; ++i)
+    y += calcValue(wavelength, alpha[i], beta[i], gamma[i], delta[i]);
+  return y;
+}
+
+/*!
+  */
+Float XyzColorMatchingFunction::calcZ(const Float wavelength) const noexcept
+{
+  constexpr uint n = 2;
+  constexpr Float alpha[n] = {1.217, 0.681};
+  constexpr Float beta[n] = {437.0, 459.0};
+  constexpr Float gamma[n] = {0.0845, 0.0385};
+  constexpr Float delta[n] = {0.0278, 0.0725};
+  Float z = 0.0;
+  for (uint i = 0; i < n; ++i)
+    z += calcValue(wavelength, alpha[i], beta[i], gamma[i], delta[i]);
+  return z;
 }
 
 } // namespace nanairo

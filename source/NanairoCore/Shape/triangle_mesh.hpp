@@ -18,10 +18,8 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
-
-// Forward declaration
-class QJsonObject;
 
 namespace nanairo {
 
@@ -51,7 +49,7 @@ class TriangleMesh : public Shape
  public:
   //! Make meshes
   static std::vector<UniquePointer<Shape>> makeMeshes(
-      const QJsonObject& settings) noexcept;
+      const SettingNodeBase* settings) noexcept;
 
   //! Make a smoothed mesh
   static UniquePointer<Shape> makeSmoothedMesh(const Point3& vertex1,

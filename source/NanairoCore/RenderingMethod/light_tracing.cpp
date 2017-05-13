@@ -13,9 +13,6 @@
 #include <thread>
 #include <tuple>
 #include <utility>
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zisc
 #include "zisc/aligned_memory_pool.hpp"
 #include "zisc/arithmetic_array.hpp"
@@ -24,7 +21,6 @@
 #include "zisc/thread_pool.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/scene.hpp"
 #include "NanairoCore/system.hpp"
@@ -48,6 +44,8 @@
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Setting/rendering_method_setting_node.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -56,7 +54,7 @@ namespace nanairo {
   No detailed.
   */
 LightTracing::LightTracing(const System& system,
-                           const QJsonObject& settings) noexcept :
+                           const SettingNodeBase* settings) noexcept :
     RenderingMethod(system, settings)
 {
   initialize(system, settings);
@@ -219,7 +217,7 @@ void LightTracing::addLightContribution(CameraModel& camera,
   */
 inline
 void LightTracing::initialize(const System& /* system */,
-                              const QJsonObject& /* settings */) noexcept
+                              const SettingNodeBase* /* settings */) noexcept
 {
 }
 
@@ -293,8 +291,7 @@ void LightTracing::traceLightPath(System& system,
     // Get a BxDF of the surface
     const auto& material = intersection.object()->material();
     const auto& surface = material.surface();
-    const auto bxdf = surface.makeBxdf(intersection.textureCoordinate(),
-                                       intersection.isReverseFace(),
+    const auto bxdf = surface.makeBxdf(intersection,
                                        wavelengths,
                                        sampler,
                                        memory_pool);

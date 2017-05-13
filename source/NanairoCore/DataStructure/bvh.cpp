@@ -18,9 +18,6 @@
 #include <tuple>
 #include <utility>
 #include <vector>
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zics
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
@@ -32,12 +29,12 @@
 #include "approximate_agglomerative_clustering_bvh.hpp"
 #include "binary_radix_tree_bvh.hpp"
 #include "bvh_node.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/object.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Setting/bvh_setting_node.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
@@ -52,7 +49,7 @@ Bvh::~Bvh() noexcept
   \details
   No detailed.
   */
-Bvh::Bvh(const QJsonObject& /* settings */) noexcept
+Bvh::Bvh(const SettingNodeBase* /* settings */) noexcept
 {
 }
 
@@ -116,23 +113,24 @@ void Bvh::construct(System& system, std::vector<Object>&& object_list) noexcept
   \details
   No detailed.
   */
-UniquePointer<Bvh> Bvh::makeBvh(const QJsonObject& settings) noexcept
+UniquePointer<Bvh> Bvh::makeBvh(const SettingNodeBase* settings) noexcept
 {
-  using zisc::toHash32;
+  ZISC_ASSERT(settings != nullptr, "The setting node is null.");
+  ZISC_ASSERT(settings->type() == SettingNodeType::kBvh,
+              "Wrong setting node is specified.");
+  const auto bvh_setting_node = zisc::cast<const BvhSettingNode*>(settings);
 
   Bvh* bvh = nullptr;
-
-  const auto type = SceneValue::toString(settings, keyword::type);
-  switch (keyword::toHash32(type)) {
-   case toHash32(keyword::binaryRadixTreeBvh): {
+  switch (bvh_setting_node->bvhType()) {
+   case BvhType::kBinaryRadixTree: {
     bvh = new BinaryRadixTreeBvh{settings};
     break;
    }
-   case zisc::toHash32(keyword::approximateAgglomerativeClusteringBvh): {
+   case BvhType::kApproximateAgglomerativeClustering: {
     bvh = new ApproximateAgglomerativeClusteringBvh{settings};
     break;
    }
-   case toHash32(keyword::agglomerativeTreeletRestructuringBvh): {
+   case BvhType::kAgglomerativeTreeletRestructuring: {
     bvh = new AgglomerativeTreeletRestructuringBvh{settings};
     break;
    }

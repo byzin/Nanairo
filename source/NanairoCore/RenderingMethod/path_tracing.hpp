@@ -13,9 +13,7 @@
 // Nanairo
 #include "rendering_method.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-
-// Forward declaration
-class QJsonObject;
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -48,7 +46,7 @@ class PathTracing : public RenderingMethod
 
 
   //! Initialize path tracing method
-  PathTracing(const System& system, const QJsonObject& settings) noexcept;
+  PathTracing(const System& system, const SettingNodeBase* settings) noexcept;
 
 
   //! Render scene using path tracing method
@@ -95,7 +93,7 @@ class PathTracing : public RenderingMethod
                   Float* inverse_direction_pdf) const noexcept;
 
   //! Initialize
-  void initialize(const QJsonObject& settings) noexcept;
+  void initialize(const SettingNodeBase* settings) noexcept;
 
   //! Calculate the MIS weight
   Float calcMisWeight(const Float pdf1, const Float inverse_pdf2) const noexcept;

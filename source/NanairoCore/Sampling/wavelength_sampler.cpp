@@ -11,9 +11,9 @@
 // Nanairo
 #include "sampler.hpp"
 #include "sampled_wavelengths.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Setting/system_setting_node.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/value.hpp"
 
 namespace nanairo {
@@ -21,7 +21,7 @@ namespace nanairo {
 /*!
   */
 WavelengthSampler::WavelengthSampler(const World& world,
-                                     const QJsonObject& settings) noexcept
+                                     const SettingNodeBase* settings) noexcept
 {
   initialize(world, settings);
 }
@@ -29,25 +29,27 @@ WavelengthSampler::WavelengthSampler(const World& world,
 /*!
   */
 void WavelengthSampler::initialize(const World& /* world */,
-                                   const QJsonObject& settings) noexcept
+                                   const SettingNodeBase* settings) noexcept
 {
-  using zisc::toHash32;
-  const auto mode = SceneValue::toString(settings, keyword::colorMode);
-  if (mode == keyword::rgb) { // RGB
+  ZISC_ASSERT(settings != nullptr, "The setting node is null.");
+  ZISC_ASSERT(settings->type() == SettingNodeType::kSystem,
+              "Wrong setting node is specified.");
+  const auto system_settings = zisc::cast<const SystemSettingNode*>(settings);
+
+  if (system_settings->colorMode() == RenderingColorMode::kRgb) {
     type_ = SamplerType::kRgb;
   }
   else { // Spectra
-    const auto method = SceneValue::toString(settings, keyword::wavelengthSampling);
-    switch (keyword::toHash32(method)) {
-     case toHash32(keyword::regularSampling): {
+    switch (system_settings->wavelengthSamplerType()) {
+     case WavelengthSamplerType::kRegular: {
       type_ = SamplerType::kRegular;
       break;
      }
-     case toHash32(keyword::randomSampling): {
+     case WavelengthSamplerType::kRandom: {
        type_ = SamplerType::kRandom;
        break;
      }
-     case toHash32(keyword::stratifiedSampling): {
+     case WavelengthSamplerType::kStratified: {
        type_ = SamplerType::kStratified;
        break;
      }

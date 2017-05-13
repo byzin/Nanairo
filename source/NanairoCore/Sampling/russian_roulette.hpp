@@ -14,9 +14,7 @@
 #include "zisc/algorithm.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-
-// Forward declaration
-class QJsonObject;
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -26,6 +24,13 @@ class Sampler;
 
 //! \addtogroup Core
 //! \{
+
+enum class RouletteType : uint32
+{
+  kMaxWeight                   = zisc::toHash32("MaxWeight"),
+  kAverageWeight               = zisc::toHash32("AverageWeight"),
+  kPathLength                  = zisc::toHash32("PathLength")
+};
 
 /*!
   \details
@@ -64,7 +69,7 @@ class RussianRoulette
 {
  public:
   //! Initialize
-  RussianRoulette(const QJsonObject& settings) noexcept;
+  RussianRoulette(const SettingNodeBase* settings) noexcept;
 
   //! Play russian roulette
   RouletteResult operator()(const uint path,
@@ -78,18 +83,8 @@ class RussianRoulette
                       Sampler& sampler) const noexcept;
 
  private:
-  /*!
-    */
-  enum class RouletteType : int
-  {
-    kAverage,
-    kMax,
-    kPath
-  };
-
-
   //! Initialize
-  void initialize(const QJsonObject& settings) noexcept;
+  void initialize(const SettingNodeBase* settings) noexcept;
 
   //! Play russian roulette
   RouletteResult playWithAverage(const SampledSpectra& weight,

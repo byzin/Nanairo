@@ -18,9 +18,6 @@
 #include <tuple>
 #include <vector>
 #include <utility>
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zisc
 #include "zisc/thread_pool.hpp"
 #include "zisc/utility.hpp"
@@ -29,11 +26,11 @@
 #include "bvh.hpp"
 #include "bvh_node.hpp"
 #include "agglomerative_cluster.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Data/object.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Setting/bvh_setting_node.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -42,7 +39,7 @@ namespace nanairo {
   No detailed.
   */
 ApproximateAgglomerativeClusteringBvh::ApproximateAgglomerativeClusteringBvh(
-    const QJsonObject& settings) noexcept :
+    const SettingNodeBase* settings) noexcept :
         Bvh(settings)
 {
   initialize(settings);
@@ -270,15 +267,21 @@ std::tuple<uint, uint> ApproximateAgglomerativeClusteringBvh::findBestMatch(
   No detailed.
   */
 void ApproximateAgglomerativeClusteringBvh::initialize(
-    const QJsonObject& settings) noexcept
+    const SettingNodeBase* settings) noexcept
 {
-  using zisc::cast;
+  const auto bvh_settings = castNode<BvhSettingNode>(settings);
 
-  delta_ = SceneValue::toInt<uint>(settings, keyword::delta);
-  const Float epsilon = SceneValue::toFloat<Float>(settings, keyword::epsilon);
-  c_ = std::pow(cast<Float>(delta()), kAlpha + epsilon) * 0.5;
-  k_ = kAlpha - epsilon;
-  f_delta_ = f(delta());
+  const auto& parameters =
+      bvh_settings->approximateAgglomerativeClusteringParameters();
+  {
+    delta_ = parameters.delta_;
+  }
+  {
+    const auto epsilon = zisc::cast<Float>(parameters.epsilon_);
+    c_ = std::pow(zisc::cast<Float>(delta()), kAlpha + epsilon) * 0.5;
+    k_ = kAlpha - epsilon;
+    f_delta_ = f(delta());
+  }
 }
 
 /*!

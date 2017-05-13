@@ -42,12 +42,14 @@ void TriangleMesh::setTextureCoordinate(const Point2& texture_coordinate1,
 inline
 Point2 TriangleMesh::textureCoordinate(const Float u, const Float v) const noexcept
 {
-  const Point2 texture_coordinate = texture_coordinate_ + u * texture_edge_[0] +
-                                                          v * texture_edge_[1];
+  Point2 texture_coordinate = texture_coordinate_ + u * texture_edge_[0] +
+                                                    v * texture_edge_[1];
   ZISC_ASSERT(zisc::isInClosedBounds(texture_coordinate[0], 0.0, 1.0),
-              "The texture_coordinate[0] is out of the range [0.0, 1.0].");
+              "The texture_coordinate[0] is out of the range [0.0, 1.0]: ",
+              texture_coordinate[0]);
   ZISC_ASSERT(zisc::isInClosedBounds(texture_coordinate[1], 0.0, 1.0),
-              "The texture_coordinate[1] is out of the range [0.0, 1.0].");
+              "The texture_coordinate[1] is out of the range [0.0, 1.0]: ",
+              texture_coordinate[1]);
   return texture_coordinate;
 }
 

@@ -37,7 +37,8 @@ class GgxConductorBrdf : public GlossyShaderModel
  public:
   //! Create a GGX conductor BRDF
   GgxConductorBrdf(const Float roughness,
-                   const SampledSpectra& reflectance_0reg) noexcept;
+                   const SampledSpectra& n,
+                   const SampledSpectra& eta) noexcept;
 
 
   //! Evaluate the pdf
@@ -71,7 +72,8 @@ class GgxConductorBrdf : public GlossyShaderModel
   bool wavelengthIsSelected() const noexcept override;
 
  private:
-  const SampledSpectra fresnel_0deg_;
+  const SampledSpectra n_,
+                       eta_;
   const Float roughness_;
 };
 

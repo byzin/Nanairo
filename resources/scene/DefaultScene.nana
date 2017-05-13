@@ -7,8 +7,6 @@
         "ColorSpace": "sRGB (D65)",
         "Exposure": 1,
         "Gamma": 2.2,
-        "StandardIllumination": "CIE D65",
-        "StandardObserver": "CIE 2deg color matching function",
         "ToneMapping": "Reinhard",
         "WavelengthSampling": "Regular sampling"
     },
@@ -37,13 +35,6 @@
                         0,
                         -6
                     ]
-                },
-                {
-                    "Angle": 180,
-                    "Axis": "Y Axis",
-                    "Enabled": false,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "CameraObject"
@@ -59,10 +50,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Floor",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -90,10 +81,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": true,
             "Name": "Light",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [

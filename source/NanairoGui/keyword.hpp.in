@@ -1,0 +1,34 @@
+/*!
+  \file keyword.hpp
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2016 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+#ifndef NANAIRO_KEYWORD_HPP
+#define NANAIRO_KEYWORD_HPP
+
+// Standard C++ library
+#include <cstdint>
+#include <string>
+// Qt
+#include <QString>
+// ZIsc
+#include "zisc/algorithm.hpp"
+
+namespace nanairo {
+
+//! \addtogroup Gui
+//! \{
+
+namespace keyword {
+
+//! Calculate the 32bit hash of string using FNW-1a
+inline
+std::uint32_t toHash32(const QString& string)
+{
+  return zisc::toHash32(string.toStdString().c_str());
+}
+

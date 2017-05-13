@@ -66,11 +66,6 @@ Version: 0.0.2
 ### Build tools ###
 
 * CMake (version 3.4 or later) [[page](http://www.cmake.org/)]
-* Python3 (version 3.5 or later) [[page](https://www.python.org/)]
-    - NumPy [[page](http://www.numpy.org/)]
-    - SciPy [[page](https://www.scipy.org/)]
-    - Matplotlib
-    - Colour [[page](http://colour-science.org/)]
 
 ### Dependency Library ###
 
@@ -85,10 +80,10 @@ Please see [wiki](https://github.com/byzin/Nanairo/wiki/Home "NanairoWiki").
 Building step is tested in the following environments  
 
 * Mac Mavericks + Apple Clang 8.0 + Qt 5.7 + CMake 3.7
-* Ubuntu 14.04 + GCC 5.3 + Qt 5.7 + CMake 3.7
-* Ubuntu 14.04 + Clang 3.9 + Qt 5.7 + CMake 3.7
+* Ubuntu 16.04 + GCC 5.4 + Qt 5.7 + CMake 3.7
+* Ubuntu 16.04 + Clang 4.0 + Qt 5.7 + CMake 3.7
 * Windows 8 (64bit) + MinGW GCC 6.2 + Qt 5.6 + CMake 3.7
-* Windows 8 (64bit) + Clang 3.9 with MSVC (Visual Studio 2015) + Qt 5.7 + CMake 3.6
+* Windows 8 (64bit) + Clang 4.0 with MSVC (Visual Studio 2015) + Qt 5.7 + CMake 3.6
 
 ### Download source code ###
 

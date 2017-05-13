@@ -16,15 +16,15 @@
 // Nanairo
 #include "surface_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
-
-// Forward declaration
-class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
+class IntersectionInfo;
+class Sampler;
+class TextureModel;
 class WavelengthSamples;
 
 //! \addtogroup Core
@@ -41,13 +41,14 @@ class SmoothDielectricSurface : public SurfaceModel
 
 
   //! Create a smooth dielectric surface
-  SmoothDielectricSurface(const QJsonObject& settings) noexcept;
+  SmoothDielectricSurface(
+      const SettingNodeBase* settings,
+      const std::vector<const TextureModel*>& texture_list) noexcept;
 
 
   //! Make a Fresnel BRDF
   ShaderPointer makeBxdf(
-      const Point2& texture_coordinate,
-      const bool is_reverse_face,
+      const IntersectionInfo& info,
       const WavelengthSamples& wavelengths,
       Sampler& sampler,
       MemoryPool& memory_pool) const noexcept override;
@@ -57,10 +58,12 @@ class SmoothDielectricSurface : public SurfaceModel
 
  private:
   //! Initialize
-  void initialize(const QJsonObject& settings) noexcept;
+  void initialize(const SettingNodeBase* settings,
+                  const std::vector<const TextureModel*>& texture_list) noexcept;
 
 
-  SpectralDistribution eta_; //!< Interior exterior ratio of refractive index
+  const TextureModel* outer_refractive_index_;
+  const TextureModel* inner_refractive_index_;
 };
 
 //! \} Core

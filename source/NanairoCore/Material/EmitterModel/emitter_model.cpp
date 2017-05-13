@@ -10,19 +10,16 @@
 #include "emitter_model.hpp"
 // Standard C++ library
 #include <vector>
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
 // Nanairo
-#include "NanairoCommon/keyword.hpp"
 #include "non_directional_emitter.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Setting/emitter_setting_node.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -39,7 +36,7 @@ EmitterModel::~EmitterModel() noexcept
   \details
   No detailed.
   */
-EmitterModel::EmitterModel(const QJsonObject& settings) noexcept
+EmitterModel::EmitterModel(const SettingNodeBase* settings) noexcept
 {
   initialize(settings);
 }
@@ -49,15 +46,17 @@ EmitterModel::EmitterModel(const QJsonObject& settings) noexcept
   No detailed.
   */
 UniquePointer<EmitterModel> EmitterModel::makeEmitter(
-    const QJsonObject& settings,
+    const SettingNodeBase* settings,
     const std::vector<const TextureModel*>& texture_list) noexcept
 {
-  using zisc::toHash32;
+  ZISC_ASSERT(settings != nullptr, "The setting node is null.");
+  ZISC_ASSERT(settings->type() == SettingNodeType::kEmitter,
+              "Wrong setting node is specified.");
+  const auto emitter_settings = zisc::cast<const EmitterSettingNode*>(settings);
 
   EmitterModel* emitter = nullptr;
-  const auto type = SceneValue::toString(settings, keyword::type);
-  switch (keyword::toHash32(type)) {
-   case toHash32(keyword::nonDirectionalEmitter): {
+  switch (emitter_settings->emitterType()) {
+   case EmitterType::kNonDirectional: {
     emitter = new NonDirectionalEmitter{settings, texture_list};
     break;
    }
@@ -73,7 +72,7 @@ UniquePointer<EmitterModel> EmitterModel::makeEmitter(
   \details
   No detailed.
   */
-void EmitterModel::initialize(const QJsonObject& /* settings */) noexcept
+void EmitterModel::initialize(const SettingNodeBase* /* settings */) noexcept
 {
 }
 

@@ -8,9 +8,6 @@
   */
 
 #include "texture_model.hpp"
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
@@ -20,10 +17,10 @@
 #include "image_texture.hpp"
 #include "unicolor_texture.hpp"
 #include "value_texture.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
+#include "NanairoCore/Setting/texture_setting_node.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
@@ -40,26 +37,25 @@ TextureModel::~TextureModel() noexcept
   */
 UniquePointer<TextureModel> TextureModel::makeTexture(
     const System& system,
-    const QJsonObject& settings) noexcept
+    const SettingNodeBase* settings) noexcept
 {
-  using zisc::toHash32;
+  const auto texture_settings = castNode<TextureSettingNode>(settings);
 
   TextureModel* texture = nullptr;
-  const auto type = SceneValue::toString(settings, keyword::type);
-  switch (keyword::toHash32(type)) {
-    case toHash32(keyword::valueTexture): {
+  switch (texture_settings->textureType()) {
+    case TextureType::kValue: {
       texture = new ValueTexture{system, settings};
       break;
     }
-    case toHash32(keyword::unicolorTexture): {
+    case TextureType::kUnicolor: {
       texture = new UnicolorTexture{system, settings};
       break;
     }
-    case toHash32(keyword::checkerboardTexture): {
+    case TextureType::kCheckerboard: {
       texture = new CheckerboardTexture{system, settings};
       break;
     }
-    case toHash32(keyword::imageTexture): {
+    case TextureType::kImage: {
       texture = new ImageTexture{system, settings};
       break;
     }

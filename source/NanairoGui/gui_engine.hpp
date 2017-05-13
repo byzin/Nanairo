@@ -13,7 +13,7 @@
 // Qt
 #include <QQmlApplicationEngine>
 // Nanairo
-#include "Utility/gui_renderer_manager.hpp"
+#include "Renderer/gui_renderer_manager.hpp"
 
 // Forward declaration
 class QUrl;

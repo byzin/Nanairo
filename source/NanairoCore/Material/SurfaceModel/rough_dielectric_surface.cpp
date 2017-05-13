@@ -12,9 +12,6 @@
 #include <cstddef>
 #include <utility>
 #include <vector>
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zisc
 #include "zisc/aligned_memory_pool.hpp"
 #include "zisc/error.hpp"
@@ -22,12 +19,13 @@
 // Nanairo
 #include "fresnel.hpp"
 #include "surface_model.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Material/Bxdf/ggx_dielectric_bsdf.hpp"
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
+#include "NanairoCore/Setting/surface_setting_node.hpp"
 
 namespace nanairo {
 
@@ -36,7 +34,7 @@ namespace nanairo {
   No detailed.
   */
 RoughDielectricSurface::RoughDielectricSurface(
-    const QJsonObject& settings,
+    const SettingNodeBase* settings,
     const std::vector<const TextureModel*>& texture_list) noexcept
 {
   initialize(settings, texture_list);
@@ -47,26 +45,22 @@ RoughDielectricSurface::RoughDielectricSurface(
   No detailed.
   */
 auto RoughDielectricSurface::makeBxdf(
-    const Point2& texture_coordinate,
-    const bool is_reverse_face,
+    const IntersectionInfo& info,
     const WavelengthSamples& wavelengths,
     Sampler& /* sampler */,
     MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
-  // Get the roughness
-  constexpr Float min_roughness = 0.001;
-  Float roughness = roughness_->floatValue(texture_coordinate);
-  roughness = (min_roughness < roughness)
-      ? roughness * roughness
-      : min_roughness * min_roughness;
-  ZISC_ASSERT(zisc::isInClosedBounds(roughness, 0.0, 1.0),
-              "The roughness is out of the range [0, 1].");
-
-  // Evaluate the refractive index
+  const auto& uv = info.textureCoordinate();
   const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];
-  const Float n = (is_reverse_face)
-      ? zisc::invert(eta_.getByWavelength(wavelength))
-      : eta_.getByWavelength(wavelength);
+
+  // Evaluate the roughness
+  const Float roughness = evalRoughness(roughness_, uv);
+  // Evaluate the refractive index
+  const Float n = evalRefractiveIndex(outer_refractive_index_,
+                                      inner_refractive_index_,
+                                      uv,
+                                      wavelength,
+                                      info.isReverseFace());
 
   // Make GGX BSDF
   using Bsdf = GgxDielectricBsdf;
@@ -80,7 +74,7 @@ auto RoughDielectricSurface::makeBxdf(
   */
 SurfaceType RoughDielectricSurface::type() const noexcept
 {
-  return SurfaceType::RoughDielectric;
+  return SurfaceType::kRoughDielectric;
 }
 
 /*!
@@ -88,25 +82,24 @@ SurfaceType RoughDielectricSurface::type() const noexcept
   No detailed.
   */
 void RoughDielectricSurface::initialize(
-    const QJsonObject& settings,
+    const SettingNodeBase* settings,
     const std::vector<const TextureModel*>& texture_list) noexcept
 {
-  const auto texture_index = SceneValue::toInt<uint>(settings,
-                                                     keyword::roughnessIndex);
-  roughness_ = texture_list[texture_index];
+  const auto surface_settings = castNode<SurfaceSettingNode>(settings);
 
-  const auto outer_refractive_index_settings =
-      SceneValue::toString(settings, keyword::outerRefractiveIndex);
-  const auto n1 = SpectralDistribution::makeSpectra(outer_refractive_index_settings);
-  ZISC_ASSERT(!n1.hasValue(0.0), "The n1 contains zero value.");
-  ZISC_ASSERT(!n1.hasNegative(), "The n1 contains negative value.");
-
-  const auto inner_refractive_index_settings =
-      SceneValue::toString(settings, keyword::innerRefractiveIndex);
-  const auto n2 = SpectralDistribution::makeSpectra(inner_refractive_index_settings);
-  ZISC_ASSERT(!n2.hasNegative(), "The n2 contains negative value.");
-
-  eta_ = n2 / n1;
+  const auto& parameters = surface_settings->roughDielectricParameters();
+  {
+    const auto index = parameters.outer_refractive_index_;
+    outer_refractive_index_ = texture_list[index];
+  }
+  {
+    const auto index = parameters.inner_refractive_index_;
+    inner_refractive_index_ = texture_list[index];
+  }
+  {
+    const auto index = parameters.roughness_index_;
+    roughness_ = texture_list[index];
+  }
 }
 
 } // namespace nanairo

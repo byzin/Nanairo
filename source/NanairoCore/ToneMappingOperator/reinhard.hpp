@@ -13,9 +13,7 @@
 // Nanairo
 #include "tone_mapping_operator.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-
-// Forward declaration
-class QJsonObject;
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -33,7 +31,7 @@ class Reinhard : public ToneMappingOperator
 {
  public:
   //! Initialize reinhard method
-  Reinhard(const System& system, const QJsonObject& settings) noexcept;
+  Reinhard(const System& system, const SettingNodeBase* settings) noexcept;
 
  private:
   //! Apply a reinhard tonemap curve

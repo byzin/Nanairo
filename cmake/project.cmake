@@ -95,20 +95,51 @@ endfunction(getNanairoWarningOption)
 
 
 #
-function(buildNanairo)
+function(buildNanairoCore core_library core_definitions)
+  # Load Nanairo core
+  include(${PROJECT_SOURCE_DIR}/source/NanairoCore/config.cmake)
+  getNanairoCore(core_source_files core_definitions)
+  # Build Core
+  set(core_name NanairoCore)
+  add_library(${core_name} STATIC ${core_source_files})
+  # Set properties
+  set_target_properties(${core_name} PROPERTIES CXX_STANDARD 14
+                                                CXX_STANDARD_REQUIRED ON)
+  getCxxWarningOption(cxx_warning_flags)
+  getNanairoWarningOption(nanairo_warning_flags)
+  checkCompilerHasCxx14Features(${core_name})
+  target_compile_options(${core_name} PRIVATE ${cxx_compiler_flags}
+                                              ${zisc_compile_flags}
+                                              ${cxx_warning_flags}
+                                              ${nanairo_warning_flags})
+  target_include_directories(${core_name} PRIVATE ${PROJECT_SOURCE_DIR}/source
+                                                  ${PROJECT_BINARY_DIR}/include
+                                                  ${zisc_include_dirs})
+  target_link_libraries(${core_name} ${CMAKE_THREAD_LIBS_INIT}
+                                     ${cxx_linker_flags}
+                                     ${zisc_linker_flags})
+  target_compile_definitions(${core_name} PRIVATE ${cxx_definitions}
+                                                    ${core_definitions}
+                                                    ${zisc_definitions}
+                                                    ${environment_definitions})
+
+
+  # Output variables
+  set(${core_library} ${core_name} PARENT_SCOPE)
+endfunction(buildNanairoCore)
+
+
+#
+function(buildNanairoSimpleRenderer)
+endfunction(buildNanairoSimpleRenderer)
+
+
+#
+function(buildNanairoApp)
   ## Load Nanairo modules
-#  include(${PROJECT_SOURCE_DIR}/cmake/keyword.cmake)
-#  getNanairoKeywords(nanairo_keyword_list)
-#  # NanairoCommon
-#  include(${PROJECT_SOURCE_DIR}/source/NanairoCommon/config.cmake)
-#  getNanairoCommon(common_source_files)
-#  # NanairoCore
-#  include(${PROJECT_SOURCE_DIR}/source/NanairoCore/config.cmake)
-#  getNanairoCore(core_source_files core_definitions)
-  # NanairoRenderer
-  include(${PROJECT_SOURCE_DIR}/source/NanairoRenderer/config.cmake)
-  getNanairoRenderer(renderer_source_files renderer_definitions)
-  # NanairoUI
+  include(${PROJECT_SOURCE_DIR}/cmake/keyword.cmake)
+  getNanairoKeywords(nanairo_keyword_list)
+  # NanairoGUI
   include(${PROJECT_SOURCE_DIR}/source/NanairoGui/config.cmake)
   getNanairoGui(gui_source_files gui_definitions)
   # Build Nanairo
@@ -119,13 +150,10 @@ function(buildNanairo)
   elseif(Z_MAC)
     set(executable_options MACOSX_BUNDLE)
   endif()
-  add_executable(${PROJECT_NAME} ${executable_options}
-                                 ${nanairo_source_files}
-                                 ${common_source_files}
-                                 ${core_source_files}
-                                 ${renderer_source_files}
-                                 ${gui_source_files}
-                                 ${zisc_source_files})
+  add_executable(${PROJECT_NAME} ${executable_options} ${nanairo_source_files}
+                                                       ${core_source_files}
+                                                       ${gui_source_files}
+                                                       ${zisc_source_files})
   # Set Nanairo properties
   set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 14
                                                    CXX_STANDARD_REQUIRED ON
@@ -146,10 +174,10 @@ function(buildNanairo)
   target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT}
                                         ${cxx_linker_flags}
                                         ${qt5_libraries}
-                                        ${zisc_linker_flags})
+                                        ${zisc_linker_flags}
+                                        ${core_library})
   target_compile_definitions(${PROJECT_NAME} PRIVATE ${cxx_definitions}
                                                      ${core_definitions}
-                                                     ${renderer_definitions}
                                                      ${gui_definitions}
                                                      ${qt5_definitions}
                                                      ${zisc_definitions}
@@ -165,4 +193,4 @@ function(buildNanairo)
                        COMMENT "Creating the symlink to \"${exec_path}\"."
                        VERBATIM)
   endif()
-endfunction(buildNanairo)
+endfunction(buildNanairoApp)

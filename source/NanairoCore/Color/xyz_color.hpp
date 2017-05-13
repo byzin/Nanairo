@@ -12,8 +12,6 @@
 
 // Zisc
 #include "zisc/arithmetic_array.hpp"
-// Qt
-#include <QColor>
 // Nanairo
 #include "color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"

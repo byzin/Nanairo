@@ -12,8 +12,10 @@
 
 // Standard C++ library
 #include <cstdint>
+#include <string>
 #include <type_traits>
 // Zisc
+#include "zisc/algorithm.hpp"
 #include "@nanairo_core_sampler_header_path@"
 
 // Forward declaration
@@ -59,6 +61,15 @@ using Matrix3x3 = zisc::Matrix<Float, 3, 3>;
 using SamplerType = @nanairo_core_sampler_type@;
 
 /*!
+  */
+enum class ObjectType : uint32
+{
+  kCamera                     = zisc::toHash32("Camera"),
+  kGroup                      = zisc::toHash32("Group"),
+  kSingle                     = zisc::toHash32("Single")
+};
+
+/*!
   \brief This class contains properties used in Core module
   */
 class CoreConfig
@@ -75,6 +86,12 @@ class CoreConfig
 
   //! Return the shortest wavelength
   static constexpr uint16 shortestWavelength() noexcept;
+
+  //! Return the minimum image height resolution
+  static constexpr uint imageHeightMin() noexcept;
+
+  //! Return the minimum image width resolution
+  static constexpr uint imageWidthMin() noexcept;
 
   //! Return the longest wavelength
   static constexpr uint16 longestWavelength() noexcept;
@@ -102,6 +119,19 @@ class CoreConfig
 
   //! Check if the implicit conenction of path tracing is enabled
   static constexpr bool pathTracingImplicitConnectionIsEnabled() noexcept;
+
+  //! Return the version string of the application
+  static std::string versionString() noexcept;
+
+  //! Return the major number of the version
+  static constexpr int versionMajor() noexcept;
+
+  //! Return the minor number of the version
+  static constexpr int versionMinor() noexcept;
+
+  //! Return the patch number of the version
+  static constexpr int versionPatch() noexcept;
+
 };
 
 //! \} Core

@@ -14,9 +14,6 @@
 #include <tuple>
 #include <vector>
 #include <utility>
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zisc
 #include "zisc/error.hpp"
 // Nanairo
@@ -26,7 +23,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Data/object.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -34,7 +31,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-BinaryRadixTreeBvh::BinaryRadixTreeBvh(const QJsonObject& settings) noexcept :
+BinaryRadixTreeBvh::BinaryRadixTreeBvh(const SettingNodeBase* settings) noexcept :
     Bvh(settings)
 {
 }

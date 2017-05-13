@@ -13,12 +13,12 @@
 // Standard C+ library
 #include <cstddef>
 #include <vector>
+// Zisc
+#include "zisc/algorithm.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
-
-// Forward declaration
-class QJsonObject;
 
 namespace nanairo {
 
@@ -35,12 +35,12 @@ class WavelengthSamples;
   \details
   No detailed.
   */
-enum class TextureType : int
+enum class TextureType : uint32
 {
-  Value = 0,
-  Unicolor,
-  Checkerboard,
-  Image
+  kValue                       = zisc::toHash32("Value"),
+  kUnicolor                    = zisc::toHash32("Unicolor"),
+  kCheckerboard                = zisc::toHash32("Checkerboard"),
+  kImage                       = zisc::toHash32("Image")
 };
 
 /*!
@@ -54,27 +54,38 @@ class TextureModel
   virtual ~TextureModel() noexcept;
 
 
-  //! Evaluate a float value at the texture coordinate
-  virtual Float floatValue(const Point2& coordinate) const noexcept = 0;
-
-  //! Evaluate emissive spectra at the texture coordinate
+  //! Evaluate the spectra at the uv coordinate
   virtual SampledSpectra emissiveValue(
-      const Point2& coordinate,
+      const Point2& uv,
       const WavelengthSamples& wavelengths) const noexcept = 0;
+
+  //! Evaluate the gray scale value at the uv coordinate
+  virtual Float grayScaleValue(const Point2& uv) const noexcept = 0;
 
   //! Make a texture
   static UniquePointer<TextureModel> makeTexture(
       const System& system,
-      const QJsonObject& settings) noexcept;
+      const SettingNodeBase* settings) noexcept;
 
-  //! Evaluate the reflective value by the wavelength at the texture coordinate
-  virtual Float reflectiveValue(const Point2& coordinate,
-                                const uint16 wavelength) const noexcept = 0;
+  //! Evaluate the reflective value by the wavelength at the uv coordinate
+  virtual Float reflectiveValue(
+      const Point2& uv,
+      const uint16 wavelength) const noexcept = 0;
 
-  //! Evaluate reflective spectra at the texture coordinate
+  //! Evaluate the reflective spectra at the uv coordinate
   virtual SampledSpectra reflectiveValue(
-      const Point2& coordinate,
+      const Point2& uv,
       const WavelengthSamples& wavelengths) const noexcept = 0;
+
+  //! Evaluate the spectra value by the wavelength at the uv coordinate
+  virtual Float spectraValue(
+      const Point2& uv,
+      const uint16 wavelength) const noexcept = 0;
+
+  //! Evaluate the spectra at the uv coordinate
+  virtual SampledSpectra spectraValue(
+      const Point2& uv,
+      const WavelengthSamples& wavelength) const noexcept = 0;
 
   //! Return the texture type
   virtual TextureType type() const noexcept = 0;

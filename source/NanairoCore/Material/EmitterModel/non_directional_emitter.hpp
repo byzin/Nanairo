@@ -15,9 +15,7 @@
 // Nanairo
 #include "emitter_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-
-// Forward declaration
-class QJsonObject;
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -38,7 +36,7 @@ class NonDirectionalEmitter : public EmitterModel
  public:
   //! Create a non directional emitter
   NonDirectionalEmitter(
-      const QJsonObject& settings,
+      const SettingNodeBase* settings,
       const std::vector<const TextureModel*>& texture_list) noexcept;
 
 
@@ -52,7 +50,7 @@ class NonDirectionalEmitter : public EmitterModel
 
  private:
   //! Initialize the emitter
-  void initialize(const QJsonObject& settings,
+  void initialize(const SettingNodeBase* settings,
                   const std::vector<const TextureModel*>& texture_list) noexcept;
 
 

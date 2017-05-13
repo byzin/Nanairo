@@ -9,8 +9,6 @@
         "ColorSpace": "sRGB (D65)",
         "Exposure": 1,
         "Gamma": 2.2,
-        "StandardIllumination": "CIE D65",
-        "StandardObserver": "CIE 2deg color matching function",
         "ToneMapping": "Reinhard",
         "WavelengthSampling": "Regular sampling"
     },
@@ -430,9 +428,9 @@
             "Type": "SmoothDiffuseSurface"
         },
         {
-            "InnerRefractiveIndex": "resources/spectrum/dielectric/diamond.csv",
+            "InnerRefractiveIndex": 3,
             "Name": "DiamondSurface",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 2,
             "Type": "SmoothDielectricSurface"
         }
     ],
@@ -462,6 +460,22 @@
                 "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
             },
             "Name": "EmitterTexture",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/dielectric/Air.csv"
+            },
+            "Name": "AirRefractiveIndex",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/dielectric/diamond.csv"
+            },
+            "Name": "DiamondRefractiveIndex",
             "Type": "UnicolorTexture"
         }
     ]

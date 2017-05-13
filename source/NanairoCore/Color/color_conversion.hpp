@@ -12,11 +12,10 @@
 
 // Standard C++ library
 #include <tuple>
-// Qt
-#include <QColor>
 // Zisc
 #include "zisc/array.hpp"
 // Nanairo
+#include "rgba_32.hpp"
 #include "rgb_color.hpp"
 #include "xyz_color.hpp"
 #include "yxy_color.hpp"
@@ -33,15 +32,15 @@ namespace nanairo {
 class ColorConversion
 {
  public:
-  //! Convert QRgb to RGB
-  static RgbColor toRgb(const QColor& rgb) noexcept;
+  //! Convert integer RGB to float RGB
+  static RgbColor toFloatRgb(const Rgba32& rgb) noexcept;
+
+  //! Convert float RGB to integer RGB
+  static Rgba32 toIntRgb(const RgbColor& rgb) noexcept;
 
   //! Convert XYZ to RGB
   static RgbColor toRgb(const XyzColor& xyz,
                         const Matrix3x3& to_rgb) noexcept;
-
-  //! Convert RGB to QRgb
-  static QRgb toQRgb(const RgbColor& rgb) noexcept;
 
   //! Convert RGB to XYZ
   static XyzColor toXyz(const RgbColor& rgb,

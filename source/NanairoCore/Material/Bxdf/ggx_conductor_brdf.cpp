@@ -28,8 +28,10 @@ namespace nanairo {
   */
 GgxConductorBrdf::GgxConductorBrdf(
     const Float roughness,
-    const SampledSpectra& fresnel_0deg) noexcept :
-        fresnel_0deg_{fresnel_0deg},
+    const SampledSpectra& n,
+    const SampledSpectra& eta) noexcept :
+        n_{n},
+        eta_{eta},
         roughness_{roughness}
 {
 }
@@ -58,8 +60,7 @@ SampledSpectra GgxConductorBrdf::evalRadiance(
     const Vector3& normal,
     const WavelengthSamples& /* wavelengths */) const noexcept
 {
-  const auto& r0 = fresnel_0deg_;
-  const auto f = MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, normal, r0);
+  const auto f = MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, normal, n_, eta_);
   return f;
 }
 
@@ -73,10 +74,8 @@ std::tuple<SampledSpectra, Float> GgxConductorBrdf::evalRadianceAndPdf(
     const Vector3& normal,
     const WavelengthSamples& /* wavelengths */) const noexcept
 {
-  const auto& r0 = fresnel_0deg_;
   Float pdf = 0.0;
-  const auto f =
-      MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, normal, r0, &pdf);
+  const auto f = MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, normal, n_, eta_, &pdf);
   return std::make_tuple(std::move(f), pdf);
 }
 
@@ -107,8 +106,7 @@ std::tuple<SampledDirection, SampledSpectra> GgxConductorBrdf::sample(
                 "Microfacet normal isn't in the same hemisphere as normal.");
 
     // Evaluate fresnel term
-    const auto& r0 = fresnel_0deg_;
-    const auto fresnel = Fresnel::evalFresnel(cos_mi, r0);
+    const auto fresnel = Fresnel::evalFresnel(n_, eta_, cos_mi);
 
     // Evaluate the weight
     const Float cos_mo = cos_mi;

@@ -14,14 +14,12 @@
 #include <memory>
 // Zisc
 #include "zisc/arithmetic_array.hpp"
-#include "zisc/linear_interp.hpp"
 // Nanairo
 #include "xyz_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-
-// Forward decralation
-class QJsonObject;
-class QString;
+#include "NanairoCore/system.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
+#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -31,6 +29,8 @@ class System;
 
 //! \addtogroup Core
 //! \{
+
+using ColorRepresentationType = RenderingColorMode;
 
 /*!
   \details
@@ -132,25 +132,22 @@ class SpectralDistribution
   //! Check if all components are zero
   bool isAllZero() const noexcept;
 
+  //! Check if the distribution is RGB distribution
+  bool isRgbDistribution() const noexcept;
+
   //! Return the largest element
   Float max() const noexcept;
 
   //! Return the smallest element
   Float min() const noexcept;
 
-  //! Make a emissive spectra
-  static SpectralDistribution makeEmissive(const System& system,
-                                           const QJsonObject& settings) noexcept;
+  //! Compute the spectra based on the system color mode
+  SpectralDistribution computeSystemColor(const System& system) const noexcept;
 
-  //! Make a reflectance spectra
-  static SpectralDistribution makeReflective(const System& system,
-                                             const QJsonObject& settings) noexcept;
-
-  //! Make a spectral property
-  static SpectralDistribution makeSpectra(const QJsonObject& settings) noexcept;
-
-  //! Make a spectral property
-  static SpectralDistribution makeSpectra(const QString& file_path) noexcept;
+  //! Make a spectra
+  static std::unique_ptr<SpectralDistribution> makeDistribution(
+      const System& system,
+      const SettingNodeBase* settings) noexcept;
 
   //! Return the normalized distribution
   SpectralDistribution normalized() const noexcept;
@@ -170,12 +167,11 @@ class SpectralDistribution
   //! Get sum of intensities
   Float sum() const noexcept;
 
-  //! Convert RGB to RGB spectra
-  static SpectralDistribution toRgbSpectra(const RgbColor& color) noexcept;
+  //! Convert to emissive color
+  SpectralDistribution toEmissiveColor() const noexcept;
 
-  //! Convert RGB to spectra
-  static SpectralDistribution toSpectra(const System& system,
-                                        const RgbColor& color) noexcept;
+  //! Convert to emissive color
+  SpectralDistribution toReflectiveColor() const noexcept;
 
   //! Return the xyz color converted from the spectra to
   XyzColor toXyzForEmitter(const System& system) const noexcept;
@@ -184,36 +180,28 @@ class SpectralDistribution
   XyzColor toXyzForReflector(const System& system) const noexcept;
 
  private:
-  //!
-  static bool isRgbData(const QJsonObject& settings) noexcept;
+  //! Load the RGB data from the settings
+  void loadRgb(const System& system,
+               const SettingNodeBase* settings) noexcept;
 
-  //!
-  static zisc::LinearInterp<Float> loadSpectraData(const QString& file_path) noexcept;
+  //! Load the spectra data from the settings
+  void loadSpectra(const SettingNodeBase* settings) noexcept;
 
-  //! Make a spectra
-  template <ColorType type>
-  static SpectralDistribution makeColor(const System& system,
-                                        const QJsonObject& settings) noexcept;
+  //! Convert RGB color to spectra color
+  SpectralDistribution toSpectraColor(const System& system) const noexcept;
 
-  //!
-  static RgbColor makeRgb(const System& system,
-                          const QJsonObject& settings) noexcept;
-
-  //!
-  template <ColorType type>
-  static SpectralDistribution toRgbSpectra(
-      const System& system,
-      const SpectralDistribution& spectra) noexcept;
+  //! Convert spectra color to RGB color
+  SpectralDistribution toRgbSpectraColor(const System& system) const noexcept;
 
   //! 
   template <ColorType type>
-  static XyzColor toXyz(
-      const System& system,
-      const SpectralDistribution& spectra) noexcept;
+  static XyzColor toXyz(const System& system,
+                        const SpectralDistribution& spectra) noexcept;
 
   //! Return the xyz color converted from the spectra to
   template <ColorType type>
   XyzColor toXyz(const System& system) const noexcept;
+
 
   zisc::ArithmeticArray<Float, CoreConfig::spectraSize()> distribution_;
 };

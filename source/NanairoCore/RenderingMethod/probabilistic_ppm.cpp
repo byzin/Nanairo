@@ -14,10 +14,6 @@
 #include <thread>
 #include <tuple>
 #include <utility>
-// Qt
-#include <QString>
-#include <QJsonObject>
-#include <QtGlobal>
 // Zisc
 #include "zisc/aligned_memory_pool.hpp"
 #include "zisc/algorithm.hpp"
@@ -27,7 +23,6 @@
 #include "zisc/utility.hpp"
 // Nanairo
 #include "rendering_method.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/scene.hpp"
 #include "NanairoCore/system.hpp"
@@ -47,8 +42,9 @@
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Setting/rendering_method_setting_node.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -57,7 +53,7 @@ namespace nanairo {
   No detailed.
   */
 ProbabilisticPpm::ProbabilisticPpm(const System& system,
-                                   const QJsonObject& settings) noexcept :
+                                   const SettingNodeBase* settings) noexcept :
     RenderingMethod(system, settings),
     photon_map_{system},
     cycle_{0}
@@ -256,30 +252,26 @@ Ray ProbabilisticPpm::generateRay(
   No detailed.
   */
 void ProbabilisticPpm::initialize(const System& system,
-                                  const QJsonObject& settings) noexcept
+                                  const SettingNodeBase* settings) noexcept
 {
+  const auto method_settings = castNode<RenderingMethodSettingNode>(settings);
+
   using zisc::cast;
   auto& thread_pool = system.threadPool();
 
+  const auto& parameters = method_settings->probabilisticPpmParameters();
   {
-    const auto num_of_photons = SceneValue::toInt<uint>(settings,
-                                                        keyword::numOfPhotons);
-    if (num_of_photons < thread_pool.numOfThreads())
-      qWarning("  PPPM warning: The num of photons is less than the num of threads.");
+    const auto num_of_photons = parameters.num_of_photons_;;
     num_of_thread_photons_ = num_of_photons / thread_pool.numOfThreads();
-    photon_power_scale_ = 
-        zisc::invert(cast<Float>(num_of_thread_photons_ * thread_pool.numOfThreads()));
-    qInfo("  PPPM num of photons: %ld", cast<long int>(num_of_thread_photons_));
+    photon_power_scale_ = zisc::invert(cast<Float>(num_of_thread_photons_ *
+                                                   thread_pool.numOfThreads()));
   }
   {
-    alpha_ = SceneValue::toFloat<Float>(settings, keyword::radiusReductionRate);
-    qInfo("  PPPM radius reduction rate: %f", cast<float>(alpha_));
+    alpha_ = parameters.radius_reduction_rate_;
   }
   {
-    const auto initial_radius =
-        SceneValue::toFloat<Float>(settings, keyword::photonSearchRadius);
+    const Float initial_radius = cast<Float>(parameters.photon_search_radius_);
     radius2_ = zisc::power<2>(initial_radius) / alpha_;
-    qInfo("  PPPM photon search radius: %f", cast<float>(initial_radius));
   }
 
   // Set a clear function
@@ -297,8 +289,7 @@ void ProbabilisticPpm::initialize(const System& system,
   thread_photon_list_.resize(thread_pool.numOfThreads());
 
   {
-    const auto k = SceneValue::toInt<uint>(settings, keyword::kNearestNeighbor);
-    qInfo("  PPPM the k of knn: %ld", cast<long int>(k));
+    const uint k = parameters.k_nearest_neighbor_;
     for (auto& photon_list : thread_photon_list_)
       photon_list.setK(k);
   }
@@ -389,8 +380,7 @@ void ProbabilisticPpm::traceCameraPath(
     // Evaluate material
     const auto& material = intersection.object()->material();
     const auto& surface = material.surface();
-    const auto bxdf = surface.makeBxdf(intersection.textureCoordinate(),
-                                       intersection.isReverseFace(),
+    const auto bxdf = surface.makeBxdf(intersection,
                                        wavelengths,
                                        sampler,
                                        memory_pool);
@@ -473,8 +463,7 @@ void ProbabilisticPpm::tracePhoton(
 
     // Evaluate the surface
     const auto& surface = intersection.object()->material().surface();
-    const auto bxdf = surface.makeBxdf(intersection.textureCoordinate(),
-                                       intersection.isReverseFace(),
+    const auto bxdf = surface.makeBxdf(intersection,
                                        wavelengths,
                                        sampler,
                                        memory_pool);

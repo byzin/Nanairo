@@ -10,17 +10,11 @@
 #include "spectral_distribution.hpp"
 // Standard C++ library
 #include <cmath>
+#include <limits>
 #include <memory>
 #include <utility>
-// Qt
-#include <QColor>
-#include <QFile>
-#include <QJsonObject>
-#include <QString>
-#include <QTextStream>
 // Zisc
 #include "zisc/arithmetic_array.hpp"
-#include "zisc/csv.hpp"
 #include "zisc/linear_interp.hpp"
 #include "zisc/math.hpp"
 #include "zisc/matrix.hpp"
@@ -32,10 +26,10 @@
 #include "spectral_transport.hpp"
 #include "xyz_color.hpp"
 #include "xyz_color_matching_function.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Setting/spectra_setting_node.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/value.hpp"
 
 namespace nanairo {
@@ -60,16 +54,65 @@ void SpectralDistribution::correctGamma(const Float gamma) noexcept
 }
 
 /*!
-  \details
-  No detailed.
   */
-SpectralDistribution SpectralDistribution::makeEmissive(
-    const System& system,
-    const QJsonObject& settings) noexcept
+bool SpectralDistribution::isRgbDistribution() const noexcept
 {
-  auto distribution = makeColor<ColorType::kEmissive>(system, settings);
-  distribution.clampAll(0.0, distribution.max());
-  distribution = distribution.normalized();
+  constexpr uint16 blue_w = CoreConfig::blueWavelength();
+  constexpr uint16 green_w = CoreConfig::greenWavelength();
+  constexpr uint16 red_w = CoreConfig::redWavelength();
+
+  bool is_rgb = true;
+  for (uint index = 0; is_rgb && (index < CoreConfig::spectraSize()); ++index) {
+    const uint16 lambda = getWavelength(index);
+    is_rgb = ((lambda == blue_w) || (lambda == green_w) || (lambda == red_w))
+      ? (is_rgb && (0.0 < get(index)))
+      : (is_rgb && (get(index) == 0.0));
+  }
+  return is_rgb;
+}
+
+/*!
+  */
+SpectralDistribution SpectralDistribution::computeSystemColor(const System& system)
+    const noexcept
+{
+  SpectralDistribution distribution = *this;
+  // RGB
+  if (isRgbDistribution()) {
+    if (system.colorMode() == RenderingColorMode::kSpectra)
+      distribution = distribution.toSpectraColor(system);
+  }
+  // Spectra
+  else {
+    if (system.colorMode() == RenderingColorMode::kRgb)
+      distribution = distribution.toRgbSpectraColor(system);
+  }
+  return distribution;
+}
+
+/*!
+  */
+std::unique_ptr<SpectralDistribution> SpectralDistribution::makeDistribution(
+    const System& system,
+    const SettingNodeBase* settings) noexcept
+{
+  const auto spectra_settings = castNode<SpectraSettingNode>(settings);
+
+  auto distribution = std::make_unique<SpectralDistribution>();
+  switch (spectra_settings->representationType()) {
+   case ColorRepresentationType::kRgb: {
+    distribution->loadRgb(system, settings);
+    break;
+   }
+   case ColorRepresentationType::kSpectra: {
+    distribution->loadSpectra(settings);
+    break;
+   }
+   default: {
+    zisc::raiseError("ColorError: Unsupported representatino type is specified.");
+    break;
+   }
+  }
   return distribution;
 }
 
@@ -77,11 +120,18 @@ SpectralDistribution SpectralDistribution::makeEmissive(
   \details
   No detailed.
   */
-SpectralDistribution SpectralDistribution::makeReflective(
-    const System& system,
-    const QJsonObject& settings) noexcept
+SpectralDistribution SpectralDistribution::toEmissiveColor() const noexcept
 {
-  auto distribution = makeColor<ColorType::kReflective>(system, settings);
+  return normalized();
+}
+
+/*!
+  \details
+  No detailed.
+  */
+SpectralDistribution SpectralDistribution::toReflectiveColor() const noexcept
+{
+  auto distribution = *this;
   distribution.clampAll(0.0, 1.0);
   return distribution;
 }
@@ -90,26 +140,63 @@ SpectralDistribution SpectralDistribution::makeReflective(
   \details
   No detailed.
   */
-SpectralDistribution SpectralDistribution::makeSpectra(
-    const QJsonObject& settings) noexcept
+void SpectralDistribution::loadRgb(const System& system,
+                                   const SettingNodeBase* settings) noexcept
 {
-  const auto file_path = SceneValue::toString(settings, keyword::value);
-  return makeSpectra(file_path);
+  const auto spectra_settings = castNode<SpectraSettingNode>(settings);
+
+  RgbColor rgb;
+  {
+    const auto& parameters = spectra_settings->rgbParameters();
+    rgb[0] = zisc::cast<Float>(parameters.rgb_[0]);
+    rgb[1] = zisc::cast<Float>(parameters.rgb_[1]);
+    rgb[2] = zisc::cast<Float>(parameters.rgb_[2]);
+    rgb.correctGamma(system.gamma());
+    rgb.clampAll(std::numeric_limits<Float>::epsilon(), rgb.max());
+  }
+  {
+    setByWavelength(CoreConfig::blueWavelength(), rgb.blue());
+    setByWavelength(CoreConfig::greenWavelength(), rgb.green());
+    setByWavelength(CoreConfig::redWavelength(), rgb.red());
+  }
+}
+
+/*!
+  */
+void SpectralDistribution::loadSpectra(const SettingNodeBase* settings) noexcept
+{
+  const auto spectra_settings = castNode<SpectraSettingNode>(settings);
+
+  zisc::LinearInterp<Float> spectra_data;
+  {
+    const auto& parameters = spectra_settings->spectraParameters();
+    for (const auto& wavelength_data : parameters.spectra_) {
+      spectra_data.add(zisc::cast<Float>(std::get<0>(wavelength_data)),
+                       zisc::cast<Float>(std::get<1>(wavelength_data)));
+    }
+  }
+  for (uint index = 0; index < CoreConfig::spectraSize(); ++index) {
+    const Float lambda = zisc::cast<Float>(getWavelength(index));
+    set(index, spectra_data(lambda));
+  }
+  clampAll(std::numeric_limits<Float>::epsilon(), max());
 }
 
 /*!
   \details
   No detailed.
   */
-SpectralDistribution SpectralDistribution::makeSpectra(
-    const QString& file_path) noexcept
+SpectralDistribution SpectralDistribution::toSpectraColor(const System& system)
+    const noexcept
 {
-  auto spectra_data = loadSpectraData(file_path);
-  SpectralDistribution spectra;
-  for (uint index = 0; index < CoreConfig::spectraSize(); ++index) {
-    const Float lambda = zisc::cast<Float>(getWavelength(index));
-    spectra.set(index, spectra_data(lambda));
-  }
+  const RgbColor rgb{getByWavelength(CoreConfig::redWavelength()),
+                     getByWavelength(CoreConfig::greenWavelength()),
+                     getByWavelength(CoreConfig::blueWavelength())};
+  const auto to_xyz_matrix = getRgbToXyzMatrix(system.colorSpace());
+  const auto xyz = ColorConversion::toXyz(rgb, to_xyz_matrix);
+
+  auto spectra = SpectralTransport::toSpectra(xyz);
+  spectra.clampAll(std::numeric_limits<Float>::epsilon(), max());
   return spectra;
 }
 
@@ -117,26 +204,19 @@ SpectralDistribution SpectralDistribution::makeSpectra(
   \details
   No detailed.
   */
-SpectralDistribution SpectralDistribution::toRgbSpectra(const RgbColor& rgb) noexcept
+SpectralDistribution SpectralDistribution::toRgbSpectraColor(const System& system)
+    const noexcept
 {
-  SpectralDistribution rgb_spectra;
-  rgb_spectra.setByWavelength(CoreConfig::blueWavelength(), rgb.blue());
-  rgb_spectra.setByWavelength(CoreConfig::greenWavelength(), rgb.green());
-  rgb_spectra.setByWavelength(CoreConfig::redWavelength(), rgb.red());
-  return rgb_spectra;
-}
+  const auto xyz = toXyz<ColorType::kReflective>(system, *this);
+  const auto to_rgb_matrix = getXyzToRgbMatrix(system.colorSpace());
+  auto rgb = ColorConversion::toRgb(xyz, to_rgb_matrix);
+  rgb.clampAll(std::numeric_limits<Float>::epsilon(), rgb.max());
 
-/*!
-  \details
-  No detailed.
-  */
-SpectralDistribution SpectralDistribution::toSpectra(const System& system,
-                                                     const RgbColor& color) noexcept
-{
-  using zisc::cast;
-  const auto to_xyz = getRgbToXyzMatrix(system.colorSpace());
-  const auto xyz = ColorConversion::toXyz(color, to_xyz);
-  return SpectralTransport::toSpectra(xyz);
+  SpectralDistribution spectra;
+  spectra.setByWavelength(CoreConfig::blueWavelength(), rgb.blue());
+  spectra.setByWavelength(CoreConfig::greenWavelength(), rgb.green());
+  spectra.setByWavelength(CoreConfig::redWavelength(), rgb.red());
+  return spectra;
 }
 
 /*!
@@ -157,105 +237,9 @@ XyzColor SpectralDistribution::toXyzForReflector(const System& system) const noe
   \details
   No detailed.
   */
-inline
-bool SpectralDistribution::isRgbData(const QJsonObject& settings) noexcept
-{
-  return SceneValue::toString(settings, keyword::colorMode) == keyword::rgb;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-zisc::LinearInterp<Float> SpectralDistribution::loadSpectraData(
-    const QString& file_path) noexcept
-{
-  // Open distribution file
-  QFile csv_file{file_path};
-  csv_file.open(QIODevice::ReadOnly | QIODevice::Text);
-  QTextStream csv_text{&csv_file};
-
-  // Remove header
-  csv_text.readLine();
-  csv_text.readLine();
-
-  // Load distribution
-  zisc::Csv<Float, Float> csv;
-  for (auto line = csv_text.readLine(); !line.isNull(); line = csv_text.readLine())
-    csv.append(line.toStdString());
-
-  // Set distribution
-  zisc::LinearInterp<Float> spectra_data;
-  for (uint i = 0; i < csv.rowSize(); ++i)
-    spectra_data.add(csv.get<0>(i), csv.get<1>(i));
-  return spectra_data;
-}
-
-/*!
-  */
 template <SpectralDistribution::ColorType type>
-SpectralDistribution SpectralDistribution::makeColor(
-    const System& system,
-    const QJsonObject& settings) noexcept
-{
-  SpectralDistribution distribution;
-  // Make from RGB data
-  if (isRgbData(settings)) {
-    const auto rgb = makeRgb(system, settings);
-    distribution = (system.isRgbRenderingMode())
-        ? toRgbSpectra(rgb)
-        : toSpectra(system, rgb);
-  }
-  // Make from spectra data
-  else {
-    const auto spectra = makeSpectra(settings);
-    distribution = (system.isRgbRenderingMode())
-        ? toRgbSpectra<type>(system, spectra)
-        : spectra;
-  }
-  return distribution;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-RgbColor SpectralDistribution::makeRgb(const System& system,
-                                       const QJsonObject& settings) noexcept
-{
-  const auto color = SceneValue::toArray(settings, keyword::value);
-  auto rgb = RgbColor{SceneValue::toFloat<Float>(color[0]),
-                      SceneValue::toFloat<Float>(color[1]),
-                      SceneValue::toFloat<Float>(color[2])};
-  rgb.correctGamma(system.gamma());
-  rgb.clampAll(0.0, 1.0);
-  return rgb;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <SpectralDistribution::ColorType type>
-SpectralDistribution SpectralDistribution::toRgbSpectra(
-    const System& system,
-    const SpectralDistribution& spectra) noexcept
-{
-  const auto xyz = toXyz<type>(system, spectra);
-  auto rgb = ColorConversion::toRgb(xyz, getXyzToRgbMatrix(system.colorSpace()));
-  rgb.clampAll(0.0, rgb.max());
-  return toRgbSpectra(rgb);
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <SpectralDistribution::ColorType type>
-XyzColor SpectralDistribution::toXyz(
-    const System& system,
-    const SpectralDistribution& spectra) noexcept
+XyzColor SpectralDistribution::toXyz(const System& system,
+                                     const SpectralDistribution& spectra) noexcept
 {
   const auto& cmf = system.xyzColorMatchingFunction();
   const auto xyz = (type == ColorType::kEmissive)
@@ -272,14 +256,21 @@ template <SpectralDistribution::ColorType type>
 XyzColor SpectralDistribution::toXyz(const System& system) const noexcept
 {
   XyzColor xyz;
-  if (system.isRgbRenderingMode()) {
+  switch (system.colorMode()) {
+   case RenderingColorMode::kRgb: {
     const RgbColor rgb{getByWavelength(CoreConfig::redWavelength()),
                        getByWavelength(CoreConfig::greenWavelength()),
                        getByWavelength(CoreConfig::blueWavelength())};
     xyz = ColorConversion::toXyz(rgb, getRgbToXyzMatrix(system.colorSpace()));
-  }
-  else {
+    break;
+   }
+   case RenderingColorMode::kSpectra: {
     xyz = toXyz<type>(system, *this);
+    break;
+   }
+   default: {
+    break;
+   }
   }
   return xyz;
 }

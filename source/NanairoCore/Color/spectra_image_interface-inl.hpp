@@ -11,28 +11,12 @@
 #define NANAIRO_SPECTRA_IMAGE_INTERFACE_INL_HPP
 
 #include "spectra_image_interface.hpp"
-// Standard C++ library
-#include <cstddef>
 // Zisc
 #include "zisc/error.hpp"
-#include "zisc/utility.hpp"
 // Nanairo
-#include "rgb_spectra_image.hpp"
-#include "spectra_image.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 
 namespace nanairo {
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-SpectraImageInterface::SpectraImageInterface(const uint width, const uint height) noexcept :
-    width_{width},
-    height_{height}
-{
-}
 
 /*!
   \details

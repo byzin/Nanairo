@@ -14,23 +14,29 @@
 #include <tuple>
 #include <vector>
 // Zisc
+#include "zisc/algorithm.hpp"
 #include "zisc/aligned_memory_pool.hpp"
 #include "zisc/thread_pool.hpp"
 // Nanairo
+#include "Color/color_space.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "Sampling/sampler.hpp"
+#include "Setting/setting_node_base.hpp"
 #include "Utility/unique_pointer.hpp"
-
-// Forward declaration
-class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
 class XyzColorMatchingFunction;
-class Sampler;
 
 //! \addtogroup Core
 //! \{
+
+enum class RenderingColorMode : uint32
+{
+  kRgb                        = zisc::toHash32("RGB"),
+  kSpectra                    = zisc::toHash32("Spectra")
+};
 
 /*!
   \details
@@ -40,7 +46,7 @@ class System
 {
  public:
   //! Initialize the renderer system
-  System(const QJsonObject& settings) noexcept;
+  System(const SettingNodeBase* system_settings) noexcept;
 
   //! Finalize the renderer system
   ~System() noexcept;
@@ -83,21 +89,27 @@ class System
   Sampler& threadSampler(const uint thread_number) noexcept;
 
   // Color system
+  //! Return the color mode
+  RenderingColorMode colorMode() const noexcept;
+
   //! Return the color space
-  uint32 colorSpace() const noexcept;
+  ColorSpaceType colorSpace() const noexcept;
 
   //! Return the gamma
   Float gamma() const noexcept;
 
   //! Check if the renderer is RGB rendering mode
-  bool isRgbRenderingMode() const noexcept;
+  bool isRgbMode() const noexcept;
+
+  //! Check if the renderer is spectra rendering mode
+  bool isSpectraMode() const noexcept;
 
   //! Return the XYZ color matching function
   const XyzColorMatchingFunction& xyzColorMatchingFunction() const noexcept;
 
  private:
   //! Initialize the renderer system
-  void initialize(const QJsonObject& settings) noexcept;
+  void initialize(const SettingNodeBase* settings) noexcept;
 
 
   std::vector<Sampler> sampler_list_;
@@ -105,10 +117,10 @@ class System
   UniquePointer<zisc::ThreadPool> thread_pool_;
   UniquePointer<XyzColorMatchingFunction> xyz_color_matching_function_;
   Float gamma_;
-  uint image_width_resolution_,
-       image_height_resolution_;
-  uint32 color_space_;
-  bool is_rgb_rendering_mode_;
+  uint32 image_width_resolution_,
+         image_height_resolution_;
+  RenderingColorMode color_mode_;
+  ColorSpaceType color_space_;
 };
 
 //! \} Core

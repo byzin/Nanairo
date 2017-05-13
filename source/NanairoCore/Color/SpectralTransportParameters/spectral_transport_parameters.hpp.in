@@ -1,0 +1,15 @@
+/*!
+  \file spectral_transport_parameters.hpp
+  \author Sho Ikeda
+
+  Copyright (c) 2015-2017 Sho Ikeda
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+  */
+
+#ifndef NANAIRO_SPECTRAL_TRANSPORT_PARAMETERS_HPP
+#define NANAIRO_SPECTRAL_TRANSPORT_PARAMETERS_HPP
+
+#include "NanairoCore/Color/SpectralTransportParameters/@parameter_impl_header@"
+
+#endif // NANAIRO_SPECTRAL_TRANSPORT_PARAMETERS_HPP

@@ -11,9 +11,6 @@
 #define NANAIRO_TONE_MAPPING_OPERATOR_INL_HPP
 
 #include "tone_mapping_operator.hpp"
-// Qt
-#include <QColor>
-#include <QImage>
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/utility.hpp"
@@ -38,17 +35,6 @@ inline
 Float ToneMappingOperator::inverseGamma() const noexcept
 {
   return inverse_gamma_;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-QRgb* ToneMappingOperator::getPixelArray(QImage* ldr_image) const noexcept
-{
-  const unsigned char* bits = ldr_image->constBits();
-  return zisc::treatAs<QRgb*>(const_cast<unsigned char*>(bits));
 }
 
 } // namespace nanairo

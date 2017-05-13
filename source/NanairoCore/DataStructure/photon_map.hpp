@@ -18,7 +18,6 @@
 #include <utility>
 // Nanairo
 #include "photon_map_node.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/photon_cache.hpp"
 #include "NanairoCore/Geometry/point.hpp"

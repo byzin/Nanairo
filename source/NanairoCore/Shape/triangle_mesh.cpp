@@ -9,33 +9,23 @@
 
 #include "triangle_mesh.hpp"
 // Standard C++ library
-#include <string>
+#include <array>
 #include <vector>
-// Qt
-#include <QFile>
-#include <QFileInfo>
-#include <QJsonObject>
-#include <QString>
-#include <QTextStream>
-#include <QtGlobal>
 // Zisc
-#include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
-#include "zisc/string.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "flat_mesh.hpp"
-#include "obj_loader.hpp"
 #include "shape.hpp"
 #include "smoothed_mesh.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Data/ray.hpp"
+#include "NanairoCore/Data/face.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
+#include "NanairoCore/Setting/single_object_setting_node.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo  {
 
@@ -44,43 +34,42 @@ namespace nanairo  {
   No detailed.
   */
 std::vector<UniquePointer<Shape>> TriangleMesh::makeMeshes(
-    const QJsonObject& settings) noexcept
+    const SettingNodeBase* settings) noexcept
 {
-  using keyword::toHash32;
-  using zisc::toHash32;
+  const auto object_settings = castNode<SingleObjectSettingNode>(settings);
 
+  const auto& parameters = object_settings->meshParameters();
   std::vector<UniquePointer<Shape>> mesh_list;
+  mesh_list.reserve(parameters.face_list_.size());
 
-  // Initialize object info
-  const auto object_file_path = SceneValue::toString(settings,
-                                                     keyword::objectFilePath);
-  const bool smoothing = SceneValue::toBool(settings, keyword::smoothing);
-  const auto mesh_type = smoothing ? MeshType::Smoothed : MeshType::Flat;
+  //! \todo Add smoothed mesh
+  //! \todo Add quadrangle mesh
+  for (const auto& face : parameters.face_list_) {
+    std::array<Point3, 3> vertices;
+    {
+      const auto& vertex_indices = face.triangleVertexIndices();
+      for (uint i = 0; i < 3; ++i) {
+        auto& vertex = vertices[i];
+        const auto& vertex_data = parameters.vertex_list_[vertex_indices[i]];
+        for (uint axis = 0; axis < 3; ++axis)
+          vertex[axis] = zisc::cast<Float>(vertex_data[axis]);
+      }
+    }
+    auto mesh = new FlatMesh{vertices[0], vertices[1], vertices[2]};
+    if (face.hasVuv()) {
+      std::array<Point2, 3> vuvs;
+      const auto& vuv_indices = face.triangleVuvIndices();
+      for (uint i = 0; i < 3; ++i) {
+        auto& vuv = vuvs[i];
+        const auto& vuv_data = parameters.vuv_list_[vuv_indices[i]];
+        for (uint axis = 0; axis < 2; ++axis)
+          vuv[axis] = zisc::cast<Float>(vuv_data[axis]);
+      }
+      mesh->setTextureCoordinate(vuvs[0], vuvs[1], vuvs[2]);
+    }
+    mesh_list.emplace_back(mesh);
+  }
 
-  // Open a object file
-  const QFileInfo object_file_info{object_file_path};
-  if (!object_file_info.exists()) {
-    qFatal("TriangleMeshError: File '%s' does not exist",
-           qUtf8Printable(object_file_path));
-  }
-  QFile object_file{object_file_path};
-  if (!object_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    qFatal("TriangleMeshError: File '%s' open failed.",
-           qUtf8Printable(object_file_path));
-  }
-
-  const auto suffix = object_file_info.suffix();
-  switch (toHash32(suffix)) {
-   case toHash32("obj"): {
-    QTextStream obj_stream{&object_file};
-    mesh_list = ObjLoader::parse(obj_stream, mesh_type);
-    break;
-   }
-   default: {
-    qFatal("TriangleMeshError: '%s' isn't supported object format",
-           qUtf8Printable(object_file_path));
-   }
-  }
   return mesh_list;
 }
 

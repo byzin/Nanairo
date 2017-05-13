@@ -12,13 +12,9 @@
 
 // Standard C++ library
 #include <cstddef>
-// Qt
-#include <QtGlobal>
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-
-// Forward declaration
-class QString;
+#include "NanairoCore/system.hpp"
 
 namespace nanairo {
 
@@ -29,16 +25,6 @@ class System;
 
 //! \addtogroup Core
 //! \{
-
-/*!
-  \details
-  No detailed.
-  */
-enum class SpectraImageType
-{
-  Spectra = 0,
-  Rgb
-};
 
 /*!
   \details
@@ -65,16 +51,13 @@ class SpectraImageInterface
   //! Return the height resolution
   uint heightResolution() const noexcept;
 
-  //! Save spectra image
-  virtual void save(const quint64 cycle, const QString& file_path) const noexcept = 0;
-
   //! Convert the spectra image to the HDR image
   virtual void toHdrImage(System& system,
-                          const quint64 cycle, 
+                          const uint64 cycle, 
                           HdrImage* hdr_image) const noexcept = 0;
 
   //! Return the spectra image type
-  virtual SpectraImageType type() const noexcept = 0;
+  virtual RenderingColorMode type() const noexcept = 0;
 
   //! Return the width resolution
   uint widthResolution() const noexcept;

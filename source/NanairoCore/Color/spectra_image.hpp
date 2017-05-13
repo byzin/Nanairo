@@ -13,17 +13,13 @@
 // Standard C++ library
 #include <cstddef>
 #include <vector>
-// Qt
-#include <QtGlobal>
 // Zisc
 #include "zisc/arithmetic_array.hpp"
 // Nanairo
 #include "spectral_distribution.hpp"
 #include "spectra_image_interface.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-
-// Forward declaration
-class QString;
+#include "NanairoCore/system.hpp"
 
 namespace nanairo {
 
@@ -54,16 +50,13 @@ class SpectraImage : public SpectraImageInterface
   //! Clear the spectra image buffer to 0
   void clear() noexcept override;
 
-  //! Save the spectra buffer
-  void save(const quint64 cycle, const QString& file_path) const noexcept override;
-
   //! Convert the spectra image to the HDR image
   void toHdrImage(System& system,
-                  const quint64 cycle,
+                  const uint64 cycle,
                   HdrImage* hdr_image) const noexcept override;
 
   //! Return the spectra image type
-  SpectraImageType type() const noexcept override;
+  RenderingColorMode type() const noexcept override;
 
  private:
   //! Initialize

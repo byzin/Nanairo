@@ -9,8 +9,6 @@
         "ColorSpace": "sRGB (D65)",
         "Exposure": 1,
         "Gamma": 2.2,
-        "StandardIllumination": "CIE D65",
-        "StandardObserver": "CIE 2deg color matching function",
         "ToneMapping": "Reinhard",
         "WavelengthSampling": "Regular sampling"
     },
@@ -1412,89 +1410,89 @@
             "Type": "SmoothDiffuseSurface"
         },
         {
-            "InnerRefractiveIndex": "resources/spectrum/dielectric/SiO2.csv",
+            "InnerRefractiveIndex": 17,
             "Name": "TestSurface1",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 16,
             "ReflectanceIndex": 15,
             "RoughnessIndex": 4,
             "Type": "LayeredDiffuseSurface"
         },
         {
-            "InnerRefractiveIndex": "resources/spectrum/dielectric/SiO2.csv",
+            "InnerRefractiveIndex": 17,
             "Name": "TestSurface2",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 16,
             "ReflectanceIndex": 15,
             "RoughnessIndex": 5,
             "Type": "LayeredDiffuseSurface"
         },
         {
-            "InnerRefractiveIndex": "resources/spectrum/dielectric/SiO2.csv",
+            "InnerRefractiveIndex": 17,
             "Name": "TestSurface3",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 16,
             "ReflectanceIndex": 15,
             "RoughnessIndex": 6,
             "Type": "LayeredDiffuseSurface"
         },
         {
-            "InnerRefractiveIndex": "resources/spectrum/dielectric/SiO2.csv",
+            "InnerRefractiveIndex": 17,
             "Name": "TestSurface4",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 16,
             "ReflectanceIndex": 15,
             "RoughnessIndex": 7,
             "Type": "LayeredDiffuseSurface"
         },
         {
-            "InnerRefractiveIndex": "resources/spectrum/dielectric/SiO2.csv",
+            "InnerRefractiveIndex": 17,
             "Name": "TestSurface5",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 16,
             "ReflectanceIndex": 15,
             "RoughnessIndex": 8,
             "Type": "LayeredDiffuseSurface"
         },
         {
-            "InnerRefractiveIndex": "resources/spectrum/dielectric/SiO2.csv",
+            "InnerRefractiveIndex": 17,
             "Name": "TestSurface6",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 16,
             "ReflectanceIndex": 15,
             "RoughnessIndex": 9,
             "Type": "LayeredDiffuseSurface"
         },
         {
-            "InnerRefractiveIndex": "resources/spectrum/dielectric/SiO2.csv",
+            "InnerRefractiveIndex": 17,
             "Name": "TestSurface7",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 16,
             "ReflectanceIndex": 15,
             "RoughnessIndex": 10,
             "Type": "LayeredDiffuseSurface"
         },
         {
-            "InnerRefractiveIndex": "resources/spectrum/dielectric/SiO2.csv",
+            "InnerRefractiveIndex": 17,
             "Name": "TestSurface8",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 16,
             "ReflectanceIndex": 15,
             "RoughnessIndex": 11,
             "Type": "LayeredDiffuseSurface"
         },
         {
-            "InnerRefractiveIndex": "resources/spectrum/dielectric/SiO2.csv",
+            "InnerRefractiveIndex": 17,
             "Name": "TestSurface9",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 16,
             "ReflectanceIndex": 15,
             "RoughnessIndex": 12,
             "Type": "LayeredDiffuseSurface"
         },
         {
-            "InnerRefractiveIndex": "resources/spectrum/dielectric/SiO2.csv",
+            "InnerRefractiveIndex": 17,
             "Name": "TestSurface10",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 16,
             "ReflectanceIndex": 15,
             "RoughnessIndex": 13,
             "Type": "LayeredDiffuseSurface"
         },
         {
-            "InnerRefractiveIndex": "resources/spectrum/dielectric/SiO2.csv",
+            "InnerRefractiveIndex": 17,
             "Name": "TestSurface11",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 16,
             "ReflectanceIndex": 15,
             "RoughnessIndex": 14,
             "Type": "LayeredDiffuseSurface"
@@ -1638,6 +1636,22 @@
                 ]
             },
             "Name": "TestDiffuseColorTexture",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/dielectric/Air.csv"
+            },
+            "Name": "AirRefractiveIndex",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/dielectric/SiO2.csv"
+            },
+            "Name": "SiO2RefractiveIndex",
             "Type": "UnicolorTexture"
         }
     ]

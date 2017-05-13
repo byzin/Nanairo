@@ -13,15 +13,15 @@
 #include "color_conversion.hpp"
 // Standard C++ library
 #include <tuple>
-// Qt
-#include <QColor>
 // Zisc
 #include "zisc/arithmetic_array.hpp"
+#include "zisc/error.hpp"
 #include "zisc/math.hpp"
 #include "zisc/matrix.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "rgb_color.hpp"
+#include "rgba_32.hpp"
 #include "xyz_color.hpp"
 #include "yxy_color.hpp"
 #include "xyz_color_matching_function.hpp"
@@ -32,13 +32,17 @@ namespace nanairo {
 /*!
   */
 inline
-RgbColor ColorConversion::toRgb(const QColor& rgb) noexcept
+RgbColor ColorConversion::toFloatRgb(const Rgba32& rgb) noexcept
 {
-  using zisc::cast;
-  constexpr Float k = zisc::invert(255.0);
-  return RgbColor{k * cast<Float>(rgb.red()),
-                  k * cast<Float>(rgb.green()),
-                  k * cast<Float>(rgb.blue())};
+  return RgbColor{rgb.redFloat(), rgb.greenFloat(), rgb.blueFloat()};
+}
+
+/*!
+  */
+inline
+Rgba32 ColorConversion::toIntRgb(const RgbColor& rgb) noexcept
+{
+  return Rgba32{rgb.red(), rgb.green(), rgb.blue()};
 }
 
 /*!
@@ -49,17 +53,6 @@ RgbColor ColorConversion::toRgb(const XyzColor& xyz,
 {
   const auto rgb = to_rgb * xyz.data();
   return RgbColor{rgb[0], rgb[1], rgb[2]};
-}
-
-/*!
-  */
-inline
-QRgb ColorConversion::toQRgb(const RgbColor& rgb) noexcept
-{
-  using zisc::cast;
-  constexpr Float scale = 255.0;
-  const auto qt_color = scale * rgb.data();
-  return qRgb(cast<int>(qt_color[0]), cast<int>(qt_color[1]), cast<int>(qt_color[2]));
 }
 
 /*!

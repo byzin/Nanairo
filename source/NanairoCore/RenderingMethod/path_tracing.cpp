@@ -13,9 +13,6 @@
 #include <thread>
 #include <tuple>
 #include <utility>
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zisc
 #include "zisc/aligned_memory_pool.hpp"
 #include "zisc/arithmetic_array.hpp"
@@ -46,6 +43,7 @@
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -54,7 +52,7 @@ namespace nanairo {
   No detailed.
   */
 PathTracing::PathTracing(const System& system,
-                         const QJsonObject& settings) noexcept :
+                         const SettingNodeBase* settings) noexcept :
     RenderingMethod(system, settings)
 {
   initialize(settings);
@@ -254,7 +252,7 @@ Ray PathTracing::generateRay(const CameraModel& camera,
   \details
   No detailed.
   */
-void PathTracing::initialize(const QJsonObject& /* settings */) noexcept
+void PathTracing::initialize(const SettingNodeBase* /* settings */) noexcept
 {
 }
 
@@ -346,8 +344,7 @@ void PathTracing::traceCameraPath(System& system,
     // Get a BxDF of the surface
     const auto& material = intersection.object()->material();
     const auto& surface = material.surface();
-    const auto bxdf = surface.makeBxdf(intersection.textureCoordinate(), 
-                                       intersection.isReverseFace(),
+    const auto bxdf = surface.makeBxdf(intersection,
                                        wavelengths,
                                        sampler,
                                        memory_pool);

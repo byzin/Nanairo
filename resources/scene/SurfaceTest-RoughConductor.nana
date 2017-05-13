@@ -9,8 +9,6 @@
         "ColorSpace": "sRGB (D65)",
         "Exposure": 1,
         "Gamma": 2.2,
-        "StandardIllumination": "CIE D65",
-        "StandardObserver": "CIE 2deg color matching function",
         "ToneMapping": "Reinhard",
         "WavelengthSampling": "Regular sampling"
     },
@@ -61,10 +59,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Floor",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -92,10 +90,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "LeftWall",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -137,10 +135,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "RightWall",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -182,10 +180,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "BackWall",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 1,
             "Transformation": [
@@ -220,10 +218,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Ceiling",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -265,10 +263,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": true,
             "Name": "Light1",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 2,
             "Transformation": [
@@ -294,10 +292,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": true,
             "Name": "Light2",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 2,
             "Transformation": [
@@ -372,11 +370,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Base",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 3,
             "Transformation": [
@@ -386,11 +384,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "InnerSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 3,
             "Transformation": [
@@ -400,11 +398,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "OuterSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 3,
             "Transformation": [
@@ -414,11 +412,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Equation",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 3,
             "Transformation": [
@@ -468,11 +466,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Base",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 4,
             "Transformation": [
@@ -482,11 +480,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "InnerSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 4,
             "Transformation": [
@@ -496,11 +494,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "OuterSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 4,
             "Transformation": [
@@ -510,11 +508,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Equation",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 4,
             "Transformation": [
@@ -564,11 +562,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Base",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 5,
             "Transformation": [
@@ -578,11 +576,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "InnerSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 5,
             "Transformation": [
@@ -592,11 +590,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "OuterSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 5,
             "Transformation": [
@@ -606,11 +604,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Equation",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 5,
             "Transformation": [
@@ -660,11 +658,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Base",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 6,
             "Transformation": [
@@ -674,11 +672,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "InnerSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 6,
             "Transformation": [
@@ -688,11 +686,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "OuterSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 6,
             "Transformation": [
@@ -702,11 +700,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Equation",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 6,
             "Transformation": [
@@ -756,11 +754,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Base",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 7,
             "Transformation": [
@@ -770,11 +768,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "InnerSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 7,
             "Transformation": [
@@ -784,11 +782,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "OuterSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 7,
             "Transformation": [
@@ -798,11 +796,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Equation",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 7,
             "Transformation": [
@@ -852,11 +850,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Base",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 8,
             "Transformation": [
@@ -866,11 +864,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "InnerSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 8,
             "Transformation": [
@@ -880,11 +878,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "OuterSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 8,
             "Transformation": [
@@ -894,11 +892,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Equation",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 8,
             "Transformation": [
@@ -948,11 +946,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Base",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 9,
             "Transformation": [
@@ -962,11 +960,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "InnerSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 9,
             "Transformation": [
@@ -976,11 +974,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "OuterSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 9,
             "Transformation": [
@@ -990,11 +988,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Equation",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 9,
             "Transformation": [
@@ -1044,11 +1042,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Base",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 10,
             "Transformation": [
@@ -1058,11 +1056,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "InnerSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 10,
             "Transformation": [
@@ -1072,11 +1070,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "OuterSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 10,
             "Transformation": [
@@ -1086,11 +1084,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Equation",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 10,
             "Transformation": [
@@ -1140,11 +1138,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Base",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 11,
             "Transformation": [
@@ -1154,11 +1152,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "InnerSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 11,
             "Transformation": [
@@ -1168,11 +1166,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "OuterSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 11,
             "Transformation": [
@@ -1182,11 +1180,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Equation",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 11,
             "Transformation": [
@@ -1236,11 +1234,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Base",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 12,
             "Transformation": [
@@ -1250,11 +1248,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "InnerSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 12,
             "Transformation": [
@@ -1264,11 +1262,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "OuterSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 12,
             "Transformation": [
@@ -1278,11 +1276,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Equation",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 12,
             "Transformation": [
@@ -1332,11 +1330,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Base",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 13,
             "Transformation": [
@@ -1346,11 +1344,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "InnerSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 13,
             "Transformation": [
@@ -1360,11 +1358,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "OuterSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 13,
             "Transformation": [
@@ -1374,11 +1372,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Equation",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 13,
             "Transformation": [
@@ -1412,90 +1410,90 @@
             "Type": "SmoothDiffuseSurface"
         },
         {
-            "InnerExtinction": "resources/spectrum/conductor/Ag extinction coefficient.csv",
-            "InnerRefractiveIndex": "resources/spectrum/conductor/Ag refractive index.csv",
+            "InnerExtinction": 17,
+            "InnerRefractiveIndex": 16,
             "Name": "TestSurface1",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 15,
             "RoughnessIndex": 4,
             "Type": "RoughConductorSurface"
         },
         {
-            "InnerExtinction": "resources/spectrum/conductor/Ag extinction coefficient.csv",
-            "InnerRefractiveIndex": "resources/spectrum/conductor/Ag refractive index.csv",
+            "InnerExtinction": 17,
+            "InnerRefractiveIndex": 16,
             "Name": "TestSurface2",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 15,
             "RoughnessIndex": 5,
             "Type": "RoughConductorSurface"
         },
         {
-            "InnerExtinction": "resources/spectrum/conductor/Ag extinction coefficient.csv",
-            "InnerRefractiveIndex": "resources/spectrum/conductor/Ag refractive index.csv",
+            "InnerExtinction": 17,
+            "InnerRefractiveIndex": 16,
             "Name": "TestSurface3",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 15,
             "RoughnessIndex": 6,
             "Type": "RoughConductorSurface"
         },
         {
-            "InnerExtinction": "resources/spectrum/conductor/Ag extinction coefficient.csv",
-            "InnerRefractiveIndex": "resources/spectrum/conductor/Ag refractive index.csv",
+            "InnerExtinction": 17,
+            "InnerRefractiveIndex": 16,
             "Name": "TestSurface4",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 15,
             "RoughnessIndex": 7,
             "Type": "RoughConductorSurface"
         },
         {
-            "InnerExtinction": "resources/spectrum/conductor/Ag extinction coefficient.csv",
-            "InnerRefractiveIndex": "resources/spectrum/conductor/Ag refractive index.csv",
+            "InnerExtinction": 17,
+            "InnerRefractiveIndex": 16,
             "Name": "TestSurface5",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 15,
             "RoughnessIndex": 8,
             "Type": "RoughConductorSurface"
         },
         {
-            "InnerExtinction": "resources/spectrum/conductor/Ag extinction coefficient.csv",
-            "InnerRefractiveIndex": "resources/spectrum/conductor/Ag refractive index.csv",
+            "InnerExtinction": 17,
+            "InnerRefractiveIndex": 16,
             "Name": "TestSurface6",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 15,
             "RoughnessIndex": 9,
             "Type": "RoughConductorSurface"
         },
         {
-            "InnerExtinction": "resources/spectrum/conductor/Ag extinction coefficient.csv",
-            "InnerRefractiveIndex": "resources/spectrum/conductor/Ag refractive index.csv",
+            "InnerExtinction": 17,
+            "InnerRefractiveIndex": 16,
             "Name": "TestSurface7",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 15,
             "RoughnessIndex": 10,
             "Type": "RoughConductorSurface"
         },
         {
-            "InnerExtinction": "resources/spectrum/conductor/Ag extinction coefficient.csv",
-            "InnerRefractiveIndex": "resources/spectrum/conductor/Ag refractive index.csv",
+            "InnerExtinction": 17,
+            "InnerRefractiveIndex": 16,
             "Name": "TestSurface8",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 15,
             "RoughnessIndex": 11,
             "Type": "RoughConductorSurface"
         },
         {
-            "InnerExtinction": "resources/spectrum/conductor/Ag extinction coefficient.csv",
-            "InnerRefractiveIndex": "resources/spectrum/conductor/Ag refractive index.csv",
+            "InnerExtinction": 17,
+            "InnerRefractiveIndex": 16,
             "Name": "TestSurface9",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 15,
             "RoughnessIndex": 12,
             "Type": "RoughConductorSurface"
         },
         {
-            "InnerExtinction": "resources/spectrum/conductor/Ag extinction coefficient.csv",
-            "InnerRefractiveIndex": "resources/spectrum/conductor/Ag refractive index.csv",
+            "InnerExtinction": 17,
+            "InnerRefractiveIndex": 16,
             "Name": "TestSurface10",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 15,
             "RoughnessIndex": 13,
             "Type": "RoughConductorSurface"
         },
         {
-            "InnerExtinction": "resources/spectrum/conductor/Ag extinction coefficient.csv",
-            "InnerRefractiveIndex": "resources/spectrum/conductor/Ag refractive index.csv",
+            "InnerExtinction": 17,
+            "InnerRefractiveIndex": 16,
             "Name": "TestSurface11",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 15,
             "RoughnessIndex": 14,
             "Type": "RoughConductorSurface"
         }
@@ -1627,6 +1625,30 @@
             "Name": "TestSurfaceRoughness11",
             "Type": "ValueTexture",
             "Value": 1
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/dielectric/Air.csv"
+            },
+            "Name": "AirRefractiveIndex",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/conductor/Ag refractive index.csv"
+            },
+            "Name": "AgRefractiveIndex",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/conductor/Ag extinction coefficient.csv"
+            },
+            "Name": "AgExtinction",
+            "Type": "UnicolorTexture"
         }
     ]
 }

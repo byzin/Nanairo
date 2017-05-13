@@ -11,10 +11,6 @@
 // Standard C++ library
 #include <future>
 #include <utility>
-// Qt
-#include <QJsonObject>
-#include <QString>
-#include <QLocale>
 // Zisc
 #include "zisc/thread_pool.hpp"
 #include "zisc/utility.hpp"
@@ -25,8 +21,9 @@
 #include "CameraModel/camera_model.hpp"
 #include "CameraModel/film.hpp"
 #include "Geometry/transformation.hpp"
-#include "Utility/scene_value.hpp"
-#include "NanairoCommon/keyword.hpp"
+#include "Setting/object_model_setting_node.hpp"
+#include "Setting/scene_setting_node.hpp"
+#include "Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -34,7 +31,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-Scene::Scene(System& system, const QJsonObject& settings) noexcept
+Scene::Scene(System& system, const SettingNodeBase* settings) noexcept
 {
   initialize(system, settings);
 }
@@ -43,26 +40,15 @@ Scene::Scene(System& system, const QJsonObject& settings) noexcept
   \details
   No detailed.
   */
-void Scene::initialize(System& system, const QJsonObject& settings) noexcept
+void Scene::initialize(System& system, const SettingNodeBase* settings) noexcept
 {
-  using zisc::cast;
+  const auto scene_settings = castNode<SceneSettingNode>(settings);
 
   // Create a camera
-  const auto object_settings_list = SceneValue::toArray(settings, keyword::object);
-  const auto camera_settings = SceneValue::toObject(object_settings_list[0]);
-  auto make_camera = [this, &system, &camera_settings]()
+  const auto camera_settings = scene_settings->cameraSettingNode();
+  auto make_camera = [this, &system, camera_settings]()
   {
-    // Film
-    film_ = new Film{system, camera_settings};
-    // Camera
-    camera_ = CameraModel::makeModel(camera_settings);
-    camera_->setFilm(film_.get());
-    // Transformation
-    const auto transformation_settings =
-        SceneValue::toArray(camera_settings, keyword::transformation);
-    const auto transformation =
-        Transformation::makeTransformation(transformation_settings);
-    camera_->transform(transformation);
+    initializeCamera(system, camera_settings);
   };
   auto& thread_pool = system.threadPool();
   auto camera_result = thread_pool.enqueue<void>(make_camera);
@@ -72,6 +58,25 @@ void Scene::initialize(System& system, const QJsonObject& settings) noexcept
 
   // Wait for the initialization completion
   camera_result.get();
+}
+
+/*!
+  */
+void Scene::initializeCamera(System& system, const SettingNodeBase* settings) noexcept
+{
+  const auto object_settings = castNode<ObjectModelSettingNode>(settings);
+  // Film
+  film_ = new Film{system, object_settings->objectSettingNode()};
+  // Camera
+  camera_ = CameraModel::makeModel(object_settings->objectSettingNode());
+  camera_->setFilm(film_.get());
+  // Transformation
+  const auto transformation_list = object_settings->transformationList();
+  if (0 < transformation_list.size()) {
+    const auto transformation =
+        Transformation::makeTransformation(transformation_list);
+    camera_->transform(transformation);
+  }
 }
 
 } // namespace nanairo

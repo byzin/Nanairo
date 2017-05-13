@@ -14,9 +14,7 @@
 #include <cstddef>
 // Nanairo
 #include "Utility/unique_pointer.hpp"
-
-// Forward declaration
-class QJsonObject;
+#include "Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -38,7 +36,7 @@ class Scene
 {
  public:
   //! Initialize the scene
-  Scene(System& system, const QJsonObject& settings) noexcept;
+  Scene(System& system, const SettingNodeBase* settings) noexcept;
 
 
   //! Return the camera
@@ -58,7 +56,10 @@ class Scene
 
  private:
   //! Initialize the scene
-  void initialize(System& system, const QJsonObject& settings) noexcept;
+  void initialize(System& system, const SettingNodeBase* settings) noexcept;
+
+  //! Initialize the camera
+  void initializeCamera(System& system, const SettingNodeBase* settings) noexcept;
 
 
   UniquePointer<CameraModel> camera_;

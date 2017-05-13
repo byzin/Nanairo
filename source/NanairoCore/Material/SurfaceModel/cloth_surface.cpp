@@ -12,18 +12,17 @@
 #include <cstddef>
 #include <utility>
 #include <vector>
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/utility.hpp"
 // Nanairo
 #include "fresnel.hpp"
 #include "surface_model.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
+#include "NanairoCore/Setting/surface_setting_node.hpp"
 
 namespace nanairo {
 
@@ -32,7 +31,7 @@ namespace nanairo {
   No detailed.
   */
 ClothSurface::ClothSurface(
-    const QJsonObject& settings,
+    const SettingNodeBase* settings,
     const std::vector<const TextureModel*>& texture_list) noexcept
 {
   initialize(settings, texture_list);
@@ -43,21 +42,19 @@ ClothSurface::ClothSurface(
   No detailed.
   */
 auto ClothSurface::makeBxdf(
-    const Point2& texture_coordinate,
-    const bool /* is_reverse_face */,
+    const IntersectionInfo& info,
     const WavelengthSamples& wavelengths,
     Sampler& /* sampler */,
     MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
+  const auto& uv = info.textureCoordinate();
+
   // Get the roughness
-  const auto  reflectance = reflectance_->reflectiveValue(texture_coordinate,
-                                                          wavelengths);
-  ZISC_ASSERT(reflectance.isAllInClosedBounds(0.0, 1.0),
-              "Reflectances isn't in the range [0, 1].");
+  const auto k_d = reflectance_->reflectiveValue(uv, wavelengths);
 
   // Make a microcylinder cloth BRDF
   using Brdf = MicrocylinderClothBrdf;
-  auto brdf = memory_pool.allocate<Brdf>(this, reflectance);
+  auto brdf = memory_pool.allocate<Brdf>(this, k_d);
   return ShaderPointer{brdf};
 }
 
@@ -67,7 +64,7 @@ auto ClothSurface::makeBxdf(
   */
 SurfaceType ClothSurface::type() const noexcept
 {
-  return SurfaceType::Cloth;
+  return SurfaceType::kCloth;
 }
 
 /*!
@@ -75,31 +72,35 @@ SurfaceType ClothSurface::type() const noexcept
   No detailed.
   */
 void ClothSurface::initialize(
-    const QJsonObject& settings,
+    const SettingNodeBase* settings,
     const std::vector<const TextureModel*>& texture_list) noexcept
 {
-  const auto texture_index = SceneValue::toInt<uint>(settings,
-                                                     keyword::reflectanceIndex);
-  reflectance_ = texture_list[texture_index];
+  const auto surface_settings = castNode<SurfaceSettingNode>(settings);
 
-  eta_ = SceneValue::toFloat<Float>(settings, keyword::fabricRefractiveIndex);
-  ZISC_ASSERT(0.0 < eta_, "The eta is minus.");
+  const auto& parameters = surface_settings->clothParameters();
+  {
+    const auto index = parameters.reflectance_index_;
+    reflectance_ = texture_list[index];
+  }
+  {
+    const auto& coefficients = parameters.coefficients_;
 
-  k_d_ = SceneValue::toFloat<Float>(settings,
-                                    keyword::isotropicScatteringCoefficient);
-  ZISC_ASSERT(zisc::isInClosedBounds(k_d_, 0.0, 1.0),
-              "The k_d is out of range [0, 1].");
+    eta_ = zisc::cast<Float>(coefficients[0]);
+    ZISC_ASSERT(0.0 < eta_, "The eta is minus.");
 
-  gamma_r_ = SceneValue::toFloat<Float>(settings,
-                                        keyword::surfaceReflectanceGaussianWidth);
-  ZISC_ASSERT(0.0 < gamma_r_, "The gamma_r is minus.");
+    k_d_ = zisc::cast<Float>(coefficients[1]);
+    ZISC_ASSERT(zisc::isInClosedBounds(k_d_, 0.0, 1.0),
+                "The k_d is out of range [0, 1].");
 
-  gamma_v_ = SceneValue::toFloat<Float>(settings,
-                                        keyword::volumeReflectanceGaussianWidth);
-  ZISC_ASSERT(0.0 < gamma_v_, "The gamma_v is minus.");
+    gamma_r_ = zisc::cast<Float>(coefficients[2]);
+    ZISC_ASSERT(0.0 < gamma_r_, "The gamma_r is minus.");
 
-  rho_ = SceneValue::toFloat<Float>(settings, keyword::bandwidthParameter);
-  ZISC_ASSERT(0.0 < rho_, "The rho is minus.");
+    gamma_v_ = zisc::cast<Float>(coefficients[3]);
+    ZISC_ASSERT(0.0 < gamma_v_, "The gamma_v is minus.");
+
+    rho_ = zisc::cast<Float>(coefficients[4]);
+    ZISC_ASSERT(0.0 < rho_, "The rho is minus.");
+  }
 }
 
 } // namespace nanairo

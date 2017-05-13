@@ -10,24 +10,29 @@
 #ifndef NANAIRO_TONE_MAPPING_OPERATOR_HPP
 #define NANAIRO_TONE_MAPPING_OPERATOR_HPP
 
-// Qt
-#include <QColor>
+// Zisc
+#include "zisc/algorithm.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
-
-// Forward declaration
-class QImage;
-class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
 class HdrImage;
+class LdrImage;
 class System;
 
 //! \addtogroup Core
 //! \{
+
+enum class ToneMappingType : uint32
+{
+  kReinhard                   = zisc::toHash32("Reinhard"),
+  kFilmic                     = zisc::toHash32("Filmic"),
+  kUncharted2Filmic           = zisc::toHash32("Uncharted2Filmic")
+};
 
 /*!
   \brief The interface of tone mapping class.
@@ -38,7 +43,7 @@ class ToneMappingOperator
 {
  public:
   //! Initialize the method
-  ToneMappingOperator(const System& system, const QJsonObject& settings) noexcept;
+  ToneMappingOperator(const System& system, const SettingNodeBase* settings) noexcept;
 
   //! Finalize the method
   virtual ~ToneMappingOperator() noexcept;
@@ -53,23 +58,20 @@ class ToneMappingOperator
   //! Make tonemapping method
   static UniquePointer<ToneMappingOperator> makeOperator(
       const System& system,
-      const QJsonObject& settings) noexcept;
+      const SettingNodeBase* settings) noexcept;
 
   //! Apply a tonemapping operator
   void map(System& system,
            const HdrImage& hdr_image,
-           QImage* ldr_image) const noexcept;
+           LdrImage* ldr_image) const noexcept;
 
  protected:
   //! Apply a tonemap curve
   virtual Float tonemap(const Float x) const noexcept = 0;
 
  private:
-  //! Return the pixel array of LDR image
-  QRgb* getPixelArray(QImage* ldr_image) const noexcept;
-
   //! Initialize
-  void initialize(const System& system, const QJsonObject& settings) noexcept;
+  void initialize(const System& system, const SettingNodeBase* settings) noexcept;
 
 
   Float inverse_gamma_;

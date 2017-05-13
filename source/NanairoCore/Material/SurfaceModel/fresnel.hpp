@@ -21,9 +21,6 @@
 
 namespace nanairo {
 
-// Forward declaration
-class SampledSpectra;
-
 //! \addtogroup Core
 //! \{
 
@@ -46,21 +43,16 @@ class Fresnel
   static std::tuple<bool, Float> evalG(const Float n,
                                        const Float cos_theta) noexcept;
 
-  //! Calculate the fresnel 0degree reflectance for the conductor
-  static SpectralDistribution evalFresnel0(
-      const SpectralDistribution& eta,
-      const SpectralDistribution& eta_k) noexcept;
-
-  //! Solve fresnel conductor equation
-  static SampledSpectra evalFresnel(
-      const Float cos_theta,
-      const SampledSpectra& fresnel_0deg) noexcept;
-
   //! Solve the fresnel dielectric equation
   static Float evalFresnel(const Float n, const Float cos_theta) noexcept;
 
   //! Solve the fresnel dielectric equation
   static Float evalFresnelFromG(const Float cos_theta, const Float g) noexcept;
+
+  //! Solve the fresnel conductor equation
+  static SampledSpectra evalFresnel(const SampledSpectra& n,
+                                    const SampledSpectra& eta,
+                                    const Float cos_theta) noexcept;
 };
 
 //! \} Core

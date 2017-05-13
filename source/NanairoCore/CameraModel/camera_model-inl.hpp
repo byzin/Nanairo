@@ -102,14 +102,8 @@ uint CameraModel::heightResolution() const noexcept
 inline
 void CameraModel::jitter(Sampler& sampler) noexcept
 {
-  if (is_jittering_enabled_) {
-    jittering_[0] = sampler.sample();
-    jittering_[1] = sampler.sample();
-  }
-  else {
-    jittering_[0] = 0.0;
-    jittering_[1] = 0.0;
-  }
+  jittering_[0] = (is_jittering_enabled_) ? sampler.sample() : 0.0;
+  jittering_[1] = (is_jittering_enabled_) ? sampler.sample() : 0.0;
 }
 
 /*!

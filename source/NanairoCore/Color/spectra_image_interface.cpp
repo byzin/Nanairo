@@ -8,8 +8,21 @@
   */
 
 #include "spectra_image_interface.hpp"
+// Nanairo
+#include "NanairoCore/nanairo_core_config.hpp"
 
 namespace nanairo {
+
+/*!
+  \details
+  No detailed.
+  */
+SpectraImageInterface::SpectraImageInterface(const uint width,
+                                             const uint height) noexcept :
+    width_{width},
+    height_{height}
+{
+}
 
 SpectraImageInterface::~SpectraImageInterface() noexcept
 {

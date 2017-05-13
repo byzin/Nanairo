@@ -23,6 +23,12 @@ namespace nanairo {
 class GuiConfig
 {
  public:
+  //! Return the GUI application name
+  static std::string applicationName() noexcept;
+
+  //! Return the max FPS
+  static constexpr int maxFps() noexcept;
+
   //! Return the seed key
   static std::string randomSeedKey() noexcept;
 };

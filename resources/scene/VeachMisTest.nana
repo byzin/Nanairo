@@ -9,8 +9,6 @@
         "ColorSpace": "sRGB (D65)",
         "Exposure": 1,
         "Gamma": 2.2,
-        "StandardIllumination": "CIE D65",
-        "StandardObserver": "CIE 2deg color matching function",
         "ToneMapping": "Reinhard",
         "WavelengthSampling": "Regular sampling"
     },
@@ -96,11 +94,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": true,
             "Name": "Light1",
             "ObjectFilePath": "resources/models/Primitives/LowPolySphere.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -128,11 +126,11 @@
         {
             "EmitterIndex": 1,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": true,
             "Name": "Light2",
             "ObjectFilePath": "resources/models/Primitives/LowPolySphere.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -160,11 +158,11 @@
         {
             "EmitterIndex": 2,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": true,
             "Name": "Light3",
             "ObjectFilePath": "resources/models/Primitives/LowPolySphere.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -192,11 +190,11 @@
         {
             "EmitterIndex": 3,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": true,
             "Name": "Light4",
             "ObjectFilePath": "resources/models/Primitives/LowPolySphere.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -215,10 +213,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Floor",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -263,11 +261,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Board1",
             "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 1,
             "Transformation": [
@@ -302,11 +300,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Board2",
             "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 2,
             "Transformation": [
@@ -341,11 +339,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Board3",
             "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 3,
             "Transformation": [
@@ -380,11 +378,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Board4",
             "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 4,
             "Transformation": [
@@ -433,34 +431,34 @@
             "Type": "SmoothDiffuseSurface"
         },
         {
-            "InnerExtinction": "resources/spectrum/conductor/Al extinction coefficient.csv",
-            "InnerRefractiveIndex": "resources/spectrum/conductor/Al refractive index.csv",
+            "InnerExtinction": 11,
+            "InnerRefractiveIndex": 10,
             "Name": "BoardSurface1",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 9,
             "RoughnessIndex": 1,
             "Type": "RoughConductorSurface"
         },
         {
-            "InnerExtinction": "resources/spectrum/conductor/Al extinction coefficient.csv",
-            "InnerRefractiveIndex": "resources/spectrum/conductor/Al refractive index.csv",
+            "InnerExtinction": 11,
+            "InnerRefractiveIndex": 10,
             "Name": "BoardSurface2",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 9,
             "RoughnessIndex": 2,
             "Type": "RoughConductorSurface"
         },
         {
-            "InnerExtinction": "resources/spectrum/conductor/Al extinction coefficient.csv",
-            "InnerRefractiveIndex": "resources/spectrum/conductor/Al refractive index.csv",
+            "InnerExtinction": 11,
+            "InnerRefractiveIndex": 10,
             "Name": "BoardSurface3",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 9,
             "RoughnessIndex": 3,
             "Type": "RoughConductorSurface"
         },
         {
-            "InnerExtinction": "resources/spectrum/conductor/Al extinction coefficient.csv",
-            "InnerRefractiveIndex": "resources/spectrum/conductor/Al refractive index.csv",
+            "InnerExtinction": 11,
+            "InnerRefractiveIndex": 10,
             "Name": "BoardSurface4",
-            "OuterRefractiveIndex": "resources/spectrum/dielectric/Air.csv",
+            "OuterRefractiveIndex": 9,
             "RoughnessIndex": 4,
             "Type": "RoughConductorSurface"
         }
@@ -548,6 +546,30 @@
                 ]
             },
             "Name": "WhiteEmitterTexture",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/dielectric/Air.csv"
+            },
+            "Name": "AirRefractiveIndex",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/conductor/Al refractive index.csv"
+            },
+            "Name": "AlRefractiveIndex",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/conductor/Al extinction coefficient.csv"
+            },
+            "Name": "AlExtinction",
             "Type": "UnicolorTexture"
         }
     ]

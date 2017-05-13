@@ -13,9 +13,6 @@
 #include <cstddef>
 #include <utility>
 #include <vector>
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zisc
 #include "zisc/aligned_memory_pool.hpp"
 #include "zisc/error.hpp"
@@ -24,12 +21,14 @@
 #include "fresnel.hpp"
 #include "layered_diffuse.hpp"
 #include "surface_model.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Material/Bxdf/interfaced_lambertian_brdf.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
+#include "NanairoCore/Setting/surface_setting_node.hpp"
+#include "NanairoCore/Utility/value.hpp"
 
 namespace nanairo {
 
@@ -38,7 +37,7 @@ namespace nanairo {
   No detailed.
   */
 LayeredDiffuseSurface::LayeredDiffuseSurface(
-    const QJsonObject& settings,
+    const SettingNodeBase* settings,
     const std::vector<const TextureModel*>& texture_list) noexcept
 {
   initialize(settings, texture_list);
@@ -49,29 +48,25 @@ LayeredDiffuseSurface::LayeredDiffuseSurface(
   No detailed.
   */
 auto LayeredDiffuseSurface::makeBxdf(
-    const Point2& texture_coordinate,
-    const bool /* is_reverse_face */,
+    const IntersectionInfo& info,
     const WavelengthSamples& wavelengths,
     Sampler& sampler,
     MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
-  // Get the roughness
-  constexpr Float min_roughness = 0.001;
-  Float roughness = roughness_->floatValue(texture_coordinate);
-  roughness = (min_roughness < roughness)
-      ? roughness * roughness
-      : min_roughness * min_roughness;
-  ZISC_ASSERT(zisc::isInClosedBounds(roughness, 0.0, 1.0),
-              "The roughness is out of the range [0, 1].");
-
-  // Evaluate the refractive index
+  const auto& uv = info.textureCoordinate();
   const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];
-  const Float n = eta_.getByWavelength(wavelength);
-  const Float ri = ri_.getByWavelength(wavelength);
 
-  // Get the reflectance
-  const Float k_d = reflectance_->reflectiveValue(texture_coordinate, wavelength);
-  ZISC_ASSERT(zisc::isInClosedBounds(k_d, 0.0, 1.0), "Reflectance isn't [0, 1].");
+  // Evaluate the reflectance
+  const Float k_d = reflectance_->reflectiveValue(uv, wavelength);
+  // Evaluate the roughness
+  const Float roughness = evalRoughness(roughness_, uv);
+  // Evaluate the refractive index
+  const Float n = evalRefractiveIndex(outer_refractive_index_,
+                                      inner_refractive_index_,
+                                      uv,
+                                      wavelength,
+                                      info.isReverseFace());
+  const Float ri = ri_.getByWavelength(wavelength);
 
   // Make a interfaced lambertian BRDF
   using Brdf = InterfacedLambertianBrdf;
@@ -86,15 +81,22 @@ auto LayeredDiffuseSurface::makeBxdf(
   */
 SurfaceType LayeredDiffuseSurface::type() const noexcept
 {
-  return SurfaceType::LayeredDiffuse;
+  return SurfaceType::kLayeredDiffuse;
 }
 
 /*!
   */
 void LayeredDiffuseSurface::calcInternalReflectance() noexcept
 {
-  for (uint i = 0; i < SpectralDistribution::size(); ++i) {
-    const Float n = eta_[i];
+  for (uint i = 0; i < CoreConfig::spectraSize(); ++i) {
+    const Point2 uv{0.0, 0.0};
+    const auto wavelength = getWavelength(i);
+    Float n = 0.0;
+    {
+      const auto n1 = outer_refractive_index_->spectraValue(uv, wavelength);
+      const auto n2 = inner_refractive_index_->spectraValue(uv, wavelength);
+      n = n2 / n1;
+    }
     ri_[i] = LayeredDiffuse::calcRi(n);
   }
 }
@@ -104,33 +106,28 @@ void LayeredDiffuseSurface::calcInternalReflectance() noexcept
   No detailed.
   */
 void LayeredDiffuseSurface::initialize(
-    const QJsonObject& settings,
+    const SettingNodeBase* settings,
     const std::vector<const TextureModel*>& texture_list) noexcept
 {
+  const auto surface_settings = castNode<SurfaceSettingNode>(settings);
+
+  const auto& parameters = surface_settings->layeredDiffuseParameters();
   {
-    const auto texture_index = SceneValue::toInt<uint>(settings,
-                                                       keyword::reflectanceIndex);
-    reflectance_ = texture_list[texture_index];
+    const auto index = parameters.outer_refractive_index_;
+    outer_refractive_index_ = texture_list[index];
   }
   {
-    const auto texture_index = SceneValue::toInt<uint>(settings,
-                                                       keyword::roughnessIndex);
-    roughness_ = texture_list[texture_index];
+    const auto index = parameters.inner_refractive_index_;
+    inner_refractive_index_ = texture_list[index];
   }
-
-  const auto outer_refractive_index_settings =
-      SceneValue::toString(settings, keyword::outerRefractiveIndex);
-  const auto n1 = SpectralDistribution::makeSpectra(outer_refractive_index_settings);
-  ZISC_ASSERT(!n1.hasValue(0.0), "The n1 contains zero value.");
-  ZISC_ASSERT(!n1.hasNegative(), "The n1 contains negative value.");
-
-  const auto inner_refractive_index_settings =
-      SceneValue::toString(settings, keyword::innerRefractiveIndex);
-  const auto n2 = SpectralDistribution::makeSpectra(inner_refractive_index_settings);
-  ZISC_ASSERT(!n2.hasNegative(), "The n2 contains negative value.");
-
-  eta_ = n2 / n1;
-
+  {
+    const auto index = parameters.reflectance_index_;
+    reflectance_ = texture_list[index];
+  }
+  {
+    const auto index = parameters.roughness_index_;
+    roughness_ = texture_list[index];
+  }
   calcInternalReflectance();
 }
 

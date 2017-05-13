@@ -20,9 +20,7 @@
 #include "bvh.hpp"
 #include "bvh_node.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-
-// Forward declaration
-class QJsonObject;
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -43,7 +41,7 @@ class ApproximateAgglomerativeClusteringBvh : public Bvh
 {
  public:
   //! Create a approximate agglomerative clustering BVH
-  ApproximateAgglomerativeClusteringBvh(const QJsonObject& settings) noexcept;
+  ApproximateAgglomerativeClusteringBvh(const SettingNodeBase* settings) noexcept;
 
 
  private:
@@ -83,7 +81,7 @@ class ApproximateAgglomerativeClusteringBvh : public Bvh
       const std::vector<Float>& distance_matrix) const noexcept;
 
   //! Initialize
-  void initialize(const QJsonObject& settings) noexcept;
+  void initialize(const SettingNodeBase* settings) noexcept;
 
   //! Initialize the distance matrix
   void initializeDistanceMatrix(const std::vector<ClusterPointer>& cluster_list,

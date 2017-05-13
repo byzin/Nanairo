@@ -10,21 +10,19 @@
 #include "non_directional_emitter.hpp"
 // Standard C++ library
 #include <vector>
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zisc
 #include "zisc/aligned_memory_pool.hpp"
 #include "zisc/error.hpp"
+#include "zisc/utility.hpp"
 // Nanairo
 #include "emitter_model.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Material/Light/non_directional_light.hpp"
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
+#include "NanairoCore/Setting/emitter_setting_node.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
@@ -34,7 +32,7 @@ namespace nanairo {
   No detailed.
   */
 NonDirectionalEmitter::NonDirectionalEmitter(
-    const QJsonObject& settings,
+    const SettingNodeBase* settings,
     const std::vector<const TextureModel*>& texture_list) noexcept
         : EmitterModel(settings)
 {
@@ -64,7 +62,7 @@ auto NonDirectionalEmitter::makeLight(
   */
 EmitterType NonDirectionalEmitter::type() const noexcept
 {
-  return EmitterType::NonDirectional;
+  return EmitterType::kNonDirectional;
 }
 
 /*!
@@ -72,17 +70,21 @@ EmitterType NonDirectionalEmitter::type() const noexcept
   No detailed.
   */
 void NonDirectionalEmitter::initialize(
-    const QJsonObject& settings,
+    const SettingNodeBase* settings,
     const std::vector<const TextureModel*>& texture_list) noexcept
 {
-  const Float radiant_exitance =
-      SceneValue::toFloat<Float>(settings, keyword::radiantExitance);
-  ZISC_ASSERT(0.0 < radiant_exitance, "Radiance exitance is negative.");
-  setRadiantExitance(radiant_exitance);
+  const auto emitter_settings = castNode<EmitterSettingNode>(settings);
 
-  const uint color_index =
-      SceneValue::toInt<uint>(settings, keyword::emissiveColorIndex);
-  color_ = texture_list[color_index];
+  const auto& parameters = emitter_settings->nonDirectionalEmitterParameters();
+  {
+    const Float radiant_exitance = zisc::cast<Float>(parameters.radiant_exitance_);
+    ZISC_ASSERT(0.0 < radiant_exitance, "Radiance exitance is negative.");
+    setRadiantExitance(radiant_exitance);
+  }
+  {
+    const uint color_index = parameters.color_index_;
+    color_ = texture_list[color_index];
+  }
 }
 
 } // namespace nanairo

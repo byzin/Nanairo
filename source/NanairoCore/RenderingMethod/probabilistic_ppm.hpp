@@ -17,9 +17,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/DataStructure/knn_photon_list.hpp"
 #include "NanairoCore/DataStructure/photon_map.hpp"
-
-// Forward declaration
-class QJsonObject;
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -55,7 +53,7 @@ class ProbabilisticPpm : public RenderingMethod
 
 
   //! Initialize probabilistic ppm method
-  ProbabilisticPpm(const System& system, const QJsonObject& settings) noexcept;
+  ProbabilisticPpm(const System& system, const SettingNodeBase* settings) noexcept;
 
 
   //! Render scene using probabilistic ppm method
@@ -101,7 +99,7 @@ class ProbabilisticPpm : public RenderingMethod
                   Spectra* weight) const noexcept;
 
   //! Initialize
-  void initialize(const System& system, const QJsonObject& settings) noexcept;
+  void initialize(const System& system, const SettingNodeBase* settings) noexcept;
 
   //! Sample next photon
   Ray sampleNextRay(const Ray& ray,

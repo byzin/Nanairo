@@ -13,15 +13,15 @@
 // Standard C++ library
 #include <functional>
 #include <limits>
+// Zisc
+#include "zisc/algorithm.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/Sampling/russian_roulette.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
-
-// Forward declaration
-class QJsonObject;
 
 namespace nanairo {
 
@@ -37,6 +37,13 @@ class World;
 //! \addtogroup Core
 //! \{
 
+enum class RenderingMethodType : uint32
+{
+  kPathTracing                = zisc::toHash32("PathTracing"),
+  kLightTracing               = zisc::toHash32("LightTracing"),
+  kProbabilisticPpm           = zisc::toHash32("ProbabilisticPPM")
+};
+
 /*!
   \details
   No detailed.
@@ -51,7 +58,7 @@ class RenderingMethod
 
 
   //! Initialize the rendering method
-  RenderingMethod(const System& system, const QJsonObject& settings) noexcept;
+  RenderingMethod(const System& system, const SettingNodeBase* settings) noexcept;
 
   //! Finalize the rendering method
   virtual ~RenderingMethod() noexcept {}
@@ -69,7 +76,7 @@ class RenderingMethod
   //! Make rendering method
   static UniquePointer<RenderingMethod> makeMethod(
       System& system,
-      const QJsonObject& settings) noexcept;
+      const SettingNodeBase* settings) noexcept;
 
   //! Return the ray cast epsilon
   Float rayCastEpsilon() const noexcept;
@@ -123,7 +130,7 @@ class RenderingMethod
 
  private:
   //! Initialize the rendering method
-  void initialize(const QJsonObject& settings) noexcept;
+  void initialize(const SettingNodeBase* settings) noexcept;
 
 
   std::function<void ()> clear_function_;

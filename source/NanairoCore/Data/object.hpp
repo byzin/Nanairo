@@ -13,8 +13,8 @@
 // Standard C++ library
 #include <vector>
 // Nanairo
-#include "NanairoCore/Shape/shape.hpp"
 #include "NanairoCore/Material/material.hpp"
+#include "NanairoCore/Shape/shape.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
@@ -47,7 +47,7 @@ class Object
   UniquePointer<Shape> shape_;
 };
 
-//! Check two objects are same
+//! Check if two objects are same
 bool isSameObject(const Object* object1, const Object* object2) noexcept;
 
 //! \} Core

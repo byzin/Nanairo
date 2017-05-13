@@ -12,19 +12,17 @@
 #include <cstddef>
 #include <vector>
 #include <utility>
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
+#include "zisc/utility.hpp"
 // Nanairo
 #include "plane.hpp"
 #include "triangle_mesh.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
+#include "NanairoCore/Setting/single_object_setting_node.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -49,18 +47,20 @@ void Shape::setSurfaceArea(const Float surface_area) noexcept
   No detailed.
   */
 std::vector<UniquePointer<Shape>> Shape::makeShape(
-    const QJsonObject& settings) noexcept
+    const SettingNodeBase* settings) noexcept
 {
-  using zisc::toHash32;
+  ZISC_ASSERT(settings != nullptr, "The setting node is null.");
+  ZISC_ASSERT(settings->type() == SettingNodeType::kSingleObject,
+              "Wrong setting node is specified.");
+  const auto object_settings = zisc::cast<const SingleObjectSettingNode*>(settings);
 
   std::vector<UniquePointer<Shape>> shape_list;
-  const auto type = SceneValue::toString(settings, keyword::shapeType);
-  switch (keyword::toHash32(type)) {
-   case toHash32(keyword::planeObject): {
+  switch (object_settings->shapeType()) {
+   case ShapeType::kPlane: {
     shape_list.emplace_back(new Plane{});
     break;
    }
-   case toHash32(keyword::meshObject): {
+   case ShapeType::kMesh: {
     shape_list = TriangleMesh::makeMeshes(settings);
     break;
    }

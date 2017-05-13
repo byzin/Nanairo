@@ -14,13 +14,11 @@
 #include <tuple>
 #include <vector>
 // Zisc
+#include "zisc/algorithm.hpp"
 #include "zisc/matrix.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-
-// Forward declaration
-class QJsonArray;
-class QJsonObject;
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -30,6 +28,13 @@ namespace nanairo {
 
 using Matrix3x3 = zisc::Matrix<Float, 3, 3>;
 using Matrix4x4 = zisc::Matrix<Float, 4, 4>;
+
+enum class TransformationType : uint32
+{
+  kTranslation                = zisc::toHash32("Translation"),
+  kScaling                    = zisc::toHash32("Scaling"),
+  kRotation                   = zisc::toHash32("Rotation")
+};
 
 /*!
   */
@@ -50,7 +55,11 @@ class Transformation
   static Matrix4x4 makeIdentity() noexcept;
 
   //! Make transformation matrix
-  static Matrix4x4 makeTransformation(const QJsonArray& settings) noexcept;
+  static Matrix4x4 makeTransformation(
+      const std::vector<const SettingNodeBase*>& settings_list) noexcept;
+
+  //! Make transformation matrix
+  static Matrix4x4 makeTransformation(const SettingNodeBase* settings) noexcept;
 
   //! Make translation matrix
   static Matrix4x4 makeTranslation(const Float x,
@@ -58,7 +67,7 @@ class Transformation
                                    const Float z) noexcept;
 
   //! Make translation matrix
-  static Matrix4x4 makeTranslation(const QJsonObject& settings) noexcept;
+  static Matrix4x4 makeTranslation(const SettingNodeBase* settings) noexcept;
 
   //! Make scaling matrix
   static Matrix4x4 makeScaling(const Float x,
@@ -66,13 +75,13 @@ class Transformation
                                const Float z) noexcept;
 
   //! Make scaling matrix
-  static Matrix4x4 makeScaling(const QJsonObject& settings) noexcept;
+  static Matrix4x4 makeScaling(const SettingNodeBase* settings) noexcept;
 
   //! Make rotation matrix
   static Matrix4x4 makeRotation(const Vector3& a, const Vector3& b) noexcept;
 
   //! Make rotation matrix
-  static Matrix4x4 makeRotation(const QJsonObject& settings) noexcept;
+  static Matrix4x4 makeRotation(const SettingNodeBase* settings) noexcept;
 
   //! Make x axis rotation matrix
   static Matrix4x4 makeXAxisRotation(const Float theta) noexcept;

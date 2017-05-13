@@ -13,8 +13,6 @@
 #include <future>
 #include <vector>
 #include <utility>
-// Qt
-#include <QtGlobal>
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
@@ -59,7 +57,7 @@ void RgbSpectraImage::addContribution(
   const uint pixel_index = widthResolution() * y + x;
   auto& pixel = buffer_[pixel_index];
   auto& compensation = compensation_[pixel_index];
-  for (uint index = 0; index < 3; ++index) {
+  for (uint index = 0; index < SampledSpectra::size(); ++index) {
     c = compensation[index];
     tmp1 = contribution.intensity(2 - index) - c;
     tmp2 = pixel[index] + tmp1;
@@ -74,25 +72,10 @@ void RgbSpectraImage::addContribution(
   */
 void RgbSpectraImage::clear() noexcept
 {
-  for (auto& pixel : buffer_) {
-    pixel[0] = 0.0;
-    pixel[1] = 0.0;
-    pixel[2] = 0.0;
-  }
-  for (auto& compensation : compensation_) {
-    compensation[0] = 0.0;
-    compensation[1] = 0.0;
-    compensation[2] = 0.0;
-  }
-}
-
-/*!
-  \details
-  No detailed.
-  */
-void RgbSpectraImage::save(const quint64 /* cycle */,
-                           const QString& /* file_path */) const noexcept
-{
+  for (auto& pixel : buffer_)
+    pixel = RgbColor{};
+  for (auto& compensation : compensation_)
+    compensation = RgbColor{};
 }
 
 /*!
@@ -100,9 +83,11 @@ void RgbSpectraImage::save(const quint64 /* cycle */,
   No detailed.
   */
 void RgbSpectraImage::toHdrImage(System& system,
-                                 const quint64 cycle,
+                                 const uint64 cycle,
                                  HdrImage* hdr_image) const noexcept
 {
+  ZISC_ASSERT(hdr_image != nullptr, "The HDR image is null.");
+
   using zisc::cast;
 
   const Float averager = zisc::invert(cast<Float>(cycle));
@@ -115,9 +100,8 @@ void RgbSpectraImage::toHdrImage(System& system,
     // Write to HDR image buffer
     const auto to_xyz_matrix = getRgbToXyzMatrix(system.colorSpace());
     for (uint index = begin; index < end; ++index) {
-      const auto rgb = averager * buffer_[index].data();
-      const RgbColor rgb_color{rgb[0], rgb[1], rgb[2]};
-      (*hdr_image)[index] = ColorConversion::toXyz(rgb_color, to_xyz_matrix);
+      const auto rgb = averager * buffer_[index];
+      (*hdr_image)[index] = ColorConversion::toXyz(rgb, to_xyz_matrix);
     }
   };
   auto& thread_pool = system.threadPool();
@@ -131,9 +115,9 @@ void RgbSpectraImage::toHdrImage(System& system,
   \details
   No detailed.
   */
-SpectraImageType RgbSpectraImage::type() const noexcept
+RenderingColorMode RgbSpectraImage::type() const noexcept
 {
-  return SpectraImageType::Rgb;
+  return RenderingColorMode::kRgb;
 }
 
 /*!

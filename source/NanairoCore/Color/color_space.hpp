@@ -10,6 +10,8 @@
 #ifndef NANAIRO_COLOR_SPACE_HPP
 #define NANAIRO_COLOR_SPACE_HPP
 
+// Zisc
+#include "zisc/algorithm.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 
@@ -18,11 +20,19 @@ namespace nanairo {
 //! \addtogroup Core
 //! \{
 
+enum class ColorSpaceType : uint32
+{
+  kSRgbD65                     = zisc::toHash32("sRGBD65"),
+  kSRgbD50                     = zisc::toHash32("sRGBD50"),
+  kAdobeRgbD65                 = zisc::toHash32("AdobeRGBD65"),
+  kAdobeRgbD50                 = zisc::toHash32("AdobeRGBD50")
+};
+
 //! Get XYZ to RGB matrix.
-Matrix3x3 getXyzToRgbMatrix(const uint32 color_space) noexcept;
+Matrix3x3 getXyzToRgbMatrix(const ColorSpaceType color_space) noexcept;
 
 //! Get RGB to XYZ matrix.
-Matrix3x3 getRgbToXyzMatrix(const uint32 color_space) noexcept;
+Matrix3x3 getRgbToXyzMatrix(const ColorSpaceType color_space) noexcept;
 
 //! \} Core
 

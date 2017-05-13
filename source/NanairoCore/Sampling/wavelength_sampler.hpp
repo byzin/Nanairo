@@ -6,12 +6,12 @@
 #ifndef NANAIRO_WAVELENGTH_SAMPLER_HPP
 #define NANAIRO_WAVELENGTH_SAMPLER_HPP
 
+// Zisc
+#include "zisc/algorithm.hpp"
 // Nanairo
 #include "sampled_wavelengths.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-
-// Forward declawation
-class QJsonObject;
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -22,6 +22,13 @@ class World;
 //! \addtogroup Core
 //! \{
 
+enum class WavelengthSamplerType : uint32
+{
+  kRegular                    = zisc::toHash32("Regular"),
+  kRandom                     = zisc::toHash32("Random"),
+  kStratified                 = zisc::toHash32("Stratified")
+};
+
 /*!
   \brief Spectra wavelength sampler
   */
@@ -29,7 +36,7 @@ class WavelengthSampler
 {
  public:
   //! Initialize a sampler
-  WavelengthSampler(const World& world, const QJsonObject& settings) noexcept;
+  WavelengthSampler(const World& world, const SettingNodeBase* settings) noexcept;
 
   //! Sample wavelengths
   SampledWavelengths operator()(Sampler& sampler) const noexcept;
@@ -61,7 +68,7 @@ class WavelengthSampler
 
 
   //!
-  void initialize(const World& world, const QJsonObject& settings) noexcept;
+  void initialize(const World& world, const SettingNodeBase* settings) noexcept;
 
 
   SamplerType type_;

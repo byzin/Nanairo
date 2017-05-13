@@ -15,9 +15,7 @@
 // Nanairo
 #include "rendering_method.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-
-// Forward declaration
-class QJsonObject;
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -50,7 +48,7 @@ class LightTracing : public RenderingMethod
 
 
   //! Initialize light tracing method
-  LightTracing(const System& system, const QJsonObject& settings) noexcept;
+  LightTracing(const System& system, const SettingNodeBase* settings) noexcept;
 
 
   //! Render scene using light tracing method
@@ -84,7 +82,7 @@ class LightTracing : public RenderingMethod
                   MemoryPool& memory_pool) noexcept;
 
   //! Initialize
-  void initialize(const System& system, const QJsonObject& settings) noexcept;
+  void initialize(const System& system, const SettingNodeBase* settings) noexcept;
 
   //! Parallelize light tracing
   void traceLightPath(System& system,

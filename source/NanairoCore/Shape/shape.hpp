@@ -15,15 +15,15 @@
 #include <vector>
 #include <tuple>
 #include <utility>
+// Zisc
+#include "zisc/algorithm.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_point.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
-
-// Forward declaration
-class QJsonObject;
 
 namespace nanairo {
 
@@ -35,6 +35,14 @@ class Sampler;
 
 //! \addtogroup Core
 //! \{
+
+/*!
+  */
+enum class ShapeType : uint32
+{
+  kPlane                      = zisc::toHash32("Plane"),
+  kMesh                       = zisc::toHash32("Mesh")
+};
 
 /*!
   \details
@@ -55,7 +63,7 @@ class Shape
 
   //! Make geometries
   static std::vector<UniquePointer<Shape>> makeShape(
-      const QJsonObject& settings) noexcept;
+      const SettingNodeBase* settings) noexcept;
 
   //! Return the surface area of the shape
   Float surfaceArea() const noexcept;

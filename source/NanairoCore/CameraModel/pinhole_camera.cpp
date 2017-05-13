@@ -11,9 +11,6 @@
 // Standard C++ library
 #include <cmath>
 #include <tuple>
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
@@ -21,14 +18,14 @@
 #include "zisc/utility.hpp"
 // Nanairo
 #include "camera_model.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Setting/camera_setting_node.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -36,7 +33,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-PinholeCamera::PinholeCamera(const QJsonObject& settings) noexcept :
+PinholeCamera::PinholeCamera(const SettingNodeBase* settings) noexcept :
     CameraModel(settings),
     pinhole_position_{0.0, 0.0, 0.0},
     film_position_{0.0, 0.0, -1.0},
@@ -169,7 +166,7 @@ void PinholeCamera::sampleLensPoint(Sampler& /* sampler */) noexcept
   */
 CameraType PinholeCamera::type() const noexcept
 {
-  return CameraType::Pinhole;
+  return CameraType::kPinhole;
 }
 
 /*!
@@ -196,12 +193,16 @@ Float PinholeCamera::filmArea() const noexcept
   \details
   No detailed.
   */
-void PinholeCamera::initialize(const QJsonObject& settings) noexcept
+void PinholeCamera::initialize(const SettingNodeBase* settings) noexcept
 {
-  const Float angle = SceneValue::toFloat<Float>(settings, keyword::angleOfView);
-  angle_of_view_ = zisc::toRadian(angle);
-  ZISC_ASSERT(zisc::isInBounds(angle_of_view_, 0.0, zisc::kPi<Float>),
-              "The angle of view is out of the range [0, pi).");
+  const auto camera_settings = castNode<CameraSettingNode>(settings);
+
+  const auto& parameters = camera_settings->pinholeCameraParameters();
+  {
+    angle_of_view_ = zisc::toRadian(parameters.angle_of_view_);
+    ZISC_ASSERT(zisc::isInBounds(angle_of_view_, 0.0, zisc::kPi<Float>),
+                "The angle of view is out of the range [0, pi).");
+  }
   setNormal((pinhole_position_ - film_position_).normalized());
 }
 
@@ -211,11 +212,10 @@ void PinholeCamera::initialize(const QJsonObject& settings) noexcept
   */
 void PinholeCamera::initializeFilm() noexcept
 {
-  const Float theta = angle_of_view_ * 0.5;
-  const Float r = std::tan(theta);
-
+  const Float theta = 0.5 * angle_of_view_;
   const Float phi = std::atan(film().inverseAspectRatio());
 
+  const Float r = std::tan(theta);
   const Float w = 2.0 * r * std::cos(phi);
   const Float h = 2.0 * r * std::sin(phi);
 

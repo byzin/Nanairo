@@ -19,9 +19,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
-
-// Forward declaration
-class QJsonObject;
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -40,7 +38,7 @@ class PinholeCamera : public CameraModel
 {
  public:
   //! Create a pinhole camera
-  PinholeCamera(const QJsonObject& settings) noexcept;
+  PinholeCamera(const SettingNodeBase* settings) noexcept;
 
 
   //! Calculate the pdf
@@ -86,7 +84,7 @@ class PinholeCamera : public CameraModel
   Float filmArea() const noexcept;
 
   //! Initialize
-  void initialize(const QJsonObject& settings) noexcept;
+  void initialize(const SettingNodeBase* settings) noexcept;
 
   //! Initialize camera film
   void initializeFilm() noexcept override;

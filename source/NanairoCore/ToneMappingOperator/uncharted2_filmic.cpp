@@ -12,6 +12,7 @@
 #include "tone_mapping_operator.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -20,7 +21,7 @@ namespace nanairo {
   No detailed.
   */
 Uncharted2Filmic::Uncharted2Filmic(const System& system,
-                                   const QJsonObject& settings) noexcept :
+                                   const SettingNodeBase* settings) noexcept :
     ToneMappingOperator(system, settings)
 {
 }

@@ -13,13 +13,12 @@
 // Standard C++ library
 #include <cstddef>
 #include <vector>
+// Zisc
+#include "zisc/algorithm.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
-
-// Forward declaration
-class QJsonObject;
 
 namespace nanairo {
 
@@ -37,9 +36,9 @@ class WavelengthSamples;
   \details
   No detailed.
   */
-enum class EmitterType : int
+enum class EmitterType : uint32
 {
-  NonDirectional = 0,
+  kNonDirectional              = zisc::toHash32("NonDirectional")
 };
 
 /*!
@@ -53,7 +52,7 @@ class EmitterModel
 
 
   //! Create a emitter model
-  EmitterModel(const QJsonObject& settings) noexcept;
+  EmitterModel(const SettingNodeBase* settings) noexcept;
 
   //! Finalize the emitter model
   virtual ~EmitterModel() noexcept;
@@ -61,7 +60,7 @@ class EmitterModel
 
   //! Make a emitter model
   static UniquePointer<EmitterModel> makeEmitter(
-      const QJsonObject& settings,
+      const SettingNodeBase* settings,
       const std::vector<const TextureModel*>& texture_list) noexcept;
 
   //! Make a light shader model
@@ -81,7 +80,7 @@ class EmitterModel
 
  private:
   //! Initialize
-  void initialize(const QJsonObject& settings) noexcept;
+  void initialize(const SettingNodeBase* settings) noexcept;
 
 
   Float radiant_exitance_;

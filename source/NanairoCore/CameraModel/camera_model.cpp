@@ -8,19 +8,16 @@
   */
 
 #include "camera_model.hpp"
-// Qt
-#include <QJsonObject>
-#include <QString>
-#include <QtGlobal>
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
+#include "zisc/utility.hpp"
 // Nanairo
 #include "pinhole_camera.hpp"
 //#include "thin_lens_camera_model.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Setting/camera_setting_node.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
@@ -38,7 +35,7 @@ CameraModel::~CameraModel() noexcept
   \details
   No detailed.
   */
-CameraModel::CameraModel(const QJsonObject& settings) noexcept
+CameraModel::CameraModel(const SettingNodeBase* settings) noexcept
     : jittering_{0.0, 0.0}
 {
   initialize(settings);
@@ -87,10 +84,13 @@ Matrix4x4 CameraModel::translateVertically(const Vector2& value) noexcept
   \details
   No detailed.
   */
-void CameraModel::initialize(const QJsonObject& settings) noexcept
+void CameraModel::initialize(const SettingNodeBase* settings) noexcept
 {
-  is_jittering_enabled_ = SceneValue::toBool(settings, keyword::jittering);
-  qInfo("  Camera jittering: %d", is_jittering_enabled_);
+  const auto camera_settings = castNode<CameraSettingNode>(settings);
+
+  {
+    is_jittering_enabled_ = camera_settings->jittering();
+  }
 }
 
 /*!
@@ -98,21 +98,22 @@ void CameraModel::initialize(const QJsonObject& settings) noexcept
   No detailed.
   */
 UniquePointer<CameraModel> CameraModel::makeModel(
-    const QJsonObject& settings) noexcept
+    const SettingNodeBase* settings) noexcept
 {
-  using zisc::toHash32;
+  const auto camera_settings = castNode<CameraSettingNode>(settings);
 
   CameraModel* camera_model = nullptr;
-
-  const auto camera_type = SceneValue::toString(settings, keyword::cameraType);
-  switch (keyword::toHash32(camera_type)) {
-   case toHash32(keyword::pinholeCamera): {
+  switch (camera_settings->cameraType()) {
+   case CameraType::kPinhole: {
     camera_model = new PinholeCamera{settings};
     break;
    }
+   case CameraType::kThinLens: {
+    zisc::raiseError("Not implemented");
 //  ase toHash32(keyword::thin_lens_camera_model):
 //  camera_model = new ThinLensCameraModel{system, settings, prefix, film};
-//  break;
+    break;
+   }
    default: {
     zisc::raiseError("CameraModelError: Unsupported type is specified.");
     break;

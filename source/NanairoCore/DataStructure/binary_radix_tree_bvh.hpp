@@ -17,9 +17,7 @@
 #include "bvh.hpp"
 #include "bvh_node.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-
-// Forward declaration
-class QJsonObject;
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -40,7 +38,7 @@ class BinaryRadixTreeBvh : public Bvh
 {
  public:
   //! Create a binary radix BVH
-  BinaryRadixTreeBvh(const QJsonObject& settings) noexcept;
+  BinaryRadixTreeBvh(const SettingNodeBase* settings) noexcept;
 
 
   //! Build a binary radix tree BVH

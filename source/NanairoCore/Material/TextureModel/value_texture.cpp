@@ -10,21 +10,19 @@
 #include "value_texture.hpp"
 // Standard C++ library
 #include <cstddef>
-// Qt
-#include <QJsonObject>
-#include <QString>
+#include <limits>
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "texture_model.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
+#include "NanairoCore/Setting/texture_setting_node.hpp"
 
 namespace nanairo {
 
@@ -33,7 +31,7 @@ namespace nanairo {
   No detailed.
   */
 ValueTexture::ValueTexture(const System& system,
-                           const QJsonObject& settings) noexcept
+                           const SettingNodeBase* settings) noexcept
 {
   initialize(system, settings);
 }
@@ -42,17 +40,8 @@ ValueTexture::ValueTexture(const System& system,
   \details
   No detailed.
   */
-Float ValueTexture::floatValue(const Point2& /* coordinate */) const noexcept
-{
-  return reflective_value_;
-}
-
-/*!
-  \details
-  No detailed.
-  */
 SampledSpectra ValueTexture::emissiveValue(
-    const Point2& /* coordinate */,
+    const Point2& /* uv */,
     const WavelengthSamples& wavelengths) const noexcept
 {
   return SampledSpectra{wavelengths, emissive_value_};
@@ -62,8 +51,18 @@ SampledSpectra ValueTexture::emissiveValue(
   \details
   No detailed.
   */
-Float ValueTexture::reflectiveValue(const Point2& /* coordinate */,
-                                    const uint16 /* wavelength */) const noexcept
+Float ValueTexture::grayScaleValue(const Point2& /* uv */) const noexcept
+{
+  return reflective_value_;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+Float ValueTexture::reflectiveValue(
+    const Point2& /* uv */,
+    const uint16 /* wavelength */) const noexcept
 {
   return reflective_value_;
 }
@@ -73,10 +72,30 @@ Float ValueTexture::reflectiveValue(const Point2& /* coordinate */,
   No detailed.
   */
 SampledSpectra ValueTexture::reflectiveValue(
-    const Point2& /* coordinate */,
+    const Point2& /* uv */,
     const WavelengthSamples& wavelengths) const noexcept
 {
   return SampledSpectra{wavelengths, reflective_value_};
+}
+
+/*!
+  */
+Float ValueTexture::spectraValue(
+    const Point2& /* uv */,
+    const uint16 /* wavelength */) const noexcept
+{
+  return spectra_value_;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+SampledSpectra ValueTexture::spectraValue(
+    const Point2& /* uv */,
+    const WavelengthSamples& wavelengths) const noexcept
+{
+  return SampledSpectra{wavelengths, spectra_value_};
 }
 
 /*!
@@ -85,7 +104,7 @@ SampledSpectra ValueTexture::reflectiveValue(
   */
 TextureType ValueTexture::type() const noexcept
 {
-  return TextureType::Value;
+  return TextureType::kValue;
 }
 
 /*!
@@ -93,16 +112,25 @@ TextureType ValueTexture::type() const noexcept
   No detailed.
   */
 void ValueTexture::initialize(const System& system,
-                              const QJsonObject& settings) noexcept
+                              const SettingNodeBase* settings) noexcept
 {
+  const auto texture_settings = castNode<TextureSettingNode>(settings);
+
+  const auto& parameters = texture_settings->valueTextureParameters();
+  {
+    const Float value = zisc::cast<Float>(parameters.value_);
+    spectra_value_ = zisc::clamp(value, 0.0, std::numeric_limits<Float>::max());
+  }
   // Emissive value
-  emissive_value_ = system.isRgbRenderingMode()
-      ? zisc::invert(3.0)
-      : zisc::invert(zisc::cast<Float>(CoreConfig::spectraSize()));
-  // Reflective value and float value
-  reflective_value_ = SceneValue::toFloat<Float>(settings, keyword::value);
-  ZISC_ASSERT(zisc::isInClosedBounds(reflective_value_, 0.0, 1.0),
-              "Texture value isn't [0, 1].");
+  {
+    emissive_value_ = system.isRgbMode()
+        ? zisc::invert(3.0)
+        : zisc::invert(zisc::cast<Float>(CoreConfig::spectraSize()));
+  }
+  // Reflective value
+  {
+    reflective_value_ = zisc::clamp(spectra_value_, 0.0, 1.0);
+  }
 }
 
 } // namespace nanairo

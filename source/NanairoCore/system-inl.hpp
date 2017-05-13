@@ -21,6 +21,7 @@
 #include "zisc/thread_pool.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
+#include "Color/color_space.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "Sampling/sampler.hpp"
 #include "Utility/unique_pointer.hpp"
@@ -82,7 +83,7 @@ Sampler& System::globalSampler() noexcept
 inline
 uint System::imageHeightResolution() const noexcept
 {
-  return image_height_resolution_;
+  return zisc::cast<uint>(image_height_resolution_);
 }
 
 /*!
@@ -92,7 +93,7 @@ uint System::imageHeightResolution() const noexcept
 inline
 uint System::imageWidthResolution() const noexcept
 {
-  return image_width_resolution_;
+  return zisc::cast<uint>(image_width_resolution_);
 }
 
 /*!
@@ -138,11 +139,19 @@ Sampler& System::threadSampler(const uint thread_number) noexcept
 // Color
 
 /*!
+  */
+inline
+RenderingColorMode System::colorMode() const noexcept
+{
+  return color_mode_;
+}
+
+/*!
   \details
   No detailed.
   */
 inline
-uint32 System::colorSpace() const noexcept
+ColorSpaceType System::colorSpace() const noexcept
 {
   return color_space_;
 }
@@ -162,9 +171,17 @@ Float System::gamma() const noexcept
   No detailed.
   */
 inline
-bool System::isRgbRenderingMode() const noexcept
+bool System::isRgbMode() const noexcept
 {
-  return is_rgb_rendering_mode_;
+  return colorMode() == RenderingColorMode::kRgb;
+}
+
+/*!
+  */
+inline
+bool System::isSpectraMode() const noexcept
+{
+  return colorMode() == RenderingColorMode::kSpectra;
 }
 
 /*!

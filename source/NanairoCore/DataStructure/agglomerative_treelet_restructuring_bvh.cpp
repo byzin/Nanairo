@@ -16,21 +16,18 @@
 #include <tuple>
 #include <utility>
 #include <vector>
-// Qt
-#include <QJsonObject>
-#include <QString>
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "aabb.hpp"
 #include "binary_radix_tree_bvh.hpp"
-#include "NanairoCommon/keyword.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Data/object.hpp"
+#include "NanairoCore/Setting/bvh_setting_node.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Shape/shape.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
 
 namespace nanairo {
 
@@ -39,7 +36,7 @@ namespace nanairo {
   No detailed.
   */
 AgglomerativeTreeletRestructuringBvh::AgglomerativeTreeletRestructuringBvh(
-    const QJsonObject& settings) noexcept :
+    const SettingNodeBase* settings) noexcept :
         Bvh(settings)
 {
   initialize(settings);
@@ -234,12 +231,19 @@ Float AgglomerativeTreeletRestructuringBvh::getNodeDistance(
   No detailed.
   */
 void AgglomerativeTreeletRestructuringBvh::initialize(
-    const QJsonObject& settings) noexcept
+    const SettingNodeBase* settings) noexcept
 {
-  treelet_size_ = SceneValue::toInt<uint>(settings, keyword::treeletSize);
-  optimization_loop_count_ =
-      SceneValue::toInt<uint>(settings, keyword::optimizationLoopCount);
-  ZISC_ASSERT(4 <= treelet_size_, "Invalid treelet size is specified.");
+  const auto bvh_settings = castNode<BvhSettingNode>(settings);
+
+  const auto& parameters =
+      bvh_settings->agglomerativeTreeletRestructuringParameters();
+  {
+    treelet_size_ = parameters.treelet_size_;
+    ZISC_ASSERT(4 <= treelet_size_, "Invalid treelet size is specified.");
+  }
+  {
+    optimization_loop_count_ = parameters.optimization_loop_;
+  }
 }
 
 /*!

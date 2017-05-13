@@ -11,10 +11,7 @@
 // Standard C++ library
 #include <cmath>
 #include <utility>
-// Qt
-#include <QJsonArray>
-#include <QJsonObject>
-#include <QString>
+#include <vector>
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
@@ -23,40 +20,43 @@
 // Nanairo
 #include "point.hpp"
 #include "vector.hpp"
-#include "NanairoCommon/keyword.hpp"
-#include "NanairoCore/Utility/scene_value.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
+#include "NanairoCore/Setting/transformation_setting_node.hpp"
 
 namespace nanairo {
+
+/*!
+  */
+Matrix4x4 Transformation::makeTransformation(
+    const std::vector<const SettingNodeBase*>& settings_list) noexcept
+{
+  auto matrix = makeIdentity();
+  for (const auto settings : settings_list)
+    matrix = matrix * makeTransformation(settings);
+  return matrix;
+}
 
 /*!
   \details
   No detailed.
   */
-Matrix4x4 Transformation::makeTransformation(const QJsonArray& settings) noexcept
+Matrix4x4 Transformation::makeTransformation(const SettingNodeBase* settings) noexcept
 {
-  using zisc::toHash32;
+  const auto transformation_settings = castNode<TransformationSettingNode>(settings);
 
   auto matrix = makeIdentity();
-
-  const int count = settings.count();
-  for (int index = count - 1; 0 <= index; --index) {
-    const auto transformation_settings = SceneValue::toObject(settings[index]);
-    const bool is_enabled = SceneValue::toBool(transformation_settings,
-                                               keyword::enabled);
-    if (!is_enabled)
-      continue;
-    const auto type = SceneValue::toString(transformation_settings, keyword::type);
-    switch (keyword::toHash32(type)) {
-     case toHash32(keyword::translation): {
-      matrix = makeTranslation(transformation_settings) * matrix;
+  if (transformation_settings->isEnabled()) {
+    switch (transformation_settings->transformationType()) {
+     case TransformationType::kTranslation: {
+      matrix = makeTranslation(settings);
       break;
      }
-     case toHash32(keyword::scaling): {
-      matrix = makeScaling(transformation_settings) * matrix;
+     case TransformationType::kScaling: {
+      matrix = makeScaling(settings);
       break;
      }
-     case toHash32(keyword::rotation): {
-      matrix = makeRotation(transformation_settings) * matrix;
+     case TransformationType::kRotation: {
+      matrix = makeRotation(settings);
       break;
      }
      default: {
@@ -72,12 +72,13 @@ Matrix4x4 Transformation::makeTransformation(const QJsonArray& settings) noexcep
   \details
   No detailed.
   */
-Matrix4x4 Transformation::makeTranslation(const QJsonObject& settings) noexcept
+Matrix4x4 Transformation::makeTranslation(const SettingNodeBase* settings) noexcept
 {
-  const auto value = SceneValue::toArray(settings, keyword::value);
-  const Float x = SceneValue::toFloat<Float>(value[0]);
-  const Float y = SceneValue::toFloat<Float>(value[1]);
-  const Float z = SceneValue::toFloat<Float>(value[2]);
+  const auto transformation_settings = castNode<TransformationSettingNode>(settings);
+
+  const Float x = transformation_settings->x();
+  const Float y = transformation_settings->y();
+  const Float z = transformation_settings->z();
   return makeTranslation(x, y, z);
 }
 
@@ -85,12 +86,13 @@ Matrix4x4 Transformation::makeTranslation(const QJsonObject& settings) noexcept
   \details
   No detailed.
   */
-Matrix4x4 Transformation::makeScaling(const QJsonObject& settings) noexcept
+Matrix4x4 Transformation::makeScaling(const SettingNodeBase* settings) noexcept
 {
-  const auto value = SceneValue::toArray(settings, keyword::value);
-  const Float x = SceneValue::toFloat<Float>(value[0]);
-  const Float y = SceneValue::toFloat<Float>(value[1]);
-  const Float z = SceneValue::toFloat<Float>(value[2]);
+  const auto transformation_settings = castNode<TransformationSettingNode>(settings);
+
+  const Float x = transformation_settings->x();
+  const Float y = transformation_settings->y();
+  const Float z = transformation_settings->z();
   return makeScaling(x, y, z);
 }
 
@@ -98,35 +100,25 @@ Matrix4x4 Transformation::makeScaling(const QJsonObject& settings) noexcept
   \details
   No detailed.
   */
-Matrix4x4 Transformation::makeRotation(const QJsonObject& settings) noexcept
+Matrix4x4 Transformation::makeRotation(const SettingNodeBase* settings) noexcept
 {
-  using zisc::toHash32;
+  const auto transformation_settings = castNode<TransformationSettingNode>(settings);
 
-  const auto angle = SceneValue::toFloat<Float>(settings, keyword::angle);
-  const auto unit = SceneValue::toString(settings, keyword::unit);
-  const Float theta = (unit == keyword::degreeUnit)
-      ? zisc::toRadian(angle)
-      : angle;
-
-  Matrix4x4 matrix;
-  const auto axis = SceneValue::toString(settings, keyword::axis);
-  switch (keyword::toHash32(axis)) {
-   case toHash32(keyword::xAxis): {
-    matrix = makeXAxisRotation(theta);
-    break;
-   }
-   case toHash32(keyword::yAxis): {
-    matrix = makeYAxisRotation(theta);
-    break;
-   }
-   case toHash32(keyword::zAxis): {
-    matrix = makeZAxisRotation(theta);
-    break;
-   }
-   default: {
-    zisc::raiseError("TransformationError: Unsupported axis is specified.");
-    break;
-   }
+  auto matrix = makeIdentity();
+  {
+    const Float x = transformation_settings->x();
+    if (x != 0.0)
+      matrix = makeXAxisRotation(x) * matrix;
+  }
+  {
+    const Float y = transformation_settings->y();
+    if (y != 0.0)
+      matrix = makeYAxisRotation(y) * matrix;
+  }
+  {
+    const Float z = transformation_settings->z();
+    if (z != 0.0)
+      matrix = makeZAxisRotation(z) * matrix;
   }
   return matrix;
 }
@@ -152,7 +144,7 @@ void Transformation::affineTransform(const Matrix4x4& matrix,
   const Matrix3x3 normal_matrix{matrix(0, 0), matrix(0, 1), matrix(0, 2),
                                 matrix(1, 0), matrix(1, 1), matrix(1, 2),
                                 matrix(2, 0), matrix(2, 1), matrix(2, 2)};
-  *vector = normal_matrix * *vector;
+  *vector = normal_matrix * (*vector);
 }
 
 } // namespace nanairo

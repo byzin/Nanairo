@@ -46,58 +46,6 @@ Float MicrofacetGgx::evalD(const Float roughness, const Float cos_nm) noexcept
   No detailed.
   */
 inline
-SampledSpectra MicrofacetGgx::evalReflectance(
-    const Float roughness,
-    const Vector3& vin,
-    const Vector3& vout,
-    const Vector3& normal,
-    const SampledSpectra& r0,
-    Float* pdf) noexcept
-{
-  const auto& wavelengths = r0.wavelengths();
-
-  // Calculate reflection half vector
-  const auto m_normal = calcReflectionHalfVector(vin, vout);
-
-  const Float cos_ni = -zisc::dot(normal, vin);
-  const Float cos_no = zisc::dot(normal, vout);
-  const Float cos_mi = -zisc::dot(m_normal, vin);
-  const Float cos_mo = cos_mi;
-  const Float cos_nm = zisc::dot(normal, m_normal);
-  ZISC_ASSERT(zisc::isInClosedBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
-  ZISC_ASSERT(zisc::isInClosedBounds(cos_no, 0.0, 1.0), "cos_no isn't [0, 1].");
-  ZISC_ASSERT(zisc::isInClosedBounds(cos_mi, 0.0, 1.0), "cos_mi isn't [0, 1].");
-  ZISC_ASSERT(zisc::isInClosedBounds(cos_nm, 0.0, 1.0), "cos_nm isn't [0, 1].");
-
-  // Evaluate D
-  const Float d = evalD(roughness, cos_nm);
-  if (d == 0.0)
-    return SampledSpectra{wavelengths};
-
-  // Evaluate G2(i, o, m)
-  const Float g2 = evalG2(roughness, cos_ni, cos_no, cos_mi, cos_mo, cos_nm);
-  if (g2 == 0.0)
-    return SampledSpectra{wavelengths};
-
-  // Evaluate the fresnel reflectance
-  const auto fresnel = Fresnel::evalFresnel(cos_mi, r0);
-
-  // Calculate reflectance
-  const auto f = fresnel * (g2 * d / (4.0 * cos_ni * cos_no));
-  ZISC_ASSERT(!f.hasNegative(), "Reflectance isn't positive.");
-
-  // Calculate the pdf
-  if (pdf != nullptr)
-    *pdf = calcReflectionPdf(roughness, d, cos_ni, cos_mi, cos_nm);
-
-  return f;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
 Float MicrofacetGgx::evalReflectionPdf(const Float roughness,
                                        const Vector3& vin,
                                        const Vector3& vout,

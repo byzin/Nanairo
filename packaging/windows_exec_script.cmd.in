@@ -1,9 +1,9 @@
+@echo off
+
 rem author: Sho Ikeda
 rem Copyright (c) 2015-2016 Sho Ikeda
 rem This software is released under the MIT License.
 rem http://opensource.org/licenses/mit-license.php
-
-@echo off
 
 set NANAIRO_ROOT=%~dp0
 start %NANAIRO_ROOT%bin\@PROJECT_NAME@.exe -w %NANAIRO_ROOT%

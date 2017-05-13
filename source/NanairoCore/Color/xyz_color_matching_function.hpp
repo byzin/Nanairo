@@ -20,9 +20,6 @@
 #include "xyz_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 
-// Forward declaration
-class QJsonObject;
-
 namespace nanairo {
 
 //! \addtogroup Core
@@ -36,11 +33,8 @@ class XyzColorMatchingFunction
 {
  public:
   //! Create a xyz color matching function
-  XyzColorMatchingFunction(const QJsonObject& settings) noexcept;
+  XyzColorMatchingFunction() noexcept;
 
-
-  //! Return the standard illuminant
-  const SpectralDistribution& illuminant() const noexcept;
 
   //! Convert spectrums to XYZ for emitter.
   XyzColor toXyzForEmitter(const SpectralDistribution& spectra) const noexcept;
@@ -49,26 +43,44 @@ class XyzColorMatchingFunction
   XyzColor toXyzForReflector(const SpectralDistribution& spectra) const noexcept;
 
   //! Return the observer x bar
+  SpectralDistribution& xBar() noexcept;
+
+  //! Return the observer x bar
   const SpectralDistribution& xBar() const noexcept;
+
+  //! Return the observer y bar
+  SpectralDistribution& yBar() noexcept;
 
   //! Return the observer y bar
   const SpectralDistribution& yBar() const noexcept;
 
   //! Return the observer z bar
+  SpectralDistribution& zBar() noexcept;
+
+  //! Return the observer z bar
   const SpectralDistribution& zBar() const noexcept;
 
  private:
+  //! Calculate the XYZ CMF component by the wavelength and parameters
+  Float calcValue(const Float wavelength,
+                  const Float alpha,
+                  const Float beta,
+                  const Float gamma,
+                  const Float delta) const noexcept;
+
+  //! Calculate the X value by the wavelength
+  Float calcX(const Float wavelength) const noexcept;
+
+  //! Calculate the Y value by the wavelength
+  Float calcY(const Float wavelength) const noexcept;
+
+  //! Calculate the Z value by the wavelength
+  Float calcZ(const Float wavelength) const noexcept;
+
   //! Initialize
-  void initialize(const QJsonObject& settings) noexcept;
-
-  //! Load standard illuminant
-  void loadStandardIlluminant(const QJsonObject& settings) const noexcept;
-
-  //! Set standard obverser
-  void loadStandardObserver(const QJsonObject& settings) const noexcept;
+  void initialize() noexcept;
 
 
-  std::unique_ptr<SpectralDistribution> illuminant_;
   std::array<std::unique_ptr<SpectralDistribution>, 3> bar_;
 };
 
