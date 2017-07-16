@@ -139,6 +139,7 @@ function(getClangWarningOption compiler_warning_flags)
   if(Z_VISUAL_STUDIO)
     list(APPEND warning_flags /W4
                               -Wno-microsoft-enum-value
+                              -Wno-unknown-argument
                               -Qunused-arguments
                               )
   else()

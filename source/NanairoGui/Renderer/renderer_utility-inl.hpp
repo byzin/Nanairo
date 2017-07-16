@@ -43,7 +43,7 @@ QString getTimeString(const zisc::Stopwatch::Clock::duration time) noexcept
   const auto millis = duration_cast<Millis>(rest_time);
 
   const auto time_string = QStringLiteral("%1 h %2 m %3.%4 s");
-  constexpr auto zero = QChar('0');
+  const auto zero = QChar('0');
   return (((time_string.arg(hours.count(), 2, 10, zero))
                        .arg(minutes.count(), 2, 10, zero))
                        .arg(seconds.count(), 2, 10, zero))
