@@ -14,7 +14,9 @@
 #include <QVariant>
 
 // Forward declaration
+class QJsonArray;
 class QJsonObject;
+class QJsonValue;
 class QString;
 class QUrl;
 
@@ -34,7 +36,7 @@ class SceneDocument
 
   //! Load a scene document
   static bool loadDocument(const QUrl& file_url,
-                           QVariantMap& node,
+                           QVariant& node,
                            QString& error_message) noexcept;
 
   //! Load a scene document
@@ -44,7 +46,7 @@ class SceneDocument
 
   //! Save a scene document
   static bool saveDocument(const QUrl& file_url,
-                           const QVariantMap& node,
+                           const QVariant& node,
                            QString& error_message) noexcept;
 
   //! Save a scene document
@@ -55,6 +57,15 @@ class SceneDocument
  private:
   //! Convert a URL to a file path
   static QString toFilePath(const QUrl& url) noexcept;
+
+  //! Convert JsonArray to List 
+  static QVariant toVariant(const QJsonArray& node) noexcept;
+
+  //! Convert JsonObject to Map
+  static QVariant toVariant(const QJsonObject& node) noexcept;
+
+  //! Convert JsonValue to Variant
+  static QVariant toVariant(const QJsonValue& node) noexcept;
 };
 
 //! \}

@@ -79,11 +79,11 @@ class GuiRendererManager : public QObject
   Q_INVOKABLE void invokePreviewing() noexcept;
 
   //! Open a scene data
-  Q_INVOKABLE QVariantMap loadSceneData(const QUrl& file_path) const noexcept;
+  Q_INVOKABLE QVariant loadSceneData(const QUrl& file_path) const noexcept;
 
   //! Save a scene data
   Q_INVOKABLE void saveSceneData(const QUrl& file_path,
-                                 const QVariantMap& scene_data) const noexcept;
+                                 const QVariant& scene_data) const noexcept;
 
   //! Set rendered image provider
   void setRenderedImageProvider(RenderedImageProvider* image_provider) noexcept;

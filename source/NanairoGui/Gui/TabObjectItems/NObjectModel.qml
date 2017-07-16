@@ -17,6 +17,13 @@ QtObject {
   property var model: ListModel {
   }
 
+  function clear() {
+    var count = model.count;
+    for (var i = 0; i < count; ++i) {
+      model.remove(0, 1);
+    }
+  }
+
   function createGeneralElement() {
     var element = {};
     element.groupLevel = 0;

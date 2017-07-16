@@ -67,8 +67,10 @@ void ObjectModelSettingNode::readData(std::istream* data_stream) noexcept
     for (uint i = 0; i < num_of_transformation; ++i) {
       auto type = readType(data_stream);
       ZISC_ASSERT(type == SettingNodeType::kTransformation, "Invalid header.");
-      auto t = addTransformation(TransformationType::kTranslation, 0.0, 0.0, 0.0);
-      t->readData(data_stream);
+      if (type == SettingNodeType::kTransformation) {
+        auto t = addTransformation(TransformationType::kTranslation, 0.0, 0.0, 0.0);
+        t->readData(data_stream);
+      }
     }
   }
   // Object

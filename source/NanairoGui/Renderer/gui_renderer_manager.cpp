@@ -222,9 +222,9 @@ void GuiRendererManager::invokePreviewing() noexcept
 
 /*!
   */
-QVariantMap GuiRendererManager::loadSceneData(const QUrl& file_url) const noexcept
+QVariant GuiRendererManager::loadSceneData(const QUrl& file_url) const noexcept
 {
-  QVariantMap scene_data;
+  QVariant scene_data;
   QString message;
   const bool result = SceneDocument::loadDocument(file_url, scene_data, message);
   if (!result) {
@@ -236,7 +236,7 @@ QVariantMap GuiRendererManager::loadSceneData(const QUrl& file_url) const noexce
 /*!
   */
 void GuiRendererManager::saveSceneData(const QUrl& file_url,
-                                       const QVariantMap& scene_data) const noexcept
+                                       const QVariant& scene_data) const noexcept
 {
   QString message;
   const bool result = SceneDocument::saveDocument(file_url, scene_data, message);

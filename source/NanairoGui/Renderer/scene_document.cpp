@@ -13,11 +13,13 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QString>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonParseError>
 #include <QJsonObject>
+#include <QJsonValue>
 #include <QUrl>
-#include <QVariantMap>
+#include <QVariant>
 #include <QtGlobal>
 // Zisc
 #include "zisc/error.hpp"
@@ -44,13 +46,14 @@ bool SceneDocument::checkDocumentInfo(const QString& file_path,
 /*!
   */
 bool SceneDocument::loadDocument(const QUrl& file_url,
-                                 QVariantMap& node,
+                                 QVariant& node,
                                  QString& error_message) noexcept
 {
   QJsonObject object;
   const auto file_path = toFilePath(file_url);
   const bool result = loadDocument(file_path, object, error_message);
-  node = object.toVariantMap();
+  if (result)
+    node = toVariant(object);
   return result;
 }
 
@@ -88,10 +91,10 @@ bool SceneDocument::loadDocument(const QString& file_path,
 /*!
   */
 bool SceneDocument::saveDocument(const QUrl& file_url,
-                                 const QVariantMap& node,
+                                 const QVariant& node,
                                  QString& error_message) noexcept
 {
-  const auto object = QJsonObject::fromVariantMap(node);
+  const auto object = QJsonObject::fromVariantMap(node.toMap());
   const auto file_path = toFilePath(file_url);
   return saveDocument(file_path, object, error_message);
 }
@@ -124,6 +127,68 @@ QString SceneDocument::toFilePath(const QUrl& file_url) noexcept
   return file_url.isLocalFile() 
       ? file_url.toLocalFile() // Local file
       : ":" + file_url.toString(QUrl::RemoveScheme); // Resource file
+}
+
+/*!
+  */
+QVariant SceneDocument::toVariant(const QJsonValue& value) noexcept
+{
+  QVariant node;
+  switch (value.type()) {
+   case QJsonValue::Null: {
+    zisc::raiseError("The json value is null.");
+    break;
+   }
+   case QJsonValue::Bool:
+   case QJsonValue::Double:
+   case QJsonValue::String: {
+    node = value.toVariant();
+    break;
+   }
+   case QJsonValue::Array: {
+    node = toVariant(value.toArray());
+    break;
+   }
+   case QJsonValue::Object: {
+    node = toVariant(value.toObject());
+    break;
+   }
+   case QJsonValue::Undefined: {
+    zisc::raiseError("The json value is undefined.");
+    break;
+   }
+   default: {
+    zisc::raiseError("Undefined json value type is specified.");
+    break;
+   }
+  }
+  return node;
+}
+
+/*!
+  */
+QVariant SceneDocument::toVariant(const QJsonArray& array) noexcept
+{
+  QVariantList node;
+  node.reserve(array.size());
+  for (const auto& element : array) {
+    const auto value = toVariant(element);
+    node.append(value);
+  }
+  return QVariant::fromValue(node);
+}
+
+/*!
+  */
+QVariant SceneDocument::toVariant(const QJsonObject& object) noexcept
+{
+  QVariantMap node;
+  const auto keys = object.keys();
+  for (const auto& key : keys) {
+    const auto value = toVariant(object[key]);
+    node.insert(key, value);
+  }
+  return QVariant::fromValue(node);
 }
 
 } // namespace nanairo

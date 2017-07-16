@@ -44,6 +44,9 @@ class GuiEngine
   //! Initialize GUI engine
   void initialize() noexcept;
 
+  //! Initialize GUI default font
+  void initializeFont() noexcept;
+
 
   QQmlApplicationEngine engine_;
   GuiRendererManager manager_;

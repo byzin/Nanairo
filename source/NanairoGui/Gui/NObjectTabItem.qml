@@ -114,7 +114,7 @@ Rectangle {
 
   function setSceneData(sceneData) {
     var objectModel = object_tree_view.objectModel;
-    objectModel.model.clear();
+    objectModel.clear();
     for (var i = 0; i < sceneData.length; ++i) {
       var itemData = sceneData[i];
       var item = makeItem(itemData);
