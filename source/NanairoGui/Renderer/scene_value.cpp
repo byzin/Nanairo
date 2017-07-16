@@ -67,7 +67,7 @@ namespace nanairo {
 std::unique_ptr<SettingNodeBase> SceneValue::toSetting(
     const QJsonObject& value) noexcept
 {
-  auto setting = std::make_unique<SceneSettingNode>();
+  std::unique_ptr<SettingNodeBase> setting = std::make_unique<SceneSettingNode>();
   toSceneSetting(value, setting.get());
   return setting;
 }
