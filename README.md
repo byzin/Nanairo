@@ -79,11 +79,12 @@ Please see [wiki](https://github.com/byzin/Nanairo/wiki/Home "NanairoWiki").
 ### Test environments ###
 Building step is tested in the following environments  
 
-* Mac Mavericks + Apple Clang 8.0 + Qt 5.7 + CMake 3.7
-* Ubuntu 16.04 + GCC 5.4 + Qt 5.7 + CMake 3.7
-* Ubuntu 16.04 + Clang 4.0 + Qt 5.7 + CMake 3.7
-* Windows 8 (64bit) + MinGW GCC 6.2 + Qt 5.6 + CMake 3.7
-* Windows 8 (64bit) + Clang 4.0 with MSVC (Visual Studio 2015) + Qt 5.7 + CMake 3.6
+* Mac Mavericks + Apple Clang 8.0 + Qt 5.9.1 + CMake 3.8.2
+* Mac Mavericks + GCC 7.1 + Qt 5.9.1 + CMake 3.8.2
+* Ubuntu 16.04 + GCC 5.4 + Qt 5.9.1 + CMake 3.8.2
+* Ubuntu 16.04 + Clang 4.0 + Qt 5.9.1 + CMake 3.8.2
+* Windows 8 (64bit) + MinGW GCC 7.1 + Qt 5.9.1 + CMake 3.8.2
+* Windows 8 (64bit) + Clang 4.0.1 with MSVC (Visual Studio 2015) + Qt 5.9.1 + CMake 3.8.2
 
 ### Download source code ###
 
