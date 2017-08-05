@@ -10,6 +10,7 @@
 #include "light_tracing.hpp"
 // Standard C++ library
 #include <future>
+#include <memory>
 #include <thread>
 #include <tuple>
 #include <utility>
@@ -37,13 +38,13 @@
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Material/EmitterModel/emitter_model.hpp"
 #include "NanairoCore/Material/SurfaceModel/surface_model.hpp"
-#include "NanairoCore/Sampling/light_source_sampler.hpp"
 #include "NanairoCore/Sampling/russian_roulette.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_point.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Sampling/LightSourceSampler/power_weighted_light_source_sampler.hpp"
 #include "NanairoCore/Setting/rendering_method_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 
@@ -54,10 +55,11 @@ namespace nanairo {
   No detailed.
   */
 LightTracing::LightTracing(const System& system,
-                           const SettingNodeBase* settings) noexcept :
+                           const SettingNodeBase* settings,
+                           const Scene& scene) noexcept :
     RenderingMethod(system, settings)
 {
-  initialize(system, settings);
+  initialize(system, settings, scene);
 }
 
 /*!
@@ -156,7 +158,8 @@ Ray LightTracing::generateRay(const World& world,
 {
   const auto& wavelengths = light_contribution->wavelengths();
   // Sample a light point
-  const auto& light_source_info = world.sampleLightSource(sampler);
+  const auto& light_sampler = lightPathLightSampler();
+  const auto& light_source_info = light_sampler.sample(sampler);
   const auto light_source = light_source_info.object();
   const auto light_point_info = light_source->shape().samplePoint(sampler);
   const auto& point = std::get<0>(light_point_info);
@@ -217,8 +220,20 @@ void LightTracing::addLightContribution(CameraModel& camera,
   */
 inline
 void LightTracing::initialize(const System& /* system */,
-                              const SettingNodeBase* /* settings */) noexcept
+                              const SettingNodeBase* /* settings */,
+                              const Scene& scene) noexcept
 {
+  light_path_light_sampler_ =
+      std::make_unique<PowerWeightedLightSourceSampler>(scene.world());
+}
+
+/*!
+  */
+inline
+const PowerWeightedLightSourceSampler& LightTracing::lightPathLightSampler()
+    const noexcept
+{
+  return *light_path_light_sampler_;
 }
 
 /*!

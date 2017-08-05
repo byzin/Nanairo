@@ -11,6 +11,9 @@
 #define NANAIRO_LIGHT_SOURCE_REFERENCE_INL_HPP
 
 #include "light_source_reference.hpp"
+// Zisc
+#include "zisc/error.hpp"
+#include "zisc/math.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 
@@ -30,6 +33,14 @@ Float LightSourceReference::inverseWeight() const noexcept
 }
 
 /*!
+  */
+inline
+bool LightSourceReference::isValid() const noexcept
+{
+  return (object() != nullptr) && (inverseWeight() != 0.0);
+}
+
+/*!
   \details
   No detailed.
   */
@@ -46,7 +57,8 @@ const Object* LightSourceReference::object() const noexcept
 inline
 Float LightSourceReference::weight() const noexcept
 {
-  return weight_;
+  ZISC_ASSERT(isValid(), "The reference is invalid.");
+  return zisc::invert(inverse_weight_);
 }
 
 } // namespace nanairo

@@ -20,8 +20,8 @@
 #include "setting_node_base.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/RenderingMethod/rendering_method.hpp"
-#include "NanairoCore/Sampling/light_source_sampler.hpp"
 #include "NanairoCore/Sampling/russian_roulette.hpp"
+#include "NanairoCore/Sampling/LightSourceSampler/light_source_sampler.hpp"
 
 namespace nanairo {
 

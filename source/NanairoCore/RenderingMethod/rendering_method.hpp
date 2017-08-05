@@ -76,7 +76,8 @@ class RenderingMethod
   //! Make rendering method
   static UniquePointer<RenderingMethod> makeMethod(
       System& system,
-      const SettingNodeBase* settings) noexcept;
+      const SettingNodeBase* settings,
+      const Scene& scene) noexcept;
 
   //! Return the ray cast epsilon
   Float rayCastEpsilon() const noexcept;

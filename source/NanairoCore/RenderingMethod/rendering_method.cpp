@@ -59,7 +59,8 @@ RenderingMethod::RenderingMethod(const System& /* system */,
   */
 UniquePointer<RenderingMethod> RenderingMethod::makeMethod(
     System& system,
-    const SettingNodeBase* settings) noexcept
+    const SettingNodeBase* settings,
+    const Scene& scene) noexcept
 {
   ZISC_ASSERT(settings != nullptr, "The setting node is null.");
   ZISC_ASSERT(settings->type() == SettingNodeType::kRenderingMethod,
@@ -69,15 +70,15 @@ UniquePointer<RenderingMethod> RenderingMethod::makeMethod(
   RenderingMethod* method = nullptr;
   switch (method_settings->methodType()) {
    case RenderingMethodType::kPathTracing: {
-    method = new PathTracing{system, settings};
+    method = new PathTracing{system, settings, scene};
     break;
    }
    case RenderingMethodType::kLightTracing: {
-    method = new LightTracing{system, settings};
+    method = new LightTracing{system, settings, scene};
     break;
    }
    case RenderingMethodType::kProbabilisticPpm:
-    method = new ProbabilisticPpm{system, settings};
+    method = new ProbabilisticPpm{system, settings, scene};
     break;
    default: {
     zisc::raiseError("RenderingMethodError: Unsupported type is speficied.");
@@ -93,12 +94,8 @@ UniquePointer<RenderingMethod> RenderingMethod::makeMethod(
   */
 void RenderingMethod::initialize(const SettingNodeBase* settings) noexcept
 {
-  ZISC_ASSERT(settings != nullptr, "The setting node is null.");
-  ZISC_ASSERT(settings->type() == SettingNodeType::kRenderingMethod,
-              "Wrong setting node is specified.");
-  const auto method_settings = zisc::cast<const RenderingMethodSettingNode*>(settings);
+  const auto method_settings = castNode<RenderingMethodSettingNode>(settings);
 
-  // Ray cast epsilon
   {
     ray_cast_epsilon_ = zisc::cast<Float>(method_settings->rayCastEpsilon());
     ZISC_ASSERT(0.0 < ray_cast_epsilon_, "Ray cast epsilon is negative.");

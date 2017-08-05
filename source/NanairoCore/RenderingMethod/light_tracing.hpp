@@ -11,11 +11,13 @@
 #define NANAIRO_LIGHT_TRACING_HPP
 
 // Standard C++ library
+#include <memory>
 #include <thread>
 // Nanairo
 #include "rendering_method.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
+#include "NanairoCore/Sampling/LightSourceSampler/power_weighted_light_source_sampler.hpp"
 
 namespace nanairo {
 
@@ -48,7 +50,9 @@ class LightTracing : public RenderingMethod
 
 
   //! Initialize light tracing method
-  LightTracing(const System& system, const SettingNodeBase* settings) noexcept;
+  LightTracing(const System& system,
+               const SettingNodeBase* settings,
+               const Scene& scene) noexcept;
 
 
   //! Render scene using light tracing method
@@ -82,7 +86,12 @@ class LightTracing : public RenderingMethod
                   MemoryPool& memory_pool) noexcept;
 
   //! Initialize
-  void initialize(const System& system, const SettingNodeBase* settings) noexcept;
+  void initialize(const System& system,
+                  const SettingNodeBase* settings,
+                  const Scene& scene) noexcept;
+
+  //! Return the light sampler for light path
+  const PowerWeightedLightSourceSampler& lightPathLightSampler() const noexcept;
 
   //! Parallelize light tracing
   void traceLightPath(System& system,
@@ -97,6 +106,7 @@ class LightTracing : public RenderingMethod
 
 
   std::mutex lock_;
+  std::unique_ptr<PowerWeightedLightSourceSampler> light_path_light_sampler_;
 };
 
 //! \} Core

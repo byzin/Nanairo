@@ -11,12 +11,14 @@
 #define NANAIRO_PROBABILISTIC_PPM_HPP
 
 // Standard C++ library
+#include <memory>
 #include <vector>
 // Nanairo
 #include "rendering_method.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/DataStructure/knn_photon_list.hpp"
 #include "NanairoCore/DataStructure/photon_map.hpp"
+#include "NanairoCore/Sampling/LightSourceSampler/power_weighted_light_source_sampler.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
@@ -53,7 +55,9 @@ class ProbabilisticPpm : public RenderingMethod
 
 
   //! Initialize probabilistic ppm method
-  ProbabilisticPpm(const System& system, const SettingNodeBase* settings) noexcept;
+  ProbabilisticPpm(const System& system,
+                   const SettingNodeBase* settings,
+                   const Scene& scene) noexcept;
 
 
   //! Render scene using probabilistic ppm method
@@ -85,8 +89,7 @@ class ProbabilisticPpm : public RenderingMethod
   static constexpr uint expectedMaxReflectionCount() noexcept;
 
   //! Generate a photon
-  Photon generatePhoton(const World& world,
-                        Spectra* light_contribution,
+  Photon generatePhoton(Spectra* light_contribution,
                         Sampler& sampler,
                         MemoryPool& memory_pool) const noexcept;
 
@@ -99,7 +102,12 @@ class ProbabilisticPpm : public RenderingMethod
                   Spectra* weight) const noexcept;
 
   //! Initialize
-  void initialize(const System& system, const SettingNodeBase* settings) noexcept;
+  void initialize(const System& system,
+                  const SettingNodeBase* settings,
+                  const Scene& scene) noexcept;
+
+  //! Return the light sampler for light path
+  const PowerWeightedLightSourceSampler& lightPathLightSampler() const noexcept;
 
   //! Sample next photon
   Ray sampleNextRay(const Ray& ray,
@@ -147,6 +155,7 @@ class ProbabilisticPpm : public RenderingMethod
   Float inverse_estimation_area_;
   Float alpha_;
   Float photon_power_scale_;
+  std::unique_ptr<PowerWeightedLightSourceSampler> light_path_light_sampler_;
   uint cycle_;
   uint num_of_thread_photons_;
 };

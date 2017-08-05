@@ -10,10 +10,13 @@
 #ifndef NANAIRO_PATH_TRACING_HPP
 #define NANAIRO_PATH_TRACING_HPP
 
+// Standard C++ library
+#include <memory>
 // Nanairo
 #include "rendering_method.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
+#include "NanairoCore/Sampling/LightSourceSampler/light_source_sampler.hpp"
 
 namespace nanairo {
 
@@ -46,7 +49,9 @@ class PathTracing : public RenderingMethod
 
 
   //! Initialize path tracing method
-  PathTracing(const System& system, const SettingNodeBase* settings) noexcept;
+  PathTracing(const System& system,
+              const SettingNodeBase* settings,
+              const Scene& scene) noexcept;
 
 
   //! Render scene using path tracing method
@@ -80,6 +85,9 @@ class PathTracing : public RenderingMethod
   //! Check if the explicit connection is enabled
   static constexpr bool explicitConnectionIsEnabled() noexcept;
 
+  //! Return the light source sampler for eye path
+  const LightSourceSampler& eyePathLightSampler() const noexcept;
+
   //! Check if the implicit connection is enabled
   static constexpr bool implicitConnectionIsEnabled() noexcept;
 
@@ -93,7 +101,9 @@ class PathTracing : public RenderingMethod
                   Float* inverse_direction_pdf) const noexcept;
 
   //! Initialize
-  void initialize(const SettingNodeBase* settings) noexcept;
+  void initialize(const System& system,
+                  const SettingNodeBase* settings,
+                  const Scene& scene) noexcept;
 
   //! Calculate the MIS weight
   Float calcMisWeight(const Float pdf1, const Float inverse_pdf2) const noexcept;
@@ -110,6 +120,9 @@ class PathTracing : public RenderingMethod
                        const int thread_id,
                        const uint x,
                        const uint y) noexcept;
+
+
+  std::unique_ptr<LightSourceSampler> eye_path_light_sampler_;
 };
 
 //! \} Core

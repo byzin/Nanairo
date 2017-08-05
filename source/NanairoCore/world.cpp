@@ -9,6 +9,7 @@
 
 #include "world.hpp"
 // Standard C++ library
+#include <algorithm>
 #include <cstdint>
 #include <cstddef>
 #include <future>
@@ -24,7 +25,6 @@
 #include "zisc/unit.hpp"
 // Nanairo
 #include "system.hpp"
-#include "Data/light_source_reference.hpp"
 #include "Data/object.hpp"
 #include "DataStructure/bvh.hpp"
 #include "Geometry/transformation.hpp"
@@ -33,7 +33,6 @@
 #include "Material/SurfaceModel/surface_model.hpp"
 #include "Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "Sampling/light_source_sampler.hpp"
 #include "Setting/group_object_setting_node.hpp"
 #include "Setting/material_setting_node.hpp"
 #include "Setting/object_model_setting_node.hpp"
@@ -115,7 +114,6 @@ void World::initialize(System& system, const SettingNodeBase* settings) noexcept
 
   {
     initializeWorldLightSource();
-    light_source_sampler_ = new LightSourceSampler{light_source_list_};
   }
 }
 
@@ -180,28 +178,6 @@ std::vector<Object> World::initializeObject(
   \details
   No detailed.
   */
-void World::initializeWorldLightSource() noexcept
-{
-  zisc::CompensatedSummation<Float> total_flux{0.0};
-  std::list<const Object*> light_source_list;
-  for (const auto& object : bvh().objectList()) {
-    if (object.material().isLightSource()) {
-      total_flux.add(object.shape().surfaceArea() *
-                     object.material().emitter().radiantExitance());
-      light_source_list.emplace_back(&object);
-    }
-  }
-  ZISC_ASSERT(0 < light_source_list.size(), "The scene has no light source.");
-
-  light_source_list_.reserve(light_source_list.size());
-  for (const auto* light_source : light_source_list)
-    light_source_list_.emplace_back(total_flux.get(), light_source);
-}
-
-/*!
-  \details
-  No detailed.
-  */
 void World::initializeSurface(
     System& system,
     const SettingNodeBase* settings,
@@ -253,6 +229,22 @@ void World::initializeTexture(
   auto result = thread_pool.enqueueLoop(make_texture, start, num_of_textures);
   result.get();
   ZISC_ASSERT(0 < texture_list_.size(), "The scene has no texture");
+}
+
+/*!
+  \details
+  No detailed.
+  */
+void World::initializeWorldLightSource() noexcept
+{
+  std::list<const Object*> light_source_list;
+  for (const auto& object : bvh().objectList()) {
+    if (object.material().isLightSource())
+      light_source_list.emplace_back(&object);
+  }
+  light_source_list_.resize(light_source_list.size());
+  std::copy(light_source_list.begin(), light_source_list.end(),
+            light_source_list_.begin());
 }
 
 /*!

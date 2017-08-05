@@ -16,13 +16,11 @@
 #include <list>
 #include <vector>
 // Nanairo
-#include "Data/light_source_reference.hpp"
 #include "Data/object.hpp"
 #include "Material/EmitterModel/emitter_model.hpp"
 #include "Material/SurfaceModel/surface_model.hpp"
 #include "Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "Sampling/light_source_sampler.hpp"
 #include "Setting/setting_node_base.hpp"
 #include "Utility/unique_pointer.hpp"
 
@@ -54,16 +52,10 @@ class World
   const Bvh& bvh() const noexcept;
 
   //! Return the light source list
-  const std::vector<LightSourceReference>& lightSourceList() const noexcept;
-
-  //! Return the world light source sampler
-  const LightSourceSampler& lightSourceSampler() const noexcept;
+  const std::vector<const Object*>& lightSourceList() const noexcept;
 
   //! Make texture list
   std::vector<const TextureModel*> textureList() const noexcept;
-
-  //! Select a light source randomly
-  const LightSourceReference& sampleLightSource(Sampler& sampler) const noexcept;
 
  private:
   //! Initialize world
@@ -125,9 +117,8 @@ class World
   std::vector<UniquePointer<EmitterModel>> emitter_list_;
   std::vector<UniquePointer<SurfaceModel>> surface_list_;
   std::vector<UniquePointer<TextureModel>> texture_list_;
-  std::vector<LightSourceReference> light_source_list_;
+  std::vector<const Object*> light_source_list_;
   UniquePointer<Bvh> bvh_;
-  UniquePointer<LightSourceSampler> light_source_sampler_;
 };
 
 //! \} Core

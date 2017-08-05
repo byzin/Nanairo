@@ -117,7 +117,9 @@ void CpuSceneRenderer::initializeRenderer(const SettingNodeBase* settings) noexc
 //  const auto method_settings = SceneValue::toObject(settings,
 //                                                    keyword::renderingMethod);
     const auto method_settings = scene_settings->renderingMethodSettingNode();
-    rendering_method_ = RenderingMethod::makeMethod(*system_, method_settings);
+    rendering_method_ = RenderingMethod::makeMethod(*system_,
+                                                    method_settings,
+                                                    *scene_);
   }
   // ToneMapping
   {

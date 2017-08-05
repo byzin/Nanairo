@@ -11,6 +11,7 @@
 // Standard C++ library
 #include <cmath>
 #include <future>
+#include <memory>
 #include <thread>
 #include <tuple>
 #include <utility>
@@ -42,6 +43,7 @@
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Sampling/LightSourceSampler/power_weighted_light_source_sampler.hpp"
 #include "NanairoCore/Setting/rendering_method_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
@@ -53,12 +55,13 @@ namespace nanairo {
   No detailed.
   */
 ProbabilisticPpm::ProbabilisticPpm(const System& system,
-                                   const SettingNodeBase* settings) noexcept :
+                                   const SettingNodeBase* settings,
+                                   const Scene& scene) noexcept :
     RenderingMethod(system, settings),
     photon_map_{system},
     cycle_{0}
 {
-  initialize(system, settings);
+  initialize(system, settings, scene);
 }
 
 /*!
@@ -182,14 +185,14 @@ constexpr uint ProbabilisticPpm::expectedMaxReflectionCount() noexcept
   */
 inline
 auto ProbabilisticPpm::generatePhoton(
-    const World& world,
     Spectra* light_contribution,
     Sampler& sampler,
     MemoryPool& memory_pool) const noexcept -> Photon
 {
   const auto& wavelengths = light_contribution->wavelengths();
   // Sample a light point
-  const auto& light_source_info = world.sampleLightSource(sampler);
+  const auto& light_sampler = lightPathLightSampler();
+  const auto& light_source_info = light_sampler.sample(sampler);
   const auto light_source = light_source_info.object();
   const auto light_point_info = light_source->shape().samplePoint(sampler);
   const auto& point = std::get<0>(light_point_info);
@@ -252,7 +255,8 @@ Ray ProbabilisticPpm::generateRay(
   No detailed.
   */
 void ProbabilisticPpm::initialize(const System& system,
-                                  const SettingNodeBase* settings) noexcept
+                                  const SettingNodeBase* settings,
+                                  const Scene& scene) noexcept
 {
   const auto method_settings = castNode<RenderingMethodSettingNode>(settings);
 
@@ -293,6 +297,20 @@ void ProbabilisticPpm::initialize(const System& system,
     for (auto& photon_list : thread_photon_list_)
       photon_list.setK(k);
   }
+
+  {
+    light_path_light_sampler_ =
+        std::make_unique<PowerWeightedLightSourceSampler>(scene.world());
+  }
+}
+
+/*!
+  */
+inline
+const PowerWeightedLightSourceSampler& ProbabilisticPpm::lightPathLightSampler()
+    const noexcept
+{
+  return *light_path_light_sampler_;
 }
 
 /*!
@@ -453,7 +471,7 @@ void ProbabilisticPpm::tracePhoton(
 
   // Generate a photon
   auto photon_weight = light_contribution;
-  auto photon = generatePhoton(world, &light_contribution, sampler, memory_pool);
+  auto photon = generatePhoton(&light_contribution, sampler, memory_pool);
 
   while(true) {
     // Phton object intersection test

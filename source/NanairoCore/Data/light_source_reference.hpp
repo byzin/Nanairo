@@ -30,26 +30,37 @@ class Object;
 class LightSourceReference
 {
  public:
+  //! Create a invalid light source reference
+  LightSourceReference() noexcept;
+
   //! Create a light source reference
-  LightSourceReference(const Float total_flux, const Object* light_source) noexcept;
+  LightSourceReference(const Object* light_source) noexcept;
+
+  //! Create a light source reference
+  LightSourceReference(const Object* light_source, const Float weight) noexcept;
 
 
   //! Return the inverse weight of this light source
   Float inverseWeight() const noexcept;
 
+  //! Check if the reference is valid
+  bool isValid() const noexcept;
+
   //! Return the light source object
   const Object* object() const noexcept;
+
+  //! Set the weight of the light source
+  void setWeight(const Float weight) noexcept;
 
   //! Return the weight of this light sonrce in the scene
   Float weight() const noexcept;
 
  private:
   //! Initialize
-  void initialize(const Float total_flux) noexcept;
+  void initialize() noexcept;
 
 
-  Float weight_,
-        inverse_weight_;
+  Float inverse_weight_;
   const Object* light_source_;
 };
 

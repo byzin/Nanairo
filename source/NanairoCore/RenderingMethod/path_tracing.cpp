@@ -36,13 +36,14 @@
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Material/EmitterModel/emitter_model.hpp"
 #include "NanairoCore/Material/SurfaceModel/surface_model.hpp"
-#include "NanairoCore/Sampling/light_source_sampler.hpp"
 #include "NanairoCore/Sampling/russian_roulette.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_point.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Sampling/LightSourceSampler/light_source_sampler.hpp"
+#include "NanairoCore/Setting/rendering_method_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
@@ -52,10 +53,11 @@ namespace nanairo {
   No detailed.
   */
 PathTracing::PathTracing(const System& system,
-                         const SettingNodeBase* settings) noexcept :
+                         const SettingNodeBase* settings,
+                         const Scene& scene) noexcept :
     RenderingMethod(system, settings)
 {
-  initialize(settings);
+  initialize(system, settings, scene);
 }
 
 /*!
@@ -90,7 +92,8 @@ void PathTracing::evalExplicitConnection(
     return;
 
   // Select a light source and sample a point on the light source
-  const auto& sampled_light_source = world.sampleLightSource(sampler);
+  const auto& light_sampler = eyePathLightSampler();
+  const auto& sampled_light_source = light_sampler.sample(intersection, sampler);
   const auto light_source = sampled_light_source.object();
   const auto light_point_info = light_source->shape().samplePoint(sampler);
   const auto& light_point = std::get<0>(light_point_info);
@@ -162,7 +165,7 @@ void PathTracing::evalExplicitConnection(
   No detailed.
   */
 void PathTracing::evalImplicitConnection(
-    const World& world,
+    const World& /* world */,
     const Ray& ray,
     const Float inverse_direction_pdf,
     const IntersectionInfo& intersection,
@@ -194,8 +197,10 @@ void PathTracing::evalImplicitConnection(
   const auto radiance = light->evalRadiance(&vin, nullptr, normal, wavelengths);
 
   // Calculate the MIS weight
-  const Float selection_pdf = world.lightSourceSampler().getPdf(object) /
-                              object->shape().surfaceArea();
+  const auto& light_sampler = eyePathLightSampler();
+  const auto& light_reference = light_sampler.getReference(intersection, object);
+  const Float selection_pdf = zisc::invert(light_reference.inverseWeight() *
+                                           object->shape().surfaceArea());
   const Float mis_weight = (explicitConnectionIsEnabled() && mis)
       ? calcMisWeight(selection_pdf, inverse_direction_pdf)
       : 1.0;
@@ -211,6 +216,14 @@ inline
 constexpr bool PathTracing::explicitConnectionIsEnabled() noexcept
 {
   return CoreConfig::pathTracingExplicitConnectionIsEnabled();
+}
+
+/*!
+  */
+inline
+const LightSourceSampler& PathTracing::eyePathLightSampler() const noexcept
+{
+  return *eye_path_light_sampler_;
 }
 
 /*!
@@ -252,8 +265,17 @@ Ray PathTracing::generateRay(const CameraModel& camera,
   \details
   No detailed.
   */
-void PathTracing::initialize(const SettingNodeBase* /* settings */) noexcept
+void PathTracing::initialize(const System& /* system */,
+                             const SettingNodeBase* settings,
+                             const Scene& scene) noexcept
 {
+  const auto method_settings = castNode<RenderingMethodSettingNode>(settings);
+
+  {
+    const auto sampler_type = method_settings->lightSourceSamplerType();
+    eye_path_light_sampler_ = LightSourceSampler::makeSampler(sampler_type,
+                                                              scene.world());
+  }
 }
 
 /*!

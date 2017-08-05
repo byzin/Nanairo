@@ -14,10 +14,7 @@
 // Standard C++ library
 #include <vector>
 // Nanairo
-#include "NanairoCore/Data/intersection_info.hpp"
-#include "NanairoCore/Data/light_source_reference.hpp"
 #include "NanairoCore/DataStructure/bvh.hpp"
-#include "NanairoCore/Sampling/light_source_sampler.hpp"
 
 namespace nanairo {
 
@@ -38,29 +35,9 @@ const Bvh& World::bvh() const noexcept
   No detailed.
   */
 inline
-const std::vector<LightSourceReference>& World::lightSourceList() const noexcept
+const std::vector<const Object*>& World::lightSourceList() const noexcept
 {
   return light_source_list_;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-const LightSourceSampler& World::lightSourceSampler() const noexcept
-{
-  return *light_source_sampler_;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-const LightSourceReference& World::sampleLightSource(Sampler& sampler) const noexcept
-{
-  return light_source_sampler_->sample(sampler);
 }
 
 } // namespace nanairo
