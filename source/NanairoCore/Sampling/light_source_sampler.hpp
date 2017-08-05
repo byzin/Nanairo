@@ -13,6 +13,7 @@
 // Standard C++ library
 #include <vector>
 // Zisc
+#include "zisc/algorithm.hpp"
 #include "zisc/cumulative_distribution_function.hpp"
 // Nanairo
 #include "NanairoCore/Data/light_source_reference.hpp"
@@ -25,6 +26,13 @@ class Sampler;
 
 //! \addtogroup Core
 //! \{
+
+enum class LightSourceSamplerType : uint32
+{
+  kUniform                    = zisc::toHash32("UniformLightSampler"),
+  kPowerWeighted              = zisc::toHash32("PowerWeightedLightSampler"),
+  kContributionWeighted       = zisc::toHash32("ContributionWeightedLightSampler")
+};
 
 /*!
   \details

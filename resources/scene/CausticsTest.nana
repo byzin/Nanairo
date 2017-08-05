@@ -363,7 +363,8 @@
         "PathLength": 3,
         "RayCastEpsilon": 1e-07,
         "RussianRoulette": "Reflectance (Max)",
-        "Type": "LightTracing"
+        "Type": "LightTracing",
+        "EyePathLightSampler": "PowerWeightedLightSampler"
     },
     "Scene": {
         "SceneName": "CausticsTest"

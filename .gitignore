@@ -120,8 +120,8 @@
 !/source/NanairoGui/Gui/TabSystemItems/*.qml
 !/source/NanairoGui/Gui/TabColorItems/
 !/source/NanairoGui/Gui/TabColorItems/*.qml
-!/source/NanairoGui/Gui/TabRendegMethodItems/
-!/source/NanairoGui/Gui/TabRendegMethodItems/*.qml
+!/source/NanairoGui/Gui/TabRenderingMethodItems/
+!/source/NanairoGui/Gui/TabRenderingMethodItems/*.qml
 !/source/NanairoGui/Gui/TabBvhItems/
 !/source/NanairoGui/Gui/TabBvhItems/*.qml
 !/source/NanairoGui/Gui/TabObjectItems/

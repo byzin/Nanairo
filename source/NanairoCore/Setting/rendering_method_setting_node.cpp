@@ -20,6 +20,7 @@
 #include "setting_node_base.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/RenderingMethod/rendering_method.hpp"
+#include "NanairoCore/Sampling/light_source_sampler.hpp"
 #include "NanairoCore/Sampling/russian_roulette.hpp"
 
 namespace nanairo {
@@ -52,6 +53,13 @@ void RenderingMethodSettingNode::initialize() noexcept
   setRayCastEpsilon(0.0000001);
   setRouletteType(RouletteType::kMaxWeight);
   setRoulettePathLength(3);
+}
+
+/*!
+  */
+LightSourceSamplerType RenderingMethodSettingNode::lightSourceSamplerType() const noexcept
+{
+  return light_source_sampler_type_;
 }
 
 /*!
@@ -127,6 +135,13 @@ RouletteType RenderingMethodSettingNode::rouletteType() const noexcept
 RenderingMethodType RenderingMethodSettingNode::methodType() const noexcept
 {
   return method_type_;
+}
+
+/*!
+  */
+void RenderingMethodSettingNode::setLightSourceSamplerType(const LightSourceSamplerType sampler_type) noexcept
+{
+  light_source_sampler_type_ = sampler_type;
 }
 
 /*!

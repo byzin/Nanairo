@@ -419,7 +419,8 @@
         "PathLength": 3,
         "RayCastEpsilon": 1e-07,
         "RussianRoulette": "Reflectance (Max)",
-        "Type": "PathTracing"
+        "Type": "PathTracing",
+        "EyePathLightSampler": "PowerWeightedLightSampler"
     },
     "Scene": {
         "SceneName": "SurfaceTest-SmoothConductor"

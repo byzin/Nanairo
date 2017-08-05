@@ -40,6 +40,13 @@ Rectangle {
     color: ray_cast_setting_block.color
   }
 
+  NEyePathLightSamplerSettingBlock {
+    id: eye_path_light_sampler_setting_block
+    x: russian_roulette_setting_block.x
+    y: (russian_roulette_setting_block.y + russian_roulette_setting_block.height) + Nanairo.blockOffset
+    color: russian_roulette_setting_block.color
+  }
+
   TabView {
     id: rendering_method_tab_view
     x: (rendering_method_setting_block.x + rendering_method_setting_block.width) + Nanairo.blockOffset
@@ -97,6 +104,7 @@ Rectangle {
     dataList.push(rendering_method_setting_block.getSceneData());
     dataList.push(ray_cast_setting_block.getSceneData());
     dataList.push(russian_roulette_setting_block.getSceneData());
+    dataList.push(eye_path_light_sampler_setting_block.getSceneData());
     var renderingMethodTab =
         getRenderingMethodTab(rendering_method_tab_view.currentIndex);
     dataList.push(renderingMethodTab.getSceneData());
@@ -107,6 +115,7 @@ Rectangle {
     rendering_method_setting_block.setSceneData(sceneData);
     ray_cast_setting_block.setSceneData(sceneData);
     russian_roulette_setting_block.setSceneData(sceneData);
+    eye_path_light_sampler_setting_block.setSceneData(sceneData);
     var renderingMethodTab =
         getRenderingMethodTab(rendering_method_tab_view.currentIndex);
     renderingMethodTab.setSceneData(sceneData);

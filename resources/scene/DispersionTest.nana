@@ -412,6 +412,7 @@
         "KNearestNeighbor": 8,
         "NumOfPhotons": 131072,
         "PathLength": 3,
+        "EyePathLightSampler": "PowerWeightedLightSampler",
         "PhotonSearchRadius": 0.02,
         "RadiusReductionRate": 0.6666667,
         "RayCastEpsilon": 1e-07,

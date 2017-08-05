@@ -77,6 +77,10 @@ var russianRoulette = "@russianRoulette@";
     var rouletteAverageReflectance = "@rouletteAverageReflectance@";
     var roulettePathLength = "@roulettePathLength@";
 var pathLength = "@pathLength@";
+var eyePathLightSampler = "@eyePathLightSampler@";
+    var uniformLightSampler = "@uniformLightSampler@";
+    var powerWeightedLightSampler = "@powerWeightedLightSampler@";
+    var contributionWeightedLightSampler = "@contributionWeightedLightSampler@";
 // Probabilistic PPM
 var numOfPhotons = "@numOfPhotons@";
 var photonSearchRadius = "@photonSearchRadius@";

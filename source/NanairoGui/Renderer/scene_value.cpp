@@ -352,6 +352,16 @@ void SceneValue::toRenderingMethodSetting(const QJsonObject& value,
     method_setting->setRoulettePathLength(path_length);
   }
   {
+    const auto light_sampler = toString(method_value, keyword::eyePathLightSampler);
+    const LightSourceSamplerType sampler_type =
+        (light_sampler == keyword::uniformLightSampler)
+            ? LightSourceSamplerType::kUniform :
+        (light_sampler == keyword::powerWeightedLightSampler)
+            ? LightSourceSamplerType::kPowerWeighted
+            : LightSourceSamplerType::kContributionWeighted;
+    method_setting->setLightSourceSamplerType(sampler_type);
+  }
+  {
     const auto rendering_method = toString(method_value, keyword::type);
     const RenderingMethodType method =
         (rendering_method == keyword::pathTracing)

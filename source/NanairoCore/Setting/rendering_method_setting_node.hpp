@@ -18,6 +18,7 @@
 #include "setting_node_base.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/RenderingMethod/rendering_method.hpp"
+#include "NanairoCore/Sampling/light_source_sampler.hpp"
 #include "NanairoCore/Sampling/russian_roulette.hpp"
 
 namespace nanairo {
@@ -52,6 +53,9 @@ class RenderingMethodSettingNode : public SettingNodeBase
   //! Initialize a rendering method
   virtual void initialize() noexcept override;
 
+  //! Return the light source sampler type
+  LightSourceSamplerType lightSourceSamplerType() const noexcept;
+
   //! Print scene data
   virtual void log() const noexcept override;
 
@@ -76,6 +80,9 @@ class RenderingMethodSettingNode : public SettingNodeBase
   //! Return the rendering method type
   RenderingMethodType methodType() const noexcept;
 
+  //! Set the light source sampler type
+  void setLightSourceSamplerType(const LightSourceSamplerType sampler_type) noexcept;
+
   //! Set the rendering method type
   void setMethodType(const RenderingMethodType method_type) noexcept;
 
@@ -97,6 +104,7 @@ class RenderingMethodSettingNode : public SettingNodeBase
  private:
   std::unique_ptr<NodeParameters> parameters_;
   RenderingMethodType method_type_;
+  LightSourceSamplerType light_source_sampler_type_;
   double ray_cast_epsilon_;
   RouletteType roulette_type_;
   uint32 roulette_path_length_;

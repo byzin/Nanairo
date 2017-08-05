@@ -81,6 +81,10 @@ function(getNanairoKeywords nanairo_keyword_list)
           rouletteAverageReflectance "Reflectance (Average)"
           roulettePathLength "Path length"
       pathLength "PathLength"
+      eyePathLightSampler "EyePathLightSampler"
+          uniformLightSampler "UniformLightSampler"
+          powerWeightedLightSampler "PowerWeightedLightSampler"
+          contributionWeightedLightSampler "ContributionWeightedLightSampler"
       # Probabilistic PPM
       numOfPhotons "NumOfPhotons"
       photonSearchRadius "PhotonSearchRadius"
