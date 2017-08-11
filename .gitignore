@@ -143,8 +143,11 @@
 !/source/NanairoGui/Renderer/
 !/source/NanairoGui/Renderer/*.hpp
 !/source/NanairoGui/Renderer/*.cpp
-## Zisc
-!/source/zisc
+## Dependencies
+!/source/dependencies/
+!/source/dependencies/zisc
+!/source/dependencies/lodepng
+!/source/dependencies/cxxopts
 ## Test
 !/test/
 !/test/config.cmake
