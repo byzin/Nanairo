@@ -95,6 +95,28 @@ function(getNanairoWarningOption nanairo_warning_flags)
 endfunction(getNanairoWarningOption)
 
 
+function(loadLodepng lodepng_include_dir lodepng_library)
+  set(lodepng_dir ${PROJECT_SOURCE_DIR}/source/dependencies/lodepng)
+  set(source_files ${lodepng_dir}/lodepng.cpp ${lodepng_dir}/lodepng.h)
+  set(lodepng_name "lodepng")
+  source_group(${lodepng_name} FILES ${source_files})
+  add_library(${lodepng_name} STATIC ${source_files})
+  ## Set lodepng properties
+  set_target_properties(${lodepng_name} PROPERTIES CXX_STANDARD 14
+                                                   CXX_STANDARD_REQUIRED ON)
+  checkCompilerHasCxx14Features(${lodepng_name})
+  target_compile_options(${lodepng_name} PRIVATE ${cxx_compiler_flags})
+  target_include_directories(${lodepng_name} PRIVATE ${lodepng_dir})
+  target_link_libraries(${lodepng_name} ${CMAKE_THREAD_LIBS_INIT}
+                                        ${cxx_linker_flags})
+  target_compile_definitions(${lodepng_name} PRIVATE ${cxx_definitions})
+
+
+  set(${lodepng_include_dir} ${lodepng_dir} PARENT_SCOPE)
+  set(${lodepng_library} ${lodepng_name} PARENT_SCOPE)
+endfunction(loadLodepng)
+
+
 #
 function(buildNanairoCore core_library core_definitions)
   # Load Nanairo core
@@ -130,38 +152,16 @@ function(buildNanairoCore core_library core_definitions)
 endfunction(buildNanairoCore)
 
 
-function(loadLodepng lodepng_include_dir lodepng_library)
-  set(lodepng_dir ${PROJECT_SOURCE_DIR}/source/dependencies/lodepng)
-  set(lodepng_source_file ${lodepng_dir}/lodepng.cpp
-                          ${lodepng_dir}/lodepng.h)
-  set(lodepng_name "lodepng")
-  source_group(${lodepng_name} FILES ${lodepng_source_file})
-  add_library(${lodepng_name} STATIC ${lodepng_source_file})
-  ## Set lodepng properties
-  set_target_properties(${lodepng_name} PROPERTIES CXX_STANDARD 14
-                                                   CXX_STANDARD_REQUIRED ON)
-  checkCompilerHasCxx14Features(${lodepng_name})
-  target_compile_options(${lodepng_name} PRIVATE ${cxx_compiler_flags})
-  target_include_directories(${lodepng_name} PRIVATE ${lodepng_dir})
-  target_link_libraries(${lodepng_name} ${CMAKE_THREAD_LIBS_INIT}
-                                        ${cxx_linker_flags})
-  target_compile_definitions(${lodepng_name} PRIVATE ${cxx_definitions})
-
-
-  set(${lodepng_include_dir} ${lodepng_dir} PARENT_SCOPE)
-  set(${lodepng_library} ${lodepng_name} PARENT_SCOPE)
-endfunction(loadLodepng)
-
-
 #
 function(buildSimpleNanairoApp)
-  ## Lodepng
-  loadLodepng(lodepng_include_dir lodepng_library)
   ## Load Nanairo modules
   include(${PROJECT_SOURCE_DIR}/cmake/keyword.cmake)
   getNanairoKeywords(nanairo_keyword_list)
   ## Build SimpleNanairo
-  set(nanairo_source_files ${PROJECT_SOURCE_DIR}/source/simple_nanairo.cpp)
+  set(nanairo_source_files ${PROJECT_SOURCE_DIR}/source/simple_nanairo.cpp
+                           ${PROJECT_SOURCE_DIR}/source/simple_renderer.cpp
+                           ${PROJECT_SOURCE_DIR}/source/simple_renderer.hpp
+                           ${PROJECT_SOURCE_DIR}/source/simple_renderer-inl.hpp)
   set(app_name "SimpleNanairo")
   add_executable(${app_name} ${nanairo_source_files}
                              ${core_source_files}

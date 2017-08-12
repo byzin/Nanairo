@@ -29,12 +29,14 @@ include(${PROJECT_SOURCE_DIR}/cmake/option.cmake)
 setCommandOptions()
 #
 include(${PROJECT_SOURCE_DIR}/cmake/compiler.cmake)
-setCompilerOption()
+initCompilerOption()
 getCompilerOption(cxx_compiler_flags cxx_linker_flags cxx_definitions)
 
 # Common libraries
 # Thread
 find_package(Threads REQUIRED)
+# LodePNG
+loadLodepng(lodepng_include_dir lodepng_library)
 # Zisc
 include(${PROJECT_SOURCE_DIR}/source/dependencies/zisc/source/zisc/config.cmake)
 loadZisc(zisc_source_files

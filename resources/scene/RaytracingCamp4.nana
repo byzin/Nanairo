@@ -826,7 +826,8 @@
         "Power2CycleSaving": true,
         "RandomSeed": 123456789,
         "SavingInterval": 3600000,
-        "TerminationCycle": 0
+        "TerminationCycle": 0,
+        "TerminationTime": 0
     },
     "TextureModel": [
         {

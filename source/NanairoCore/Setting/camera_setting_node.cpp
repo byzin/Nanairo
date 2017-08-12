@@ -129,6 +129,7 @@ SettingNodeType CameraSettingNode::type() const noexcept
 void CameraSettingNode::writeData(std::ostream* data_stream) const noexcept
 {
   writeType(data_stream);
+
   // Write properties
   zisc::write(&type_, data_stream);
   zisc::write(&jittering_, data_stream);

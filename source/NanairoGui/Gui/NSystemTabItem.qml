@@ -32,8 +32,8 @@ Rectangle {
     color: system_tab_item.color
   }
 
-  NTerminationCycleSettingBlock {
-    id: termination_cycle_setting_block
+  NTerminationSettingBlock {
+    id: termination_setting_block
     x: random_seed_setting_block.x
     y: (random_seed_setting_block.y + random_seed_setting_block.height) + Nanairo.blockOffset
     color: system_tab_item.color
@@ -41,8 +41,8 @@ Rectangle {
 
   NImageResolutionSettingBlock {
     id: image_resolution_setting_block 
-    x: termination_cycle_setting_block.x
-    y: (termination_cycle_setting_block.y + termination_cycle_setting_block.height) + Nanairo.blockOffset
+    x: termination_setting_block.x
+    y: (termination_setting_block.y + termination_setting_block.height) + Nanairo.blockOffset
     color: system_tab_item.color
   }
 
@@ -61,7 +61,7 @@ Rectangle {
     var dataList = [];
     dataList.push(thread_setting_block.getSceneData());
     dataList.push(random_seed_setting_block.getSceneData());
-    dataList.push(termination_cycle_setting_block.getSceneData());
+    dataList.push(termination_setting_block.getSceneData());
     dataList.push(image_resolution_setting_block.getSceneData());
     dataList.push(image_saving_setting_block.getSceneData());
     return Nanairo.mergeDataList(dataList);
@@ -70,7 +70,7 @@ Rectangle {
   function setSceneData(sceneData) {
     thread_setting_block.setSceneData(sceneData);
     random_seed_setting_block.setSceneData(sceneData);
-    termination_cycle_setting_block.setSceneData(sceneData);
+    termination_setting_block.setSceneData(sceneData);
     image_resolution_setting_block.setSceneData(sceneData);
     image_saving_setting_block.setSceneData(sceneData);
   }

@@ -356,7 +356,7 @@ void World::makeGroupObject(
 {
   const auto group_settings = castNode<GroupObjectSettingNode>(settings);
 
-  const auto object_list = group_settings->objectList();
+  const auto& object_list = group_settings->objectList();
   for (const auto object_settings : object_list)
     makeObjects(system, object_settings, transformation, results);
 }

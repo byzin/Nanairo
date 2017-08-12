@@ -10,6 +10,7 @@
 #include "setting_node_base.hpp"
 // Standard C++ library
 #include <istream>
+#include <memory>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -86,5 +87,9 @@ void SettingNodeBase::writeType(std::ostream* data_stream) const noexcept
   const SettingNodeType t = type();
   zisc::write(&t, data_stream);
 }
+
+// Check for node conversion
+static_assert(sizeof(SettingNodeBase*) == sizeof(std::unique_ptr<SettingNodeBase>),
+              "The size of unique_ptr is larger than pointer.");
 
 } // namespace nanairo

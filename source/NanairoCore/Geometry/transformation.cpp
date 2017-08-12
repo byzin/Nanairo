@@ -28,7 +28,7 @@ namespace nanairo {
 /*!
   */
 Matrix4x4 Transformation::makeTransformation(
-    const std::vector<const SettingNodeBase*>& settings_list) noexcept
+    const std::vector<SettingNodeBase*>& settings_list) noexcept
 {
   auto matrix = makeIdentity();
   for (const auto settings : settings_list)

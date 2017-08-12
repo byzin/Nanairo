@@ -56,7 +56,7 @@ class Transformation
 
   //! Make transformation matrix
   static Matrix4x4 makeTransformation(
-      const std::vector<const SettingNodeBase*>& settings_list) noexcept;
+      const std::vector<SettingNodeBase*>& settings_list) noexcept;
 
   //! Make transformation matrix
   static Matrix4x4 makeTransformation(const SettingNodeBase* settings) noexcept;
