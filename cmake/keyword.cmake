@@ -34,6 +34,7 @@ function(getNanairoKeywords nanairo_keyword_list)
       numOfThreads "NumOfThreads"
       randomSeed "RandomSeed"
       terminationCycle "TerminationCycle"
+      terminationTime "TerminationTime"
       imageResolution "ImageResolution"
 #      enableToSaveSpectraImage "EnableToSaveSpectraImage"
       power2CycleSaving "Power2CycleSaving"

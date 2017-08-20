@@ -771,7 +771,8 @@ void SceneValue::toSystemSetting(const QJsonObject& value,
     system_setting->setRandomSeed(random_seed);
   }
   {
-    const uint32 termination_time = 0; //!< \todo Get from json
+    const uint32 termination_time = toInt<uint32>(system_value,
+                                                  keyword::terminationTime);
     system_setting->setTerminationTime(termination_time);
   }
   {

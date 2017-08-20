@@ -34,7 +34,7 @@ NSettingBlock {
 
     suffix: " ms " + qsTr("interval")
     maximumValue: Nanairo.integer32Max
-    minimumValue: 1
+    minimumValue: 0
   }
 
   function getSceneData() {

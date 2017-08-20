@@ -100,6 +100,11 @@ void MaterialSettingNode<kMaterialType>::readData(std::istream* data_stream)
     auto material = addMaterial();
     SettingNodeType material_type;
     zisc::read(&material_type, data_stream); //!< \todo Check material type
+    ZISC_ASSERT(material_type ==
+        ((type() == SettingNodeType::kTextureModel) ? SettingNodeType::kTexture :
+         (type() == SettingNodeType::kSurfaceModel) ? SettingNodeType::kSurface
+                                                    : SettingNodeType::kEmitter),
+        "The stream header is wrong.");
     material->readData(data_stream);
   }
 }

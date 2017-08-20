@@ -38,10 +38,10 @@ class GroupObjectSettingNode : public SettingNodeBase
   virtual void readData(std::istream* data_stream) noexcept override;
 
   //! Return the object list
-  std::vector<SettingNodeBase*> objectList() noexcept;
+  std::vector<SettingNodeBase*>& objectList() noexcept;
 
   //! Return the object list
-  std::vector<const SettingNodeBase*> objectList() const noexcept;
+  const std::vector<SettingNodeBase*>& objectList() const noexcept;
 
   //! Return the node type
   virtual SettingNodeType type() const noexcept override;

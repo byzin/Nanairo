@@ -112,6 +112,7 @@ const std::array<double, 3>& TransformationSettingNode::value() const noexcept
 void TransformationSettingNode::writeData(std::ostream* data_stream) const noexcept
 {
   writeType(data_stream);
+
   // Write properties
   zisc::write(&type_, data_stream);
   constexpr uint size = sizeof(value_[0]);

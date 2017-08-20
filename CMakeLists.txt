@@ -29,14 +29,16 @@ include(${PROJECT_SOURCE_DIR}/cmake/option.cmake)
 setCommandOptions()
 #
 include(${PROJECT_SOURCE_DIR}/cmake/compiler.cmake)
-setCompilerOption()
+initCompilerOption()
 getCompilerOption(cxx_compiler_flags cxx_linker_flags cxx_definitions)
 
 # Common libraries
 # Thread
 find_package(Threads REQUIRED)
+# LodePNG
+loadLodepng(lodepng_include_dir lodepng_library)
 # Zisc
-include(${PROJECT_SOURCE_DIR}/source/zisc/source/zisc/config.cmake)
+include(${PROJECT_SOURCE_DIR}/source/dependencies/zisc/source/zisc/config.cmake)
 loadZisc(zisc_source_files
          zisc_include_dirs
          zisc_compile_flags
@@ -56,9 +58,9 @@ if(${NANAIRO_BUILD_DOCUMENTS})
 endif()
 
 buildNanairoCore(core_library core_definitions)
-# buildNanairoSimpleRenderer()
 
-# Applicatino
+# Applications
+buildSimpleNanairoApp()
 if(${NANAIRO_BUILD_APP})
   # Library
   include(${PROJECT_SOURCE_DIR}/cmake/qt5.cmake)

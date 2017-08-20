@@ -65,10 +65,10 @@ class ObjectModelSettingNode : public SettingNodeBase
   void setVisibility(const bool visibility) noexcept;
 
   //! Return the transformation setting node list
-  std::vector<SettingNodeBase*> transformationList() noexcept;
+  std::vector<SettingNodeBase*>& transformationList() noexcept;
 
   //! Return the transformation setting node list
-  std::vector<const SettingNodeBase*> transformationList() const noexcept;
+  const std::vector<SettingNodeBase*>& transformationList() const noexcept;
 
   //! Return the node type
   virtual SettingNodeType type() const noexcept override;

@@ -54,6 +54,10 @@ UnicolorTextureParameters::UnicolorTextureParameters() noexcept :
 void UnicolorTextureParameters::readData(std::istream* data_stream) noexcept
 {
   ZISC_ASSERT(color_ != nullptr, "The color is null.");
+
+  SettingNodeType type;
+  zisc::read(&type, data_stream);
+  ZISC_ASSERT(type == SettingNodeType::kSpectra, "The stream header is wrong.");
   color_->readData(data_stream);
 }
 
@@ -82,8 +86,16 @@ void CheckerboardTextureParameters::readData(std::istream* data_stream) noexcept
 {
   ZISC_ASSERT(color_[0] != nullptr, "The color1 is null.");
   ZISC_ASSERT(color_[1] != nullptr, "The color2 is null.");
+
+  SettingNodeType type;
+  zisc::read(&type, data_stream);
+  ZISC_ASSERT(type == SettingNodeType::kSpectra, "The stream header is wrong.");
   color_[0]->readData(data_stream);
+
+  zisc::read(&type, data_stream);
+  ZISC_ASSERT(type == SettingNodeType::kSpectra, "The stream header is wrong.");
   color_[1]->readData(data_stream);
+
   zisc::read(&resolution_[0], data_stream, sizeof(resolution_[0]) * 2);
 }
 

@@ -71,7 +71,7 @@ void Scene::initializeCamera(System& system, const SettingNodeBase* settings) no
   camera_ = CameraModel::makeModel(object_settings->objectSettingNode());
   camera_->setFilm(film_.get());
   // Transformation
-  const auto transformation_list = object_settings->transformationList();
+  const auto& transformation_list = object_settings->transformationList();
   if (0 < transformation_list.size()) {
     const auto transformation =
         Transformation::makeTransformation(transformation_list);

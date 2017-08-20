@@ -74,13 +74,28 @@ endfunction(checkCompilerHasCxx14Features)
 
 
 #
-function(setCompilerOption)
+function(initCompilerOption)
   set(option_description "Clang uses libc++ instead of libstdc++ (if compiler supports).")
   setBooleanOption(Z_CLANG_USES_LIBCXX OFF ${option_description})
 
-  set(option_description "Enable C++ sanitizer (Address) (if compiler supports).")
-  setBooleanOption(Z_ENABLE_SANITIZER OFF ${option_description})
-endfunction(setCompilerOption)
+  set(option_description "Statically link C++ library")
+  setBooleanOption(Z_STATIC_LINK_LIBCXX OFF ${option_description})
+
+  set(option_description "Enable C++ address sanitizer (if compiler supports).")
+  setBooleanOption(Z_ENABLE_ADDRESS_SANITIZER OFF ${option_description})
+
+  set(option_description "Enable C++ leak sanitizer (if compiler supports).")
+  setBooleanOption(Z_ENABLE_LEAK_SANITIZER OFF ${option_description})
+
+  set(option_description "Enable C++ thread sanitizer (if compiler supports).")
+  setBooleanOption(Z_ENABLE_THREAD_SANITIZER OFF ${option_description})
+
+  set(option_description "Enable C++ undefined sanitizer (if compiler supports).")
+  setBooleanOption(Z_ENABLE_UNDEFINED_SANITIZER OFF ${option_description})
+
+  set(option_description "Enable C++ memory sanitizer (if compiler supports).")
+  setBooleanOption(Z_ENABLE_MEMORY_SANITIZER OFF ${option_description})
+endfunction(initCompilerOption)
 
 
 function(getClangCompilerOption cxx_compile_flags cxx_linker_flags cxx_definitions)
@@ -88,14 +103,42 @@ function(getClangCompilerOption cxx_compile_flags cxx_linker_flags cxx_definitio
   set(linker_flags "")
   set(definitions "")
   list(APPEND compile_flags -fconstexpr-steps=${max_constexpr_step})
+
   if(Z_CLANG_USES_LIBCXX)
     list(APPEND compile_flags -stdlib=libc++)
     list(APPEND linker_flags -stdlib=libc++)
   endif()
-  if(Z_ENABLE_SANITIZER)
-    list(APPEND compile_flags -fsanitize=address -fno-omit-frame-pointer)
-    list(APPEND linker_flags -fsanitize=address)
+  if(Z_STATIC_LINK_LIBCXX)
+    list(APPEND linker_flags -static-libstdc++ c++abi)
   endif()
+  if(Z_VISUAL_STUDIO)
+    list(APPEND cxx_compile_flags /EHsc)
+  endif()
+
+  # Sanitizer
+  set(sanitizer_flags "")
+  if(Z_ENABLE_ADDRESS_SANITIZER)
+    list(APPEND sanitizer_flags -fsanitize=address)
+  endif()
+  if(Z_ENABLE_LEAK_SANITIZER)
+    list(APPEND sanitizer_flags -fsanitize=leak)
+  endif()
+  if(Z_ENABLE_THREAD_SANITIZER)
+    list(APPEND sanitizer_flags -fsanitize=thread)
+  endif()
+  if(Z_ENABLE_UNDEFINED_SANITIZER)
+    list(APPEND sanitizer_flags -fsanitize=undefined)
+  endif()
+  if(Z_ENABLE_MEMORY_SANITIZER)
+    list(APPEND sanitizer_flags -fsanitize=memory)
+  endif()
+  if(Z_ENABLE_ADDRESS_SANITIZER OR Z_ENABLE_LEAK_SANITIZER OR
+     Z_ENABLE_THREAD_SANITIZER OR Z_ENABLE_UNDEFINED_SANITIZER OR
+     Z_ENABLE_MEMORY_SANITIZER)
+    list(APPEND compile_flags ${sanitizer_flags} -fno-omit-frame-pointer)
+    list(APPEND linker_flags ${sanitizer_flags})
+  endif()
+
   # Output variables
   set(${cxx_compile_flags} ${compile_flags} PARENT_SCOPE)
   set(${cxx_linker_flags} ${linker_flags} PARENT_SCOPE)
@@ -107,10 +150,35 @@ function(getGccCompilerOption cxx_compile_flags cxx_linker_flags cxx_definitions
   set(compile_flags "")
   set(linker_flags "")
   set(definitions "")
-  if(Z_ENABLE_SANITIZER)
-    list(APPEND compile_flags -fsanitize=address -fno-omit-frame-pointer)
-    list(APPEND linker_flags -fsanitize=address)
+
+  if(Z_STATIC_LINK_LIBCXX)
+    list(APPEND linker_flags -static-libstdc++)
   endif()
+
+  # Sanitizer
+  set(sanitizer_flags "")
+  if(Z_ENABLE_ADDRESS_SANITIZER)
+    list(APPEND sanitizer_flags -fsanitize=address)
+  endif()
+  if(Z_ENABLE_LEAK_SANITIZER)
+    list(APPEND sanitizer_flags -fsanitize=leak)
+  endif()
+  if(Z_ENABLE_THREAD_SANITIZER)
+    list(APPEND sanitizer_flags -fsanitize=thread)
+  endif()
+  if(Z_ENABLE_UNDEFINED_SANITIZER)
+    list(APPEND sanitizer_flags -fsanitize=undefined)
+  endif()
+  if(Z_ENABLE_MEMORY_SANITIZER)
+    list(APPEND sanitizer_flags -fsanitize=memory)
+  endif()
+  if(Z_ENABLE_ADDRESS_SANITIZER OR Z_ENABLE_LEAK_SANITIZER OR
+     Z_ENABLE_THREAD_SANITIZER OR Z_ENABLE_UNDEFINED_SANITIZER OR
+     Z_ENABLE_MEMORY_SANITIZER)
+    list(APPEND compile_flags ${sanitizer_flags} -fno-omit-frame-pointer)
+    list(APPEND linker_flags ${sanitizer_flags})
+  endif()
+
   # Output variables
   set(${cxx_compile_flags} ${compile_flags} PARENT_SCOPE)
   set(${cxx_linker_flags} ${linker_flags} PARENT_SCOPE)

@@ -10,6 +10,7 @@
 #include "gui_renderer_manager.hpp"
 // Standard C++ library
 #include <cstdint>
+#include <fstream>
 #include <functional>
 #include <utility>
 // Qt
@@ -173,6 +174,9 @@ void GuiRendererManager::invokeRendering(const QString& output_dir) noexcept
     {
       const auto scene_setting = SceneValue::toSetting(scene_value);
       renderer->initialize(scene_setting.get());
+      //! \todo Add condition if save nanabin or not
+      std::ofstream nanabin{"scene.nanabin", std::ios::binary | std::ios::out};
+      scene_setting->writeData(&nanabin);
     }
     // Start rendering
     emit started();

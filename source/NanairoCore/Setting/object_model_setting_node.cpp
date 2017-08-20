@@ -57,24 +57,39 @@ void ObjectModelSettingNode::initialize() noexcept
   */
 void ObjectModelSettingNode::readData(std::istream* data_stream) noexcept
 {
+  // Properties
   setName(readString(data_stream));
   zisc::read(&visibility_, data_stream);
+
   // Transformation
   {
-    uint32 num_of_transformation;
-    zisc::read(&num_of_transformation, data_stream);
-    transformation_list_.reserve(num_of_transformation);
-    for (uint i = 0; i < num_of_transformation; ++i) {
-      auto type = readType(data_stream);
-      ZISC_ASSERT(type == SettingNodeType::kTransformation, "Invalid header.");
-      if (type == SettingNodeType::kTransformation) {
-        auto t = addTransformation(TransformationType::kTranslation, 0.0, 0.0, 0.0);
-        t->readData(data_stream);
-      }
+    uint32 num_of_transformations;
+    zisc::read(&num_of_transformations, data_stream);
+    transformation_list_.reserve(num_of_transformations);
+    for (uint i = 0; i < num_of_transformations; ++i) {
+      SettingNodeType type;
+      zisc::read(&type, data_stream);
+      ZISC_ASSERT(type == SettingNodeType::kTransformation, "The stream header is wrong.");
+      auto t = addTransformation(TransformationType::kTranslation, 0.0, 0.0, 0.0);
+      t->readData(data_stream);
     }
   }
+
   // Object
-  //! \todo Object reading
+  {
+    SettingNodeType type;
+    zisc::read(&type, data_stream);
+    ZISC_ASSERT((type == SettingNodeType::kCameraObject) ||
+                (type == SettingNodeType::kGroupObject) ||
+                (type == SettingNodeType::kSingleObject),
+                "The invalid object type is specified.");
+    const ObjectType object_type =
+        (type == SettingNodeType::kCameraObject) ? ObjectType::kCamera :
+        (type == SettingNodeType::kGroupObject)  ? ObjectType::kGroup
+                                                 : ObjectType::kSingle;
+    auto object = setObject(object_type);
+    object->readData(data_stream);
+  }
 }
 
 /*!
@@ -118,15 +133,15 @@ SettingNodeBase* ObjectModelSettingNode::setObject(const ObjectType type) noexce
 {
   switch (type) {
    case ObjectType::kCamera: {
-    object_setting_node_.reset(new CameraSettingNode{});
+    object_setting_node_ = std::make_unique<CameraSettingNode>();
     break;
    }
    case ObjectType::kGroup: {
-    object_setting_node_.reset(new GroupObjectSettingNode{});
+    object_setting_node_ = std::make_unique<GroupObjectSettingNode>();
     break;
    }
    case ObjectType::kSingle: {
-    object_setting_node_.reset(new SingleObjectSettingNode{});
+    object_setting_node_ = std::make_unique<SingleObjectSettingNode>();
     break;
    }
    default: {
@@ -147,25 +162,17 @@ void ObjectModelSettingNode::setVisibility(const bool visibility) noexcept
 
 /*!
   */
-std::vector<SettingNodeBase*> ObjectModelSettingNode::transformationList() noexcept
+std::vector<SettingNodeBase*>& ObjectModelSettingNode::transformationList() noexcept
 {
-  std::vector<SettingNodeBase*> transformation_list;
-  transformation_list.resize(transformation_list_.size());
-  for (uint i = 0; i < transformation_list_.size(); ++i)
-    transformation_list[i] = transformation_list_[i].get();
-  return transformation_list;
+  return *zisc::treatAs<std::vector<SettingNodeBase*>*>(&transformation_list_);
 }
 
 /*!
   */
-std::vector<const SettingNodeBase*> ObjectModelSettingNode::transformationList()
+const std::vector<SettingNodeBase*>& ObjectModelSettingNode::transformationList()
     const noexcept
 {
-  std::vector<const SettingNodeBase*> transformation_list;
-  transformation_list.resize(transformation_list_.size());
-  for (uint i = 0; i < transformation_list_.size(); ++i)
-    transformation_list[i] = transformation_list_[i].get();
-  return transformation_list;
+  return *zisc::treatAs<const std::vector<SettingNodeBase*>*>(&transformation_list_);
 }
 
 /*!
@@ -184,8 +191,28 @@ bool ObjectModelSettingNode::visibility() const noexcept
 
 /*!
   */
-void ObjectModelSettingNode::writeData(std::ostream* /* data_stream */) const noexcept
+void ObjectModelSettingNode::writeData(std::ostream* data_stream) const noexcept
 {
+  writeType(data_stream);
+
+  // Properties
+  writeString(name(), data_stream);
+  zisc::write(&visibility_, data_stream);
+
+  // Transformations
+  {
+    const auto& transformation_list = transformationList();
+    const uint32 num_of_transformations = zisc::cast<uint32>(transformation_list.size());
+    zisc::write(&num_of_transformations, data_stream);
+    for (const auto transformation : transformation_list)
+      transformation->writeData(data_stream);
+  }
+
+  // Object
+  {
+    const auto object_settings = objectSettingNode();
+    object_settings->writeData(data_stream);
+  }
 }
 
 } // namespace nanairo
