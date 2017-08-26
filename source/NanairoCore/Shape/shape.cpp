@@ -20,6 +20,7 @@
 #include "plane.hpp"
 #include "triangle_mesh.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/shape_point.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/single_object_setting_node.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
@@ -30,6 +31,14 @@ namespace nanairo {
   */
 Shape::~Shape() noexcept
 {
+}
+
+/*!
+  */
+ShapePoint Shape::getPoint(const Point2& /* st */) const noexcept
+{
+  zisc::raiseError("Not implemented.");
+  return ShapePoint{};
 }
 
 /*!

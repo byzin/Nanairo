@@ -57,7 +57,6 @@ void SceneRendererBase::initialize(const SettingNodeBase* settings) noexcept
 {
   using zisc::cast;
   using std::chrono::duration_cast;
-  using Clock = zisc::Stopwatch::Clock;
   using Millis = std::chrono::milliseconds;
 
   qInfo("Initialize the renderer.");

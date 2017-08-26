@@ -17,12 +17,14 @@
 #include "zisc/algorithm.hpp"
 // Nanairo
 #include "NanairoCore/Data/light_source_reference.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
 // Forward declaration
 class IntersectionInfo;
 class Sampler;
+class System;
 class World;
 
 //! \addtogroup Core
@@ -55,8 +57,9 @@ class LightSourceSampler
 
   //! Make a light source sampler
   static std::unique_ptr<LightSourceSampler> makeSampler(
-      const LightSourceSamplerType type,
-      const World& world) noexcept;
+      const SettingNodeBase* settings,
+      const World& world,
+      System& system) noexcept;
 
   //! Sample a light source
   virtual const LightSourceReference& sample(const IntersectionInfo& info,

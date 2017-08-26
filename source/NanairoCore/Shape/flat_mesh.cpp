@@ -21,6 +21,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/ray.hpp"
+#include "NanairoCore/Data/shape_point.hpp"
 #include "NanairoCore/DataStructure/aabb.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
@@ -58,6 +59,15 @@ Aabb FlatMesh::boundingBox() const noexcept
     max_point = zisc::maxElements(max_point, point.data());
   }
   return Aabb{Point3{min_point}, Point3{max_point}};
+}
+
+/*!
+  */
+ShapePoint FlatMesh::getPoint(const Point2& st) const noexcept
+{
+  const auto point = vertex_ + st[0] * edge_[0] + st[1] * edge_[1];
+  const auto uv = textureCoordinate(st[0], st[1]);
+  return ShapePoint{SampledPoint{point, surfaceArea()}, normal_, uv, st};
 }
 
 /*!
@@ -112,6 +122,7 @@ bool FlatMesh::testIntersection(const Ray& ray,
     intersection->setNormal(normal_);
     intersection->setRayDistance(t);
     intersection->setTextureCoordinate(textureCoordinate(u, v));
+    intersection->setSt(Point2{u, v});
   }
   return is_hit;
 }

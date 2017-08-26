@@ -133,7 +133,7 @@ void World::initializeEmitter(
 
   const auto emitter_setting_list = emitter_model_settings->materialList();
   auto make_emitter =
-  [this, &system, &emitter_setting_list, &texture_list](const uint index)
+  [this, &emitter_setting_list, &texture_list](const uint index)
   {
     const auto emitter_settings = emitter_setting_list[index];
     emitter_list_[index] = EmitterModel::makeEmitter(emitter_settings, texture_list);

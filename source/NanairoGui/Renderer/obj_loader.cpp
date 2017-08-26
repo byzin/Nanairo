@@ -36,7 +36,7 @@ void ObjLoader::parse(
     std::vector<std::array<double, 3>>* vnormal_list,
     std::vector<std::array<double, 2>>* vuv_list) noexcept
 {
-  ZISC_ASSERT(obj_stream.device() != 0, "The obj_stream isn't initialized.");
+  ZISC_ASSERT(obj_stream.device() != nullptr, "The obj_stream isn't initialized.");
   ZISC_ASSERT(face_list != nullptr, "The face_list is null.");
   ZISC_ASSERT(vertex_list != nullptr, "The vertex_list is null.");
   ZISC_ASSERT(vnormal_list != nullptr, "The vnormal_list is null.");

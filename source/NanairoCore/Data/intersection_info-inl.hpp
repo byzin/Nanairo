@@ -173,6 +173,14 @@ void IntersectionInfo::setRayDistance(const Float distance) noexcept
 }
 
 /*!
+  */
+inline
+void IntersectionInfo::setSt(const Point2& st) noexcept
+{
+  st_coordinate_ = st;
+}
+
+/*!
   \details
   No detailed.
   */
@@ -180,6 +188,14 @@ inline
 void IntersectionInfo::setTextureCoordinate(const Point2& texture_coordinate) noexcept
 {
   texture_coordinate_ = texture_coordinate;
+}
+
+/*!
+  */
+inline
+const Point2& IntersectionInfo::st() const noexcept
+{
+  return st_coordinate_;
 }
 
 /*!

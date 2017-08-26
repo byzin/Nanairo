@@ -52,7 +52,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-PathTracing::PathTracing(const System& system,
+PathTracing::PathTracing(System& system,
                          const SettingNodeBase* settings,
                          const Scene& scene) noexcept :
     RenderingMethod(system, settings)
@@ -265,17 +265,13 @@ Ray PathTracing::generateRay(const CameraModel& camera,
   \details
   No detailed.
   */
-void PathTracing::initialize(const System& /* system */,
+void PathTracing::initialize(System& system,
                              const SettingNodeBase* settings,
                              const Scene& scene) noexcept
 {
-  const auto method_settings = castNode<RenderingMethodSettingNode>(settings);
-
-  {
-    const auto sampler_type = method_settings->lightSourceSamplerType();
-    eye_path_light_sampler_ = LightSourceSampler::makeSampler(sampler_type,
-                                                              scene.world());
-  }
+  eye_path_light_sampler_ = LightSourceSampler::makeSampler(settings,
+                                                            scene.world(),
+                                                            system);
 }
 
 /*!

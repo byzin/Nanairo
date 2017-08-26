@@ -58,12 +58,19 @@ void PhotonMap::construct(System& system) noexcept
 {
   ZISC_ASSERT(0 < node_list_.size(), "The size of the tree is zero.");
   // Allocate memory
-  if (tree_.size() < node_list_.size())
-    tree_.resize(node_list_.size(), nullptr);
+  const uint node_size = zisc::cast<uint>(node_counter_.load());
+  uint memory = 1;
+  while (memory < node_size)
+    memory = memory << 1;
+  tree_.resize(memory, nullptr);
+
+
+//  if (tree_.size() < node_list_.size())
+//    tree_.resize(node_list_.size(), nullptr);
   // Construct KD-tree
   constexpr bool threading = threadingIsEnabled();
   auto begin = node_list_.begin();
-  auto end = begin + node_counter_;
+  auto end = begin + node_size;
   splitAtMedian<threading>(system, 1, begin, end);
 }
 
@@ -214,6 +221,9 @@ void PhotonMap::splitAtMedian(System& system,
                               NodeIterator begin,
                               NodeIterator end) noexcept
 {
+  if (tree_.size() <= (number - 1))
+    std::cout << "Size: " << tree_.size() << ", index: " << (number - 1) << std::endl;
+  ZISC_ASSERT((number - 1) < tree_.size(), "The index is out of range.");
   const uint size = zisc::cast<uint>(std::distance(begin, end));
   if (size == 0) {
     tree_[number - 1] = nullptr;

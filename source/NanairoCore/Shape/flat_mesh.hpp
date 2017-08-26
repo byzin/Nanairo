@@ -19,6 +19,7 @@
 #include "shape.hpp"
 #include "triangle_mesh.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/shape_point.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_point.hpp"
@@ -49,6 +50,9 @@ class FlatMesh : public TriangleMesh
 
   //! Return the bounding box
   Aabb boundingBox() const noexcept override;
+
+  //! Return the point data by the st coordinate
+  ShapePoint getPoint(const Point2& st) const noexcept override;
 
   //! Return the cost of a ray-triangle intersection test
   Float getTraversalCost() const noexcept override;

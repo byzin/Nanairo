@@ -57,6 +57,20 @@ void RenderingMethodSettingNode::initialize() noexcept
 
 /*!
   */
+uint32 RenderingMethodSettingNode::lightSamplerMaxSurfaceSplit() const noexcept
+{
+  return light_sampler_max_surface_split_;
+}
+
+/*!
+  */
+uint32 RenderingMethodSettingNode::lightSamplerNumOfPhotons() const noexcept
+{
+  return light_sampler_num_of_photons_;
+}
+
+/*!
+  */
 LightSourceSamplerType RenderingMethodSettingNode::lightSourceSamplerType() const noexcept
 {
   return light_source_sampler_type_;
@@ -109,6 +123,9 @@ void RenderingMethodSettingNode::readData(std::istream* data_stream) noexcept
     zisc::read(&method_type_, data_stream);
     setMethodType(method_type_);
   }
+  zisc::read(&light_source_sampler_type_, data_stream);
+  zisc::read(&light_sampler_max_surface_split_, data_stream);
+  zisc::read(&light_sampler_num_of_photons_, data_stream);
   zisc::read(&ray_cast_epsilon_, data_stream);
   zisc::read(&roulette_type_, data_stream);
   zisc::read(&roulette_path_length_, data_stream);
@@ -135,6 +152,22 @@ RouletteType RenderingMethodSettingNode::rouletteType() const noexcept
 RenderingMethodType RenderingMethodSettingNode::methodType() const noexcept
 {
   return method_type_;
+}
+
+/*!
+  */
+void RenderingMethodSettingNode::setLightSamplerMaxSurfaceSplit(
+    const uint32 max_surface_split) noexcept
+{
+  light_sampler_max_surface_split_ = max_surface_split;
+}
+
+/*!
+  */
+void RenderingMethodSettingNode::setLightSamplerNumOfPhotons(
+    const uint32 num_of_photons) noexcept
+{
+  light_sampler_num_of_photons_ = num_of_photons;
 }
 
 /*!
@@ -203,6 +236,9 @@ void RenderingMethodSettingNode::writeData(std::ostream* data_stream)
   writeType(data_stream);
   // Write properties
   zisc::write(&method_type_, data_stream);
+  zisc::write(&light_source_sampler_type_, data_stream);
+  zisc::write(&light_sampler_max_surface_split_, data_stream);
+  zisc::write(&light_sampler_num_of_photons_, data_stream);
   zisc::write(&ray_cast_epsilon_, data_stream);
   zisc::write(&roulette_type_, data_stream);
   zisc::write(&roulette_path_length_, data_stream);

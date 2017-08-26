@@ -9,12 +9,19 @@
 
 #include "light_source_sampler.hpp"
 // Standard C++ library
+#include <memory>
 #include <vector>
+// Zisc
+#include "zisc/utility.hpp"
 // Nanairo
+#include "contribution_weighted_light_source_sampler.hpp"
 #include "power_weighted_light_source_sampler.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/system.hpp"
 #include "NanairoCore/Data/light_source_reference.hpp"
 #include "NanairoCore/Data/object.hpp"
+#include "NanairoCore/Setting/rendering_method_setting_node.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -38,27 +45,35 @@ LightSourceSampler::~LightSourceSampler() noexcept
 /*!
   */
 std::unique_ptr<LightSourceSampler> LightSourceSampler::makeSampler(
-    const LightSourceSamplerType type,
-    const World& world) noexcept
+    const SettingNodeBase* settings,
+    const World& world,
+    System& system) noexcept
 {
-  LightSourceSampler* sampler = nullptr;
-  switch (type) {
+  const auto sampler_settings = castNode<RenderingMethodSettingNode>(settings);
+
+  std::unique_ptr<LightSourceSampler> sampler;
+  switch (sampler_settings->lightSourceSamplerType()) {
    case LightSourceSamplerType::kUniform: {
 //    sampler = new UniformLightSourceSampler{world};
     break;
    }
    case LightSourceSamplerType::kPowerWeighted: {
-    sampler = new PowerWeightedLightSourceSampler{world};
+    sampler = std::make_unique<PowerWeightedLightSourceSampler>(world);
     break;
    }
    case LightSourceSamplerType::kContributionWeighted: {
-//    sampler = new ContributionWeightedLightSourceSampler{world};
+    const uint max_surface_split =
+        zisc::cast<uint>(sampler_settings->lightSamplerMaxSurfaceSplit());
+    const uint num_of_photons =
+        zisc::cast<uint>(sampler_settings->lightSamplerNumOfPhotons());
+    sampler = std::make_unique<ContributionWeightedLightSourceSampler>(
+        system, world, max_surface_split, num_of_photons);
     break;
    }
    default:
     break;
   }
-  return std::unique_ptr<LightSourceSampler>{sampler};
+  return sampler;
 }
 
 /*!

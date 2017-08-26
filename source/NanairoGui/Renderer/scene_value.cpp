@@ -362,6 +362,16 @@ void SceneValue::toRenderingMethodSetting(const QJsonObject& value,
     method_setting->setLightSourceSamplerType(sampler_type);
   }
   {
+    const auto max_surface_split = toInt<uint32>(method_value,
+                                                 keyword::lightSamplerMaxSurfaceSplit);
+    method_setting->setLightSamplerMaxSurfaceSplit(max_surface_split);
+  }
+  {
+    const auto num_of_photons = toInt<uint32>(method_value,
+                                              keyword::lightSamplerNumOfPhotons);
+    method_setting->setLightSamplerNumOfPhotons(num_of_photons);
+  }
+  {
     const auto rendering_method = toString(method_value, keyword::type);
     const RenderingMethodType method =
         (rendering_method == keyword::pathTracing)

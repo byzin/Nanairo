@@ -82,6 +82,8 @@ var eyePathLightSampler = "@eyePathLightSampler@";
     var uniformLightSampler = "@uniformLightSampler@";
     var powerWeightedLightSampler = "@powerWeightedLightSampler@";
     var contributionWeightedLightSampler = "@contributionWeightedLightSampler@";
+        var lightSamplerMaxSurfaceSplit = "@lightSamplerMaxSurfaceSplit@";
+        var lightSamplerNumOfPhotons = "@lightSamplerNumOfPhotons@";
 // Probabilistic PPM
 var numOfPhotons = "@numOfPhotons@";
 var photonSearchRadius = "@photonSearchRadius@";

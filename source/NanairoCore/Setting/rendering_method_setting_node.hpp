@@ -53,6 +53,12 @@ class RenderingMethodSettingNode : public SettingNodeBase
   //! Initialize a rendering method
   virtual void initialize() noexcept override;
 
+  //! Return the max surface split
+  uint32 lightSamplerMaxSurfaceSplit() const noexcept;
+
+  //! Return the num of photons
+  uint32 lightSamplerNumOfPhotons() const noexcept;
+
   //! Return the light source sampler type
   LightSourceSamplerType lightSourceSamplerType() const noexcept;
 
@@ -80,6 +86,12 @@ class RenderingMethodSettingNode : public SettingNodeBase
   //! Return the rendering method type
   RenderingMethodType methodType() const noexcept;
 
+  //! Set the max surface split
+  void setLightSamplerMaxSurfaceSplit(const uint max_surface_split) noexcept;
+
+  //! Set the num of photons
+  void setLightSamplerNumOfPhotons(const uint num_of_photons) noexcept;
+
   //! Set the light source sampler type
   void setLightSourceSamplerType(const LightSourceSamplerType sampler_type) noexcept;
 
@@ -105,6 +117,8 @@ class RenderingMethodSettingNode : public SettingNodeBase
   std::unique_ptr<NodeParameters> parameters_;
   RenderingMethodType method_type_;
   LightSourceSamplerType light_source_sampler_type_;
+  uint32 light_sampler_max_surface_split_;
+  uint32 light_sampler_num_of_photons_;
   double ray_cast_epsilon_;
   RouletteType roulette_type_;
   uint32 roulette_path_length_;

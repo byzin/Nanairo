@@ -49,7 +49,7 @@ class PathTracing : public RenderingMethod
 
 
   //! Initialize path tracing method
-  PathTracing(const System& system,
+  PathTracing(System& system,
               const SettingNodeBase* settings,
               const Scene& scene) noexcept;
 
@@ -101,7 +101,7 @@ class PathTracing : public RenderingMethod
                   Float* inverse_direction_pdf) const noexcept;
 
   //! Initialize
-  void initialize(const System& system,
+  void initialize(System& system,
                   const SettingNodeBase* settings,
                   const Scene& scene) noexcept;
 

@@ -86,6 +86,8 @@ function(getNanairoKeywords nanairo_keyword_list)
           uniformLightSampler "UniformLightSampler"
           powerWeightedLightSampler "PowerWeightedLightSampler"
           contributionWeightedLightSampler "ContributionWeightedLightSampler"
+              lightSamplerMaxSurfaceSplit "LightSamplerMaxSurfaceSplit"
+              lightSamplerNumOfPhotons "LightSamplerNumOfPhotons"
       # Probabilistic PPM
       numOfPhotons "NumOfPhotons"
       photonSearchRadius "PhotonSearchRadius"

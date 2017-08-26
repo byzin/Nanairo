@@ -416,11 +416,13 @@
         }
     ],
     "RenderingMethod": {
+        "EyePathLightSampler": "PowerWeightedLightSampler",
+        "LightSamplerMaxSurfaceSplit": 10,
+        "LightSamplerNumOfPhotons": 32768,
         "PathLength": 3,
         "RayCastEpsilon": 1e-07,
         "RussianRoulette": "Reflectance (Max)",
-        "Type": "PathTracing",
-        "EyePathLightSampler": "PowerWeightedLightSampler"
+        "Type": "PathTracing"
     },
     "Scene": {
         "SceneName": "VeachMisTest"
