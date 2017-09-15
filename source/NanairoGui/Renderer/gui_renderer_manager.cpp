@@ -10,38 +10,29 @@
 #include "gui_renderer_manager.hpp"
 // Standard C++ library
 #include <cstdint>
-#include <fstream>
-#include <functional>
 #include <utility>
 // Qt
 #include <QFileInfo>
 #include <QDir>
 #include <QImage>
 #include <QJsonObject>
-#include <QMatrix4x4>
 #include <QObject>
-#include <QSizeF>
+#include <QScopedPointer>
 #include <QSharedPointer>
 #include <QString>
+#include <QTextStream>
 #include <QThread>
 #include <QUrl>
 #include <QVariant>
 #include <QtGlobal>
 // Zisc
-#include "zisc/algorithm.hpp"
-#include "zisc/math.hpp"
+#include "zisc/error.hpp"
 #include "zisc/thread_pool.hpp"
-#include "zisc/stopwatch.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
-#include "cpu_scene_renderer.hpp"
-#include "renderer_utility.hpp"
+#include "gui_renderer.hpp"
 #include "scene_document.hpp"
-#include "scene_renderer_base.hpp"
-#include "scene_value.hpp"
-#include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoGui/keyword.hpp"
-#include "NanairoGui/nanairo_gui_config.hpp"
 #include "NanairoGui/rendered_image_provider.hpp"
 
 namespace nanairo {
@@ -54,25 +45,6 @@ GuiRendererManager::GuiRendererManager() noexcept :
     rendering_thread_{1},
     image_provider_{nullptr}
 {
-}
-
-/*!
-  \details
-  No detailed.
-  */
-void GuiRendererManager::outputCameraEvent(const QMatrix4x4& matrix) const noexcept
-{
-  emit cameraEventHandled(matrix);
-}
-
-/*!
-  \details
-  No detailed.
-  */
-void GuiRendererManager::finishRendering() noexcept
-{
-  setRenderingInfo(0, 1);
-  emit finished();
 }
 
 /*!
@@ -113,16 +85,6 @@ bool GuiRendererManager::isDebugMode() const noexcept
   \details
   No detailed.
   */
-void GuiRendererManager::makeDir(const QString& dir) const noexcept
-{
-  const QDir current_dir{};
-  current_dir.mkdir(dir);
-}
-
-/*!
-  \details
-  No detailed.
-  */
 int GuiRendererManager::random() const noexcept
 {
   return qrand();
@@ -149,79 +111,36 @@ QString GuiRendererManager::toRelativeFilePath(
 }
 
 /*!
-  \details
-  No detailed.
   */
-void GuiRendererManager::invokeRendering(const QString& output_dir) noexcept
+void GuiRendererManager::invokeRendering(const QVariant& scene_data,
+                                         const bool is_previewing) noexcept
 {
-  // Load a scene data
-  const QString scene_file_path = output_dir + "/" + keyword::sceneBackupFileName;
-  QJsonObject scene_value;
-  QString message;
-  const bool result = SceneDocument::loadDocument(scene_file_path,
-                                                  scene_value,
-                                                  message);
-  if (!result) {
-    qFatal("%s", message.toStdString().c_str());
-  }
-
-  // Invoke renderer
-  QSharedPointer<SceneRendererBase> renderer{new CpuSceneRenderer};
-  setRenderer(renderer.data());
-  auto render = [this, renderer, output_dir, scene_value]()
+  QSharedPointer<QJsonObject> scene_value{
+      new QJsonObject{QJsonObject::fromVariantMap(scene_data.toMap())}};
+  auto render = [this, scene_value, is_previewing]()
   {
-    // Initialize the renderer
-    {
-      const auto scene_setting = SceneValue::toSetting(scene_value);
-      renderer->initialize(scene_setting.get());
-      //! \todo Add condition if save nanabin or not
-      std::ofstream nanabin{"scene.nanabin", std::ios::binary | std::ios::out};
-      scene_setting->writeData(&nanabin);
+    const GuiRenderer::RenderingMode mode = (is_previewing)
+        ? GuiRenderer::RenderingMode::kPreviewing
+        : GuiRenderer::RenderingMode::kRendering;
+    QScopedPointer<GuiRenderer> renderer{new GuiRenderer{mode}};
+    QString output_dir;
+    QString error_message;
+    // Prepare for rendering
+    prepareForRendering(*scene_value, renderer.data(), &output_dir, &error_message);
+    if (renderer->isRunnable()) {
+      // Start rendering
+      connectWithRenderer(renderer.data());
+      emit started();
+      renderer->render(output_dir.toStdString());
+      // Finish rendering
+      disconnectFromRenderer();
+      emit finished();
     }
-    // Start rendering
-    emit started();
-    renderer->renderImage(output_dir);
-    // Finish rendering
-    image_provider_->setImage(nullptr);
+    else {
+      QTextStream{stderr} << "Error: " << error_message;
+    }
   };
   rendering_thread_.enqueue<void>(render);
-}
-
-/*!
-  \details
-  No detailed.
-  */
-void GuiRendererManager::invokePreviewing() noexcept
-{
-  // Load a scene data
-  const QString scene_file_path = QString{keyword::previewDir} + "/" +
-                                  keyword::sceneBackupFileName;
-  QJsonObject scene_value;
-  QString message;
-  const bool result = SceneDocument::loadDocument(scene_file_path,
-                                                  scene_value,
-                                                  message);
-  if (!result) {
-    qFatal("%s", message.toStdString().c_str());
-  }
-
-  // Invoke renderer
-  QSharedPointer<SceneRendererBase> renderer{new CpuSceneRenderer};
-  setRenderer(renderer.data());
-  auto preview = [this, renderer, scene_value]()
-  {
-    // Initialize the renderer
-    {
-      const auto scene_setting = SceneValue::toSetting(scene_value);
-      renderer->initialize(scene_setting.get());
-    }
-    // Start rendering
-    emit started();
-    renderer->previewImage();
-    // Finish rendering
-    image_provider_->setImage(nullptr);
-  };
-  rendering_thread_.enqueue<void>(preview);
 }
 
 /*!
@@ -261,40 +180,56 @@ void GuiRendererManager::setRenderedImageProvider(
 }
 
 /*!
-  \details
-  No detailed.
   */
-void GuiRendererManager::setRenderer(const SceneRendererBase* renderer) noexcept
+void GuiRendererManager::connectWithRenderer(GuiRenderer* renderer) noexcept
 {
-  connect(renderer, &SceneRendererBase::updated,
-          this, &GuiRendererManager::setRenderingInfo);
-  connect(renderer, &SceneRendererBase::finished,
-          this, &GuiRendererManager::finishRendering);
-  connect(renderer, &SceneRendererBase::cameraEventHandled,
-          this, &GuiRendererManager::outputCameraEvent);
-  connect(this, &GuiRendererManager::stopping,
-          renderer, &SceneRendererBase::stopRendering);
-  connect(this, &GuiRendererManager::previewEvent,
-          renderer, &SceneRendererBase::handlePreviewEvent);
-
-  image_provider_->setImage(&renderer->renderedImage());
+  ZISC_ASSERT(renderer != nullptr, "The renderer is nulll.");
+  {
+    auto notify_of_info = [this](const QString& info)
+    {
+      emit notifyOfRenderingInfo(info);
+    };
+    connect(renderer, &GuiRenderer::notifiedOfRenderingInfo, notify_of_info);
+  }
+  {
+    auto stop_rendering = [renderer]()
+    {
+      ZISC_ASSERT(renderer != nullptr, "The renderer is nulll.");
+      renderer->setRunnable(false);
+    };
+    connect(this, &GuiRendererManager::stopRendering, stop_rendering);
+  }
+  {
+    auto handle_camera_event = [renderer](const int transformation_event_type,
+                                          const int axis_event_type,
+                                          const int value)
+    {
+      ZISC_ASSERT(renderer != nullptr, "The renderer is nulll.");
+      auto& camera_event = renderer->cameraEvent();
+      camera_event.addEvent(transformation_event_type, axis_event_type, value);
+    };
+    connect(this, &GuiRendererManager::previewEvent, handle_camera_event);
+  }
+  auto image_provider = renderedImageProvider();
+  image_provider->setImage(&renderer->ldrImageHelper());
 }
 
 /*!
-  \details
-  No detailed.
   */
-void GuiRendererManager::setRenderingInfo(const quint64 cycle,
-                                          const qint64 time) noexcept
+void GuiRendererManager::disconnectFromRenderer() noexcept
 {
-  using zisc::cast;
-  constexpr quint64 k = cast<quint64>(zisc::Stopwatch::Clock::period::den);
-  const double fps = cast<double>(k * cycle) / cast<double>(time);
-  const auto fps_string = QString::number(fps, 'f', 2);
-  const auto cycle_string = QStringLiteral("%1").arg(cycle, 8, 10, QChar('0'));
-  const auto time_string = getTimeString(zisc::Stopwatch::Clock::duration{time});
+  disconnect(this, &GuiRendererManager::stopRendering, nullptr, nullptr);
+  disconnect(this, &GuiRendererManager::previewEvent, nullptr, nullptr);
+  auto image_provider = renderedImageProvider();
+  image_provider->setImage(nullptr);
+}
 
-  emit updated(fps_string, cycle_string, time_string);
+/*!
+  */
+RenderedImageProvider* GuiRendererManager::renderedImageProvider() noexcept
+{
+  ZISC_ASSERT(image_provider_ != nullptr, "The image provider is null.");
+  return image_provider_;
 }
 
 } // namespace nanairo

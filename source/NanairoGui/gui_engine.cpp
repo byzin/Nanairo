@@ -42,6 +42,20 @@ void GuiEngine::load(const QUrl& url) noexcept
 }
 
 /*!
+  */
+GuiRendererManager& GuiEngine::rendererManager() noexcept
+{
+  return manager_;
+}
+
+/*!
+  */
+const GuiRendererManager& GuiEngine::rendererManager() const noexcept
+{
+  return manager_;
+}
+
+/*!
   \details
   No detailed.
   */

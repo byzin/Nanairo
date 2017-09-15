@@ -278,15 +278,15 @@ void ProbabilisticPpm::initialize(const System& system,
     radius2_ = zisc::power<2>(initial_radius) / alpha_;
   }
 
-  // Set a clear function
+  // Set the method initializer 
   {
     const auto radius2 = radius2_;
-    auto clear_function = [this, radius2]()
+    auto method_initializer = [this, radius2]()
     {
       cycle_ = 0;
       radius2_ = radius2;
     };
-    Method::setClearFunction(clear_function);
+    setMethodInitializer(method_initializer);
   }
 
   photon_map_.reserve(num_of_thread_photons_ * expectedMaxReflectionCount());

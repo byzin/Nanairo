@@ -70,8 +70,8 @@ class RenderingMethod
                   const Wavelengths& sampled_wavelengths) noexcept;
 
 
-  //! Initialize the method
-  void clear() noexcept;
+  //! Initialize the method for rendering
+  void initMethod() noexcept;
 
   //! Make rendering method
   static UniquePointer<RenderingMethod> makeMethod(
@@ -110,9 +110,6 @@ class RenderingMethod
                                      const Spectra& weight,
                                      Sampler& sampler) const noexcept;
 
-  //! Set clear function
-  void setClearFunction(std::function<void ()>&& clear_function) noexcept;
-
   //! Sample next ray
   Ray sampleNextRay(const uint length,
                     const Ray& ray,
@@ -122,6 +119,9 @@ class RenderingMethod
                     Spectra* next_ray_weight,
                     Sampler& sampler,
                     Float* inverse_direction_pdf = nullptr) const noexcept;
+
+  //! Set the method initializer
+  void setMethodInitializer(std::function<void ()>&& initializer) noexcept;
 
   //! Update the wavelength selection info and the weight of the selected wavelength
   void updateSelectedWavelengthInfo(const ShaderPointer& bxdf,
@@ -133,8 +133,11 @@ class RenderingMethod
   //! Initialize the rendering method
   void initialize(const SettingNodeBase* settings) noexcept;
 
+  //! Return the method initializer
+  std::function<void ()>& methodInitializer() noexcept;
 
-  std::function<void ()> clear_function_;
+
+  std::function<void ()> method_initializer_;
   RussianRoulette russian_roulette_;
   Float ray_cast_epsilon_;
 };

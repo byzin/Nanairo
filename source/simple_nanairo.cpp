@@ -11,50 +11,67 @@
 #include <fstream>
 #include <memory>
 #include <string>
+#include <utility>
 // cxxopts
 #include "cxxopts.hpp"
 // Nanairo
 #include "simple_renderer.hpp"
 #include "NanairoCore/Setting/scene_setting_node.hpp"
 
+namespace {
+
 /*!
   */
 struct NanairoParameters
 {
   std::string nanabin_file_path_ = " ";
+  std::string output_path_ = ".";
 };
 
 //! Process command line arguments
-void processCommandLine(int& argc, char** argv, NanairoParameters* parameters);
+std::unique_ptr<NanairoParameters> processCommandLine(int& argc, char** argv);
 
 //! Load Nanairo binary file
-std::ifstream loadNanabin(const std::string& nanabin_file_path);
+std::ifstream loadSceneBinary(const std::string& nanabin_file_path);
+
+}
 
 int main(int argc, char** argv)
 {
+  std::string output_path;
   std::unique_ptr<nanairo::SimpleRenderer> renderer;
   {
     // Process command line
-    NanairoParameters parameters;
-    processCommandLine(argc, argv, &parameters);
+    auto parameters = ::processCommandLine(argc, argv);
     // Load nanairo binary file
-    auto nanabin = loadNanabin(parameters.nanabin_file_path_);
+    auto nanabin = ::loadSceneBinary(parameters->nanabin_file_path_);
     // Load scene settings
     nanairo::SceneSettingNode settings;
     settings.readData(&nanabin);
     // Initialize renderer
-    renderer = std::make_unique<nanairo::SimpleRenderer>(settings);
+    renderer = std::make_unique<nanairo::SimpleRenderer>();
+    std::string error_message;
+    const bool is_runnable = renderer->loadScene(settings, &error_message);
+    if (!is_runnable) {
+      std::cerr << "Scene loading error: " << error_message;
+      exit(EXIT_FAILURE);
+    }
+    output_path = std::move(parameters->output_path_);
   }
-
-  renderer->renderImage();
+  // Start rendering
+  renderer->render(output_path);
 
   return 0;
 }
 
+namespace {
+
 /*!
   */
-void processCommandLine(int& argc, char** argv, NanairoParameters* parameters)
+std::unique_ptr<NanairoParameters> processCommandLine(int& argc, char** argv)
 {
+  auto parameters = std::make_unique<NanairoParameters>();
+
   try {
     cxxopts::Options options{
         argv[0],
@@ -72,6 +89,11 @@ void processCommandLine(int& argc, char** argv, NanairoParameters* parameters)
       options.add_options("Argument")
           ("binpath", "Specify nanabin file path.", value);
     }
+    {
+      auto value = cxxopts::value(parameters->output_path_);
+      options.add_options()
+          ("o,outputpath", "Specify the output dir in which images are saved.", value);
+    }
 
     // Parse command line
     options.parse_positional(std::vector<std::string>{"binpath"});
@@ -86,19 +108,26 @@ void processCommandLine(int& argc, char** argv, NanairoParameters* parameters)
       std::cout << options.help(std::vector<std::string>{""}) << std::endl;
       exit(EXIT_SUCCESS);
     }
+    if (options.count("outputpath") == 0) {
+      parameters->output_path_.clear();
+    }
   }
   catch (const cxxopts::OptionException& error) {
     std::cerr << "Error: " << error.what() << std::endl;
     exit(EXIT_FAILURE);
   }
+
+  return parameters;
 }
 
 /*!
   */
-std::ifstream loadNanabin(const std::string& nanabin_file_path)
+std::ifstream loadSceneBinary(const std::string& nanabin_file_path)
 {
-  std::ifstream nanabin{nanabin_file_path};
+  std::ifstream nanabin{nanabin_file_path, std::ios::binary};
   if (!nanabin.is_open())
     std::cerr << "Error: \"" << nanabin_file_path << "\" not found." << std::endl;
   return nanabin;
+}
+
 }

@@ -35,16 +35,23 @@ class SettingNodeBase;
   */
 class SimpleRenderer
 {
+ public:
   using Clock = zisc::Stopwatch::Clock;
 
 
- public:
   //! Create a renderer
-  SimpleRenderer(const SettingNodeBase& settings) noexcept;
+  SimpleRenderer() noexcept;
+
+  //!
+  virtual ~SimpleRenderer() noexcept;
 
 
-  //! Initialize the renderer for rendering the scene
-  void initForRendering() noexcept;
+  //! Check if the renderer is runnable
+  bool isRunnable() const noexcept;
+
+  //! Load the rendering scene
+  bool loadScene(const SettingNodeBase& settings,
+                 std::string* error_message) noexcept;
 
   //! Return the max FPS
   static constexpr int maxFps() noexcept;
@@ -53,14 +60,32 @@ class SimpleRenderer
   static constexpr Clock::duration minTimePerFrame() noexcept;
 
   //! Render the scene image
-  void renderImage() noexcept;
+  void render(const std::string& output_path) noexcept;
+
+  //! Set the renderer state manually
+  void setRunnable(const bool is_runnable) noexcept;
 
  protected:
+  //! Set the flag of saving image at each cycle
+  void enableSavingAtEachCycle(const bool flag) noexcept;
+
+  //! Make a image path
+  std::string makeImagePath(const std::string& output_path,
+                            const uint64 cycle) const noexcept;
+
+  //! Handle camera event
+  virtual void handleCameraEvent(zisc::Stopwatch* stopwatch,
+                                 uint64* cycle,
+                                 Clock::duration* time) noexcept;
+
   //! Return the HDR image
   HdrImage& hdrImage() noexcept;
 
   //! Return the HDR image
   const HdrImage& hdrImage() const noexcept;
+
+  //! Initialize the renderer for rendering the scene
+  void initForRendering() noexcept;
 
   //! Return the LDR image
   LdrImage& ldrImage() noexcept;
@@ -99,13 +124,14 @@ class SimpleRenderer
   const WavelengthSampler& wavelengthSampler() const noexcept;
 
   //! Log a message
-  void logMessage(const std::string& messsage) noexcept;
+  virtual void logMessage(const std::string& messsage) noexcept;
 
   //! Output LDR image
-  void outputLdrImage(const uint64 cycle) noexcept;
+  virtual void outputLdrImage(const std::string& output_path,
+                              const uint64 cycle) noexcept;
 
-  //! Set the flag of saving image at each cycle
-  void setEnablingSaveAtEachCycle(const bool flag) noexcept;
+  //! Notify of updating rendering information
+  virtual void notifyOfRenderingInfo(const std::string& info) const noexcept;
 
  private:
   //! Convert Spectra image to HDR image
@@ -115,10 +141,10 @@ class SimpleRenderer
   uint64 cycleToFinish() const noexcept;
 
   //! Check if the LDR image is saved at each cycle
-  bool enablingSaveAtEachCycle() const noexcept;
+  bool isSavingAtEachCycleEnabled() const noexcept;
 
   //! Check if the LDR image is saved at power of 2 cycles
-  bool enablingSaveAtPowerOf2Cycles() const noexcept;
+  bool isSavingAtPowerOf2CyclesEnabled() const noexcept;
 
   //! Return the next cycle to save image
   uint64 getNextCycleToSaveImage(const uint64 cycle) const noexcept;
@@ -127,7 +153,7 @@ class SimpleRenderer
   Clock::duration getNextTimeToSaveImage(const Clock::duration& time) const noexcept;
 
   //! Initialize the renderer
-  void initialize(const SettingNodeBase& settings) noexcept;
+  void initialize() noexcept;
 
   //! Check if it is the cycle to finish rendering
   bool isCycleToFinish(const uint64 cycle) const noexcept;
@@ -143,9 +169,6 @@ class SimpleRenderer
   bool isTimeToSaveImage(const Clock::duration& time,
                          const Clock::duration& time_to_save_image) const noexcept;
 
-  //! Log rendering info
-  void logRenderingInfo(const uint64 cycle, const Clock::duration& time) noexcept;
-
   //! Process elapsed time per frame
   Clock::duration processElapsedTime(
       const zisc::Stopwatch& stopwatch,
@@ -155,13 +178,13 @@ class SimpleRenderer
   void processLdrForLodepng() noexcept;
 
   //! Render the scene
-  void render() noexcept;
+  void renderScene() noexcept;
 
   //! Set the cycle to finish rendering
   void setCycleToFinish(const uint64 cycle) noexcept;
 
   //! Set the flag of saving image at power of 2 cycles
-  void setEnablingSaveAtPowerOf2Cycles(const bool flag) noexcept;
+  void enableSavingAtPowerOf2Cycles(const bool flag) noexcept;
 
   //! Set the time interval to save image
   void setTimeIntervalToSave(const Clock::duration& interval) noexcept;
@@ -178,6 +201,9 @@ class SimpleRenderer
   //! Apply tone mapping
   void toneMap() noexcept;
 
+  //! Update rendering info
+  void updateRenderingInfo(const uint64 cycle, const Clock::duration& time) noexcept;
+
   //! Current thread waits for next rendering frame
   void waitForNextFrame(const Clock::duration& wait_time) const noexcept;
 
@@ -192,8 +218,9 @@ class SimpleRenderer
   Clock::duration time_to_finish_;
   Clock::duration time_interval_to_save_image_;
   uint64 cycle_to_finish_;
-  bool enabling_save_at_each_cycle_;
-  bool enabling_save_at_power_of_2_cycles_;
+  bool is_saving_each_cycle_enabled_;
+  bool is_saving_at_power_of_2_cycles_enabled_;
+  bool is_runnable_;
 };
 
 } // namespace nanairo

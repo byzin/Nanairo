@@ -13,7 +13,6 @@
 // Standard C++ library
 #include <cstdint>
 // Qt
-#include <QMatrix4x4>
 #include <QObject>
 #include <QString>
 #include <QUrl>
@@ -22,14 +21,16 @@
 // Zisc
 #include "zisc/thread_pool.hpp"
 // Nanairo
+#include "cui_renderer_manager.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 
 namespace nanairo {
 
-//! \addtogroup Gui
+//! \addtogroup Renderer
 //! \{
 
 // Forward declaration
+class GuiRenderer;
 class RenderedImageProvider;
 class SceneRendererBase;
 
@@ -37,7 +38,7 @@ class SceneRendererBase;
   \details
   No detailed.
   */
-class GuiRendererManager : public QObject
+class GuiRendererManager : public QObject, public CuiRendererManager
 {
   Q_OBJECT
 
@@ -59,9 +60,6 @@ class GuiRendererManager : public QObject
   //! Check if the GUI is debug mode
   Q_INVOKABLE bool isDebugMode() const noexcept;
 
-  //! Make the directory
-  Q_INVOKABLE void makeDir(const QString& dir) const noexcept;
-
   //! Return the random number
   Q_INVOKABLE int random() const noexcept;
 
@@ -71,12 +69,9 @@ class GuiRendererManager : public QObject
   //! Convert a url of absolute path to a relative path
   Q_INVOKABLE QString toRelativeFilePath(const QUrl& absolute_path) const noexcept;
 
-  // Manager
-  //! Invoke the rendering function of thr renderer
-  Q_INVOKABLE void invokeRendering(const QString& output_dir) noexcept;
-
-  //! Invoke the previewing function of the renderer
-  Q_INVOKABLE void invokePreviewing() noexcept;
+  //! Invoke the rendering function of the renderer
+  Q_INVOKABLE void invokeRendering(const QVariant& scene_data,
+                                   const bool is_previewing) noexcept;
 
   //! Open a scene data
   Q_INVOKABLE QVariant loadSceneData(const QUrl& file_path) const noexcept;
@@ -89,46 +84,39 @@ class GuiRendererManager : public QObject
   void setRenderedImageProvider(RenderedImageProvider* image_provider) noexcept;
 
  signals:
-  //! Called when the rendering is finished
+  //! Notify that rendering is finished
   void finished() const;
 
-  //! Called when the rendering is started
+  //! Notify that rendering is started
   void started() const;
 
   //! Called when the manager is to stop the rendering
-  void stopping() const;
-
-  //! Called when rendered image is updated
-  void updated(QString fps, QString cycle, QString time) const;
-
-  //! Output the total camera event
-  void cameraEventHandled(QMatrix4x4 matrix) const;
+  void stopRendering() const;
 
   //! Called when a preview event is occured
   void previewEvent(const int transformation_event_type,
                     const int axis_event_type,
                     const int value) const;
 
+  //! Notify of updating rendering info
+  void notifyOfRenderingInfo(const QString& info) const;
+
  private:
-  //! Set renderer
-  void setRenderer(const SceneRendererBase* renderer) noexcept;
+  //! Connect with renderer
+  void connectWithRenderer(GuiRenderer* renderer) noexcept;
+
+  //! Disconnect from renderer
+  void disconnectFromRenderer() noexcept;
+
+  //! Return the image provider
+  RenderedImageProvider* renderedImageProvider() noexcept;
 
 
   zisc::ThreadPool rendering_thread_;
   RenderedImageProvider* image_provider_;
-
- private slots:
-  //! Finish rendering
-  void finishRendering() noexcept;
-
-  //! Set rendering information
-  void setRenderingInfo(quint64 cycle, qint64 time) noexcept;
-
-  //! Output the total camera event
-  void outputCameraEvent(const QMatrix4x4& matrix) const noexcept;
 };
 
-//! \} Gui
+//! \} Renderer
 
 } // namespace nanairo
 

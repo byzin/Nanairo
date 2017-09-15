@@ -21,7 +21,6 @@
 #include <QGuiApplication>
 #include <QScopedPointer>
 #include <QString>
-#include <QStringList>
 #include <QtGlobal>
 #include <QQmlApplicationEngine>
 #include <QUrl>
@@ -33,22 +32,38 @@
 #include "NanairoGui/gui_engine.hpp"
 #include "NanairoGui/nanairo_gui_config.hpp"
 #include "NanairoGui/Renderer/cui_renderer_manager.hpp"
-#include "NanairoGui/Renderer/renderer_parameter.hpp"
 #include "NanairoGui/Renderer/scene_document.hpp"
 
 namespace {
 
-//! Make a renderer runner
-std::function<int ()> makeRendererRunner(
-    const QCoreApplication& application,
-    const std::shared_ptr<nanairo::RendererParameter>& options) noexcept;
+/*!
+  */
+enum class RendererManagerType
+{
+  kCui,
+  kGui
+};
 
-//! Process command-line options
-std::shared_ptr<nanairo::RendererParameter> processCommandLineOptions(
+/*!
+  */
+struct NanairoParameters
+{
+  QString scene_file_path_;
+  RendererManagerType manager_type_ = RendererManagerType::kGui;
+  bool is_saving_scene_binary_enabled_ = false;
+};
+
+//! Initialize Qt settings
+void initQt() noexcept;
+
+//! Process command-line parameters
+std::unique_ptr<NanairoParameters> processCommandLine(
     const QCoreApplication& application) noexcept;
 
-//! Initialize Qt random seed
-void initializeQtRandomSeed() noexcept;
+//! Make a renderer runner
+std::function<int ()> makeRenderRunner(
+    const QCoreApplication& application,
+    const NanairoParameters& parameters) noexcept;
 
 } // namespace
 
@@ -58,64 +73,47 @@ void initializeQtRandomSeed() noexcept;
   */
 int main(int argc, char** argv)
 {
-  using nanairo::CoreConfig;
-  using nanairo::GuiConfig;
-
   // Initialize application
   QScopedPointer<QGuiApplication> application{new QGuiApplication{argc, argv}};
-  QCoreApplication::setApplicationName(GuiConfig::applicationName().c_str());
-  QCoreApplication::setApplicationVersion(CoreConfig::versionString().c_str());
-  const auto options = processCommandLineOptions(*application);
+  initQt();
 
-  // Initialize Qt
-  initializeQtRandomSeed();
-
-  auto renderer_runner = makeRendererRunner(*application, options);
-  return renderer_runner();
+  std::function<int ()> render_runner;
+  {
+    // Parse command line arguments
+    const auto parameters = processCommandLine(*application);
+    // Make a render runner
+    render_runner = makeRenderRunner(*application, *parameters);
+  }
+  // Launch render runner
+  return render_runner();
 }
 
 namespace {
 
 /*!
   */
-std::function<int ()> makeRendererRunner(
-    const QCoreApplication& application,
-    const std::shared_ptr<nanairo::RendererParameter>& options) noexcept
+void initQt() noexcept
 {
-  std::function<int ()> renderer_runner;
-  switch (options->managerType()) {
-    case nanairo::RendererManagerType::kGui: {
-      renderer_runner = [&application]()
-      {
-        // Initialize GUI
-        nanairo::GuiEngine engine;
-        engine.load(QUrl{"qrc:/NanairoGui/NMainWindow.qml"});
-        return application.exec();
-      };
-      break;
-    }
-    case nanairo::RendererManagerType::kCui: {
-      renderer_runner = [options]()
-      {
-        nanairo::CuiRendererManager manager{*options};
-        const bool is_runnable = manager.isRunnable();
-        if (is_runnable)
-          manager.invokeRenderer();
-        return is_runnable ? 0 : EXIT_FAILURE;
-      };
-      break;
-    }
-    default:
-      break;
+  // Application info
+  QCoreApplication::setApplicationName(
+      nanairo::GuiConfig::applicationName().c_str());
+  QCoreApplication::setApplicationVersion(
+      nanairo::CoreConfig::versionString().c_str());
+
+  // Random seed
+  {
+    const qint64 time = QDateTime::currentMSecsSinceEpoch();
+    const qint32* array = zisc::treatAs<const qint32*>(&time);
+    const qint32 seed = std::abs(array[0] ^ array[1]);
+    qsrand(zisc::cast<uint>(seed));
   }
-  return renderer_runner;
 }
 
 /*!
   \details
   No detailed.
   */
-std::shared_ptr<nanairo::RendererParameter> processCommandLineOptions(
+std::unique_ptr<NanairoParameters> processCommandLine(
     const QCoreApplication& application) noexcept
 {
   QCommandLineParser parser;
@@ -132,37 +130,42 @@ std::shared_ptr<nanairo::RendererParameter> processCommandLineOptions(
   // Options
   // Rendering mode
   QCommandLineOption renderer_mode_option{
-      QStringList{} << "r" << "renderer-mode",
+      {"r", "renderermode"},
       "Choose gui/cui renderer to run.",
       "mode",
       "gui"};
   parser.addOption(renderer_mode_option);
   // Working directory
   QCommandLineOption working_directory_option{
-      QStringList{} << "w" << "working-directory",
-      "Set the Nanairo's current working directory.",
+      {"w", "workingdirectory"},
+      "Set the current working directory of Nanairo application.",
       "dir"};
   parser.addOption(working_directory_option);
   // Scene file
   QCommandLineOption scene_file_option{
-    QStringList{} << "s" << "scene-file",
-    "Specify the rendering scene.",
-    "path",
-    ":/NanairoGui/scene/DefaultScene.nana"};
+      {"s", "scenefile"},
+      "Specify the rendering scene for cui rendering.",
+      "path",
+      ":/NanairoGui/scene/DefaultScene.nana"};
   parser.addOption(scene_file_option);
+  // Scene binary
+  QCommandLineOption scene_binary_option{
+      {"b", "savescenebinary"},
+      "Enable saving scene binary file when rendering."};
+  parser.addOption(scene_binary_option);
 
-  // Process options
+  // Process parameters
   parser.process(application);
 
-  // Set options
-  auto options = std::make_shared<nanairo::RendererParameter>();
+  // Set parameters
+  auto parameters = std::make_unique<NanairoParameters>();
   // Rendering mode
   {
     const auto mode = parser.value(renderer_mode_option);
     if (mode == "gui")
-      options->setManagerType(nanairo::RendererManagerType::kGui);
+      parameters->manager_type_ = RendererManagerType::kGui;
     else if (mode == "cui")
-      options->setManagerType(nanairo::RendererManagerType::kCui);
+      parameters->manager_type_ = RendererManagerType::kCui;
     else
       zisc::raiseError("Invalid renderer mode is specified: ", mode.toStdString());
   }
@@ -175,28 +178,59 @@ std::shared_ptr<nanairo::RendererParameter> processCommandLineOptions(
   }
   // Scene file
   {
-    const auto path = parser.value(scene_file_option);
+    const auto file_path = parser.value(scene_file_option);
     QString error_message;
-    if (!nanairo::SceneDocument::checkDocumentInfo(path, error_message))
+    if (!nanairo::SceneDocument::checkDocumentInfo(file_path, error_message))
       zisc::raiseError(error_message.toStdString());
-    options->setSceneFilePath(path);
+    parameters->scene_file_path_ = file_path;
+  }
+  // Scene binary
+  if (parser.isSet(scene_binary_option)) {
+    parameters->is_saving_scene_binary_enabled_ = true;
   }
 
-  return options;
+  return parameters;
 }
 
 /*!
-  \details
-  No detailed.
   */
-void initializeQtRandomSeed() noexcept
+std::function<int ()> makeRenderRunner(
+    const QCoreApplication& application,
+    const NanairoParameters& parameters) noexcept
 {
-  using zisc::cast;
-
-  const qint64 time = QDateTime::currentMSecsSinceEpoch();
-  const qint32* array = zisc::treatAs<const qint32*>(&time);
-  const qint32 seed = std::abs(array[0] ^ array[1]);
-  qsrand(cast<uint>(seed));
+  std::function<int ()> render_runner;
+  switch (parameters.manager_type_) {
+    case RendererManagerType::kGui: {
+      const bool is_saving_scene_binary_enabled =
+          parameters.is_saving_scene_binary_enabled_;
+      render_runner = [&application, is_saving_scene_binary_enabled]()
+      {
+        // Initialize GUI
+        nanairo::GuiEngine engine;
+        engine.load(QUrl{"qrc:/NanairoGui/NMainWindow.qml"});
+        auto& manager = engine.rendererManager();
+        manager.enableSavingSceneBinary(is_saving_scene_binary_enabled);
+        return application.exec();
+      };
+      break;
+    }
+    case RendererManagerType::kCui: {
+      const auto scene_file_path = parameters.scene_file_path_;
+      const bool is_saving_scene_binary_enabled =
+          parameters.is_saving_scene_binary_enabled_;
+      render_runner = [scene_file_path, is_saving_scene_binary_enabled]()
+      {
+        nanairo::CuiRendererManager manager;
+        manager.enableSavingSceneBinary(is_saving_scene_binary_enabled);
+        manager.invokeRendering(scene_file_path);
+        return 0;
+      };
+      break;
+    }
+    default:
+      break;
+  }
+  return render_runner;
 }
 
 } // namespace

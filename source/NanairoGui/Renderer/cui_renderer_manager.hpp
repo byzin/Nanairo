@@ -10,23 +10,20 @@
 #ifndef NANAIRO_CUI_RENDERER_MANAGER_HPP
 #define NANAIRO_CUI_RENDERER_MANAGER_HPP
 
-// Standard C++ library
-#include <tuple>
 // Qt
-#include <QJsonObject>
-#include <QScopedPointer>
+#include <QString>
 // Nanairo
-#include "scene_renderer_base.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 // Forward declaration
-class QString;
+class QJsonObject;
 
 namespace nanairo {
 
 // Forward declaration
-class RendererParameter;
+class CuiRenderer;
 
-//! \addtogroup Core
+//! \addtogroup Renderer
 //! \{
 
 /*!
@@ -37,35 +34,40 @@ class CuiRendererManager
 {
  public:
   //! Initialize the renderer manager
-  CuiRendererManager(const RendererParameter& parameters) noexcept;
+  CuiRendererManager() noexcept;
 
 
-  //! Invoke renderer function
-  void invokeRenderer() noexcept;
+  //! Enable saving scene binary
+  void enableSavingSceneBinary(const bool is_enabled) noexcept;
 
-  //! Check if the renderer is runnable
-  bool isRunnable() const noexcept;
+  //! Invoke rendering with the scene
+  void invokeRendering(const QString& scene_file_path) const noexcept;
+
+  //! Check whether is saving scene binary enabled
+  bool isSavingSceneBinaryEnabled() const noexcept;
+
+ protected:
+  //! Prepare renderer with the scene for rendering
+  bool prepareForRendering(const QJsonObject& scene_value,
+                           CuiRenderer* renderer,
+                           QString* output_dir,
+                           QString* error_message) const noexcept;
 
  private:
-  //! Generate a output dir
-  std::tuple<bool, QString> generateOutputDir() const noexcept;
-
-  //! Get the current time string
+  //! Return the current time string
   QString getCurrentTime() const noexcept;
 
   //! Initialize the renderer manager
-  void initialize(const RendererParameter& parameters) noexcept;
+  void initialize() noexcept;
 
-  //!
-  void setRenderer() noexcept;
+  //! Make a directory for saving images
+  QString makeOutputDir(const SettingNodeBase* settings) const noexcept;
 
 
-  QScopedPointer<SceneRendererBase> renderer_;
-  QJsonObject settings_;
-  bool is_runnable_;
+  bool is_saving_scene_binary_enabled_;
 };
 
-//! \} Core
+//! \} Renderer
 
 } // namespace nanairo
 

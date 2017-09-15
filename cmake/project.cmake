@@ -190,7 +190,8 @@ function(buildSimpleNanairoApp)
   target_compile_definitions(${app_name} PRIVATE ${cxx_definitions}
                                                  ${core_definitions}
                                                  ${zisc_definitions}
-                                                 ${environment_definitions})
+                                                 ${environment_definitions}
+                                                 NANAIRO_HAS_LODEPNG)
 endfunction(buildSimpleNanairoApp)
 
 
@@ -203,7 +204,10 @@ function(buildNanairoApp)
   include(${PROJECT_SOURCE_DIR}/source/NanairoGui/config.cmake)
   getNanairoGui(gui_source_files gui_definitions)
   # Build Nanairo
-  set(nanairo_source_files ${PROJECT_SOURCE_DIR}/source/main.cpp)
+  set(nanairo_source_files ${PROJECT_SOURCE_DIR}/source/main.cpp
+                           ${PROJECT_SOURCE_DIR}/source/simple_renderer.cpp 
+                           ${PROJECT_SOURCE_DIR}/source/simple_renderer.hpp 
+                           ${PROJECT_SOURCE_DIR}/source/simple_renderer-inl.hpp)
   if(Z_WINDOWS)
     set(executable_options WIN32)
     list(APPEND nanairo_source_files ${PROJECT_SOURCE_DIR}/packaging/icon.rc)

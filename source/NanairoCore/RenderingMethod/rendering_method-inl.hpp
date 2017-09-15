@@ -56,10 +56,11 @@ void RenderingMethod::operator()(System& system,
   No detailed.
   */
 inline
-void RenderingMethod::clear() noexcept
+void RenderingMethod::initMethod() noexcept
 {
-  if (clear_function_)
-    clear_function_();
+  auto& initializer = methodInitializer();
+  if (initializer)
+    initializer();
 }
 
 /*!
@@ -127,17 +128,6 @@ RouletteResult RenderingMethod::playRussianRoulette(const uint path,
   No detailed.
   */
 inline
-void RenderingMethod::setClearFunction(
-    std::function<void ()>&& clear_function) noexcept
-{
-  clear_function_ = std::move(clear_function);
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
 Ray RenderingMethod::sampleNextRay(const uint length,
                                    const Ray& ray,
                                    const ShaderPointer& bxdf,
@@ -186,6 +176,18 @@ Ray RenderingMethod::sampleNextRay(const uint length,
   No detailed.
   */
 inline
+void RenderingMethod::setMethodInitializer(std::function<void ()>&& initializer)
+    noexcept
+{
+  method_initializer_ = std::move(initializer);
+}
+
+
+/*!
+  \details
+  No detailed.
+  */
+inline
 void RenderingMethod::updateSelectedWavelengthInfo(
     const ShaderPointer& bxdf,
     Spectra* weight,
@@ -201,6 +203,14 @@ void RenderingMethod::updateSelectedWavelengthInfo(
     weight->setIntensity(index, intensity);
     *wavelength_is_selected = true;
   }
+}
+
+/*!
+  */
+inline
+std::function<void ()>& RenderingMethod::methodInitializer() noexcept
+{
+  return method_initializer_;
 }
 
 } // namespace nanairo

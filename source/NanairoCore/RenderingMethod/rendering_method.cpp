@@ -46,7 +46,6 @@ class System;
   */
 RenderingMethod::RenderingMethod(const System& /* system */,
                                  const SettingNodeBase* settings) noexcept :
-    clear_function_{},
     russian_roulette_{settings},
     ray_cast_epsilon_{0.0}
 {

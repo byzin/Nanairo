@@ -164,13 +164,4 @@ Rectangle {
 
     return item;
   }
-
-  function addCameraEvent(matrix) {
-    console.log("CameraEvent: ", matrix);
-  }
-
-  Connections {
-    target: nanairoManager
-    onCameraEventHandled: addCameraEvent(matrix)
-  }
 }

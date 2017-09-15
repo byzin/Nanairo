@@ -40,6 +40,12 @@ class GuiEngine
   //! Load window
   void load(const QUrl& url) noexcept;
 
+  //! Return the renderer manager
+  GuiRendererManager& rendererManager() noexcept;
+
+  //! Return the renderer manager
+  const GuiRendererManager& rendererManager() const noexcept;
+
  private:
   //! Initialize GUI engine
   void initialize() noexcept;

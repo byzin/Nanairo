@@ -178,7 +178,7 @@ ApplicationWindow {
         shortcut: ctrlKey + "+R"
         onTriggered: {
           isRenderingMode = true;
-          invokeRendering();
+          invokeRendering(false);
         }
 
       }
@@ -188,7 +188,7 @@ ApplicationWindow {
         shortcut: ctrlKey + "+P"
         onTriggered: {
           isRenderingMode = true;
-          invokePreviewing()
+          invokeRendering(true);
         }
       }
 
@@ -196,7 +196,7 @@ ApplicationWindow {
         enabled: isRenderingMode
         text: qsTr("Stop")
         shortcut: ctrlKey + "+F"
-        onTriggered: nanairoManager.stopping()
+        onTriggered: nanairoManager.stopRendering()
       }
     }
 
@@ -213,6 +213,7 @@ ApplicationWindow {
 
   Connections {
     target: nanairoManager
+    onStarted: rendered_image_window.show()
     onFinished: isRenderingMode = false
   }
 
@@ -251,46 +252,16 @@ ApplicationWindow {
     }
   }
 
-  function invokeRendering() {
-    // Make output dir
-    var sceneName = scene_setting_view.getSceneName();
-    var outputDir = sceneName + "_" + getCurrentTimeText()
-    nanairoManager.makeDir(outputDir);
-    // Backup the scene data
-    var sceneFilePath = outputDir + "/" + Nanairo.sceneBackupFileName;
-    saveSceneData(nanairoManager.toAbsoluteFileUrl(sceneFilePath));
+  function invokeRendering(isPreviewing) {
     // Initialize rendered image dialog
     rendered_image_window.title = scene_setting_view.getSceneName();
     var imageResolution = scene_setting_view.getImageResolution();
     rendered_image_window.imageWidth = imageResolution[0];
     rendered_image_window.imageHeight = imageResolution[1];
-    // 
-    rendered_image_window.isPreviewMode = false;
-    rendered_image_window.show();
-    nanairoManager.invokeRendering(outputDir);
-  }
-
-  function invokePreviewing() {
-    // Make output dir
-    var outputDir = Nanairo.previewDir;
-    nanairoManager.makeDir(outputDir);
-    // Backup the scene data
-    var sceneFilePath = outputDir + "/" + Nanairo.sceneBackupFileName;
-    saveSceneData(nanairoManager.toAbsoluteFileUrl(sceneFilePath));
-    // Initialize rendered image dialog
-    rendered_image_window.title = scene_setting_view.getSceneName();
-    var imageResolution = scene_setting_view.getImageResolution();
-    rendered_image_window.imageWidth = imageResolution[0];
-    rendered_image_window.imageHeight = imageResolution[1];
-    // 
-    rendered_image_window.isPreviewMode = true;
-    rendered_image_window.show();
-    nanairoManager.invokePreviewing(outputDir);
-  }
-
-  function getCurrentTimeText() {
-    var timeText = new Date().toLocaleString(Qt.locale(), "yyyy_MM_dd_HH_mm_ss");
-    return timeText;
+    // Start rendering
+    rendered_image_window.initForRendering(isPreviewing);
+    var sceneData = getSceneData();
+    nanairoManager.invokeRendering(sceneData, isPreviewing);
   }
 
   function getSceneData() {

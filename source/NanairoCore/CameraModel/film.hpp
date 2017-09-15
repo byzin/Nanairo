@@ -43,6 +43,9 @@ class Film
   //! Sample film coordinate randomly
   Point2 coordinate(const uint x, const uint y, const Vector2& jittering) const noexcept;
 
+  //! Clear film buffers
+  void clear() noexcept;
+
   //! Return image height
   uint heightResolution() const noexcept;
 

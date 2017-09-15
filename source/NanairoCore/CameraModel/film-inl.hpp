@@ -51,6 +51,14 @@ Point2 Film::coordinate(const uint x, const uint y, const Vector2& jittering) co
 }
 
 /*!
+  */
+inline
+void Film::clear() noexcept
+{
+  spectraBuffer().clear();
+}
+
+/*!
   \details
   No detailed.
   */

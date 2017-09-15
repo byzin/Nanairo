@@ -9,30 +9,24 @@
 
 #include "cui_renderer_manager.hpp"
 // Standard C++ library
+#include <fstream>
 #include <string>
-#include <tuple>
 // Qt
 #include <QDate>
 #include <QDir>
-#include <QFileInfo>
 #include <QJsonObject>
-#include <QObject>
-#include <QScopedPointer>
-#include <QSharedPointer>
 #include <QString>
 #include <QTime>
 #include <QTextStream>
-#include <QtGlobal>
 // Zisc
 #include "zisc/error.hpp"
-#include "zisc/stopwatch.hpp"
 // Nanairo
-#include "cpu_scene_renderer.hpp"
-#include "renderer_parameter.hpp"
-#include "renderer_utility.hpp"
+#include "cui_renderer.hpp"
 #include "scene_document.hpp"
-#include "scene_renderer_base.hpp"
 #include "scene_value.hpp"
+#include "simple_renderer.hpp"
+#include "NanairoCore/Setting/scene_setting_node.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoGui/keyword.hpp"
 
 namespace nanairo {
@@ -41,58 +35,94 @@ namespace nanairo {
   \details
   No detailed.
   */
-CuiRendererManager::CuiRendererManager(const RendererParameter& parameters) noexcept
-    : is_runnable_{false}
+CuiRendererManager::CuiRendererManager() noexcept
+    : is_saving_scene_binary_enabled_{false}
 {
-  initialize(parameters);
+  initialize();
 }
 
 /*!
-  \details
-  No detailed.
   */
-void CuiRendererManager::invokeRenderer() noexcept
+void CuiRendererManager::enableSavingSceneBinary(const bool is_enabled) noexcept
 {
+  is_saving_scene_binary_enabled_ = is_enabled;
+}
+
+/*!
+  */
+void CuiRendererManager::invokeRendering(const QString& scene_file_path)
+    const noexcept
+{
+  CuiRenderer renderer;
+  QString output_dir;
+  QString error_message;
+
+  // Prepare for rendering
+  {
+    QJsonObject scene_value;
+    if (SceneDocument::loadDocument(scene_file_path, scene_value, error_message))
+      prepareForRendering(scene_value, &renderer, &output_dir, &error_message);
+  }
+
+  if (renderer.isRunnable())
+    renderer.render(output_dir.toStdString());
+  else
+    QTextStream{stderr} << "Error: " << error_message;
+}
+
+bool CuiRendererManager::isSavingSceneBinaryEnabled() const noexcept
+{
+  return is_saving_scene_binary_enabled_;
+}
+
+/*!
+  */
+bool CuiRendererManager::prepareForRendering(const QJsonObject& scene_value,
+                                             CuiRenderer* renderer,
+                                             QString* output_dir,
+                                             QString* error_message) const noexcept
+{
+  ZISC_ASSERT(renderer != nullptr, "The renderer is null.");
+  ZISC_ASSERT(output_dir != nullptr, "The output dir var is null.");
+  ZISC_ASSERT(error_message != nullptr, "The error message var is null.");
+
+  // Make a setting file
+  const auto scene_settings = SceneValue::toSetting(scene_value);
+
   // Make a output directory
-  const auto r = generateOutputDir();
-  const bool result = std::get<0>(r);
-  const auto& output_dir = std::get<1>(r);
-  if (!result) {
-    auto message = "Making the output dir: \"" + output_dir + "\" failed.";
-    qFatal("%s", message.toStdString().c_str());
+  *output_dir = makeOutputDir(scene_settings.get());
+  if (output_dir->isEmpty()) {
+    *error_message = "Error: making output dir failed.";
+    return false;
   }
 
-  // Save a backup of scene settings
-  QString message;
-  const auto scene_file_path = output_dir + "/" + keyword::sceneBackupFileName;
-  if (!SceneDocument::saveDocument(scene_file_path, settings_, message)) {
-    qFatal("%s", message.toStdString().c_str());
+  // Backup scene settings
+  {
+    const auto backup_path = (*output_dir) + "/" + keyword::sceneBackupFileName;
+    if (!SceneDocument::saveDocument(backup_path, scene_value, *error_message))
+      return false;
   }
 
-  // Render
-//  renderer_->initialize(settings_);
-//  renderer_->renderImage(output_dir);
-}
+  // Backup scene binary
+  if (isSavingSceneBinaryEnabled()) {
+    const auto backup_path = (*output_dir) + "/" + keyword::sceneBinaryFileName;
+    std::ofstream scene_binary{backup_path.toStdString(), std::ios::binary};
+    if (!scene_binary.is_open()) {
+      *error_message = "Error: making scene binary file failed.";
+      return false;
+    }
+    scene_settings->writeData(&scene_binary);
+  }
 
-/*!
-  */
-bool CuiRendererManager::isRunnable() const noexcept
-{
-  return is_runnable_;
-}
+  {
+    std::string message;
+    if (renderer->loadScene(*scene_settings, &message))
+      renderer->initLdrImageHelper();
+    else
+      *error_message = message.c_str();
+  }
 
-/*!
-  */
-std::tuple<bool, QString> CuiRendererManager::generateOutputDir() const noexcept
-{
-  const auto current_dir = QDir::current();
-  const auto scene_settings = SceneValue::toObject(settings_, keyword::scene);
-  const auto scene_name = SceneValue::toString(scene_settings, keyword::sceneName);
-  const auto current_time = getCurrentTime();
-  const auto dir_name = scene_name + "_" + current_time;
-  const bool result = current_dir.mkdir(dir_name);
-  const auto output_dir = current_dir.absolutePath() + "/" + dir_name;
-  return std::make_tuple(result, output_dir);
+  return renderer->isRunnable();
 }
 
 /*!
@@ -106,51 +136,23 @@ QString CuiRendererManager::getCurrentTime() const noexcept
   return current_date + "_" + current_time;
 }
 
-/*!
-  \details
-  No detailed.
-  */
-void CuiRendererManager::initialize(const RendererParameter& parameters) noexcept
+void CuiRendererManager::initialize() noexcept
 {
-  is_runnable_ = false;
-
-  // Load a scene settings
-  QString message;
-  if (!SceneDocument::loadDocument(parameters.sceneFilePath(), settings_, message)) {
-    qFatal("%s", message.toStdString().c_str());
-  }
-
-  // Renderer
-  renderer_.reset(new CpuSceneRenderer);
-  setRenderer();
-
-  is_runnable_ = true;
 }
 
 /*!
-  \details
-  No detailed.
   */
-void CuiRendererManager::setRenderer() noexcept
+QString CuiRendererManager::makeOutputDir(const SettingNodeBase* settings)
+    const noexcept
 {
-  auto renderer = renderer_.data();
-  QSharedPointer<QTextStream> cout{new QTextStream{stdout}};
+  const auto scene_settings = castNode<SceneSettingNode>(settings);
+  const auto scene_name = QString{scene_settings->sceneName().c_str()};
 
-  auto output_rendering_info = [cout](const quint64 cycle, const qint64 time)
-  {
-    using zisc::cast;
-    constexpr quint64 k = cast<quint64>(zisc::Stopwatch::Clock::period::den);
-    const double fps = cast<double>(k * cycle) / cast<double>(time);
-    const auto fps_string = QString::number(fps, 'f', 2);
-    const auto cycle_string = QStringLiteral("%1").arg(cycle, 8, 10, QChar('0'));
-    const auto time_string = getTimeString(zisc::Stopwatch::Clock::duration{time});
-
-    *cout << "FPS: " << fps_string
-          << " cycle: " << cycle_string 
-          << " time: " << time_string << "\r";
-    flush(*cout);
-  };
-  QObject::connect(renderer, &SceneRendererBase::updated, output_rendering_info);
+  QString dir_name = scene_name + "_" + getCurrentTime();
+  const bool result = QDir::current().mkdir(dir_name);
+  if (!result)
+    dir_name.clear();
+  return dir_name;
 }
 
 } // namespace nanairo

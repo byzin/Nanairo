@@ -28,6 +28,14 @@ namespace nanairo {
 /*!
   */
 inline
+bool SimpleRenderer::isRunnable() const noexcept
+{
+  return is_runnable_;
+}
+
+/*!
+  */
+inline
 constexpr int SimpleRenderer::maxFps() noexcept
 {
   constexpr int max_fps = 50;
@@ -42,6 +50,26 @@ constexpr auto SimpleRenderer::minTimePerFrame() noexcept -> Clock::duration
   constexpr std::chrono::nanoseconds t{1'000'000'000 / maxFps()};
   constexpr auto time_per_frame = std::chrono::duration_cast<Clock::duration>(t);
   return time_per_frame;
+}
+
+/*!
+  */
+inline
+void SimpleRenderer::setRunnable(const bool is_runnable) noexcept
+{
+  is_runnable_ = is_runnable;
+}
+
+/*!
+  */
+inline
+std::string SimpleRenderer::makeImagePath(const std::string& output_path,
+                                          const uint64 cycle) const noexcept
+{
+  std::string ldr_path = std::to_string(cycle) + "cycle.png";
+  if (!output_path.empty())
+    ldr_path = output_path + "/" + ldr_path;
+  return ldr_path;
 }
 
 /*!

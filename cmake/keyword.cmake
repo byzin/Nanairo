@@ -13,6 +13,7 @@ function(getNanairoKeywords nanairo_keyword_list)
       # Nanairo files
       nanairoFileFormat "nana"
       sceneBackupFileName "settings.nana"
+      sceneBinaryFileName "settings.nanabin"
       previewDir "Preview"
 
       name "Name"

@@ -44,7 +44,7 @@ void CameraEvent::addEvent(const int transformation_event_type,
           ? kVerticalTranslationEventScale
           : kRotationEventScale;
   const Float v = scale * zisc::cast<Float>(value);
-  event[axis_event_type] = v;
+  event[axis_event_type] += v;
 }
 
 /*!
@@ -122,7 +122,7 @@ inline
 bool CameraEvent::isVerticalTranslationEventOccured() const noexcept
 {
   const auto& vertical_translation = verticalTranslationEvent();
-  return (vertical_translation[0] != 0.0) && (vertical_translation[1] != 0.0);
+  return (vertical_translation[0] != 0.0) || (vertical_translation[1] != 0.0);
 }
 
 /*!
