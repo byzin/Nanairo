@@ -20,7 +20,6 @@ function(checkCompilerHasCxx14Features target)
     cxx_binary_literals
     cxx_constexpr
     cxx_contextual_conversions
-#    cxx_decltype_incomplete_return_types
     cxx_decltype
     cxx_decltype_auto
     cxx_default_function_template_args
@@ -50,14 +49,13 @@ function(checkCompilerHasCxx14Features target)
     cxx_range_for
     cxx_raw_string_literals
     cxx_reference_qualified_functions
-    cxx_relaxed_constexpr
     cxx_return_type_deduction
     cxx_right_angle_brackets
     cxx_rvalue_references
     cxx_sizeof_member
     cxx_static_assert
     cxx_strong_enums
-#    cxx_thread_local
+    cxx_thread_local
     cxx_trailing_return_types
     cxx_unicode_literals
     cxx_uniform_initialization
@@ -66,7 +64,13 @@ function(checkCompilerHasCxx14Features target)
     cxx_variable_templates
     cxx_variadic_macros
     cxx_variadic_templates
-    cxx_template_template_parameters)
+    cxx_template_template_parameters
+#    cxx_decltype_incomplete_return_types
+    )
+  if(NOT Z_MSVC)
+    list(APPEND compiler_feature_list cxx_relaxed_constexpr
+                                      )
+  endif()
   foreach(feature IN LISTS compiler_feature_list)
     target_compile_features(${target} PRIVATE ${feature})
   endforeach()
@@ -102,7 +106,6 @@ function(getClangCompilerOption cxx_compile_flags cxx_linker_flags cxx_definitio
   set(compile_flags "")
   set(linker_flags "")
   set(definitions "")
-  list(APPEND compile_flags -fconstexpr-steps=${max_constexpr_step})
 
   if(Z_CLANG_USES_LIBCXX)
     list(APPEND compile_flags -stdlib=libc++)
@@ -191,7 +194,6 @@ endfunction(getGccCompilerOption)
 
 # Get compile options
 function(getCompilerOption cxx_compile_flags cxx_linker_flags cxx_definitions)
-  math(EXPR max_constexpr_step "1 << 24")
   # Options
   if (Z_CLANG)
     getClangCompilerOption(compile_flags linker_flags definitions)
@@ -209,9 +211,6 @@ function(getClangWarningOption compiler_warning_flags)
   set(warning_flags "")
   if(Z_VISUAL_STUDIO)
     list(APPEND warning_flags /W4
-                              -Wno-microsoft-enum-value
-                              -Wno-unknown-argument
-                              -Qunused-arguments
                               )
   else()
     list(APPEND warning_flags -Werror
@@ -255,6 +254,13 @@ function(getGccWarningOption compiler_warning_flags)
   set(${compiler_warning_flags} ${warning_flags} PARENT_SCOPE)
 endfunction(getGccWarningOption)
 
+function(getMsvcWarningOption compiler_warning_flags)
+  set(warning_flags "")
+  list(APPEND warning_flags /W4)
+  # Output variables
+  set(${compiler_warning_flags} ${warning_flags} PARENT_SCOPE)
+endfunction(getMsvcWarningOption)
+
 #
 function(getCxxWarningOption compiler_warning_flags)
   set(compiler_version ${CMAKE_CXX_COMPILER_VERSION})
@@ -266,6 +272,9 @@ function(getCxxWarningOption compiler_warning_flags)
   # GCC
   elseif(Z_GCC)
     getGccWarningOption(warning_flags)
+  # MSVC
+  elseif(Z_MSVC)
+    getMsvcWarningOption(warning_flags)
   else()
     message(WARNING "${environment}: Warning option isn't supported.")
   endif()

@@ -66,27 +66,24 @@ endfunction(findNanairoSourceFiles)
 
 # Get the warning options of the compiler
 function(getNanairoWarningOption nanairo_warning_flags)
-  if(Z_VISUAL_STUDIO)
-    set(warning_flags -Wno-microsoft-enum-value
-                      -Qunused-arguments
-                      -Wno-sign-compare
-                      )
+  set(warning_flags "")
+  if(Z_CLANG AND Z_VISUAL_STUDIO)
   elseif(Z_CLANG)
-    set(warning_flags -Wno-padded
-                      -Wno-covered-switch-default
-                      -Wno-float-equal
-                      -Wno-sign-conversion
-                      -Wno-exit-time-destructors
-                      -Wno-global-constructors
-                      -Wno-weak-vtables
-                      -Wno-undefined-reinterpret-cast
-                      -Wno-documentation-unknown-command
-                      )
+    list(APPEND warning_flags -Wno-padded
+                              -Wno-covered-switch-default
+                              -Wno-float-equal
+                              -Wno-sign-conversion
+                              -Wno-exit-time-destructors
+                              -Wno-global-constructors
+                              -Wno-weak-vtables
+                              -Wno-undefined-reinterpret-cast
+                              -Wno-documentation-unknown-command
+                              )
   elseif(Z_GCC)
-    set(warning_flags -Wno-sign-conversion
-                      -Wno-strict-overflow
-                      -Wno-sign-compare
-                      )
+    list(APPEND warning_flags -Wno-sign-conversion
+                              -Wno-strict-overflow
+                              -Wno-sign-compare
+                              )
   endif()
 
 
