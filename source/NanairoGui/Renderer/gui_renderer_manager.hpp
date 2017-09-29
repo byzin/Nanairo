@@ -26,7 +26,7 @@
 
 namespace nanairo {
 
-//! \addtogroup Renderer
+//! \addtogroup Gui
 //! \{
 
 // Forward declaration
@@ -116,7 +116,7 @@ class GuiRendererManager : public QObject, public CuiRendererManager
   RenderedImageProvider* image_provider_;
 };
 
-//! \} Renderer
+//! \} Gui
 
 } // namespace nanairo
 

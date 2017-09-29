@@ -23,7 +23,7 @@ namespace nanairo {
 // Forward declaration
 class CuiRenderer;
 
-//! \addtogroup Renderer
+//! \addtogroup Gui
 //! \{
 
 /*!
@@ -67,7 +67,7 @@ class CuiRendererManager
   bool is_saving_scene_binary_enabled_;
 };
 
-//! \} Renderer
+//! \} Gui
 
 } // namespace nanairo
 

@@ -16,7 +16,7 @@
 
 namespace nanairo {
 
-//! \addtogroup Renderer
+//! \addtogroup Gui
 //! \{
 
 /*!
@@ -96,7 +96,7 @@ class CameraEvent
   Vector2 event_list_[3];
 };
 
-//! \} Renderer
+//! \} Gui
 
 } // namespace nanairo
 

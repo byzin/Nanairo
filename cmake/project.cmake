@@ -68,6 +68,7 @@ endfunction(findNanairoSourceFiles)
 function(getNanairoWarningOption nanairo_warning_flags)
   set(warning_flags "")
   if(Z_CLANG AND Z_VISUAL_STUDIO)
+    # Nothing
   elseif(Z_CLANG)
     list(APPEND warning_flags -Wno-padded
                               -Wno-covered-switch-default

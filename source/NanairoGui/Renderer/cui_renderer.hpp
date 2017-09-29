@@ -21,7 +21,7 @@
 
 namespace nanairo {
 
-//! \addtogroup Renderer
+//! \addtogroup Gui
 //! \{
 
 /*!
@@ -52,7 +52,7 @@ class CuiRenderer : public SimpleRenderer
   QScopedPointer<QImage> ldr_image_helper_;
 };
 
-//! \} Renderer
+//! \} Gui
 
 } // namespace nanairo
 

@@ -27,7 +27,7 @@ class QString;
 
 namespace nanairo {
 
-//! \addtogroup Renderer
+//! \addtogroup Gui
 //! \{
 
 /*!
@@ -83,7 +83,7 @@ class GuiRenderer : public QObject, public CuiRenderer
   RenderingMode mode_;
 };
 
-//! \} Renderer
+//! \} Gui
 
 } // namespace nanairo
 
