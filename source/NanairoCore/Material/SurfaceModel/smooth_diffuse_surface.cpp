@@ -11,8 +11,8 @@
 // Standard C++ library
 #include <vector>
 // Zisc
-#include "zisc/aligned_memory_pool.hpp"
 #include "zisc/error.hpp"
+#include "zisc/memory_pool.hpp"
 // Nanairo
 #include "surface_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -22,6 +22,7 @@
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/surface_setting_node.hpp"
+#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -44,7 +45,7 @@ auto SmoothDiffuseSurface::makeBxdf(
     const IntersectionInfo& info,
     const WavelengthSamples& wavelengths,
     Sampler& /* sampler */,
-    MemoryPool& memory_pool) const noexcept -> ShaderPointer
+    zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
   const auto& uv = info.textureCoordinate();
 
@@ -52,8 +53,9 @@ auto SmoothDiffuseSurface::makeBxdf(
   const auto k_d = reflectance_->reflectiveValue(uv, wavelengths);
 
   using Brdf = LambertBrdf;
-  auto brdf = memory_pool.allocate<Brdf>(k_d);
-  return ShaderPointer{brdf};
+  auto chunk = memory_pool.allocate<Brdf>();
+  auto ptr = makeUnique<Brdf>(chunk, k_d);
+  return ptr;
 }
 
 /*!

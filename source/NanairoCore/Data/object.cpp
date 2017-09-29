@@ -8,10 +8,12 @@
   */
 
 #include "object.hpp"
+// Standard C++ library
+#include <memory>
+#include <utility>
 // Nanairo
 #include "NanairoCore/Shape/shape.hpp"
 #include "NanairoCore/Material/material.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -19,7 +21,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-Object::Object(const Material& material, UniquePointer<Shape>&& shape) noexcept :
+Object::Object(const Material& material, std::unique_ptr<Shape>&& shape) noexcept :
     material_{material},
     shape_{std::move(shape)}
 {

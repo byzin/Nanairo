@@ -9,9 +9,10 @@
 
 #include "system.hpp"
 // Standard C++ library
+#include <memory>
 #include <vector>
 // Zisc
-#include "zisc/aligned_memory_pool.hpp"
+#include "zisc/memory_pool.hpp"
 #include "zisc/thread_pool.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -20,7 +21,6 @@
 #include "Sampling/sampler.hpp"
 #include "Setting/setting_node_base.hpp"
 #include "Setting/system_setting_node.hpp"
-#include "Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -51,7 +51,7 @@ void System::initialize(const SettingNodeBase* settings) noexcept
 
   // Thread pool
   {
-    thread_pool_ = new zisc::ThreadPool{system_settings->numOfThreads()};
+    thread_pool_ = std::make_unique<zisc::ThreadPool>(system_settings->numOfThreads());
   }
   // Sampler
   {
@@ -63,7 +63,9 @@ void System::initialize(const SettingNodeBase* settings) noexcept
   // Memory pool
   {
     const auto num_of_memory_pool = system_settings->numOfThreads() + 1;
-    memory_pool_list_.resize(num_of_memory_pool);
+    memory_pool_list_.reserve(num_of_memory_pool);
+    for (uint i = 0; i < num_of_memory_pool; ++i)
+      memory_pool_list_.emplace_back(CoreConfig::memoryPoolSize());
   }
   // Image resolution
   {
@@ -84,7 +86,7 @@ void System::initialize(const SettingNodeBase* settings) noexcept
   }
   // Color matching function
   {
-    xyz_color_matching_function_ = new XyzColorMatchingFunction{};
+    xyz_color_matching_function_ = std::make_unique<XyzColorMatchingFunction>();
   }
 }
 

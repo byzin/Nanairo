@@ -14,7 +14,6 @@
 // Nanairo
 #include "NanairoCore/Shape/shape.hpp"
 #include "NanairoCore/Material/material.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 

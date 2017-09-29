@@ -17,6 +17,13 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
+namespace zisc {
+
+// Forward declaration
+class MemoryChunk;
+
+} // namespace zisc
+
 namespace nanairo {
 
 // Forward declaration
@@ -56,11 +63,11 @@ class ShaderModel
   virtual ~ShaderModel() noexcept {}
 
 
-  // Dummy delete function
-  static void operator delete(void*) noexcept;
+  //! Delete a new shader
+  static void operator delete(void* shader, zisc::MemoryChunk* chunk) noexcept;
 
-  //! Dummy new function
-  static void* operator new(std::size_t, void* memory) noexcept;
+  //! Create a new shader
+  static void* operator new(std::size_t, zisc::MemoryChunk* chunk) noexcept;
 
 
   //! Evaluate the pdf
@@ -99,6 +106,14 @@ class ShaderModel
 
   //! Check if wavelength selection occured
   virtual bool wavelengthIsSelected() const noexcept = 0;
+
+ protected:
+  static void operator delete(void*) {}
+
+ private:
+  static void operator delete[](void*) = delete;
+  static void* operator new(std::size_t) = delete;
+  static void* operator new[](std::size_t) = delete;
 };
 
 /*!

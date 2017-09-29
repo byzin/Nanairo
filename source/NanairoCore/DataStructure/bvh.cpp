@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <iterator>
+#include <memory>
 //#include <iostream>
 #include <limits>
 #include <string>
@@ -35,7 +36,6 @@
 #include "NanairoCore/Data/object.hpp"
 #include "NanairoCore/Setting/bvh_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -100,7 +100,6 @@ void Bvh::construct(System& system, std::vector<Object>&& object_list) noexcept
   else {
     std::vector<BvhNode> tree;
     constructBvh(system, object_list, tree);
-//    printTree(0, 0, tree);
     sortTreeNode(tree);
     tree_.resize(tree.size());
     end_index_ = zisc::cast<uint32>(tree_.size());
@@ -113,25 +112,25 @@ void Bvh::construct(System& system, std::vector<Object>&& object_list) noexcept
   \details
   No detailed.
   */
-UniquePointer<Bvh> Bvh::makeBvh(const SettingNodeBase* settings) noexcept
+std::unique_ptr<Bvh> Bvh::makeBvh(const SettingNodeBase* settings) noexcept
 {
   ZISC_ASSERT(settings != nullptr, "The setting node is null.");
   ZISC_ASSERT(settings->type() == SettingNodeType::kBvh,
               "Wrong setting node is specified.");
   const auto bvh_setting_node = zisc::cast<const BvhSettingNode*>(settings);
 
-  Bvh* bvh = nullptr;
+  std::unique_ptr<Bvh> bvh;
   switch (bvh_setting_node->bvhType()) {
    case BvhType::kBinaryRadixTree: {
-    bvh = new BinaryRadixTreeBvh{settings};
+    bvh = std::make_unique<BinaryRadixTreeBvh>(settings);
     break;
    }
    case BvhType::kApproximateAgglomerativeClustering: {
-    bvh = new ApproximateAgglomerativeClusteringBvh{settings};
+    bvh = std::make_unique<ApproximateAgglomerativeClusteringBvh>(settings);
     break;
    }
    case BvhType::kAgglomerativeTreeletRestructuring: {
-    bvh = new AgglomerativeTreeletRestructuringBvh{settings};
+    bvh = std::make_unique<AgglomerativeTreeletRestructuringBvh>(settings);
     break;
    }
    default: {
@@ -139,7 +138,7 @@ UniquePointer<Bvh> Bvh::makeBvh(const SettingNodeBase* settings) noexcept
     break;
    }
   }
-  return UniquePointer<Bvh>{bvh};
+  return bvh;
 }
 
 /*!

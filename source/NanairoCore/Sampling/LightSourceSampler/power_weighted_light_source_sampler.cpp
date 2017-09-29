@@ -10,6 +10,7 @@
 #include "power_weighted_light_source_sampler.hpp"
 // Standard C++ library
 #include <algorithm>
+#include <utility>
 #include <vector>
 // Zisc
 #include "zisc/compensated_summation.hpp"
@@ -99,10 +100,8 @@ void PowerWeightedLightSourceSampler::initialize(
       pdf_list.emplace_back(light_source.weight());
     }
 
-    light_source_cdf_.reset(new LightSourceCdf{reference_list.begin(),
-                                               reference_list.end(),
-                                               pdf_list.begin(),
-                                               pdf_list.end()});
+    light_source_cdf_ = std::make_unique<LightSourceCdf>(std::move(reference_list),
+                                                         std::move(pdf_list));
   }
 }
 

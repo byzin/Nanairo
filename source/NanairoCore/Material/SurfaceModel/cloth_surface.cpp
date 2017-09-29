@@ -14,6 +14,7 @@
 #include <vector>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/memory_pool.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "fresnel.hpp"
@@ -21,8 +22,10 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Material/Bxdf/microcylinder_cloth_brdf.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/surface_setting_node.hpp"
+#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -45,7 +48,7 @@ auto ClothSurface::makeBxdf(
     const IntersectionInfo& info,
     const WavelengthSamples& wavelengths,
     Sampler& /* sampler */,
-    MemoryPool& memory_pool) const noexcept -> ShaderPointer
+    zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
   const auto& uv = info.textureCoordinate();
 
@@ -54,8 +57,9 @@ auto ClothSurface::makeBxdf(
 
   // Make a microcylinder cloth BRDF
   using Brdf = MicrocylinderClothBrdf;
-  auto brdf = memory_pool.allocate<Brdf>(this, k_d);
-  return ShaderPointer{brdf};
+  auto chunk = memory_pool.allocate<Brdf>();
+  auto ptr = makeUnique<Brdf>(chunk, this, k_d);
+  return ptr;
 }
 
 /*!

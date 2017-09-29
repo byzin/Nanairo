@@ -11,11 +11,11 @@
 #define NANAIRO_OBJECT_HPP
 
 // Standard C++ library
+#include <memory>
 #include <vector>
 // Nanairo
 #include "NanairoCore/Material/material.hpp"
 #include "NanairoCore/Shape/shape.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -30,7 +30,7 @@ class Object
 {
  public:
   //! Create object
-  Object(const Material& material, UniquePointer<Shape>&& shape) noexcept;
+  Object(const Material& material, std::unique_ptr<Shape>&& shape) noexcept;
 
   //! Move object
   Object(Object&& object) noexcept;
@@ -44,7 +44,7 @@ class Object
 
  private:
   Material material_;
-  UniquePointer<Shape> shape_;
+  std::unique_ptr<Shape> shape_;
 };
 
 //! Check if two objects are same

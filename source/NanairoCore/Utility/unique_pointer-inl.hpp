@@ -11,6 +11,11 @@
 #define NANAIRO_UNIQUE_POINTER_INL_HPP
 
 #include "unique_pointer.hpp"
+// Zisc
+#include "zisc/error.hpp"
+#include "zisc/memory_chunk.hpp"
+#include "zisc/type_traits.hpp"
+#include "zisc/utility.hpp"
 
 namespace nanairo {
 
@@ -20,7 +25,8 @@ namespace nanairo {
   */
 template <typename Type> inline
 UniquePointer<Type>::UniquePointer() noexcept :
-    pointer_{nullptr}
+    pointer_{nullptr},
+    chunk_{nullptr}
 {
 }
 
@@ -29,9 +35,11 @@ UniquePointer<Type>::UniquePointer() noexcept :
   No detailed.
   */
 template <typename Type> inline
-UniquePointer<Type>::UniquePointer(Type* pointer) noexcept :
-    pointer_{pointer}
+UniquePointer<Type>::UniquePointer(zisc::MemoryChunk* chunk) noexcept :
+    pointer_{nullptr},
+    chunk_{nullptr}
 {
+  reset(chunk);
 }
 
 /*!
@@ -39,10 +47,20 @@ UniquePointer<Type>::UniquePointer(Type* pointer) noexcept :
   No detailed.
   */
 template <typename Type> inline
-UniquePointer<Type>::UniquePointer(UniquePointer&& pointer) noexcept :
-    pointer_{pointer.pointer_}
+UniquePointer<Type>::UniquePointer(UniquePointer&& other) noexcept :
+    pointer_{other.pointer_},
+    chunk_{other.release()}
 {
-  pointer.pointer_ = nullptr;
+}
+
+/*!
+  */
+template <typename Type> template <typename Super> inline
+UniquePointer<Type>::UniquePointer(UniquePointer<Super>&& other,
+                                   zisc::EnableIfBaseOf<Type, Super>) noexcept :
+    pointer_{zisc::cast<Type*>(other.get())},
+    chunk_{other.release()}
+{
 }
 
 /*!
@@ -62,6 +80,7 @@ UniquePointer<Type>::~UniquePointer() noexcept
 template <typename Type> inline
 Type& UniquePointer<Type>::operator*() noexcept
 {
+  ZISC_ASSERT(pointer_ != nullptr, "The pointer is null.");
   return *pointer_;
 }
 
@@ -72,6 +91,7 @@ Type& UniquePointer<Type>::operator*() noexcept
 template <typename Type> inline
 const Type& UniquePointer<Type>::operator*() const noexcept
 {
+  ZISC_ASSERT(pointer_ != nullptr, "The pointer is null.");
   return *pointer_;
 }
 
@@ -100,9 +120,10 @@ const Type* UniquePointer<Type>::operator->() const noexcept
   No detailed.
   */
 template <typename Type> inline
-auto UniquePointer<Type>::operator=(Type* pointer) noexcept -> UniquePointer&
+auto UniquePointer<Type>::operator=(zisc::MemoryChunk* chunk) noexcept
+    -> UniquePointer&
 {
-  reset(pointer);
+  reset(chunk);
   return *this;
 }
 
@@ -111,11 +132,10 @@ auto UniquePointer<Type>::operator=(Type* pointer) noexcept -> UniquePointer&
   No detailed.
   */
 template <typename Type> inline
-auto UniquePointer<Type>::operator=(UniquePointer&& pointer) noexcept
+auto UniquePointer<Type>::operator=(UniquePointer&& other) noexcept
     -> UniquePointer&
 {
-  reset(nullptr);
-  swap(pointer);
+  swap(other);
   return *this;
 }
 
@@ -140,6 +160,22 @@ const Type* UniquePointer<Type>::get() const noexcept
 }
 
 /*!
+  */
+template <typename Type> inline
+zisc::MemoryChunk* UniquePointer<Type>::getChunk() noexcept
+{
+  return chunk_;
+}
+
+/*!
+  */
+template <typename Type> inline
+const zisc::MemoryChunk* UniquePointer<Type>::getChunk() const noexcept
+{
+  return chunk_;
+}
+
+/*!
   \details
   No detailed.
   */
@@ -150,15 +186,27 @@ bool UniquePointer<Type>::isNull() const noexcept
 }
 
 /*!
+  */
+template <typename Type> inline
+zisc::MemoryChunk* UniquePointer<Type>::release() noexcept
+{
+  auto chunk = chunk_;
+  pointer_ = nullptr;
+  chunk_ = nullptr;
+  return chunk;
+}
+
+/*!
   \details
   No detailed.
   */
 template <typename Type> inline
-void UniquePointer<Type>::reset(Type* pointer) noexcept
+void UniquePointer<Type>::reset(zisc::MemoryChunk* chunk) noexcept
 {
   if (!isNull())
-    delete pointer_;
-  pointer_ = pointer;
+    Type::operator delete(pointer_, chunk_);
+  chunk_ = chunk;
+  pointer_ = (chunk_ != nullptr) ? chunk_->data<Type>() : nullptr;
 }
 
 /*!
@@ -166,11 +214,18 @@ void UniquePointer<Type>::reset(Type* pointer) noexcept
   No detailed.
   */
 template <typename Type> inline
-void UniquePointer<Type>::swap(UniquePointer& pointer) noexcept
+void UniquePointer<Type>::swap(UniquePointer& other) noexcept
 {
-  auto* tmp = get();
-  pointer_ = pointer.get();
-  pointer.pointer_ = tmp;
+  {
+    auto* tmp = get();
+    pointer_ = other.get();
+    other.pointer_ = tmp;
+  }
+  {
+    auto* tmp = getChunk();
+    chunk_ = other.getChunk();
+    other.chunk_ = tmp;
+  }
 }
 
 /*!
@@ -178,9 +233,21 @@ void UniquePointer<Type>::swap(UniquePointer& pointer) noexcept
   No detailed.
   */
 template <typename Type> inline
-bool operator<(const UniquePointer<Type>& a, const UniquePointer<Type>& b) noexcept
+bool operator<(const UniquePointer<Type>& lhs,
+               const UniquePointer<Type>& rhs) noexcept
 {
-  return a.get() < b.get();
+  return lhs.get() < rhs.get();
+}
+
+/*!
+  */
+template <typename Type, typename ...Types> inline
+UniquePointer<Type> makeUnique(zisc::MemoryChunk* chunk,
+                               Types&&... arguments) noexcept
+{
+  new(chunk) Type{std::forward<Types>(arguments)...};
+  auto ptr = UniquePointer<Type>{chunk};
+  return ptr;
 }
 
 } // namespace nanairo

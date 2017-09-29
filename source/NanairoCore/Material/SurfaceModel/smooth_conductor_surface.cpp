@@ -11,8 +11,8 @@
 // Standard C++ library
 #include <vector>
 // Zisc
-#include "zisc/aligned_memory_pool.hpp"
 #include "zisc/error.hpp"
+#include "zisc/memory_pool.hpp"
 // Nanairo
 #include "fresnel.hpp"
 #include "surface_model.hpp"
@@ -23,6 +23,7 @@
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/surface_setting_node.hpp"
+#include "NanairoCore/Utility/unique_pointer.hpp"
 #include "NanairoCore/Utility/value.hpp"
 
 namespace nanairo {
@@ -46,7 +47,7 @@ auto SmoothConductorSurface::makeBxdf(
     const IntersectionInfo& info,
     const WavelengthSamples& wavelengths,
     Sampler& /* sampler */,
-    MemoryPool& memory_pool) const noexcept -> ShaderPointer
+    zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
   const auto& uv = info.textureCoordinate();
 
@@ -60,9 +61,11 @@ auto SmoothConductorSurface::makeBxdf(
                                        uv,
                                        wavelengths);
 
+
   using Brdf = SpecularBrdf;
-  auto brdf = memory_pool.allocate<Brdf>(n, eta);
-  return ShaderPointer{brdf};
+  auto chunk = memory_pool.allocate<Brdf>();
+  auto ptr = makeUnique<Brdf>(chunk, n, eta);
+  return ptr;
 }
 
 /*!

@@ -65,9 +65,14 @@ Window {
 
         anchors.fill: parent
         cache: false
+        horizontalAlignment: Image.AlignHCenter
+        verticalAlignment: Image.AlignVCenter
+        smooth: false
+        sourceSize.width: rendered_image_window.imageWidth
+        sourceSize.height: rendered_image_window.imageHeight
 
         function updateRenderedImage(info) {
-          source = "image://renderedImage/preview" + imageNumber;
+          source = "image://renderedImage/preview?" + imageNumber;
           imageNumber = imageNumber + 1;
           rendering_info_text.text = info;
         }

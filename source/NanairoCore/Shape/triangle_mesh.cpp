@@ -10,6 +10,8 @@
 #include "triangle_mesh.hpp"
 // Standard C++ library
 #include <array>
+#include <memory>
+#include <utility>
 #include <vector>
 // Zisc
 #include "zisc/error.hpp"
@@ -25,7 +27,6 @@
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/single_object_setting_node.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo  {
 
@@ -33,13 +34,13 @@ namespace nanairo  {
   \details
   No detailed.
   */
-std::vector<UniquePointer<Shape>> TriangleMesh::makeMeshes(
+std::vector<std::unique_ptr<Shape>> TriangleMesh::makeMeshes(
     const SettingNodeBase* settings) noexcept
 {
   const auto object_settings = castNode<SingleObjectSettingNode>(settings);
 
   const auto& parameters = object_settings->meshParameters();
-  std::vector<UniquePointer<Shape>> mesh_list;
+  std::vector<std::unique_ptr<Shape>> mesh_list;
   mesh_list.reserve(parameters.face_list_.size());
 
   //! \todo Add smoothed mesh
@@ -55,7 +56,7 @@ std::vector<UniquePointer<Shape>> TriangleMesh::makeMeshes(
           vertex[axis] = zisc::cast<Float>(vertex_data[axis]);
       }
     }
-    auto mesh = new FlatMesh{vertices[0], vertices[1], vertices[2]};
+    auto mesh = std::make_unique<FlatMesh>(vertices[0], vertices[1], vertices[2]);
     if (face.hasVuv()) {
       std::array<Point2, 3> vuvs;
       const auto& vuv_indices = face.triangleVuvIndices();
@@ -67,7 +68,7 @@ std::vector<UniquePointer<Shape>> TriangleMesh::makeMeshes(
       }
       mesh->setTextureCoordinate(vuvs[0], vuvs[1], vuvs[2]);
     }
-    mesh_list.emplace_back(mesh);
+    mesh_list.emplace_back(std::move(mesh));
   }
 
   return mesh_list;
@@ -77,7 +78,7 @@ std::vector<UniquePointer<Shape>> TriangleMesh::makeMeshes(
   \details
   No detailed.
   */
-UniquePointer<Shape> TriangleMesh::makeSmoothedMesh(
+std::unique_ptr<Shape> TriangleMesh::makeSmoothedMesh(
     const Point3& vertex1,
     const Point3& vertex2,
     const Point3& vertex3,
@@ -85,7 +86,7 @@ UniquePointer<Shape> TriangleMesh::makeSmoothedMesh(
     const Vector3& normal2,
     const Vector3& normal3) noexcept
 {
-  TriangleMesh* mesh = nullptr;
+  std::unique_ptr<TriangleMesh> mesh;
 
   const auto c1 = zisc::dot(normal1, normal2);
   const auto c2 = zisc::dot(normal2, normal3);
@@ -93,10 +94,10 @@ UniquePointer<Shape> TriangleMesh::makeSmoothedMesh(
   constexpr Float threshold = 0.9999;
   // If the mesh is mostly the same as flat, make a flat mesh instead of the smoothed.
   if ((threshold < c1) && (threshold < c2) && (threshold < c3))
-    mesh = new FlatMesh{vertex1, vertex2, vertex3};
+    mesh = std::make_unique<FlatMesh>(vertex1, vertex2, vertex3);
   else
-    mesh = new SmoothedMesh{vertex1, vertex2, vertex3, normal1, normal2, normal3};
-  return UniquePointer<Shape>{mesh};
+    mesh = std::make_unique<SmoothedMesh>(vertex1, vertex2, vertex3, normal1, normal2, normal3);
+  return mesh;
 }
 
 } // namespace nanairo

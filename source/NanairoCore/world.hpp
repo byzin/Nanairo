@@ -14,6 +14,7 @@
 #include <cstddef>
 #include <future>
 #include <list>
+#include <memory>
 #include <vector>
 // Nanairo
 #include "Data/object.hpp"
@@ -22,7 +23,6 @@
 #include "Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "Setting/setting_node_base.hpp"
-#include "Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -114,11 +114,11 @@ class World
       std::list<std::future<std::vector<Object>>>& results) const noexcept;
 
 
-  std::vector<UniquePointer<EmitterModel>> emitter_list_;
-  std::vector<UniquePointer<SurfaceModel>> surface_list_;
-  std::vector<UniquePointer<TextureModel>> texture_list_;
+  std::vector<std::unique_ptr<EmitterModel>> emitter_list_;
+  std::vector<std::unique_ptr<SurfaceModel>> surface_list_;
+  std::vector<std::unique_ptr<TextureModel>> texture_list_;
   std::vector<const Object*> light_source_list_;
-  UniquePointer<Bvh> bvh_;
+  std::unique_ptr<Bvh> bvh_;
 };
 
 //! \} Core

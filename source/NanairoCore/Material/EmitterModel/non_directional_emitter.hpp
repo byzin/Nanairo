@@ -17,6 +17,13 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 
+namespace zisc {
+
+// Forward declaration
+class MemoryPool;
+
+} // namespace zisc
+
 namespace nanairo {
 
 // Forward declaration
@@ -43,7 +50,7 @@ class NonDirectionalEmitter : public EmitterModel
   //! Make non-directional light
   ShaderPointer makeLight(const Point2& texture_coordinate,
                           const WavelengthSamples& wavelengths,
-                          MemoryPool& memory_pool) const noexcept override;
+                          zisc::MemoryPool& memory_pool) const noexcept override;
 
   //! Return the non-directional emitter type
   EmitterType type() const noexcept override;

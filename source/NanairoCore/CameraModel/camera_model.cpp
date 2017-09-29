@@ -8,6 +8,8 @@
   */
 
 #include "camera_model.hpp"
+// Standard C++ library
+#include <memory>
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
@@ -97,15 +99,15 @@ void CameraModel::initialize(const SettingNodeBase* settings) noexcept
   \details
   No detailed.
   */
-UniquePointer<CameraModel> CameraModel::makeModel(
+std::unique_ptr<CameraModel> CameraModel::makeModel(
     const SettingNodeBase* settings) noexcept
 {
   const auto camera_settings = castNode<CameraSettingNode>(settings);
 
-  CameraModel* camera_model = nullptr;
+  std::unique_ptr<CameraModel> camera_model;
   switch (camera_settings->cameraType()) {
    case CameraType::kPinhole: {
-    camera_model = new PinholeCamera{settings};
+    camera_model = std::make_unique<PinholeCamera>(settings);
     break;
    }
    case CameraType::kThinLens: {
@@ -119,7 +121,7 @@ UniquePointer<CameraModel> CameraModel::makeModel(
     break;
    }
   }
-  return UniquePointer<CameraModel>{camera_model};
+  return camera_model; 
 }
 
 } // namespace nanairo

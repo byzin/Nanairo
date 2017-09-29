@@ -12,6 +12,7 @@
 
 // Standard C++ library
 #include <cstddef>
+#include <memory>
 #include <vector>
 // Zisc
 #include "zisc/algorithm.hpp"
@@ -21,7 +22,6 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/object.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -67,7 +67,7 @@ class Bvh
   void construct(System& system, std::vector<Object>&& object_list) noexcept;
 
   //! Make BVH
-  static UniquePointer<Bvh> makeBvh(const SettingNodeBase* settings) noexcept;
+  static std::unique_ptr<Bvh> makeBvh(const SettingNodeBase* settings) noexcept;
 
   //! Return the object list
   const std::vector<Object>& objectList() const noexcept;

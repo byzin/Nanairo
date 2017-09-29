@@ -10,6 +10,7 @@
 #include "scene.hpp"
 // Standard C++ library
 #include <future>
+#include <memory>
 #include <utility>
 // Zisc
 #include "zisc/thread_pool.hpp"
@@ -54,7 +55,7 @@ void Scene::initialize(System& system, const SettingNodeBase* settings) noexcept
   auto camera_result = thread_pool.enqueue<void>(make_camera);
 
   // Create a world
-  world_ = new World{system, settings};
+  world_ = std::make_unique<World>(system, settings);
 
   // Wait for the initialization completion
   camera_result.get();
@@ -66,7 +67,7 @@ void Scene::initializeCamera(System& system, const SettingNodeBase* settings) no
 {
   const auto object_settings = castNode<ObjectModelSettingNode>(settings);
   // Film
-  film_ = new Film{system, object_settings->objectSettingNode()};
+  film_ = std::make_unique<Film>(system, object_settings->objectSettingNode());
   // Camera
   camera_ = CameraModel::makeModel(object_settings->objectSettingNode());
   camera_->setFilm(film_.get());

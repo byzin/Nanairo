@@ -14,6 +14,7 @@
 #include <cstddef>
 #include <future>
 #include <list>
+#include <memory>
 #include <utility>
 #include <vector>
 // Zisc
@@ -39,7 +40,6 @@
 #include "Setting/scene_setting_node.hpp"
 #include "Setting/setting_node_base.hpp"
 #include "Setting/single_object_setting_node.hpp"
-#include "Utility/unique_pointer.hpp"
 
 
 namespace nanairo {

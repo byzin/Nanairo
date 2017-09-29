@@ -12,6 +12,7 @@
 
 // Qt
 #include <QImage>
+#include <QPixmap>
 #include <QQuickImageProvider>
 
 // Forward declaration
@@ -35,9 +36,9 @@ class RenderedImageProvider : public QQuickImageProvider
 
 
   //! Return the rendered image
-  QImage requestImage(const QString& id, 
-                      QSize* size, 
-                      const QSize& requested_size) noexcept override;
+  QPixmap requestPixmap(const QString& id, 
+                        QSize* size, 
+                        const QSize& requested_size) noexcept override;
 
   //! Set image
   void setImage(const QImage* image) noexcept;

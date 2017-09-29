@@ -12,6 +12,7 @@
 
 // Standard C++ library
 #include <cstddef>
+#include <memory>
 #include <vector>
 // Zisc
 #include "zisc/algorithm.hpp"
@@ -20,6 +21,12 @@
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
+
+namespace zisc {
+
+class MemoryPool;
+
+} // namespace zisc
 
 namespace nanairo {
 
@@ -67,10 +74,10 @@ class SurfaceModel
       const IntersectionInfo& info,
       const WavelengthSamples& wavelengths,
       Sampler& sampler,
-      MemoryPool& memory_pool) const noexcept = 0;
+      zisc::MemoryPool& memory_pool) const noexcept = 0;
 
   //! Make a surface scattering model
-  static UniquePointer<SurfaceModel> makeSurface(
+  static std::unique_ptr<SurfaceModel> makeSurface(
       const SettingNodeBase* settings,
       const std::vector<const TextureModel*>& texture_list) noexcept;
 

@@ -14,7 +14,7 @@
 // Standard C++ library
 #include <utility>
 // Zisc
-#include "zisc/aligned_memory_pool.hpp"
+#include "zisc/memory_pool.hpp"
 // Nanairo
 #include "film.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -69,10 +69,11 @@ auto CameraModel::makeSensor(
     const uint x,
     const uint y,
     const WavelengthSamples& /* wavelengths */,
-    MemoryPool& memory_pool) const noexcept -> ShaderPointer
+    zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
-  auto sensor = memory_pool.allocate<Sensor>(this, x, y);
-  return ShaderPointer{sensor};
+  auto chunk = memory_pool.allocate<Sensor>();
+  auto ptr = makeUnique<Sensor>(chunk, this, x, y);
+  return ptr;
 }
 
 /*!

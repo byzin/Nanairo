@@ -12,6 +12,7 @@
 
 // Standard C++ library
 #include <cstddef>
+#include <memory>
 #include <vector>
 #include <tuple>
 #include <utility>
@@ -24,7 +25,6 @@
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_point.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -66,7 +66,7 @@ class Shape
   virtual Float getTraversalCost() const noexcept = 0;
 
   //! Make geometries
-  static std::vector<UniquePointer<Shape>> makeShape(
+  static std::vector<std::unique_ptr<Shape>> makeShape(
       const SettingNodeBase* settings) noexcept;
 
   //! Return the surface area of the shape

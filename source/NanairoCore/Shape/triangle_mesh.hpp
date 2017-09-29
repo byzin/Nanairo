@@ -12,6 +12,7 @@
 
 // Standard C++ library
 #include <cstddef>
+#include <memory>
 #include <vector>
 // Nanairo
 #include "shape.hpp"
@@ -19,7 +20,6 @@
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -48,16 +48,16 @@ class TriangleMesh : public Shape
 {
  public:
   //! Make meshes
-  static std::vector<UniquePointer<Shape>> makeMeshes(
+  static std::vector<std::unique_ptr<Shape>> makeMeshes(
       const SettingNodeBase* settings) noexcept;
 
   //! Make a smoothed mesh
-  static UniquePointer<Shape> makeSmoothedMesh(const Point3& vertex1,
-                                               const Point3& vertex2,
-                                               const Point3& vertex3,
-                                               const Vector3& normal1,
-                                               const Vector3& normal2,
-                                               const Vector3& normal3) noexcept;
+  static std::unique_ptr<Shape> makeSmoothedMesh(const Point3& vertex1,
+                                                 const Point3& vertex2,
+                                                 const Point3& vertex3,
+                                                 const Vector3& normal1,
+                                                 const Vector3& normal2,
+                                                 const Vector3& normal3) noexcept;
 
   //! Set vertex texture coordinate
   void setTextureCoordinate(const Point2& texture_coordinate1,

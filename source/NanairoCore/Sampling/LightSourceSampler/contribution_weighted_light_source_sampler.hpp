@@ -26,6 +26,13 @@
 #include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/DataStructure/photon_map.hpp"
 
+namespace zisc {
+
+// Forward declaration
+class MemoryPool;
+
+} // namespace zisc
+
 //! \addtogroup Core
 //! \{
 
@@ -87,7 +94,7 @@ class ContributionWeightedLightSourceSampler : public LightSourceSampler
   Photon generatePhoton(const WavelengthSamples& wavelengths,
                         const Object& light_source,
                         Sampler& sampler,
-                        MemoryPool& memory_pool) const noexcept;
+                        zisc::MemoryPool& memory_pool) const noexcept;
 
   //! Return the index by the st coordinate
   uint getIndex(const uint split_level, const Point2& st) const noexcept;

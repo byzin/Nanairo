@@ -12,13 +12,13 @@
 
 // Standard C+ library
 #include <cstddef>
+#include <memory>
 #include <vector>
 // Zisc
 #include "zisc/algorithm.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -63,7 +63,7 @@ class TextureModel
   virtual Float grayScaleValue(const Point2& uv) const noexcept = 0;
 
   //! Make a texture
-  static UniquePointer<TextureModel> makeTexture(
+  static std::unique_ptr<TextureModel> makeTexture(
       const System& system,
       const SettingNodeBase* settings) noexcept;
 

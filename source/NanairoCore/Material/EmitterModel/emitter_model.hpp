@@ -12,6 +12,7 @@
 
 // Standard C++ library
 #include <cstddef>
+#include <memory>
 #include <vector>
 // Zisc
 #include "zisc/algorithm.hpp"
@@ -19,6 +20,13 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
+
+namespace zisc {
+
+// Forward declaration
+class MemoryPool;
+
+} // namespace zisc
 
 namespace nanairo {
 
@@ -59,14 +67,14 @@ class EmitterModel
 
 
   //! Make a emitter model
-  static UniquePointer<EmitterModel> makeEmitter(
+  static std::unique_ptr<EmitterModel> makeEmitter(
       const SettingNodeBase* settings,
       const std::vector<const TextureModel*>& texture_list) noexcept;
 
   //! Make a light shader model
   virtual ShaderPointer makeLight(const Point2& texture_coordinate,
                                   const WavelengthSamples& wavelengths,
-                                  MemoryPool& memory_pool) const noexcept = 0;
+                                  zisc::MemoryPool& memory_pool) const noexcept = 0;
 
   //! Return the radiant exitance
   Float radiantExitance() const noexcept;

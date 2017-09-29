@@ -21,6 +21,13 @@
 #include "NanairoCore/Sampling/LightSourceSampler/power_weighted_light_source_sampler.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 
+namespace zisc {
+
+// Forward declaration
+class MemoryPool;
+
+} // namespace zisc
+
 namespace nanairo {
 
 // Forward declaration
@@ -82,7 +89,7 @@ class ProbabilisticPpm : public RenderingMethod
                               const IntersectionInfo& intersection,
                               const Spectra& camera_contribution,
                               const Spectra& ray_weight,
-                              MemoryPool& memory_pool,
+                              zisc::MemoryPool& memory_pool,
                               Spectra* contribution) const noexcept;
 
   //! Return the expected max reflection count
@@ -91,14 +98,14 @@ class ProbabilisticPpm : public RenderingMethod
   //! Generate a photon
   Photon generatePhoton(Spectra* light_contribution,
                         Sampler& sampler,
-                        MemoryPool& memory_pool) const noexcept;
+                        zisc::MemoryPool& memory_pool) const noexcept;
 
   //! Generate a camera ray
   Ray generateRay(const CameraModel& camera,
                   const uint x,
                   const uint y,
                   Sampler& sampler,
-                  MemoryPool& memory_pool,
+                  zisc::MemoryPool& memory_pool,
                   Spectra* weight) const noexcept;
 
   //! Initialize

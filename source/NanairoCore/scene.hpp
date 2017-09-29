@@ -12,8 +12,8 @@
 
 // Standard C++ library
 #include <cstddef>
+#include <memory>
 // Nanairo
-#include "Utility/unique_pointer.hpp"
 #include "Setting/setting_node_base.hpp"
 
 namespace nanairo {
@@ -62,9 +62,9 @@ class Scene
   void initializeCamera(System& system, const SettingNodeBase* settings) noexcept;
 
 
-  UniquePointer<CameraModel> camera_;
-  UniquePointer<Film> film_;
-  UniquePointer<World> world_;
+  std::unique_ptr<CameraModel> camera_;
+  std::unique_ptr<Film> film_;
+  std::unique_ptr<World> world_;
 };
 
 //! \} Core

@@ -10,6 +10,16 @@
 #ifndef NANAIRO_UNIQUE_POINTER_HPP
 #define NANAIRO_UNIQUE_POINTER_HPP
 
+// Zisc
+#include "zisc/type_traits.hpp"
+
+namespace zisc {
+
+// Forward declaration
+class MemoryChunk;
+
+} // namespace zisc
+
 namespace nanairo {
 
 //! \addtogroup Core
@@ -27,10 +37,15 @@ class UniquePointer
   UniquePointer() noexcept;
 
   //! Create a unique pointer
-  UniquePointer(Type* pointer) noexcept;
+  UniquePointer(zisc::MemoryChunk* chunk) noexcept;
 
-  //! Receive the pointer from an another unique pointer
-  UniquePointer(UniquePointer&& pointer) noexcept;
+  //! Swap data for other data
+  UniquePointer(UniquePointer&& other) noexcept;
+
+  //! Move a data from other
+  template <typename Super>
+  UniquePointer(UniquePointer<Super>&& other,
+                zisc::EnableIfBaseOf<Type, Super> = zisc::kEnabler) noexcept;
 
   //! Delete the managed object
   ~UniquePointer() noexcept;
@@ -49,10 +64,10 @@ class UniquePointer
   const Type* operator->() const noexcept;
 
   //! It is same as calling reset(pointer)
-  UniquePointer& operator=(Type* pointer) noexcept;
+  UniquePointer& operator=(zisc::MemoryChunk* chunk) noexcept;
 
   //! Move the pointer
-  UniquePointer& operator=(UniquePointer&& pointer) noexcept;
+  UniquePointer& operator=(UniquePointer&& other) noexcept;
 
 
   //! Return a pointer to the managed object 
@@ -61,22 +76,38 @@ class UniquePointer
   //! Return a pointer to the managed object 
   const Type* get() const noexcept;
 
+  //! Return the memory chunk
+  zisc::MemoryChunk* getChunk() noexcept;
+
+  //! Return the memory chunk
+  const zisc::MemoryChunk* getChunk() const noexcept;
+
   //! Check if there is not associated managed object
   bool isNull() const noexcept;
 
+  //! Release the data owner
+  zisc::MemoryChunk* release() noexcept;
+
   //! Replace the managed object
-  void reset(Type* pointer = nullptr) noexcept;
+  void reset(zisc::MemoryChunk* chunk = nullptr) noexcept;
 
   //! Swap the managed objects with another
-  void swap(UniquePointer& pointer) noexcept;
+  void swap(UniquePointer& other) noexcept;
 
  private:
   Type* pointer_;
+  zisc::MemoryChunk* chunk_;
 };
 
 //! Compare the pointer address
 template <typename Type>
-bool operator<(const UniquePointer<Type>& a, const UniquePointer<Type>& b) noexcept;
+bool operator<(const UniquePointer<Type>& lhs,
+               const UniquePointer<Type>& rhs) noexcept;
+
+//! Make a unique pointer
+template <typename Type, typename ...Types>
+UniquePointer<Type> makeUnique(zisc::MemoryChunk* chunk,
+                               Types&&... arguments) noexcept;
 
 //! \} Core
 

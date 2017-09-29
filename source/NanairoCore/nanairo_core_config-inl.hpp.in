@@ -12,6 +12,7 @@
 
 #include "NanairoCore/nanairo_core_config.hpp"
 // Standard C++ library
+#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <type_traits>
@@ -61,6 +62,15 @@ constexpr uint CoreConfig::imageWidthMin() noexcept
 {
   constexpr uint image_width_min = 320;
   return image_width_min;
+}
+
+/*!
+  */
+inline
+constexpr std::size_t CoreConfig::memoryPoolSize() noexcept
+{
+  constexpr std::size_t pool_size = @NANAIRO_MEMORY_POOL_SIZE@;
+  return pool_size;
 }
 
 /*!

@@ -13,6 +13,7 @@
 // Standard C++ library
 #include <functional>
 #include <limits>
+#include <memory>
 // Zisc
 #include "zisc/algorithm.hpp"
 // Nanairo
@@ -74,7 +75,7 @@ class RenderingMethod
   void initMethod() noexcept;
 
   //! Make rendering method
-  static UniquePointer<RenderingMethod> makeMethod(
+  static std::unique_ptr<RenderingMethod> makeMethod(
       System& system,
       const SettingNodeBase* settings,
       const Scene& scene) noexcept;

@@ -16,10 +16,10 @@
 #include <tuple>
 #include <utility>
 // Zisc
-#include "zisc/aligned_memory_pool.hpp"
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
+#include "zisc/memory_pool.hpp"
 #include "zisc/thread_pool.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -144,7 +144,7 @@ void ProbabilisticPpm::evalImplicitConnection(
     const IntersectionInfo& intersection,
     const Spectra& camera_contribution,
     const Spectra& ray_weight,
-    MemoryPool& memory_pool,
+    zisc::MemoryPool& memory_pool,
     Spectra* contribution) const noexcept
 {
   const auto object = intersection.object();
@@ -187,7 +187,7 @@ inline
 auto ProbabilisticPpm::generatePhoton(
     Spectra* light_contribution,
     Sampler& sampler,
-    MemoryPool& memory_pool) const noexcept -> Photon
+    zisc::MemoryPool& memory_pool) const noexcept -> Photon
 {
   const auto& wavelengths = light_contribution->wavelengths();
   // Sample a light point
@@ -235,7 +235,7 @@ Ray ProbabilisticPpm::generateRay(
     const uint x,
     const uint y,
     Sampler& sampler,
-    MemoryPool& memory_pool,
+    zisc::MemoryPool& memory_pool,
     Spectra* weight) const noexcept
 {
   const auto& wavelengths = weight->wavelengths();

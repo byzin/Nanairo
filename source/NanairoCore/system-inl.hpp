@@ -12,19 +12,19 @@
 
 #include "system.hpp"
 // Standard C++ library
+#include <memory>
 #include <tuple>
 #include <type_traits>
 #include <vector>
 // Zisc
-#include "zisc/aligned_memory_pool.hpp"
 #include "zisc/error.hpp"
+#include "zisc/memory_pool.hpp"
 #include "zisc/thread_pool.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "Color/color_space.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "Sampling/sampler.hpp"
-#include "Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -61,7 +61,7 @@ std::tuple<Integer, Integer> System::calcThreadRange(
   No detailed.
   */
 inline
-MemoryPool& System::globalMemoryPool() noexcept
+zisc::MemoryPool& System::globalMemoryPool() noexcept
 {
   return memory_pool_list_[0];
 }
@@ -121,7 +121,7 @@ const zisc::ThreadPool& System::threadPool() const noexcept
   No detailed.
   */
 inline
-MemoryPool& System::threadMemoryPool(const uint thread_number) noexcept
+zisc::MemoryPool& System::threadMemoryPool(const uint thread_number) noexcept
 {
   return memory_pool_list_[thread_number + 1];
 }

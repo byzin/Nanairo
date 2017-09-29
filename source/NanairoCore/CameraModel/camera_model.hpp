@@ -11,9 +11,11 @@
 #define NANAIRO_CAMERA_MODEL_HPP
 
 // Standard C++ library
+#include <memory>
 #include <tuple>
 // Zisc
 #include "zisc/algorithm.hpp"
+#include "zisc/memory_pool.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Geometry/point.hpp"
@@ -90,7 +92,7 @@ class CameraModel
       const uint x,
       const uint y,
       const WavelengthSamples& wavelengths,
-      MemoryPool& memory_pool) const noexcept;
+      zisc::MemoryPool& memory_pool) const noexcept;
 
   //! Return the camera normal
   const Vector3& normal() const noexcept;
@@ -105,7 +107,8 @@ class CameraModel
   const Vector2& jittering() const noexcept;
 
   //! Make a camera
-  static UniquePointer<CameraModel> makeModel(const SettingNodeBase* settings) noexcept;
+  static std::unique_ptr<CameraModel> makeModel(const SettingNodeBase* settings)
+      noexcept;
 
   //! Return the camera position
   virtual const Point3& position() const noexcept = 0;

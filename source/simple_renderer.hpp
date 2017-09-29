@@ -24,7 +24,6 @@
 #include "NanairoCore/RenderingMethod/rendering_method.hpp"
 #include "NanairoCore/Sampling/wavelength_sampler.hpp"
 #include "NanairoCore/ToneMappingOperator/tone_mapping_operator.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -210,10 +209,10 @@ class SimpleRenderer
 
   std::unique_ptr<HdrImage> hdr_image_;
   std::unique_ptr<LdrImage> ldr_image_;
-  UniquePointer<RenderingMethod> rendering_method_;
+  std::unique_ptr<RenderingMethod> rendering_method_;
   std::unique_ptr<Scene> scene_;
   std::unique_ptr<System> system_;
-  UniquePointer<ToneMappingOperator> tone_mapping_operator_;
+  std::unique_ptr<ToneMappingOperator> tone_mapping_operator_;
   std::unique_ptr<WavelengthSampler> wavelength_sampler_;
   Clock::duration time_to_finish_;
   Clock::duration time_interval_to_save_image_;

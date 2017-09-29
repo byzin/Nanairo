@@ -11,8 +11,8 @@
 // Standard C++ library
 #include <vector>
 // Zisc
-#include "zisc/aligned_memory_pool.hpp"
 #include "zisc/error.hpp"
+#include "zisc/memory_pool.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "emitter_model.hpp"
@@ -46,14 +46,15 @@ NonDirectionalEmitter::NonDirectionalEmitter(
 auto NonDirectionalEmitter::makeLight(
     const Point2& texture_coordinate,
     const WavelengthSamples& wavelengths,
-    MemoryPool& memory_pool) const noexcept -> ShaderPointer
+    zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
   const auto color = color_->emissiveValue(texture_coordinate, wavelengths);
   const auto radiant_exitance = color * radiantExitance();
 
   using Light = NonDirectionalLight;
-  auto light = memory_pool.allocate<Light>(radiant_exitance);
-  return ShaderPointer{light};
+  auto chunk = memory_pool.allocate<Light>();
+  auto ptr = makeUnique<Light>(chunk, radiant_exitance);
+  return ptr;
 }
 
 /*!

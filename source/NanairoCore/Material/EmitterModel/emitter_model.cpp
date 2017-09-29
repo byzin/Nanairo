@@ -9,10 +9,12 @@
 
 #include "emitter_model.hpp"
 // Standard C++ library
+#include <memory>
 #include <vector>
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
+#include "zisc/memory_pool.hpp"
 // Nanairo
 #include "non_directional_emitter.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -45,19 +47,16 @@ EmitterModel::EmitterModel(const SettingNodeBase* settings) noexcept
   \details
   No detailed.
   */
-UniquePointer<EmitterModel> EmitterModel::makeEmitter(
+std::unique_ptr<EmitterModel> EmitterModel::makeEmitter(
     const SettingNodeBase* settings,
     const std::vector<const TextureModel*>& texture_list) noexcept
 {
-  ZISC_ASSERT(settings != nullptr, "The setting node is null.");
-  ZISC_ASSERT(settings->type() == SettingNodeType::kEmitter,
-              "Wrong setting node is specified.");
-  const auto emitter_settings = zisc::cast<const EmitterSettingNode*>(settings);
+  const auto emitter_settings = castNode<EmitterSettingNode>(settings);
 
-  EmitterModel* emitter = nullptr;
+  std::unique_ptr<EmitterModel> emitter;
   switch (emitter_settings->emitterType()) {
    case EmitterType::kNonDirectional: {
-    emitter = new NonDirectionalEmitter{settings, texture_list};
+    emitter = std::make_unique<NonDirectionalEmitter>(settings, texture_list);
     break;
    }
    default: {
@@ -65,7 +64,7 @@ UniquePointer<EmitterModel> EmitterModel::makeEmitter(
     break;
    }
   }
-  return UniquePointer<EmitterModel>{emitter};
+  return emitter;
 }
 
 /*!

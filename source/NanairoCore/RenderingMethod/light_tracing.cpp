@@ -15,10 +15,10 @@
 #include <tuple>
 #include <utility>
 // Zisc
-#include "zisc/aligned_memory_pool.hpp"
 #include "zisc/arithmetic_array.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
+#include "zisc/memory_pool.hpp"
 #include "zisc/thread_pool.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -85,7 +85,7 @@ void LightTracing::evalExplicitConnection(
     const Spectra& light_contribution,
     const Spectra& ray_weight,
     CameraModel& camera,
-    MemoryPool& memory_pool) noexcept
+    zisc::MemoryPool& memory_pool) noexcept
 {
   if (bxdf->type() == ShaderType::Specular)
     return;
@@ -154,7 +154,7 @@ Ray LightTracing::generateRay(const World& world,
                               const Spectra& ray_weight,
                               CameraModel& camera,
                               Sampler& sampler,
-                              MemoryPool& memory_pool) noexcept
+                              zisc::MemoryPool& memory_pool) noexcept
 {
   const auto& wavelengths = light_contribution->wavelengths();
   // Sample a light point

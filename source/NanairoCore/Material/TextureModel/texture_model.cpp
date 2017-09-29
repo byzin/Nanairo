@@ -8,6 +8,8 @@
   */
 
 #include "texture_model.hpp"
+// Standard C++ library
+#include <memory>
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
@@ -21,7 +23,6 @@
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/texture_setting_node.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -35,28 +36,28 @@ TextureModel::~TextureModel() noexcept
   \details
   No detailed.
   */
-UniquePointer<TextureModel> TextureModel::makeTexture(
+std::unique_ptr<TextureModel> TextureModel::makeTexture(
     const System& system,
     const SettingNodeBase* settings) noexcept
 {
   const auto texture_settings = castNode<TextureSettingNode>(settings);
 
-  TextureModel* texture = nullptr;
+  std::unique_ptr<TextureModel> texture;
   switch (texture_settings->textureType()) {
     case TextureType::kValue: {
-      texture = new ValueTexture{system, settings};
+      texture = std::make_unique<ValueTexture>(system, settings);
       break;
     }
     case TextureType::kUnicolor: {
-      texture = new UnicolorTexture{system, settings};
+      texture = std::make_unique<UnicolorTexture>(system, settings);
       break;
     }
     case TextureType::kCheckerboard: {
-      texture = new CheckerboardTexture{system, settings};
+      texture = std::make_unique<CheckerboardTexture>(system, settings);
       break;
     }
     case TextureType::kImage: {
-      texture = new ImageTexture{system, settings};
+      texture = std::make_unique<ImageTexture>(system, settings);
       break;
     }
     default: {
@@ -64,7 +65,7 @@ UniquePointer<TextureModel> TextureModel::makeTexture(
       break;
     }
   }
-  return UniquePointer<TextureModel>{texture};
+  return texture;
 }
 
 } // namespace nanairo

@@ -19,6 +19,13 @@
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Sampling/LightSourceSampler/power_weighted_light_source_sampler.hpp"
 
+namespace zisc {
+
+// Forward declaration
+class MemoryPool;
+
+} // namespace zisc
+
 namespace nanairo {
 
 // Forward declaration
@@ -75,7 +82,7 @@ class LightTracing : public RenderingMethod
                               const Spectra& light_contribution,
                               const Spectra& ray_weight,
                               CameraModel& camera,
-                              MemoryPool& memory_pool) noexcept;
+                              zisc::MemoryPool& memory_pool) noexcept;
 
   //! Generate a light ray
   Ray generateRay(const World& world,
@@ -83,7 +90,7 @@ class LightTracing : public RenderingMethod
                   const Spectra& ray_weight,
                   CameraModel& camera,
                   Sampler& sampler,
-                  MemoryPool& memory_pool) noexcept;
+                  zisc::MemoryPool& memory_pool) noexcept;
 
   //! Initialize
   void initialize(const System& system,

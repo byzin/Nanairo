@@ -18,6 +18,13 @@
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Sampling/LightSourceSampler/light_source_sampler.hpp"
 
+namespace zisc {
+
+// Forward declaration
+class MemoryPool;
+
+} // namespace zisc
+
 namespace nanairo {
 
 // Forward declaration
@@ -68,7 +75,7 @@ class PathTracing : public RenderingMethod
                               const Spectra& camera_contribution,
                               const Spectra& ray_weight,
                               Sampler& sampler,
-                              MemoryPool& memory_pool,
+                              zisc::MemoryPool& memory_pool,
                               Spectra* contribution) const noexcept;
 
   //! Evaluate the implicit connection
@@ -79,7 +86,7 @@ class PathTracing : public RenderingMethod
                               const Spectra& camera_contribution,
                               const Spectra& ray_weight,
                               const bool mis,
-                              MemoryPool& memory_pool,
+                              zisc::MemoryPool& memory_pool,
                               Spectra* contribution) const noexcept;
 
   //! Check if the explicit connection is enabled
@@ -96,7 +103,7 @@ class PathTracing : public RenderingMethod
                   const uint x,
                   const uint y,
                   Sampler& sampler,
-                  MemoryPool& memory_pool,
+                  zisc::MemoryPool& memory_pool,
                   Spectra* ray_weight,
                   Float* inverse_direction_pdf) const noexcept;
 

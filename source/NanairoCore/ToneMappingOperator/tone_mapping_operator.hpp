@@ -10,12 +10,13 @@
 #ifndef NANAIRO_TONE_MAPPING_OPERATOR_HPP
 #define NANAIRO_TONE_MAPPING_OPERATOR_HPP
 
+// Standard C++ library
+#include <memory>
 // Zisc
 #include "zisc/algorithm.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -56,7 +57,7 @@ class ToneMappingOperator
   Float inverseGamma() const noexcept;
 
   //! Make tonemapping method
-  static UniquePointer<ToneMappingOperator> makeOperator(
+  static std::unique_ptr<ToneMappingOperator> makeOperator(
       const System& system,
       const SettingNodeBase* settings) noexcept;
 

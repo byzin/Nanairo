@@ -10,6 +10,7 @@
 #include "rendered_image_provider.hpp"
 // Qt
 #include <QImage>
+#include <QPixmap>
 #include <QSize>
 #include <QString>
 #include <QQuickImageProvider>
@@ -21,7 +22,7 @@ namespace nanairo {
   No detailed.
   */
 RenderedImageProvider::RenderedImageProvider() noexcept :
-    QQuickImageProvider(QQuickImageProvider::Image),
+    QQuickImageProvider(QQuickImageProvider::Pixmap),
     image_{nullptr}
 {
 }
@@ -30,17 +31,15 @@ RenderedImageProvider::RenderedImageProvider() noexcept :
   \details
   No detailed.
   */
-QImage RenderedImageProvider::requestImage(const QString& /* id */,
-                                           QSize* size,
-                                           const QSize& /* requested_size */) noexcept
+QPixmap RenderedImageProvider::requestPixmap(const QString& /* id */,
+                                             QSize* size,
+                                             const QSize& requested_size) noexcept
 {
-  if (image_ == nullptr) {
-    QImage image{QSize{640, 480}, QImage::Format_RGB32};
-    *size = image.size();
-    return image;
-  }
-  *size = image_->size();
-  return *image_;
+  const QPixmap image = (image_ != nullptr)
+      ? QPixmap::fromImage(*image_)
+      : QPixmap{(requested_size != QSize{-1, -1}) ? requested_size : QSize{32, 32}};
+  *size = image.size();
+  return image;
 }
 
 } // namespace nanairo

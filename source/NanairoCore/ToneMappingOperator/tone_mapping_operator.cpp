@@ -9,6 +9,7 @@
 
 #include "tone_mapping_operator.hpp"
 // Standard C++ library
+#include <memory>
 #include <vector>
 // Zisc
 #include "zisc/error.hpp"
@@ -30,7 +31,6 @@
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Setting/system_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -126,31 +126,31 @@ void ToneMappingOperator::initialize(const System& system,
   \details
   No detailed.
   */
-UniquePointer<ToneMappingOperator> ToneMappingOperator::makeOperator(
+std::unique_ptr<ToneMappingOperator> ToneMappingOperator::makeOperator(
     const System& system,
     const SettingNodeBase* settings) noexcept
 {
   const auto system_settings = castNode<SystemSettingNode>(settings);
 
-  ToneMappingOperator* method = nullptr;
+  std::unique_ptr<ToneMappingOperator> method;
   switch (system_settings->toneMappingType()) {
    case ToneMappingType::kReinhard: {
-    method = new Reinhard{system, settings};
+    method = std::make_unique<Reinhard>(system, settings);
     break;
    }
    case ToneMappingType::kFilmic: {
-    method = new Filmic{system, settings};
+    method = std::make_unique<Filmic>(system, settings);
     break;
    }
    case ToneMappingType::kUncharted2Filmic: {
-    method = new Uncharted2Filmic{system, settings};
+    method = std::make_unique<Uncharted2Filmic>(system, settings);
     break;
    }
    default: {
     zisc::raiseError("ToneMappingError: Unsupprted type is specified.");
    }
   }
-  return UniquePointer<ToneMappingOperator>{method};
+  return method;
 }
 
 } // namespace nanairo

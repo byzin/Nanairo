@@ -13,9 +13,9 @@
 #include <utility>
 #include <vector>
 // Zisc
-#include "zisc/aligned_memory_pool.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
+#include "zisc/memory_pool.hpp"
 #include "zisc/utility.hpp"
 // Reflect
 #include "fresnel.hpp"
@@ -27,6 +27,7 @@
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/surface_setting_node.hpp"
+#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -49,7 +50,7 @@ auto RoughConductorSurface::makeBxdf(
     const IntersectionInfo& info,
     const WavelengthSamples& wavelengths,
     Sampler& /* sampler */,
-    MemoryPool& memory_pool) const noexcept -> ShaderPointer
+    zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
   const auto& uv = info.textureCoordinate();
 
@@ -67,8 +68,9 @@ auto RoughConductorSurface::makeBxdf(
 
   // Make GGX BRDF
   using Brdf = GgxConductorBrdf;
-  auto brdf = memory_pool.allocate<Brdf>(roughness, n, eta);
-  return ShaderPointer{brdf};
+  auto chunk = memory_pool.allocate<Brdf>();
+  auto ptr = makeUnique<Brdf>(chunk, roughness, n, eta);
+  return ptr;
 }
 
 /*!

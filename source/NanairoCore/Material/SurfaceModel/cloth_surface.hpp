@@ -19,6 +19,13 @@
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 
+namespace zisc {
+
+// Forward declaration
+class MemoryPool;
+
+} // namespace zisc
+
 namespace nanairo {
 
 // Forward declaration
@@ -64,7 +71,7 @@ class ClothSurface : public SurfaceModel
       const IntersectionInfo& info,
       const WavelengthSamples& wavelengths,
       Sampler& sampler,
-      MemoryPool& memory_pool) const noexcept override;
+      zisc::MemoryPool& memory_pool) const noexcept override;
 
   //! Return the bandwidth parameter
   Float rho() const noexcept;

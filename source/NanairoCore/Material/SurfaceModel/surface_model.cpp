@@ -10,6 +10,7 @@
 #include "surface_model.hpp"
 // Standard C++ library
 #include <cstddef>
+#include <memory>
 #include <vector>
 // Zisc
 #include "zisc/algorithm.hpp"
@@ -44,40 +45,40 @@ SurfaceModel::~SurfaceModel() noexcept
   \details
   No detailed.
   */
-UniquePointer<SurfaceModel> SurfaceModel::makeSurface(
+std::unique_ptr<SurfaceModel> SurfaceModel::makeSurface(
     const SettingNodeBase* settings,
     const std::vector<const TextureModel*>& texture_list) noexcept
 {
   const auto surface_settings = castNode<SurfaceSettingNode>(settings);
 
-  SurfaceModel* surface = nullptr;
+  std::unique_ptr<SurfaceModel> surface;
   switch (surface_settings->surfaceType()) {
    case SurfaceType::kSmoothDiffuse: {
-    surface = new SmoothDiffuseSurface{settings, texture_list};
+    surface = std::make_unique<SmoothDiffuseSurface>(settings, texture_list);
     break;
    }
    case SurfaceType::kSmoothDielectric: {
-    surface = new SmoothDielectricSurface{settings, texture_list};
+    surface = std::make_unique<SmoothDielectricSurface>(settings, texture_list);
     break;
    }
    case SurfaceType::kSmoothConductor: {
-    surface = new SmoothConductorSurface{settings, texture_list};
+    surface = std::make_unique<SmoothConductorSurface>(settings, texture_list);
     break;
    }
    case SurfaceType::kRoughDielectric: {
-    surface = new RoughDielectricSurface{settings, texture_list};
+    surface = std::make_unique<RoughDielectricSurface>(settings, texture_list);
     break;
    }
    case SurfaceType::kRoughConductor: {
-    surface = new RoughConductorSurface{settings, texture_list};
+    surface = std::make_unique<RoughConductorSurface>(settings, texture_list);
     break;
    }
    case SurfaceType::kLayeredDiffuse: {
-    surface = new LayeredDiffuseSurface{settings, texture_list};
+    surface = std::make_unique<LayeredDiffuseSurface>(settings, texture_list);
     break;
    }
    case SurfaceType::kCloth: {
-    surface = new ClothSurface{settings, texture_list};
+    surface = std::make_unique<ClothSurface>(settings, texture_list);
     break;
    }
    default: {
@@ -85,7 +86,7 @@ UniquePointer<SurfaceModel> SurfaceModel::makeSurface(
     break;
    }
   }
-  return UniquePointer<SurfaceModel>{surface};
+  return surface;
 }
 
 } // namespace nanairo

@@ -13,12 +13,14 @@
 #include <limits>
 #include <memory>
 #include <tuple>
+#include <utility>
 #include <vector>
 // Zisc
 #include "zisc/cumulative_distribution_function.hpp"
 #include "zisc/compensated_summation.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
+#include "zisc/memory_pool.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "light_source_sampler.hpp"
@@ -149,7 +151,7 @@ auto ContributionWeightedLightSourceSampler::generatePhoton(
     const WavelengthSamples& wavelengths,
     const Object& light_source,
     Sampler& sampler,
-    MemoryPool& memory_pool) const noexcept -> Photon
+    zisc::MemoryPool& memory_pool) const noexcept -> Photon
 {
   // Sample a point
   const auto sampled_point = light_source.shape().samplePoint(sampler);
@@ -528,10 +530,8 @@ auto ContributionWeightedLightSourceSampler::makeLightSourceCdf(
     pdf_list[i] = light_source_reference.weight();
   }
 
-  return std::make_unique<LightSourceCdf>(ref_pointer_list.begin(),
-                                          ref_pointer_list.end(),
-                                          pdf_list.begin(),
-                                          pdf_list.end());
+  return std::make_unique<LightSourceCdf>(std::move(ref_pointer_list),
+                                          std::move(pdf_list));
 }
 
 /*!

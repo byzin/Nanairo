@@ -11,6 +11,7 @@
 #define NANAIRO_NANAIRO_CORE_CONFIG_HPP
 
 // Standard C++ library
+#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <type_traits>
@@ -23,7 +24,6 @@ namespace zisc {
 template <typename, uint> class Point;
 template <typename, uint> class Vector;
 template <typename, uint, uint> class Matrix;
-template <uint, uint> class AlignedMemoryPool;
 template <typename, uint> class ArithmeticArray;
 } // namespace zisc
 
@@ -43,11 +43,6 @@ using uint16 = std::uint16_t;
 using uint32 = std::uint32_t;
 using uint64 = std::uint64_t;
 using Float = @NANAIRO_FLOATING_POINT_TYPE@;
-
-// System
-using MemoryPool = zisc::AlignedMemoryPool<
-    @NANAIRO_MEMORY_POOL_SIZE@, // The memory pool size
-    std::alignment_of<void*>::value>; // The memory alignment
 
 // Geometry
 using Vector3 = zisc::Vector<Float, 3>;
@@ -84,14 +79,17 @@ class CoreConfig
   //! Retun the red wavelength
   static constexpr uint16 redWavelength() noexcept;
 
-  //! Return the shortest wavelength
-  static constexpr uint16 shortestWavelength() noexcept;
-
   //! Return the minimum image height resolution
   static constexpr uint imageHeightMin() noexcept;
 
   //! Return the minimum image width resolution
   static constexpr uint imageWidthMin() noexcept;
+
+  //! Return the size of memory pool
+  static constexpr std::size_t memoryPoolSize() noexcept;
+
+  //! Return the shortest wavelength
+  static constexpr uint16 shortestWavelength() noexcept;
 
   //! Return the longest wavelength
   static constexpr uint16 longestWavelength() noexcept;
@@ -131,7 +129,6 @@ class CoreConfig
 
   //! Return the patch number of the version
   static constexpr int versionPatch() noexcept;
-
 };
 
 //! \} Core

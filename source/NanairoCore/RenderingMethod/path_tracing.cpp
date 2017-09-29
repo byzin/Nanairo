@@ -14,10 +14,10 @@
 #include <tuple>
 #include <utility>
 // Zisc
-#include "zisc/aligned_memory_pool.hpp"
 #include "zisc/arithmetic_array.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
+#include "zisc/memory_pool.hpp"
 #include "zisc/thread_pool.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -83,7 +83,7 @@ void PathTracing::evalExplicitConnection(
     const Spectra& camera_contribution,
     const Spectra& ray_weight,
     Sampler& sampler,
-    MemoryPool& memory_pool,
+    zisc::MemoryPool& memory_pool,
     Spectra* contribution) const noexcept
 {
   if (!explicitConnectionIsEnabled())
@@ -172,7 +172,7 @@ void PathTracing::evalImplicitConnection(
     const Spectra& camera_contribution,
     const Spectra& ray_weight,
     const bool mis,
-    MemoryPool& memory_pool,
+    zisc::MemoryPool& memory_pool,
     Spectra* contribution) const noexcept
 {
   if (!implicitConnectionIsEnabled())
@@ -243,7 +243,7 @@ Ray PathTracing::generateRay(const CameraModel& camera,
                              const uint x,
                              const uint y,
                              Sampler& sampler,
-                             MemoryPool& memory_pool,
+                             zisc::MemoryPool& memory_pool,
                              Spectra* weight,
                              Float* inverse_direction_pdf) const noexcept
 {

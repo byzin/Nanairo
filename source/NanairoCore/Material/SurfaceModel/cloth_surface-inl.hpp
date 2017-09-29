@@ -11,24 +11,8 @@
 #define NANAIRO_CLOTH_SURFACE_INL_HPP
 
 #include "cloth_surface.hpp"
-// Standard C++ library
-#include <tuple>
-// Zisc
-#include "zisc/aligned_memory_pool.hpp"
-#include "zisc/error.hpp"
-#include "zisc/utility.hpp"
 // Nanairo
-#include "fresnel.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Color/spectral_distribution.hpp"
-#include "NanairoCore/Data/intersection_info.hpp"
-#include "NanairoCore/Data/wavelength_samples.hpp"
-#include "NanairoCore/Geometry/vector.hpp"
-#include "NanairoCore/Material/shader_model.hpp"
-#include "NanairoCore/Material/Bxdf/microcylinder_cloth_brdf.hpp"
-#include "NanairoCore/Material/TextureModel/texture_model.hpp"
-#include "NanairoCore/Sampling/sampled_spectra.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 

@@ -9,6 +9,7 @@
 
 #include "film.hpp"
 // Standard C++ library
+#include <memory>
 #include <utility>
 // Zisc
 #include "zisc/error.hpp"
@@ -21,7 +22,6 @@
 #include "NanairoCore/Color/spectra_image.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/camera_setting_node.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -51,11 +51,11 @@ void Film::initialize(const System& system, const SettingNodeBase* /* settings *
   // Initialize buffer
   switch (system.colorMode()) {
    case RenderingColorMode::kRgb: {
-    spectra_buffer_ = new RgbSpectraImage{width, height};
+    spectra_buffer_ = std::make_unique<RgbSpectraImage>(width, height);
     break;
    }
    case RenderingColorMode::kSpectra: {
-    spectra_buffer_ = new SpectraImage{width, height};
+    spectra_buffer_ = std::make_unique<SpectraImage>(width, height);
     break;
    }
    default: {

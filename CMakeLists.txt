@@ -8,6 +8,10 @@
 
 cmake_minimum_required(VERSION 3.4)
 
+function(showSubmoduleWarning submodule_name)
+  message(FATAL_ERROR "Submodule '${submodule_name}' not found, please init submodules.")
+endfunction(showSubmoduleWarning)
+
 # Set project information
 project(Nanairo LANGUAGES C CXX)
 include(${PROJECT_SOURCE_DIR}/cmake/project.cmake)
@@ -20,15 +24,25 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
+set(zisc_path ${CMAKE_SOURCE_DIR}/source/dependencies/zisc)
+set(general_setting_file ${zisc_path}/cmake/general.cmake)
+if(NOT EXISTS ${general_setting_file})
+  showSubmoduleWarning(zisc)
+endif()
+
 # Build configuration
-include(${PROJECT_SOURCE_DIR}/cmake/general.cmake)
+include(${general_setting_file})
 restrictBuildDirectory(${PROJECT_SOURCE_DIR}/build)
 detectEnvironment(environment_definitions)
 # Command option
 include(${PROJECT_SOURCE_DIR}/cmake/option.cmake)
 setCommandOptions()
 #
-include(${PROJECT_SOURCE_DIR}/cmake/compiler.cmake)
+set(compiler_setting_file ${zisc_path}/cmake/compiler.cmake)
+if(NOT EXISTS ${compiler_setting_file})
+  showSubmoduleWarning(zisc)
+endif()
+include(${compiler_setting_file})
 initCompilerOption()
 getCompilerOption(cxx_compiler_flags cxx_linker_flags cxx_definitions)
 
@@ -38,7 +52,11 @@ find_package(Threads REQUIRED)
 # LodePNG
 loadLodepng(lodepng_include_dir lodepng_library)
 # Zisc
-include(${PROJECT_SOURCE_DIR}/source/dependencies/zisc/source/zisc/config.cmake)
+set(zisc_config_file ${zisc_path}/source/zisc/config.cmake)
+if(NOT EXISTS ${zisc_config_file})
+  showSubmoduleWarning(zisc)
+endif()
+include(${zisc_config_file})
 loadZisc(zisc_source_files
          zisc_include_dirs
          zisc_compile_flags
@@ -73,7 +91,7 @@ if(${NANAIRO_BUILD_APP})
 endif()
 
 # Unit tests
-# if(${NANAIRO_BUILD_TESTS})
-#   include(${PROJECT_SOURCE_DIR}/test/config.cmake)
-#   buildUnitTest()
-# endif()
+if(${NANAIRO_BUILD_TESTS})
+  include(${PROJECT_SOURCE_DIR}/test/config.cmake)
+  buildUnitTest()
+endif()

@@ -11,18 +11,18 @@
 #define NANAIRO_SYSTEM_HPP
 
 // Standard C++ library
+#include <memory>
 #include <tuple>
 #include <vector>
 // Zisc
 #include "zisc/algorithm.hpp"
-#include "zisc/aligned_memory_pool.hpp"
+#include "zisc/memory_pool.hpp"
 #include "zisc/thread_pool.hpp"
 // Nanairo
 #include "Color/color_space.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "Sampling/sampler.hpp"
 #include "Setting/setting_node_base.hpp"
-#include "Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -65,7 +65,7 @@ class System
                                                const int thread_id) const noexcept;
 
   //! Return the global memory pool
-  MemoryPool& globalMemoryPool() noexcept;
+  zisc::MemoryPool& globalMemoryPool() noexcept;
 
   //! Return the global sampler
   Sampler& globalSampler() noexcept;
@@ -83,7 +83,7 @@ class System
   const zisc::ThreadPool& threadPool() const noexcept;
 
   //! Return the thread's memory pool
-  MemoryPool& threadMemoryPool(const uint thread_number) noexcept;
+  zisc::MemoryPool& threadMemoryPool(const uint thread_number) noexcept;
 
   //! Return the thread's sampler
   Sampler& threadSampler(const uint thread_number) noexcept;
@@ -113,9 +113,9 @@ class System
 
 
   std::vector<Sampler> sampler_list_;
-  std::vector<MemoryPool> memory_pool_list_;
-  UniquePointer<zisc::ThreadPool> thread_pool_;
-  UniquePointer<XyzColorMatchingFunction> xyz_color_matching_function_;
+  std::vector<zisc::MemoryPool> memory_pool_list_;
+  std::unique_ptr<zisc::ThreadPool> thread_pool_;
+  std::unique_ptr<XyzColorMatchingFunction> xyz_color_matching_function_;
   Float gamma_;
   uint32 image_width_resolution_,
          image_height_resolution_;

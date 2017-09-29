@@ -10,6 +10,7 @@
 #include "shape.hpp"
 // Standard C++ library
 #include <cstddef>
+#include <memory>
 #include <vector>
 #include <utility>
 // Zisc
@@ -55,18 +56,15 @@ void Shape::setSurfaceArea(const Float surface_area) noexcept
   \details
   No detailed.
   */
-std::vector<UniquePointer<Shape>> Shape::makeShape(
+std::vector<std::unique_ptr<Shape>> Shape::makeShape(
     const SettingNodeBase* settings) noexcept
 {
-  ZISC_ASSERT(settings != nullptr, "The setting node is null.");
-  ZISC_ASSERT(settings->type() == SettingNodeType::kSingleObject,
-              "Wrong setting node is specified.");
-  const auto object_settings = zisc::cast<const SingleObjectSettingNode*>(settings);
+  const auto object_settings = castNode<SingleObjectSettingNode>(settings);
 
-  std::vector<UniquePointer<Shape>> shape_list;
+  std::vector<std::unique_ptr<Shape>> shape_list;
   switch (object_settings->shapeType()) {
    case ShapeType::kPlane: {
-    shape_list.emplace_back(new Plane{});
+    shape_list.emplace_back(std::make_unique<Plane>());
     break;
    }
    case ShapeType::kMesh: {

@@ -10,12 +10,13 @@
 #ifndef NANAIRO_FILM_HPP
 #define NANAIRO_FILM_HPP
 
+// Standard C++ library
+#include <memory>
 // Nanairo 
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectra_image_interface.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -66,7 +67,7 @@ class Film
   void initialize(const System& system, const SettingNodeBase* settings) noexcept;
 
 
-  UniquePointer<SpectraImageInterface> spectra_buffer_; //!< The buffer of spectra
+  std::unique_ptr<SpectraImageInterface> spectra_buffer_; //!< The buffer of spectra
   Float inverse_width_,
         inverse_height_;
 };
