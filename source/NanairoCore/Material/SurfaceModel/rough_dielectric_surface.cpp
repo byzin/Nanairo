@@ -66,7 +66,7 @@ auto RoughDielectricSurface::makeBxdf(
   // Make GGX BSDF
   using Bsdf = GgxDielectricBsdf;
   auto chunk = memory_pool.allocate<Bsdf>();
-  auto ptr = makeUnique<Bsdf>(chunk, roughness, n);
+  ShaderPointer ptr = makeUnique<Bsdf>(chunk, roughness, n);
   return ptr;
 }
 

@@ -61,7 +61,7 @@ auto SmoothDielectricSurface::makeBxdf(
 
   using Bsdf = SpecularBsdf;
   auto chunk = memory_pool.allocate<Bsdf>();
-  auto ptr = makeUnique<Bsdf>(chunk, n);
+  ShaderPointer ptr = makeUnique<Bsdf>(chunk, n);
   return ptr;
 }
 

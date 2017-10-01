@@ -72,7 +72,7 @@ auto LayeredDiffuseSurface::makeBxdf(
   // Make a interfaced lambertian BRDF
   using Brdf = InterfacedLambertianBrdf;
   auto chunk = memory_pool.allocate<Brdf>();
-  auto ptr = makeUnique<Brdf>(chunk, k_d, roughness, n, ri, sampler);
+  ShaderPointer ptr = makeUnique<Brdf>(chunk, k_d, roughness, n, ri, sampler);
   return ptr;
 }
 

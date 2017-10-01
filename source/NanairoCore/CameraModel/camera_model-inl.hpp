@@ -72,7 +72,7 @@ auto CameraModel::makeSensor(
     zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
   auto chunk = memory_pool.allocate<Sensor>();
-  auto ptr = makeUnique<Sensor>(chunk, this, x, y);
+  ShaderPointer ptr = makeUnique<Sensor>(chunk, this, x, y);
   return ptr;
 }
 

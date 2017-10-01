@@ -58,7 +58,7 @@ auto ClothSurface::makeBxdf(
   // Make a microcylinder cloth BRDF
   using Brdf = MicrocylinderClothBrdf;
   auto chunk = memory_pool.allocate<Brdf>();
-  auto ptr = makeUnique<Brdf>(chunk, this, k_d);
+  ShaderPointer ptr = makeUnique<Brdf>(chunk, this, k_d);
   return ptr;
 }
 

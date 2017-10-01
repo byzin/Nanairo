@@ -69,7 +69,7 @@ auto RoughConductorSurface::makeBxdf(
   // Make GGX BRDF
   using Brdf = GgxConductorBrdf;
   auto chunk = memory_pool.allocate<Brdf>();
-  auto ptr = makeUnique<Brdf>(chunk, roughness, n, eta);
+  ShaderPointer ptr = makeUnique<Brdf>(chunk, roughness, n, eta);
   return ptr;
 }
 

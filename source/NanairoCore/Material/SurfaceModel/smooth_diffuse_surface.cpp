@@ -54,7 +54,7 @@ auto SmoothDiffuseSurface::makeBxdf(
 
   using Brdf = LambertBrdf;
   auto chunk = memory_pool.allocate<Brdf>();
-  auto ptr = makeUnique<Brdf>(chunk, k_d);
+  ShaderPointer ptr = makeUnique<Brdf>(chunk, k_d);
   return ptr;
 }
 

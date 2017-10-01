@@ -64,7 +64,7 @@ auto SmoothConductorSurface::makeBxdf(
 
   using Brdf = SpecularBrdf;
   auto chunk = memory_pool.allocate<Brdf>();
-  auto ptr = makeUnique<Brdf>(chunk, n, eta);
+  ShaderPointer ptr = makeUnique<Brdf>(chunk, n, eta);
   return ptr;
 }
 

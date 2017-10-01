@@ -86,7 +86,7 @@ std::unique_ptr<Shape> TriangleMesh::makeSmoothedMesh(
     const Vector3& normal2,
     const Vector3& normal3) noexcept
 {
-  std::unique_ptr<TriangleMesh> mesh;
+  std::unique_ptr<Shape> mesh;
 
   const auto c1 = zisc::dot(normal1, normal2);
   const auto c2 = zisc::dot(normal2, normal3);

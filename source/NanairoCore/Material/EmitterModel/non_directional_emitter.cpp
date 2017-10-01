@@ -53,7 +53,7 @@ auto NonDirectionalEmitter::makeLight(
 
   using Light = NonDirectionalLight;
   auto chunk = memory_pool.allocate<Light>();
-  auto ptr = makeUnique<Light>(chunk, radiant_exitance);
+  ShaderPointer ptr = makeUnique<Light>(chunk, radiant_exitance);
   return ptr;
 }
 
