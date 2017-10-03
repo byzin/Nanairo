@@ -60,8 +60,8 @@ function(buildUnitTest)
                                           ${cxx_warning_flags}
                                           ${test_warning_flags})
   target_include_directories(UnitTest PRIVATE ${PROJECT_SOURCE_DIR}/source
-                                              ${PROJECT_BINARY_DIR}/include
-                                              ${zisc_include_dirs})
+                                              ${PROJECT_BINARY_DIR}/include)
+  includeZisc(UnitTest)
   target_include_directories(UnitTest SYSTEM PRIVATE ${qt5_include_dirs}
                                                      ${gtest_include_dir})
   target_link_libraries(UnitTest ${CMAKE_THREAD_LIBS_INIT}

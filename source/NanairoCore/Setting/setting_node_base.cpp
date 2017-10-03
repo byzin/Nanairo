@@ -24,7 +24,7 @@ namespace nanairo {
 
 /*!
   */
-NodeParameters::~NodeParameters() noexcept
+NodeParameterBase::~NodeParameterBase() noexcept
 {
 }
 
@@ -37,12 +37,6 @@ SettingNodeBase::SettingNodeBase() noexcept
 /*!
   */
 SettingNodeBase::~SettingNodeBase() noexcept
-{
-}
-
-/*!
-  */
-void SettingNodeBase::log() const noexcept
 {
 }
 

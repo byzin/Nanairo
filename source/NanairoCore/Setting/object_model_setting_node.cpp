@@ -13,6 +13,7 @@
 #include <ostream>
 #include <string>
 #include <vector>
+#include <utility>
 // Zisc
 #include "zisc/binary_data.hpp"
 #include "zisc/error.hpp"
@@ -36,7 +37,7 @@ SettingNodeBase* ObjectModelSettingNode::addTransformation(
     const double y,
     const double z) noexcept
 {
-  transformation_list_.emplace_back(new TransformationSettingNode{});
+  transformation_list_.emplace_back(std::make_unique<TransformationSettingNode>());
   auto t = zisc::cast<TransformationSettingNode*>(transformation_list_.back().get());
   t->setTransformationType(type);
   t->setValue(x, y, z);
@@ -55,10 +56,34 @@ void ObjectModelSettingNode::initialize() noexcept
 
 /*!
   */
+const std::string& ObjectModelSettingNode::name() const noexcept
+{
+  return name_;
+}
+
+/*!
+  */
+SettingNodeBase* ObjectModelSettingNode::objectSettingNode() noexcept
+{
+  return object_setting_node_.get();
+}
+
+/*!
+  */
+const SettingNodeBase* ObjectModelSettingNode::objectSettingNode() const noexcept
+{
+  return object_setting_node_.get();
+}
+
+/*!
+  */
 void ObjectModelSettingNode::readData(std::istream* data_stream) noexcept
 {
   // Properties
-  setName(readString(data_stream));
+  {
+    auto n = readString(data_stream);
+    setName(std::move(n));
+  }
   zisc::read(&visibility_, data_stream);
 
   // Transformation
@@ -90,27 +115,6 @@ void ObjectModelSettingNode::readData(std::istream* data_stream) noexcept
     auto object = setObject(object_type);
     object->readData(data_stream);
   }
-}
-
-/*!
-  */
-const std::string& ObjectModelSettingNode::name() const noexcept
-{
-  return name_;
-}
-
-/*!
-  */
-SettingNodeBase* ObjectModelSettingNode::objectSettingNode() noexcept
-{
-  return object_setting_node_.get();
-}
-
-/*!
-  */
-const SettingNodeBase* ObjectModelSettingNode::objectSettingNode() const noexcept
-{
-  return object_setting_node_.get();
 }
 
 /*!

@@ -31,7 +31,7 @@ namespace nanairo {
 // LightTracing has no parameter
 
 //! ProbabilisticPPM parameters
-struct ProbabilisticPpmParameters : public NodeParameters
+struct ProbabilisticPpmParameters : public NodeParameterBase
 {
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept override;
@@ -51,7 +51,7 @@ class RenderingMethodSettingNode : public SettingNodeBase
 {
  public:
   //! Initialize a rendering method
-  virtual void initialize() noexcept override;
+  void initialize() noexcept override;
 
   //! Return the max surface split
   uint32 lightSamplerMaxSurfaceSplit() const noexcept;
@@ -61,9 +61,6 @@ class RenderingMethodSettingNode : public SettingNodeBase
 
   //! Return the light source sampler type
   LightSourceSamplerType lightSourceSamplerType() const noexcept;
-
-  //! Print scene data
-  virtual void log() const noexcept override;
 
   //! Return the ProbabilisticPPM parameters
   ProbabilisticPpmParameters& probabilisticPpmParameters() noexcept;
@@ -75,7 +72,7 @@ class RenderingMethodSettingNode : public SettingNodeBase
   double rayCastEpsilon() const noexcept;
 
   //! Read the setting data from the stream
-  virtual void readData(std::istream* data_stream) noexcept override;
+  void readData(std::istream* data_stream) noexcept override;
 
   //! Return the roulette path length
   uint32 roulettePathLength() const noexcept;
@@ -108,13 +105,13 @@ class RenderingMethodSettingNode : public SettingNodeBase
   void setRayCastEpsilon(const double ray_cast_epsilon) noexcept;
 
   //! Return the setting node type
-  virtual SettingNodeType type() const noexcept override;
+  SettingNodeType type() const noexcept override;
 
   //! Write the setting data to the stream
-  virtual void writeData(std::ostream* data_stream) const noexcept override;
+  void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
-  std::unique_ptr<NodeParameters> parameters_;
+  std::unique_ptr<NodeParameterBase> parameters_;
   RenderingMethodType method_type_;
   LightSourceSamplerType light_source_sampler_type_;
   uint32 light_sampler_max_surface_split_;

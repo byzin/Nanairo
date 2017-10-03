@@ -26,7 +26,7 @@ namespace nanairo {
 // BinaryRadixTree has no parameter
 
 //! ApproximateAgglomerativeClustering parameters
-struct ApproximateAgglomerativeClusteringParameters : public NodeParameters
+struct ApproximateAgglomerativeClusteringParameters : public NodeParameterBase
 {
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept override;
@@ -39,7 +39,7 @@ struct ApproximateAgglomerativeClusteringParameters : public NodeParameters
 };
 
 //! AgglomerativeTreeletRestructuring parameters
-struct AgglomerativeTreeletRestructuringParameters : public NodeParameters
+struct AgglomerativeTreeletRestructuringParameters : public NodeParameterBase
 {
   //! Read the parameters from the setting
   void readData(std::istream* data_stream) noexcept override;
@@ -76,25 +76,22 @@ class BvhSettingNode : public SettingNodeBase
   BvhType bvhType() const noexcept;
 
   //! Initialize a bvh setting
-  virtual void initialize() noexcept override;
-
-  //! Print data
-  virtual void log() const noexcept override;
+  void initialize() noexcept override;
 
   //! Read the bvh setting data from the stream
-  virtual void readData(std::istream* data_stream) noexcept override;
+  void readData(std::istream* data_stream) noexcept override;
 
   //! Set the bvh type
   void setBvhType(const BvhType type) noexcept;
 
   //! Return the node type
-  virtual SettingNodeType type() const noexcept override;
+  SettingNodeType type() const noexcept override;
 
   //! Write the bvh setting data to the stream
-  virtual void writeData(std::ostream* data_stream) const noexcept override;
+  void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
-  std::unique_ptr<NodeParameters> parameters_;
+  std::unique_ptr<NodeParameterBase> parameters_;
   BvhType bvh_type_;
 };
 

@@ -54,10 +54,7 @@ class SystemSettingNode : public SettingNodeBase
   uint32 imageWidthResolution() const noexcept;
 
   //! Initialize a systemm node
-  virtual void initialize() noexcept override;
-
-  //! Print data
-  virtual void log() const noexcept override;
+  void initialize() noexcept override;
 
   //! Return the num of threads used for rendering
   uint32 numOfThreads() const noexcept;
@@ -69,7 +66,7 @@ class SystemSettingNode : public SettingNodeBase
   uint32 randomSeed() const noexcept;
 
   //! Read the setting datafrom the stream
-  virtual void readData(std::istream* data_stream) noexcept override;
+  void readData(std::istream* data_stream) noexcept override;
 
   //! Return the saving interval cycle
   uint32 savingIntervalCycle() const noexcept;
@@ -135,13 +132,13 @@ class SystemSettingNode : public SettingNodeBase
   ToneMappingType toneMappingType() const noexcept;
 
   //! Return the setting node type
-  virtual SettingNodeType type() const noexcept override;
+  SettingNodeType type() const noexcept override;
 
   //! Return the wavelength sampler type
   WavelengthSamplerType wavelengthSamplerType() const noexcept;
 
   //! Write the setting data to the stream
-  virtual void writeData(std::ostream* data_stream) const noexcept override;
+  void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
   uint32 num_of_threads_;

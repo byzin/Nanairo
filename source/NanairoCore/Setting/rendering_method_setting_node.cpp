@@ -78,16 +78,6 @@ LightSourceSamplerType RenderingMethodSettingNode::lightSourceSamplerType() cons
 
 /*!
   */
-void RenderingMethodSettingNode::log() const noexcept
-{
-  using zisc::cast;
-  zisc::logMessage("Rendering method: ", cast<uint>(methodType()));
-  zisc::logMessage("Ray cast epsilon: ", rayCastEpsilon());
-  zisc::logMessage("Russian roulette: ", cast<uint>(rouletteType()));
-}
-
-/*!
-  */
 ProbabilisticPpmParameters&
 RenderingMethodSettingNode::probabilisticPpmParameters() noexcept
 {

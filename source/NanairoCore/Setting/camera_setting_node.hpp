@@ -25,7 +25,7 @@ namespace nanairo {
 //! \{
 
 //! PinholeCamera parameters
-struct PinholeCameraParameters : public NodeParameters
+struct PinholeCameraParameters : public NodeParameterBase
 {
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept override;
@@ -45,7 +45,7 @@ class CameraSettingNode : public SettingNodeBase
   CameraType cameraType() const noexcept;
 
   //! Initialize a node
-  virtual void initialize() noexcept override;
+  void initialize() noexcept override;
 
   //! Return the jittering mode
   bool jittering() const noexcept;
@@ -57,7 +57,7 @@ class CameraSettingNode : public SettingNodeBase
   const PinholeCameraParameters& pinholeCameraParameters() const noexcept;
 
   //! Read the setting data from the stream
-  virtual void readData(std::istream* data_stream) noexcept override;
+  void readData(std::istream* data_stream) noexcept override;
 
   //! Set the camera type
   void setCameraType(const CameraType type) noexcept;
@@ -66,13 +66,13 @@ class CameraSettingNode : public SettingNodeBase
   void setJittering(const bool jittering) noexcept;
 
   //! Return the node type
-  virtual SettingNodeType type() const noexcept override;
+  SettingNodeType type() const noexcept override;
 
   //! Write the setting data to the stream
-  virtual void writeData(std::ostream* data_stream) const noexcept override;
+  void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
-  std::unique_ptr<NodeParameters> parameters_;
+  std::unique_ptr<NodeParameterBase> parameters_;
   CameraType type_;
   uint8 jittering_;
 };

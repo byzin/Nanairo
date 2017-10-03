@@ -56,11 +56,11 @@ enum class SettingNodeType : uint32
 
 /*!
   */
-class NodeParameters
+class NodeParameterBase
 {
  public:
   //!
-  virtual ~NodeParameters() noexcept;
+  virtual ~NodeParameterBase() noexcept;
 
   //! Read the parameters from the stream
   virtual void readData(std::istream* data_stream) noexcept = 0;
@@ -82,9 +82,6 @@ class SettingNodeBase
 
   //! Initialize a node
   virtual void initialize() noexcept = 0;
-
-  //! Print data
-  virtual void log() const noexcept;
 
   //! Read the setting data from the stream
   virtual void readData(std::istream* data_stream) noexcept = 0;

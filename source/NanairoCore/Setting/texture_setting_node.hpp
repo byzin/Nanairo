@@ -27,7 +27,7 @@ namespace nanairo {
 //! \{
 
 //! ValueTexture parameters
-struct ValueTextureParameters : public NodeParameters
+struct ValueTextureParameters : public NodeParameterBase
 {
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept;
@@ -39,7 +39,7 @@ struct ValueTextureParameters : public NodeParameters
 };
 
 //! UnicolorTexture parameters
-struct UnicolorTextureParameters : public NodeParameters
+struct UnicolorTextureParameters : public NodeParameterBase
 {
   //! Initialize parameters
   UnicolorTextureParameters() noexcept;
@@ -54,7 +54,7 @@ struct UnicolorTextureParameters : public NodeParameters
 };
 
 //! CheckerboardTexture parameters
-struct CheckerboardTextureParameters : public NodeParameters
+struct CheckerboardTextureParameters : public NodeParameterBase
 {
   //! Initialize parameters
   CheckerboardTextureParameters() noexcept;
@@ -70,7 +70,7 @@ struct CheckerboardTextureParameters : public NodeParameters
 };
 
 //! ImageTexture parameters
-struct ImageTextureParameters : public NodeParameters
+struct ImageTextureParameters : public NodeParameterBase
 {
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept;
@@ -138,7 +138,7 @@ class TextureSettingNode : public SettingNodeBase
   void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
-  std::unique_ptr<NodeParameters> parameters_;
+  std::unique_ptr<NodeParameterBase> parameters_;
   std::string name_;
   TextureType texture_type_;
 };

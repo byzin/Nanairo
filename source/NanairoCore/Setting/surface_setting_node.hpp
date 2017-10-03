@@ -28,7 +28,7 @@ namespace nanairo {
 //! \{
 
 //! SmoothDiffuse parameters
-struct SmoothDiffuseParameters : public NodeParameters
+struct SmoothDiffuseParameters : public NodeParameterBase
 {
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept;
@@ -40,7 +40,7 @@ struct SmoothDiffuseParameters : public NodeParameters
 };
 
 //! SmoothDielectric parameters
-struct SmoothDielectricParameters : public NodeParameters
+struct SmoothDielectricParameters : public NodeParameterBase
 {
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept;
@@ -53,7 +53,7 @@ struct SmoothDielectricParameters : public NodeParameters
 };
 
 //! SmoothConductor parameters
-struct SmoothConductorParameters : public NodeParameters
+struct SmoothConductorParameters : public NodeParameterBase
 {
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept;
@@ -67,7 +67,7 @@ struct SmoothConductorParameters : public NodeParameters
 };
 
 //! RoughDielectric parameters
-struct RoughDielectricParameters : public NodeParameters
+struct RoughDielectricParameters : public NodeParameterBase
 {
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept;
@@ -81,7 +81,7 @@ struct RoughDielectricParameters : public NodeParameters
 };
 
 //! RoughConductor parameters
-struct RoughConductorParameters : public NodeParameters
+struct RoughConductorParameters : public NodeParameterBase
 {
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept;
@@ -96,7 +96,7 @@ struct RoughConductorParameters : public NodeParameters
 };
 
 //! LayeredDiffuse parameters
-struct LayeredDiffuseParameters : public NodeParameters
+struct LayeredDiffuseParameters : public NodeParameterBase
 {
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept;
@@ -111,7 +111,7 @@ struct LayeredDiffuseParameters : public NodeParameters
 };
 
 //! Cloth parameters
-struct ClothParameters : public NodeParameters
+struct ClothParameters : public NodeParameterBase
 {
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept;
@@ -198,7 +198,7 @@ class SurfaceSettingNode : public SettingNodeBase
   virtual void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
-  std::unique_ptr<NodeParameters> parameters_;
+  std::unique_ptr<NodeParameterBase> parameters_;
   std::string name_;
   SurfaceType surface_type_;
 };

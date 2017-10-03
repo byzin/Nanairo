@@ -67,23 +67,22 @@ endfunction(findNanairoSourceFiles)
 # Get the warning options of the compiler
 function(getNanairoWarningOption nanairo_warning_flags)
   set(warning_flags "")
-  if(Z_CLANG AND Z_VISUAL_STUDIO)
-    # Nothing
-  elseif(Z_CLANG)
-    list(APPEND warning_flags -Wno-padded
-                              -Wno-covered-switch-default
+ if(Z_CLANG AND Z_VISUAL_STUDIO)
+   # Nothing
+ elseif(Z_CLANG)
+   list(APPEND warning_flags -Wno-covered-switch-default
+#                              -Wno-documentation-unknown-command
+#                              -Wno-exit-time-destructors
                               -Wno-float-equal
-                              -Wno-sign-conversion
-                              -Wno-exit-time-destructors
                               -Wno-global-constructors
-                              -Wno-weak-vtables
+                              -Wno-padded
+                              -Wno-sign-conversion
                               -Wno-undefined-reinterpret-cast
-                              -Wno-documentation-unknown-command
+                              -Wno-weak-vtables
                               )
   elseif(Z_GCC)
     list(APPEND warning_flags -Wno-sign-conversion
                               -Wno-strict-overflow
-                              -Wno-sign-compare
                               )
   endif()
 
@@ -91,6 +90,16 @@ function(getNanairoWarningOption nanairo_warning_flags)
   # Output variable
   set(${nanairo_warning_flags} ${warning_flags} PARENT_SCOPE)
 endfunction(getNanairoWarningOption)
+
+
+set(__zisc_system_include__ ON)
+macro(includeZisc target)
+  if(__zisc_system_include__)
+    target_include_directories(${target} SYSTEM PRIVATE ${zisc_include_dirs})
+  else()
+    target_include_directories(${target} PRIVATE ${zisc_include_dirs})
+  endif()
+endmacro(includeZisc)
 
 
 function(loadLodepng lodepng_include_dir lodepng_library)
@@ -137,8 +146,8 @@ function(buildNanairoCore core_library core_definitions)
                                               ${cxx_warning_flags}
                                               ${nanairo_warning_flags})
   target_include_directories(${core_name} PRIVATE ${PROJECT_SOURCE_DIR}/source
-                                                  ${PROJECT_BINARY_DIR}/include
-                                                  ${zisc_include_dirs})
+                                                  ${PROJECT_BINARY_DIR}/include)
+  includeZisc(${core_name})
   target_link_libraries(${core_name} ${CMAKE_THREAD_LIBS_INIT}
                                      ${cxx_linker_flags}
                                      ${zisc_linker_flags})
@@ -178,8 +187,8 @@ function(buildSimpleNanairoApp)
                                              ${cxx_warning_flags}
                                              ${nanairo_warning_flags})
   target_include_directories(${app_name} PRIVATE ${PROJECT_SOURCE_DIR}/source
-                                                 ${PROJECT_BINARY_DIR}/include
-                                                 ${zisc_include_dirs})
+                                                 ${PROJECT_BINARY_DIR}/include)
+  includeZisc(${app_name})
   target_include_directories(${app_name} SYSTEM PRIVATE
       ${lodepng_include_dir}
       ${PROJECT_SOURCE_DIR}/source/dependencies/cxxopts/include)
@@ -234,8 +243,8 @@ function(buildNanairoApp)
                                              ${cxx_warning_flags}
                                              ${nanairo_warning_flags})
   target_include_directories(${app_name} PRIVATE ${PROJECT_SOURCE_DIR}/source
-                                                 ${PROJECT_BINARY_DIR}/include
-                                                 ${zisc_include_dirs})
+                                                 ${PROJECT_BINARY_DIR}/include)
+  includeZisc(${app_name})
   target_include_directories(${app_name} SYSTEM PRIVATE ${qt5_include_dirs})
   target_link_libraries(${app_name} ${CMAKE_THREAD_LIBS_INIT}
                                     ${cxx_linker_flags}

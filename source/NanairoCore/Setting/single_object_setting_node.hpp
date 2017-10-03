@@ -29,7 +29,7 @@ namespace nanairo {
 //! \{
 
 //! Mesh parameters
-struct MeshParameters : public NodeParameters
+struct MeshParameters : public NodeParameterBase
 {
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept override;
@@ -53,7 +53,7 @@ class SingleObjectSettingNode : public SettingNodeBase
   uint32 emitterIndex() const noexcept;
 
   //! Initialize a object
-  virtual void initialize() noexcept override;
+  void initialize() noexcept override;
 
   //! Check if the object is emissive
   bool isEmissiveObject() const noexcept;
@@ -65,7 +65,7 @@ class SingleObjectSettingNode : public SettingNodeBase
   const MeshParameters& meshParameters() const noexcept;
 
   //! Read the setting data from the stream
-  virtual void readData(std::istream* data_stream) noexcept override;
+  void readData(std::istream* data_stream) noexcept override;
 
   //! Set the emissive flag
   void setEmissive(const bool emissive) noexcept;
@@ -95,7 +95,7 @@ class SingleObjectSettingNode : public SettingNodeBase
   static constexpr uint32 kInvalidIndex = std::numeric_limits<uint32>::max();
 
  private:
-  std::unique_ptr<NodeParameters> parameters_;
+  std::unique_ptr<NodeParameterBase> parameters_;
   ShapeType shape_type_;
   uint32 surface_index_,
          emitter_index_;

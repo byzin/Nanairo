@@ -28,7 +28,7 @@ namespace nanairo {
 //! \{
 
 //! RGB parameters
-struct RgbParameters : public NodeParameters
+struct RgbParameters : public NodeParameterBase
 {
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept override;
@@ -40,7 +40,7 @@ struct RgbParameters : public NodeParameters
 };
 
 //! Spectra parameters
-struct SpectraParameters : public NodeParameters
+struct SpectraParameters : public NodeParameterBase
 {
   //! Initialize the spectra
   SpectraParameters() noexcept;
@@ -90,7 +90,7 @@ class SpectraSettingNode : public SettingNodeBase
   void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
-  std::unique_ptr<NodeParameters> parameters_;
+  std::unique_ptr<NodeParameterBase> parameters_;
   ColorRepresentationType color_type_;
 };
 

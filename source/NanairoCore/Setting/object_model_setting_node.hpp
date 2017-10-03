@@ -35,10 +35,7 @@ class ObjectModelSettingNode : public SettingNodeBase
                                      const double z) noexcept;
 
   //! Initialize the object model
-  virtual void initialize() noexcept override;
-
-  //! Read the object setting data from the stream
-  virtual void readData(std::istream* data_stream) noexcept override;
+  void initialize() noexcept override;
 
   //! Return the object name
   const std::string& name() const noexcept;
@@ -51,6 +48,9 @@ class ObjectModelSettingNode : public SettingNodeBase
 
   //! Return the object model setting node
   const SettingNodeBase* objectSettingNode() const noexcept;
+
+  //! Read the object setting data from the stream
+  void readData(std::istream* data_stream) noexcept override;
 
   //! Set the object name
   void setName(const std::string& name) noexcept;
@@ -71,13 +71,13 @@ class ObjectModelSettingNode : public SettingNodeBase
   const std::vector<SettingNodeBase*>& transformationList() const noexcept;
 
   //! Return the node type
-  virtual SettingNodeType type() const noexcept override;
+  SettingNodeType type() const noexcept override;
 
   //! Return the visibility of the object
   bool visibility() const noexcept;
 
   //! Write the object setting data to the stream
-  virtual void writeData(std::ostream* data_stream) const noexcept override;
+  void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
   std::string name_;

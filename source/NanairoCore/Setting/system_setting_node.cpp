@@ -106,28 +106,6 @@ void SystemSettingNode::initialize() noexcept
 
 /*!
   */
-void SystemSettingNode::log() const noexcept
-{
-  using zisc::cast;
-
-  zisc::logMessage("Num of threads: ", numOfThreads());
-  zisc::logMessage("Random seed: ", randomSeed());
-  zisc::logMessage("Termination time: ", terminationTime(), " ms");
-  zisc::logMessage("Terminstion cycle: ", terminationCycle());
-  zisc::logMessage("Image size: ", imageWidthResolution(), " x ", imageHeightResolution());
-  zisc::logMessage("Saving interval time: ", savingIntervalTime(), " ms");
-  zisc::logMessage("Saving interval cycle: ", savingIntervalCycle());
-  zisc::logMessage("Power2 cycle saving: ", power2CycleSaving());
-  zisc::logMessage("Color mode: ", cast<uint>(colorMode()));
-  zisc::logMessage("Wavelength sampler: ", cast<uint>(wavelengthSamplerType()));
-  zisc::logMessage("Color space: ", cast<uint>(colorSpace()));
-  zisc::logMessage("Gamma correction: ", gammaCorrection());
-  zisc::logMessage("Tone mapping: ", cast<uint>(toneMappingType()));
-  zisc::logMessage("Exposure time: ", exposure());
-}
-
-/*!
-  */
 uint32 SystemSettingNode::numOfThreads() const noexcept
 {
   ZISC_ASSERT(num_of_threads_ != 0, "The num of thread is zero.");

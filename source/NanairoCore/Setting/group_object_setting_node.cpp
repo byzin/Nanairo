@@ -27,7 +27,7 @@ namespace nanairo {
   */
 SettingNodeBase* GroupObjectSettingNode::addObject() noexcept
 {
-  object_list_.emplace_back(new ObjectModelSettingNode{});
+  object_list_.emplace_back(std::make_unique<ObjectModelSettingNode>());
   auto& s = object_list_.back();
   s->initialize();
   return s.get();
@@ -50,7 +50,8 @@ void GroupObjectSettingNode::readData(std::istream* data_stream) noexcept
   for (uint i = 0; i < size; ++i) {
     SettingNodeType type;
     zisc::read(&type, data_stream);
-    ZISC_ASSERT((type == SettingNodeType::kObjectModel), "The stream header is wrong.");
+    ZISC_ASSERT((type == SettingNodeType::kObjectModel),
+                "The stream header is wrong.");
     auto object = addObject();
     object->readData(data_stream);
   }

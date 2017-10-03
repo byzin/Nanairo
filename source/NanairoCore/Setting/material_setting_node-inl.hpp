@@ -55,27 +55,19 @@ SettingNodeBase* MaterialSettingNode<kMaterialType>::addMaterial() noexcept
 /*!
   */
 template <SettingNodeType kMaterialType> inline
-std::vector<SettingNodeBase*> MaterialSettingNode<kMaterialType>::materialList()
+std::vector<SettingNodeBase*>& MaterialSettingNode<kMaterialType>::materialList()
     noexcept
 {
-  std::vector<SettingNodeBase*> material_list;
-  material_list.resize(material_list_.size());
-  for (uint i = 0; i < material_list_.size(); ++i)
-    material_list[i] = material_list_[i].get();
-  return material_list;
+  return *zisc::treatAs<std::vector<SettingNodeBase*>*>(&material_list_);
 }
 
 /*!
   */
 template <SettingNodeType kMaterialType> inline
-std::vector<const SettingNodeBase*> MaterialSettingNode<kMaterialType>::materialList()
+const std::vector<SettingNodeBase*>& MaterialSettingNode<kMaterialType>::materialList()
     const noexcept
 {
-  std::vector<const SettingNodeBase*> material_list;
-  material_list.resize(material_list_.size());
-  for (uint i = 0; i < material_list_.size(); ++i)
-    material_list[i] = material_list_[i].get();
-  return material_list;
+  return *zisc::treatAs<const std::vector<SettingNodeBase*>*>(&material_list_);
 }
 
 /*!

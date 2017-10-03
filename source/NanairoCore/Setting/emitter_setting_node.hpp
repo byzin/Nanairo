@@ -25,7 +25,7 @@ namespace nanairo {
 //! \{
 
 //! NonDirectional emitter
-struct NonDirectionalEmitterParameters : public NodeParameters
+struct NonDirectionalEmitterParameters : public NodeParameterBase
 {
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept override;
@@ -46,7 +46,7 @@ class EmitterSettingNode : public SettingNodeBase
   EmitterType emitterType() const noexcept;
 
   //! Initialize a emitter setting
-  virtual void initialize() noexcept override;
+  void initialize() noexcept override;
 
   //! Return the emitter name
   const std::string& name() const noexcept;
@@ -71,13 +71,13 @@ class EmitterSettingNode : public SettingNodeBase
   void setName(std::string&& name) noexcept;
 
   //! Return the node type
-  virtual SettingNodeType type() const noexcept override;
+  SettingNodeType type() const noexcept override;
 
   //! Write the emitter setting to the stream
-  virtual void writeData(std::ostream* data_stream) const noexcept override;
+  void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
-  std::unique_ptr<NodeParameters> parameters_;
+  std::unique_ptr<NodeParameterBase> parameters_;
   std::string name_;
   EmitterType emitter_type_;
 };

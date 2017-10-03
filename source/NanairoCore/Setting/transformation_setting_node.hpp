@@ -26,13 +26,13 @@ class TransformationSettingNode : public SettingNodeBase
 {
  public:
   //! Initialize the value
-  virtual void initialize() noexcept override;
+  void initialize() noexcept override;
 
   //! Check if the transformation is enabled
   bool isEnabled() const noexcept;
 
   //! Read the transformation data from the stream
-  virtual void readData(std::istream* data_stream) noexcept override;
+  void readData(std::istream* data_stream) noexcept override;
 
   //! Set if the transformation is enabled
   void setEnabled(const bool is_enabled) noexcept;
@@ -47,13 +47,13 @@ class TransformationSettingNode : public SettingNodeBase
   TransformationType transformationType() const noexcept;
 
   //! Return the setting node type
-  virtual SettingNodeType type() const noexcept override;
+  SettingNodeType type() const noexcept override;
 
   //! Return the value
   const std::array<double, 3>& value() const noexcept;
 
   //! Write the transformation data to the stream
-  virtual void writeData(std::ostream* data_stream) const noexcept override;
+  void writeData(std::ostream* data_stream) const noexcept override;
 
   //! Return the x value
   double x() const noexcept;

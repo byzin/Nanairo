@@ -131,7 +131,7 @@ void World::initializeEmitter(
   const auto num_of_emitters = emitter_model_settings->numOfMaterials();
   emitter_list_.resize(num_of_emitters);
 
-  const auto emitter_setting_list = emitter_model_settings->materialList();
+  const auto& emitter_setting_list = emitter_model_settings->materialList();
   auto make_emitter =
   [this, &emitter_setting_list, &texture_list](const uint index)
   {
@@ -188,7 +188,7 @@ void World::initializeSurface(
   const auto num_of_surfaces = surface_model_settings->numOfMaterials();
   surface_list_.resize(num_of_surfaces);
 
-  const auto surface_setting_list = surface_model_settings->materialList();
+  const auto& surface_setting_list = surface_model_settings->materialList();
   auto make_surface =
   [this, &surface_setting_list, &texture_list](const uint index)
   {
@@ -216,7 +216,7 @@ void World::initializeTexture(
   const auto num_of_textures = texture_model_settings->numOfMaterials();
   texture_list_.resize(num_of_textures);
 
-  const auto texture_setting_list = texture_model_settings->materialList();
+  const auto& texture_setting_list = texture_model_settings->materialList();
   auto make_texture =
   [this, &system, &texture_setting_list](const uint index)
   {

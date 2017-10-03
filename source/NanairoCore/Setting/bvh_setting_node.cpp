@@ -121,13 +121,6 @@ void BvhSettingNode::initialize() noexcept
 
 /*!
   */
-void BvhSettingNode::log() const noexcept
-{
-  zisc::logMessage("Bvh: ", zisc::cast<uint>(bvhType()));
-}
-
-/*!
-  */
 void BvhSettingNode::readData(std::istream* data_stream) noexcept
 {
   {

@@ -10,6 +10,7 @@
 #include "scene_setting_node.hpp"
 // Standard C++ library
 #include <istream>
+#include <memory>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -31,14 +32,14 @@ namespace nanairo {
 /*!
   */
 SceneSettingNode::SceneSettingNode() noexcept :
-    system_setting_node_{new SystemSettingNode{}},
-    rendering_method_setting_node_{new RenderingMethodSettingNode{}},
-    texture_model_setting_node_{new TextureModelSettingNode{}},
-    surface_model_setting_node_{new SurfaceModelSettingNode{}},
-    emitter_model_setting_node_{new EmitterModelSettingNode{}},
-    camera_setting_node_{new ObjectModelSettingNode{}},
-    object_setting_node_{new ObjectModelSettingNode{}},
-    bvh_setting_node_{new BvhSettingNode{}}
+    system_setting_node_{std::make_unique<SystemSettingNode>()},
+    rendering_method_setting_node_{std::make_unique<RenderingMethodSettingNode>()},
+    texture_model_setting_node_{std::make_unique<TextureModelSettingNode>()},
+    surface_model_setting_node_{std::make_unique<SurfaceModelSettingNode>()},
+    emitter_model_setting_node_{std::make_unique<EmitterModelSettingNode>()},
+    camera_setting_node_{std::make_unique<ObjectModelSettingNode>()},
+    object_setting_node_{std::make_unique<ObjectModelSettingNode>()},
+    bvh_setting_node_{std::make_unique<BvhSettingNode>()}
 {
 }
 
@@ -46,60 +47,42 @@ SceneSettingNode::SceneSettingNode() noexcept :
   */
 SettingNodeBase* SceneSettingNode::bvhSettingNode() noexcept
 {
-  ZISC_ASSERT(bvh_setting_node_ != nullptr, "The setting node is null.");
-  ZISC_ASSERT(bvh_setting_node_->type() == SettingNodeType::kBvh,
-              "The node isn't BVH setting node.");
-  return bvh_setting_node_.get();
+  return castNode<BvhSettingNode>(bvh_setting_node_.get());
 }
 
 /*!
   */
 const SettingNodeBase* SceneSettingNode::bvhSettingNode() const noexcept
 {
-  ZISC_ASSERT(bvh_setting_node_ != nullptr, "The setting node is null.");
-  ZISC_ASSERT(bvh_setting_node_->type() == SettingNodeType::kBvh,
-              "The node isn't BVH setting node.");
-  return bvh_setting_node_.get();
+  return castNode<BvhSettingNode>(bvh_setting_node_.get());
 }
 
 /*!
   */
 SettingNodeBase* SceneSettingNode::cameraSettingNode() noexcept
 {
-  ZISC_ASSERT(camera_setting_node_ != nullptr, "The setting node is null.");
-  ZISC_ASSERT(camera_setting_node_->type() == SettingNodeType::kObjectModel,
-              "The node isn't Camera setting node.");
-  return camera_setting_node_.get();
+  return castNode<ObjectModelSettingNode>(camera_setting_node_.get());
 }
 
 /*!
   */
 const SettingNodeBase* SceneSettingNode::cameraSettingNode() const noexcept
 {
-  ZISC_ASSERT(camera_setting_node_ != nullptr, "The setting node is null.");
-  ZISC_ASSERT(camera_setting_node_->type() == SettingNodeType::kObjectModel,
-              "The node isn't Camera setting node.");
-  return camera_setting_node_.get();
+  return castNode<ObjectModelSettingNode>(camera_setting_node_.get());
 }
 
 /*!
   */
 SettingNodeBase* SceneSettingNode::emitterModelSettingNode() noexcept
 {
-  ZISC_ASSERT(emitter_model_setting_node_ != nullptr, "The setting node is null.");
-  ZISC_ASSERT(emitter_model_setting_node_->type() == SettingNodeType::kEmitterModel,
-              "The node isn't emitter model setting node.");
-  return emitter_model_setting_node_.get();
+  return castNode<EmitterModelSettingNode>(emitter_model_setting_node_.get());
 }
 
 /*!
   */
 const SettingNodeBase* SceneSettingNode::emitterModelSettingNode() const noexcept
 {
-  ZISC_ASSERT(emitter_model_setting_node_ != nullptr, "The setting node is null.");
-  ZISC_ASSERT(emitter_model_setting_node_->type() == SettingNodeType::kEmitterModel,
-              "The node isn't emitter model setting node.");
-  return emitter_model_setting_node_.get();
+  return castNode<EmitterModelSettingNode>(emitter_model_setting_node_.get());
 }
 
 /*!
@@ -119,41 +102,16 @@ void SceneSettingNode::initialize() noexcept
 
 /*!
   */
-void SceneSettingNode::log() const noexcept
-{
-  zisc::logMessage("\n");
-
-  zisc::logMessage("Scene name: \"", sceneName(), "\"");
-  systemSettingNode()->log();
-  renderingMethodSettingNode()->log();
-  textureModelSettingNode()->log();
-  surfaceModelSettingNode()->log();
-  emitterModelSettingNode()->log();
-  cameraSettingNode()->log();
-  objectSettingNode()->log();
-  bvhSettingNode()->log();
-
-  zisc::logMessage("\n");
-}
-
-/*!
-  */
 SettingNodeBase* SceneSettingNode::objectSettingNode() noexcept
 {
-  ZISC_ASSERT(object_setting_node_ != nullptr, "The setting node is null.");
-  ZISC_ASSERT(object_setting_node_->type() == SettingNodeType::kObjectModel,
-              "The node isn't object setting node.");
-  return object_setting_node_.get();
+  return castNode<ObjectModelSettingNode>(object_setting_node_.get());
 }
 
 /*!
   */
 const SettingNodeBase* SceneSettingNode::objectSettingNode() const noexcept
 {
-  ZISC_ASSERT(object_setting_node_ != nullptr, "The setting node is null.");
-  ZISC_ASSERT(object_setting_node_->type() == SettingNodeType::kObjectModel,
-              "The node isn't object setting node.");
-  return object_setting_node_.get();
+  return castNode<ObjectModelSettingNode>(object_setting_node_.get());
 }
 
 /*!
@@ -207,20 +165,14 @@ void SceneSettingNode::readData(std::istream* data_stream) noexcept
   */
 SettingNodeBase* SceneSettingNode::renderingMethodSettingNode() noexcept
 {
-  ZISC_ASSERT(rendering_method_setting_node_ != nullptr, "The setting node is null.");
-  ZISC_ASSERT(rendering_method_setting_node_->type() == SettingNodeType::kRenderingMethod,
-              "The node isn't rendering method setting node.");
-  return rendering_method_setting_node_.get();
+  return castNode<RenderingMethodSettingNode>(rendering_method_setting_node_.get());
 }
 
 /*!
   */
 const SettingNodeBase* SceneSettingNode::renderingMethodSettingNode() const noexcept
 {
-  ZISC_ASSERT(rendering_method_setting_node_ != nullptr, "The setting node is null.");
-  ZISC_ASSERT(rendering_method_setting_node_->type() == SettingNodeType::kRenderingMethod,
-              "The node isn't rendering method setting node.");
-  return rendering_method_setting_node_.get();
+  return castNode<RenderingMethodSettingNode>(rendering_method_setting_node_.get());
 }
 
 /*!
@@ -248,60 +200,42 @@ void SceneSettingNode::setSceneName(std::string&& scene_name) noexcept
   */
 SettingNodeBase* SceneSettingNode::surfaceModelSettingNode() noexcept
 {
-  ZISC_ASSERT(surface_model_setting_node_ != nullptr, "The setting node is null.");
-  ZISC_ASSERT(surface_model_setting_node_->type() == SettingNodeType::kSurfaceModel,
-              "The node isn't surface model setting node.");
-  return surface_model_setting_node_.get();
+  return castNode<SurfaceModelSettingNode>(surface_model_setting_node_.get());
 }
 
 /*!
   */
 const SettingNodeBase* SceneSettingNode::surfaceModelSettingNode() const noexcept
 {
-  ZISC_ASSERT(surface_model_setting_node_ != nullptr, "The setting node is null.");
-  ZISC_ASSERT(surface_model_setting_node_->type() == SettingNodeType::kSurfaceModel,
-              "The node isn't surface model setting node.");
-  return surface_model_setting_node_.get();
+  return castNode<SurfaceModelSettingNode>(surface_model_setting_node_.get());
 }
 
 /*!
   */
 SettingNodeBase* SceneSettingNode::systemSettingNode() noexcept
 {
-  ZISC_ASSERT(system_setting_node_ != nullptr, "The setting node is null.");
-  ZISC_ASSERT(system_setting_node_->type() == SettingNodeType::kSystem,
-              "The node isn't system setting node.");
-  return system_setting_node_.get();
+  return castNode<SystemSettingNode>(system_setting_node_.get());
 }
 
 /*!
   */
 const SettingNodeBase* SceneSettingNode::systemSettingNode() const noexcept
 {
-  ZISC_ASSERT(system_setting_node_ != nullptr, "The setting node is null.");
-  ZISC_ASSERT(system_setting_node_->type() == SettingNodeType::kSystem,
-              "The node isn't system setting node.");
-  return system_setting_node_.get();
+  return castNode<SystemSettingNode>(system_setting_node_.get());
 }
 
 /*!
   */
 SettingNodeBase* SceneSettingNode::textureModelSettingNode() noexcept
 {
-  ZISC_ASSERT(texture_model_setting_node_ != nullptr, "The setting node is null.");
-  ZISC_ASSERT(texture_model_setting_node_->type() == SettingNodeType::kTextureModel,
-              "The node isn't texture model setting node.");
-  return texture_model_setting_node_.get();
+  return castNode<TextureModelSettingNode>(texture_model_setting_node_.get());
 }
 
 /*!
   */
 const SettingNodeBase* SceneSettingNode::textureModelSettingNode() const noexcept
 {
-  ZISC_ASSERT(texture_model_setting_node_ != nullptr, "The setting node is null.");
-  ZISC_ASSERT(texture_model_setting_node_->type() == SettingNodeType::kTextureModel,
-              "The node isn't texture model setting node.");
-  return texture_model_setting_node_.get();
+  return castNode<TextureModelSettingNode>(texture_model_setting_node_.get());
 }
 
 /*!

@@ -34,25 +34,25 @@ class MaterialSettingNode : public SettingNodeBase
   SettingNodeBase* addMaterial() noexcept;
 
   //! Initialize a material setting node
-  virtual void initialize() noexcept override;
+  void initialize() noexcept override;
 
   //! Return the material list
-  std::vector<SettingNodeBase*> materialList() noexcept;
+  std::vector<SettingNodeBase*>& materialList() noexcept;
 
   //! Return the material list
-  std::vector<const SettingNodeBase*> materialList() const noexcept;
+  const std::vector<SettingNodeBase*>& materialList() const noexcept;
 
   //! Return the num of materials
   uint numOfMaterials() const noexcept;
 
   //! Read the material setting from the stream
-  virtual void readData(std::istream* data_stream) noexcept override;
+  void readData(std::istream* data_stream) noexcept override;
 
   //! Return the node type
-  virtual SettingNodeType type() const noexcept override;
+  SettingNodeType type() const noexcept override;
 
   //! Write the material setting to the stream
-  virtual void writeData(std::ostream* data_stream) const noexcept override;
+  void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
   std::vector<std::unique_ptr<SettingNodeBase>> material_list_;

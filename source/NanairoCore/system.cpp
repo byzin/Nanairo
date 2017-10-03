@@ -88,6 +88,10 @@ void System::initialize(const SettingNodeBase* settings) noexcept
   {
     xyz_color_matching_function_ = std::make_unique<XyzColorMatchingFunction>();
   }
+
+  // Check type properties
+  static_assert(sizeof(std::unique_ptr<int*>) == sizeof(int*),
+                "The size of a unique pointer doesn't match the size of a pointer.");
 }
 
 } // namespace nanairo

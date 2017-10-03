@@ -32,10 +32,10 @@ class GroupObjectSettingNode : public SettingNodeBase
   SettingNodeBase* addObject() noexcept;
 
   //! Initialize group object setting
-  virtual void initialize() noexcept override;
+  void initialize() noexcept override;
 
   //! Read the group object setting data from the stream
-  virtual void readData(std::istream* data_stream) noexcept override;
+  void readData(std::istream* data_stream) noexcept override;
 
   //! Return the object list
   std::vector<SettingNodeBase*>& objectList() noexcept;
@@ -44,10 +44,10 @@ class GroupObjectSettingNode : public SettingNodeBase
   const std::vector<SettingNodeBase*>& objectList() const noexcept;
 
   //! Return the node type
-  virtual SettingNodeType type() const noexcept override;
+  SettingNodeType type() const noexcept override;
 
   //! Write the group object setting to the stream
-  virtual void writeData(std::ostream* data_stream) const noexcept override;
+  void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
   std::vector<std::unique_ptr<SettingNodeBase>> object_list_;

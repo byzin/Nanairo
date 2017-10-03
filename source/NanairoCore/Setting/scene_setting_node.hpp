@@ -51,10 +51,7 @@ class SceneSettingNode : public SettingNodeBase
   const SettingNodeBase* emitterModelSettingNode() const noexcept;
 
   //! Initialize a scene node
-  virtual void initialize() noexcept override;
-
-  //! Print scene data
-  virtual void log() const noexcept override;
+  void initialize() noexcept override;
 
   //! Return the object setting node
   SettingNodeBase* objectSettingNode() noexcept;
@@ -63,7 +60,7 @@ class SceneSettingNode : public SettingNodeBase
   const SettingNodeBase* objectSettingNode() const noexcept;
 
   //! Read the setting data from the stream
-  virtual void readData(std::istream* data_stream) noexcept override;
+  void readData(std::istream* data_stream) noexcept override;
 
   //! Return the rendering method setting node
   SettingNodeBase* renderingMethodSettingNode() noexcept;
@@ -99,10 +96,10 @@ class SceneSettingNode : public SettingNodeBase
   const SettingNodeBase* textureModelSettingNode() const noexcept;
 
   //! Return the setting node type
-  virtual SettingNodeType type() const noexcept override;
+  SettingNodeType type() const noexcept override;
 
   //! Write the setting data to the stream
-  virtual void writeData(std::ostream* data_stream) const noexcept override;
+  void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
   std::string scene_name_;
