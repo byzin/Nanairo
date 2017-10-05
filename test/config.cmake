@@ -13,6 +13,10 @@ function(getTestWarningOption test_warning_flags)
   set(warning_flags "")
   if(Z_CLANG AND Z_VISUAL_STUDIO)
   elseif(Z_CLANG)
+    list(APPEND warning_flags -Wno-float-equal
+                              -Wno-global-constructors
+                              -Wno-zero-as-null-pointer-constant
+                              )
   elseif(Z_GCC)
   endif()
 
@@ -20,7 +24,6 @@ function(getTestWarningOption test_warning_flags)
   # Output variable
   set(${test_warning_flags} ${warning_flags} PARENT_SCOPE)
 endfunction()
-
 
 
 # Build tests

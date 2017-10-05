@@ -51,14 +51,17 @@ void System::initialize(const SettingNodeBase* settings) noexcept
 
   // Thread pool
   {
-    thread_pool_ = std::make_unique<zisc::ThreadPool>(system_settings->numOfThreads());
+    const auto num_of_threads = system_settings->numOfThreads();
+    thread_pool_ = std::make_unique<zisc::ThreadPool>(num_of_threads);
   }
   // Sampler
   {
     const auto num_of_sampler = system_settings->numOfThreads() + 1;
     sampler_list_.reserve(num_of_sampler);
-    for (uint i = 0; i < num_of_sampler; ++i)
-      sampler_list_.emplace_back(zisc::cast<uint64>(system_settings->randomSeed() + i));
+    for (uint i = 0; i < num_of_sampler; ++i) {
+      const auto seed = zisc::cast<uint64>(system_settings->randomSeed()) + i;
+      sampler_list_.emplace_back(seed);
+    }
   }
   // Memory pool
   {
@@ -69,8 +72,8 @@ void System::initialize(const SettingNodeBase* settings) noexcept
   }
   // Image resolution
   {
-    image_width_resolution_ = system_settings->imageWidthResolution();
-    image_height_resolution_ = system_settings->imageHeightResolution();
+    image_resolution_[0] = system_settings->imageWidthResolution();
+    image_resolution_[1] = system_settings->imageHeightResolution();
   }
   // Rendering color mode
   {

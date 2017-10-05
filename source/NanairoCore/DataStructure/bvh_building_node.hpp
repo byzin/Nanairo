@@ -1,5 +1,5 @@
 /*!
-  \file bvh_node.hpp
+  \file bvh_building_node.hpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2017 Sho Ikeda
@@ -7,12 +7,11 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef NANAIRO_BVH_NODE_HPP
-#define NANAIRO_BVH_NODE_HPP
+#ifndef NANAIRO_BVH_BUILDING_NODE_HPP
+#define NANAIRO_BVH_BUILDING_NODE_HPP
 
 // Standard C++ library
 #include <array>
-#include <tuple>
 #include <vector>
 // Nanairo
 #include "aabb.hpp"
@@ -31,14 +30,17 @@ class Object;
  \details
  No detailed.
  */
-class BvhNode
+class BvhBuildingNode
 {
  public:
+  using ObjectList = std::array<const Object*, CoreConfig::maxNumOfNodeObjects()>;
+
+
   //! Create empty node
-  BvhNode() noexcept;
+  BvhBuildingNode() noexcept;
 
   //! Create a leaf node
-  BvhNode(const Object* object) noexcept;
+  BvhBuildingNode(const Object* object) noexcept;
 
 
   //! Add object
@@ -56,11 +58,12 @@ class BvhNode
   //! Return the left child index
   uint32 leftChildIndex() const noexcept;
 
-  //! Return the max num of objects
-  static constexpr uint32 maxNumOfObjects() noexcept;
 
   //! Return the max node index
   static constexpr uint32 maxNodeIndex() noexcept;
+
+  //! Return the max num of objects
+  static constexpr uint32 maxNumOfLeafNodes() noexcept;
 
   //! Return the non object index
   static constexpr uint32 nonObjectIndex() noexcept;
@@ -75,8 +78,7 @@ class BvhNode
   uint32 rightChildIndex() const noexcept;
 
   //! Return the object list
-  const std::array<const Object*, CoreConfig::maxNumOfNodeObjects()>&
-      objectList() const noexcept;
+  const ObjectList& objectList() const noexcept;
 
   //! Return the SAH cost
   Float sahCost() const noexcept;
@@ -98,39 +100,21 @@ class BvhNode
 
  private:
   Aabb bounding_box_;
-  std::array<const Object*, CoreConfig::maxNumOfNodeObjects()> object_list_;
+  ObjectList object_list_;
   uint32 parent_index_,
          left_child_index_,
          right_child_index_;
   float cost_;
 };
 
-using MortonCode = std::tuple<BvhNode*, uint64>;
-using MortonCodeIterator = std::vector<MortonCode>::iterator;
-using NodeIterator = std::vector<BvhNode*>::iterator;
-
-//! Calculate the morton code of the node
-uint64 calc63bitMortonCode(const Float x, const Float y, const Float z) noexcept;
-
 //! Get the bounding box overlapping nodes
-Aabb combineBoundingBoxs(std::vector<BvhNode>::const_iterator begin,
-                         std::vector<BvhNode>::const_iterator end) noexcept;
-
-//! Get the bounding box overlapping nodes
-Aabb combineBoundingBoxs(NodeIterator begin, NodeIterator end) noexcept;
-
-//! Find the split position
-MortonCodeIterator findSplitPosition(const uint64 bit,
-                                     MortonCodeIterator begin,
-                                     MortonCodeIterator end) noexcept;
-
-//! Make a morton code list
-std::vector<MortonCode> makeMortonCodeList(std::vector<BvhNode>& leaf_node_list) noexcept;
+Aabb combineBoundingBoxes(std::vector<BvhBuildingNode>::const_iterator begin,
+                          std::vector<BvhBuildingNode>::const_iterator end) noexcept;
 
 //! \} Core
 
 } // namespace nanairo
 
-#include "bvh_node-inl.hpp"
+#include "bvh_building_node-inl.hpp"
 
-#endif // NANAIRO_BVH_NODE_HPP
+#endif // NANAIRO_BVH_BUILDING_NODE_HPP

@@ -23,24 +23,6 @@ namespace nanairo {
 
 /*!
   */
-void ApproximateAgglomerativeClusteringParameters::readData(
-    std::istream* data_stream) noexcept
-{
-  zisc::read(&epsilon_, data_stream);
-  zisc::read(&delta_, data_stream);
-}
-
-/*!
-  */
-void ApproximateAgglomerativeClusteringParameters::writeData(
-    std::ostream* data_stream) const noexcept
-{
-  zisc::write(&epsilon_, data_stream);
-  zisc::write(&delta_, data_stream);
-}
-
-/*!
-  */
 void AgglomerativeTreeletRestructuringParameters::readData(
     std::istream* data_stream) noexcept
 {
@@ -55,30 +37,6 @@ void AgglomerativeTreeletRestructuringParameters::writeData(
 {
   zisc::write(&treelet_size_, data_stream);
   zisc::write(&optimization_loop_, data_stream);
-}
-
-/*!
-  */
-ApproximateAgglomerativeClusteringParameters&
-BvhSettingNode::approximateAgglomerativeClusteringParameters() noexcept
-{
-  ZISC_ASSERT(bvhType() == BvhType::kApproximateAgglomerativeClustering,
-              "Invalid BVH type is specified.");
-  auto parameter = zisc::cast<ApproximateAgglomerativeClusteringParameters*>(
-      parameters_.get());
-  return *parameter;
-}
-
-/*!
-  */
-const ApproximateAgglomerativeClusteringParameters&
-BvhSettingNode::approximateAgglomerativeClusteringParameters() const noexcept
-{
-  ZISC_ASSERT(bvhType() == BvhType::kApproximateAgglomerativeClustering,
-              "Invalid BVH type is specified.");
-  auto parameter = zisc::cast<const ApproximateAgglomerativeClusteringParameters*>(
-      parameters_.get());
-  return *parameter;
 }
 
 /*!
@@ -139,10 +97,6 @@ void BvhSettingNode::setBvhType(const BvhType type) noexcept
   // Initialize parameters
   parameters_.reset(nullptr);
   switch (bvh_type_) {
-   case BvhType::kApproximateAgglomerativeClustering: {
-    parameters_ = std::make_unique<ApproximateAgglomerativeClusteringParameters>();
-    break;
-   }
    case BvhType::kAgglomerativeTreeletRestructuring: {
     parameters_ = std::make_unique<AgglomerativeTreeletRestructuringParameters>();
     break;

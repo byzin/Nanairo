@@ -15,7 +15,8 @@
 #include <utility>
 // Nanairo
 #include "bvh.hpp"
-#include "bvh_node.hpp"
+#include "bvh_building_node.hpp"
+#include "morton_code.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 
@@ -44,23 +45,23 @@ class BinaryRadixTreeBvh : public Bvh
   //! Build a binary radix tree BVH
   static void constructBinaryRadixTreeBvh(System& system,
                                           const std::vector<Object>& object_list,
-                                          std::vector<BvhNode>& tree) noexcept;
+                                          std::vector<BvhBuildingNode>& tree) noexcept;
 
  private:
   //! Build a binary radix tree BVH
   void constructBvh(System& system,
                     const std::vector<Object>& object_list,
-                    std::vector<BvhNode>& tree) const noexcept override;
+                    std::vector<BvhBuildingNode>& tree) const noexcept override;
 
-  //! Split leaf node list in the morton code
-  template <bool threading>
-  static void splitInMortonCode(System& system,
-                                const uint64 bit,
-                                const uint32 index,
-                                std::vector<BvhNode>& tree,
-                                MortonCodeIterator first,
-                                MortonCodeIterator begin,
-                                MortonCodeIterator end) noexcept;
+  //! Split leaf node list using the morton code
+  template <bool threading = false>
+  static void split(System& system,
+                    uint bit,
+                    const uint32 index,
+                    std::vector<BvhBuildingNode>& tree,
+                    MortonCode::Iterator first,
+                    MortonCode::Iterator begin,
+                    MortonCode::Iterator end) noexcept;
 };
 
 //! \} Core

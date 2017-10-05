@@ -91,10 +91,6 @@ class SettingNodeBase
 
   //! Write the setting data to the stream
   virtual void writeData(std::ostream* data_stream) const noexcept = 0;
-
-
-  static constexpr uint8 kTrue = 1;
-  static constexpr uint8 kFalse = 0;
  
  protected:
   //! Read the string data from the stream

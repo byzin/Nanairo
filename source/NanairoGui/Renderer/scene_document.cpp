@@ -23,20 +23,21 @@
 #include <QtGlobal>
 // Zisc
 #include "zisc/error.hpp"
+#include "NanairoGui/keyword.hpp"
 
 namespace nanairo {
 
 /*!
   */
-bool SceneDocument::checkDocumentInfo(const QString& file_path,
-                                      QString& error_message) noexcept
+bool SceneDocument::isSceneDocument(const QString& file_path,
+                                    QString& error_message) noexcept
 {
   const QFileInfo file_info{file_path};
   if (!file_info.exists()) {
     error_message = QStringLiteral("File does't exist: ") + file_path;
     return false;
   }
-  if (file_info.suffix() != "nana") {
+  if (file_info.suffix() != keyword::nanairoFileFormat) {
     error_message = QStringLiteral("File isn't Nanairo scene file: ") + file_path;
     return false;
   }
@@ -63,7 +64,7 @@ bool SceneDocument::loadDocument(const QString& file_path,
                                  QJsonObject& node,
                                  QString& error_message) noexcept
 {
-  if (!checkDocumentInfo(file_path, error_message))
+  if (!isSceneDocument(file_path, error_message))
     return false;
 
   // Open a scene document

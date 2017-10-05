@@ -180,7 +180,7 @@ std::unique_ptr<NanairoParameters> processCommandLine(
   {
     const auto file_path = parser.value(scene_file_option);
     QString error_message;
-    if (!nanairo::SceneDocument::checkDocumentInfo(file_path, error_message))
+    if (!nanairo::SceneDocument::isSceneDocument(file_path, error_message))
       zisc::raiseError(error_message.toStdString());
     parameters->scene_file_path_ = file_path;
   }

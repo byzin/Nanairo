@@ -44,6 +44,9 @@ using uint32 = std::uint32_t;
 using uint64 = std::uint64_t;
 using Float = @NANAIRO_FLOATING_POINT_TYPE@;
 
+constexpr uint8 kTrue = 1;
+constexpr uint8 kFalse = 0;
+
 // Geometry
 using Vector3 = zisc::Vector<Float, 3>;
 using Vector2 = zisc::Vector<Float, 2>;

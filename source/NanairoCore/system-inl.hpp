@@ -12,6 +12,7 @@
 
 #include "system.hpp"
 // Standard C++ library
+#include <array>
 #include <memory>
 #include <tuple>
 #include <type_traits>
@@ -31,29 +32,30 @@ namespace nanairo {
 //! Calculate the range of indices
 template <typename Integer> inline
 std::tuple<Integer, Integer> System::calcThreadRange(
-    const Integer length,
-    const Integer num_of_threads,
+    const Integer range,
+    const uint num_of_threads,
     const int thread_id) noexcept
 {
-  static_assert(std::is_integral<Integer>::value,
-                "The Integer is not integer type.");
+  static_assert(std::is_integral<Integer>::value, "The Integer isn't integer type.");
   // Set the calculation range 
-  const uint id = zisc::cast<Integer>(thread_id);
-  ZISC_ASSERT(num_of_threads < length,
-              "The num of threads is more than the length.");
-  const uint begin = id * (length / num_of_threads);
-  const uint end = (id + 1) * (length / num_of_threads) +
-      (((id + 1) == num_of_threads) ? (length % num_of_threads) : 0);
+  const Integer threads = zisc::cast<Integer>(num_of_threads);
+  const Integer id = zisc::cast<Integer>(thread_id);
+  ZISC_ASSERT(0 < range, "The range is minus.");
+  ZISC_ASSERT(threads < range, "The num of threads is more than the range.");
+  const Integer per_thread = range / threads;
+  const Integer begin = id * per_thread;
+  const Integer end = (begin + per_thread) + 
+      (((id + 1) == threads) ? (range % threads) : 0);
   return std::make_tuple(begin, end);
 }
 
 //! Calculate the range of indices
 template <typename Integer> inline
 std::tuple<Integer, Integer> System::calcThreadRange(
-    const Integer num_of_indices,
+    const Integer range,
     const int thread_id) const noexcept
 {
-  return calcThreadRange(num_of_indices, threadPool().numOfThreads(), thread_id);
+  return calcThreadRange(range, threadPool().numOfThreads(), thread_id);
 }
 
 /*!
@@ -77,13 +79,22 @@ Sampler& System::globalSampler() noexcept
 }
 
 /*!
+  */
+inline
+const std::array<uint, 2>& System::imageResolution() const noexcept
+{
+  return image_resolution_;
+}
+
+/*!
   \details
   No detailed.
   */
 inline
 uint System::imageHeightResolution() const noexcept
 {
-  return zisc::cast<uint>(image_height_resolution_);
+  const auto& image_resolution = imageResolution();
+  return image_resolution[1];
 }
 
 /*!
@@ -93,7 +104,8 @@ uint System::imageHeightResolution() const noexcept
 inline
 uint System::imageWidthResolution() const noexcept
 {
-  return zisc::cast<uint>(image_width_resolution_);
+  const auto& image_resolution = imageResolution();
+  return image_resolution[0];
 }
 
 /*!

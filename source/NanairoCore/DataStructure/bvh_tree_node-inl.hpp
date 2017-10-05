@@ -14,9 +14,11 @@
 // Standard C++ library
 #include <limits>
 // Zisc
+#include "zisc/error.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "aabb.hpp"
+#include "bvh_building_node.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 
 namespace nanairo {
@@ -26,7 +28,9 @@ namespace nanairo {
   No detailed.
   */
 inline
-BvhTreeNode::BvhTreeNode() noexcept
+BvhTreeNode::BvhTreeNode() noexcept :
+    object_info_{0},
+    failure_next_index_{0}
 {
 }
 
@@ -47,7 +51,8 @@ const Aabb& BvhTreeNode::boundingBox() const noexcept
 inline
 bool BvhTreeNode::isLeafNode() const noexcept
 {
-  return numOfObjects() != 0;
+  const bool is_leaf_node = objectInfo() != 0;
+  return is_leaf_node;
 }
 
 /*!
@@ -67,7 +72,8 @@ uint32 BvhTreeNode::failureNextIndex() const noexcept
 inline
 uint BvhTreeNode::numOfObjects() const noexcept
 {
-  return zisc::cast<uint>(num_of_objects_);
+  const uint32 num_of_objects = objectInfo() >> numOfObjectsShift();
+  return zisc::cast<uint>(num_of_objects);
 }
 
 /*!
@@ -77,7 +83,8 @@ uint BvhTreeNode::numOfObjects() const noexcept
 inline
 uint32 BvhTreeNode::objectIndex() const noexcept
 {
-  return object_index_;
+  const uint32 object_index = objectInfo() & objectIndexMask();
+  return object_index;
 }
 
 /*!
@@ -101,23 +108,56 @@ void BvhTreeNode::setFailureNextIndex(const uint32 failure_next_index) noexcept
 }
 
 /*!
-  \details
-  No detailed.
   */
 inline
-void BvhTreeNode::setNumOfObjects(const uint num_of_objects) noexcept
+void BvhTreeNode::setObjectInfo(const uint32 object_index,
+                                const uint num_of_objects) noexcept
 {
-  num_of_objects_ = zisc::cast<uint32>(num_of_objects);
+  ZISC_ASSERT(object_index <= objectIndexMask(),
+              "The object index is exceeded the limit.");
+  const uint32 objects = zisc::cast<uint32>(num_of_objects) << numOfObjectsShift();
+  object_info_ = objects | object_index;
 }
 
 /*!
-  \details
-  No detailed.
   */
 inline
-void BvhTreeNode::setObjectIndex(const uint32 object_index) noexcept
+constexpr uint32 BvhTreeNode::numOfObjectsMask() noexcept
 {
-  object_index_ = object_index;
+  uint32 mask = objectIndexMask();
+  mask = ~mask;
+  return mask;
+}
+
+/*!
+  */
+inline
+constexpr uint32 BvhTreeNode::numOfObjectsShift() noexcept
+{
+  uint32 shift = 0;
+  uint32 mask = numOfObjectsMask();
+  while ((mask & zisc::cast<uint32>(0b01)) != zisc::cast<uint32>(0b01)) {
+    ++shift;
+    mask = mask >> 1;
+  }
+  return shift;
+}
+
+/*!
+  */
+inline
+constexpr uint32 BvhTreeNode::objectIndexMask() noexcept
+{
+  constexpr uint32 mask = BvhBuildingNode::maxNumOfLeafNodes();
+  return mask;
+}
+
+/*!
+  */
+inline
+uint32 BvhTreeNode::objectInfo() const noexcept
+{
+  return object_info_;
 }
 
 } // namespace nanairo

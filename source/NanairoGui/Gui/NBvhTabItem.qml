@@ -50,14 +50,6 @@ Rectangle {
     }
 
     Tab {
-      title: Nanairo.approximateAgglomerativeClusteringBvh
-      active: true
-      NApproximateAgglomerativeClusteringBvhItem {
-        color: bvh_tab_item.color
-      }
-    }
-
-    Tab {
       title: Nanairo.agglomerativeTreeletRestructuringBvh
       active: true
       NAgglomerativeTreeletRestructuringBvhItem {

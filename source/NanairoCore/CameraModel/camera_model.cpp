@@ -99,7 +99,7 @@ void CameraModel::initialize(const SettingNodeBase* settings) noexcept
   \details
   No detailed.
   */
-std::unique_ptr<CameraModel> CameraModel::makeModel(
+std::unique_ptr<CameraModel> CameraModel::makeCamera(
     const SettingNodeBase* settings) noexcept
 {
   const auto camera_settings = castNode<CameraSettingNode>(settings);

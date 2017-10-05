@@ -107,7 +107,7 @@ class CameraModel
   const Vector2& jittering() const noexcept;
 
   //! Make a camera
-  static std::unique_ptr<CameraModel> makeModel(const SettingNodeBase* settings)
+  static std::unique_ptr<CameraModel> makeCamera(const SettingNodeBase* settings)
       noexcept;
 
   //! Return the camera position

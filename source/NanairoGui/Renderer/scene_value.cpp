@@ -82,25 +82,12 @@ void SceneValue::toBvhSetting(const QJsonObject& value,
   const auto bvh_value = toObject(value, keyword::bvh);
   {
     const auto bvh_type = toString(bvh_value, keyword::type);
-    const BvhType bvh =
-        (bvh_type == keyword::binaryRadixTreeBvh)
-            ? BvhType::kBinaryRadixTree :
-        (bvh_type == keyword::approximateAgglomerativeClusteringBvh)
-            ? BvhType::kApproximateAgglomerativeClustering
-            : BvhType::kAgglomerativeTreeletRestructuring;
+    const BvhType bvh = (bvh_type == keyword::binaryRadixTreeBvh)
+        ? BvhType::kBinaryRadixTree
+        : BvhType::kAgglomerativeTreeletRestructuring;
     bvh_setting->setBvhType(bvh);
   }
   switch (bvh_setting->bvhType()) {
-   case BvhType::kApproximateAgglomerativeClustering: {
-    auto& parameters = bvh_setting->approximateAgglomerativeClusteringParameters();
-    {
-      parameters.delta_ = toInt<uint32>(bvh_value, keyword::delta);
-    }
-    {
-      parameters.epsilon_ = toFloat<double>(bvh_value, keyword::epsilon);
-    }
-    break;
-   }
    case BvhType::kAgglomerativeTreeletRestructuring: {
     auto& parameters = bvh_setting->agglomerativeTreeletRestructuringParameters();
     {
@@ -470,8 +457,7 @@ void SceneValue::toSingleObjectSetting(const QJsonObject& object_value,
     auto& parameters = object_setting->meshParameters();
     {
       const auto smoothing = toBool(object_value, keyword::smoothing);
-      parameters.smoothing_ = (smoothing) ? SettingNodeBase::kTrue
-                                          : SettingNodeBase::kFalse;
+      parameters.smoothing_ = (smoothing) ? kTrue : kFalse;
     }
     {
       const auto object_file_path = toString(object_value, keyword::objectFilePath);

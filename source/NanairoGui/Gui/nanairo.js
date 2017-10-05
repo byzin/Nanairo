@@ -97,7 +97,6 @@ var kernelType = "@kernelType@";
 // BVH
 var bvh = "@bvh@";
     var binaryRadixTreeBvh = "@binaryRadixTreeBvh@";
-    var approximateAgglomerativeClusteringBvh = "@approximateAgglomerativeClusteringBvh@";
     var agglomerativeTreeletRestructuringBvh = "@agglomerativeTreeletRestructuringBvh@";
         var treeletSize = "@treeletSize@";
         var optimizationLoopCount = "@optimizationLoopCount@";

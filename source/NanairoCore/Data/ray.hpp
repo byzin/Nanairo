@@ -10,6 +10,8 @@
 #ifndef NANAIRO_RAY_HPP
 #define NANAIRO_RAY_HPP
 
+// Standard C++ library
+#include <array>
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Geometry/point.hpp"
@@ -37,8 +39,8 @@ class Ray
   //! Return the direction
   const Vector3& direction() const noexcept;
 
-  //! Return the inverse direction vector
-  const Vector3& inverseDirection() const noexcept;
+  //! Return the inverted direction
+  const Vector3& invDirection() const noexcept;
 
   //! Check if the ray is alive
   bool isAlive() const noexcept;
@@ -56,17 +58,22 @@ class Ray
   void setOrigin(const Point3& origin) noexcept;
 
   //! Return the direction sign
-  const uint8* sign() const noexcept;
+  std::array<uint8, 3> sign() const noexcept;
 
  private:
-  //! Set inverse direction.
-  void setInverseDirection() noexcept;
+  //! Initialize the ray
+  void initialize() noexcept;
+
+  //! Initialize the inverse direction
+  void initInvDirection() noexcept;
+
 
   Point3 origin_;
   Vector3 direction_,
-          inverse_direction_;
-  uint8 sign_[3];
-  bool is_alive_;
+          inv_direction_;
+  std::array<uint8, 3> sign_;
+  uint8 is_alive_;
+  uint8 padding_[4];
 };
 
 //! \} Core

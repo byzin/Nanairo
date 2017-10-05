@@ -103,7 +103,6 @@ function(getNanairoKeywords nanairo_keyword_list)
       # BVH
       bvh "Bvh"
           binaryRadixTreeBvh "BinaryRadixTreeBvh"
-          approximateAgglomerativeClusteringBvh "ApproximateAgglomerativeClusteringBvh"
           agglomerativeTreeletRestructuringBvh "AgglomerativeTreeletRestructuringBvh"
               treeletSize "TreeletSize"
               optimizationLoopCount "OptimizationLoopCount"

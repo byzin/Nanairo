@@ -54,16 +54,28 @@ class BvhTreeNode
   //! Set the failure next index
   void setFailureNextIndex(const uint32 failure_next_index) noexcept;
 
-  //! Set the num of objects
-  void setNumOfObjects(const uint num_of_objects) noexcept;
-
-  //! Set the first object index
-  void setObjectIndex(const uint32 object_index) noexcept;
+  //! Set the object info
+  void setObjectInfo(const uint32 object_index, const uint num_of_objects) noexcept;
 
  private:
+  //! Initialize the node
+  void initialize() noexcept;
+
+  //! Return the number of objects mask
+  static constexpr uint32 numOfObjectsMask() noexcept;
+
+  //! Return the number of objects shift
+  static constexpr uint32 numOfObjectsShift() noexcept;
+
+  //! Return the object index mask
+  static constexpr uint32 objectIndexMask() noexcept;
+
+  //! Return the bits of the object info
+  uint32 objectInfo() const noexcept;
+
+
   Aabb bounding_box_;
-  uint32 object_index_,
-         num_of_objects_;
+  uint32 object_info_;
   uint32 failure_next_index_;
 };
 

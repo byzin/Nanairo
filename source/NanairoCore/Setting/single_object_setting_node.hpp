@@ -41,7 +41,7 @@ struct MeshParameters : public NodeParameterBase
   std::vector<std::array<double, 3>> vertex_list_;
   std::vector<std::array<double, 3>> vnormal_list_;
   std::vector<std::array<double, 2>> vuv_list_;
-  uint8 smoothing_ = SettingNodeBase::kFalse;
+  uint8 smoothing_ = kFalse;
 };
 
 /*!

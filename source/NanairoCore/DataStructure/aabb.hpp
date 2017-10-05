@@ -10,11 +10,9 @@
 #ifndef NANAIRO_AABB_HPP
 #define NANAIRO_AABB_HPP
 
-// Standard C++ library
-#include <tuple>
-#include <utility>
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/intersection_test_result.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 
 namespace nanairo {
@@ -44,7 +42,7 @@ class Aabb
   Point3 centroid() const noexcept;
 
   //! Test ray-AABB intersection
-  std::tuple<bool, Float> testIntersection(const Ray& ray) const noexcept;
+  IntersectionTestResult testIntersection(const Ray& ray) const noexcept;
 
   //! Return the longest axis number
   uint longestAxis() const noexcept;
@@ -69,7 +67,7 @@ class Aabb
 };
 
 //! Combine bounding boxs
-Aabb combineBoundingBox(const Aabb& a, const Aabb& b) noexcept;
+Aabb combine(const Aabb& a, const Aabb& b) noexcept;
 
 //! \} Core
 

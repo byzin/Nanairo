@@ -69,7 +69,7 @@ void Scene::initializeCamera(System& system, const SettingNodeBase* settings) no
   // Film
   film_ = std::make_unique<Film>(system, object_settings->objectSettingNode());
   // Camera
-  camera_ = CameraModel::makeModel(object_settings->objectSettingNode());
+  camera_ = CameraModel::makeCamera(object_settings->objectSettingNode());
   camera_->setFilm(film_.get());
   // Transformation
   const auto& transformation_list = object_settings->transformationList();

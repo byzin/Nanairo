@@ -19,7 +19,8 @@
 // Nanairo
 #include "aabb.hpp"
 #include "bvh.hpp"
-#include "bvh_node.hpp"
+#include "bvh_building_node.hpp"
+#include "morton_code.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Data/object.hpp"
@@ -43,22 +44,30 @@ BinaryRadixTreeBvh::BinaryRadixTreeBvh(const SettingNodeBase* settings) noexcept
 void BinaryRadixTreeBvh::constructBinaryRadixTreeBvh(
     System& system,
     const std::vector<Object>& object_list,
-    std::vector<BvhNode>& tree) noexcept
+    std::vector<BvhBuildingNode>& tree) noexcept
 {
-  // Create leaf node list
-  std::vector<BvhNode> leaf_node_list;
-  leaf_node_list.reserve(object_list.size());
-  for (const auto& object : object_list)
-    leaf_node_list.emplace_back(&object);
+  const auto num_of_nodes = 2 * object_list.size() - 1;
+  tree.resize(num_of_nodes);
 
-  auto morton_code_list = makeMortonCodeList(leaf_node_list);
+  // Make a morton code list
+  std::vector<MortonCode> morton_code_list;
+  std::vector<BvhBuildingNode> leaf_node_list;
+  {
+    leaf_node_list.reserve(object_list.size());
+    for (const auto& object : object_list)
+      leaf_node_list.emplace_back(&object);
+    morton_code_list = MortonCode::makeList(leaf_node_list);
+  }
 
   constexpr bool threading = threadingIsEnabled();
-  auto first = morton_code_list.begin();
-  auto begin = first;
-  auto end = morton_code_list.end();
-  splitInMortonCode<threading>(system, 63, 0, tree, first, begin, end);
-  setBoundingBox<threading>(system, tree, 0);
+  {
+    auto first = morton_code_list.begin();
+    auto begin = first;
+    auto end = morton_code_list.end();
+    constexpr uint key_bit = 8 * sizeof(MortonCode::CodeType) - 1;
+    split<threading>(system, key_bit, 0, tree, first, begin, end);
+  }
+  setupBoundingBoxes<threading>(system, tree, 0);
 }
 
 /*!
@@ -67,10 +76,8 @@ void BinaryRadixTreeBvh::constructBinaryRadixTreeBvh(
   */
 void BinaryRadixTreeBvh::constructBvh(System& system,
                                       const std::vector<Object>& object_list,
-                                      std::vector<BvhNode>& tree) const noexcept
+                                      std::vector<BvhBuildingNode>& tree) const noexcept
 {
-  const auto num_of_nodes = object_list.size() * 2 - 1;
-  tree.resize(num_of_nodes);
   constructBinaryRadixTreeBvh(system, object_list, tree);
 }
 
@@ -79,84 +86,79 @@ void BinaryRadixTreeBvh::constructBvh(System& system,
   No detailed.
   */
 template <bool threading>
-void BinaryRadixTreeBvh::splitInMortonCode(System& system,
-                                           const uint64 bit,
-                                           const uint32 index,
-                                           std::vector<BvhNode>& tree,
-                                           MortonCodeIterator first,
-                                           MortonCodeIterator begin,
-                                           MortonCodeIterator end) noexcept
+void BinaryRadixTreeBvh::split(System& system,
+                               uint bit,
+                               const uint32 index,
+                               std::vector<BvhBuildingNode>& tree,
+                               MortonCode::Iterator first,
+                               MortonCode::Iterator begin,
+                               MortonCode::Iterator end) noexcept
 {
   using zisc::cast;
 
-  // Check if node is leaf node
-  if ((tree.size() >> 1) <= index) {
-    tree[index] = std::move(*std::get<0>(*begin));
-    return;
-  }
+  const auto size = std::distance(begin, end);
+  const uint32 internal_node_size = cast<uint32>(tree.size() >> 1);
 
-  // Split leaf node list in the morton code
-  auto split_position = findSplitPosition(bit, begin, end);
-  if (split_position == begin || split_position == end) {
-    if (bit != 1) {
-      const auto next_bit = bit - 1;
-      splitInMortonCode<threading>(system, next_bit, index, tree, first, begin, end);
-      return;
+  ZISC_ASSERT(index < tree.size(), "The index exceeds the tree size: ", index);
+  ZISC_ASSERT(0 < size, "The size of the range isn't positive: ", size);
+
+  if (1 < size) {
+    // Internal node
+    // Split leaf node list using the morton code
+    auto split_position = end;
+    for (;(0 < bit) && (split_position == begin || split_position == end); --bit)
+      split_position = MortonCode::findSplit(bit, begin, end);
+    if ((bit == 0) && (split_position == begin || split_position == end))
+      split_position = begin + (size >> 1);
+
+    uint32 right_child_index = cast<uint32>(std::distance(first, split_position));
+    uint32 left_child_index = right_child_index - 1;
+    left_child_index = (std::distance(begin, split_position) == 1)
+        ? left_child_index + internal_node_size // Leaf node
+        : left_child_index; // Internal node
+    right_child_index = (std::distance(split_position, end) == 1)
+        ? right_child_index + internal_node_size // Leaf node
+        : right_child_index; // Internal node
+    if (threading) {
+      auto split_left_range =
+      [&system, bit, left_child_index, &tree, first, begin, split_position]()
+      {
+        const auto key = (0 < bit) ? bit - 1 : bit;
+        split<>(system, key, left_child_index, tree, first, begin, split_position);
+      };
+      auto split_right_range =
+      [&system, bit, right_child_index, &tree, first, split_position, end]()
+      {
+        const auto key = (0 < bit) ? bit - 1 : bit;
+        split<>(system, key, right_child_index, tree, first, split_position, end);
+      };
+
+      auto& thread_pool = system.threadPool();
+      auto left_result = thread_pool.enqueue<void>(split_left_range);
+      auto right_result = thread_pool.enqueue<void>(split_right_range);
+      left_result.get();
+      right_result.get();
     }
     else {
-      const auto length = std::distance(begin, end);
-      split_position = begin + (length >> 1);
+      const auto key = (0 < bit) ? bit - 1 : bit;
+      split<>(system, key, left_child_index, tree, first, begin, split_position);
+      split<>(system, key, right_child_index, tree, first, split_position, end);
     }
-  }
 
-  const uint64 next_bit = (bit != 1) ? bit - 1 : bit;
-  uint32 right_child_index = cast<uint32>(std::distance(first, split_position));
-  uint32 left_child_index = cast<uint32>(right_child_index - 1);
-  left_child_index = (std::distance(begin, split_position) == 1)
-      ? left_child_index + cast<uint32>(tree.size() >> 1)
-      : left_child_index;
-  right_child_index = (std::distance(split_position, end) == 1)
-      ? right_child_index + cast<uint32>(tree.size() >> 1)
-      : right_child_index;
-  ZISC_ASSERT(left_child_index < tree.size(), "BVH buffer is overrun!.");
-  ZISC_ASSERT(right_child_index < tree.size(), "BVH buffer is overrun!.");
-
-  auto split_in_left_morton_code =
-  [&system, next_bit, left_child_index, &tree, first, begin, split_position]()
-  {
-    splitInMortonCode<false>(
-        system, next_bit, left_child_index, tree, first, begin, split_position);
-  };
-  auto split_in_right_morton_code =
-  [&system, next_bit, right_child_index, &tree, first, split_position, end]()
-  {
-    splitInMortonCode<false>(
-        system, next_bit, right_child_index, tree, first, split_position, end);
-  };
-
-  if (threading) {
-    auto& thread_pool = system.threadPool();
-    auto left_result = thread_pool.enqueue<void>(split_in_left_morton_code);
-    auto right_result = thread_pool.enqueue<void>(split_in_right_morton_code);
-    left_result.get();
-    right_result.get();
+    ZISC_ASSERT(tree[index].parentIndex() == BvhBuildingNode::nonObjectIndex(),
+                "The node is rewrited.");
+    tree[index].setLeftChildIndex(left_child_index);
+    tree[index].setRightChildIndex(right_child_index);
+    // Child nodes
+    tree[left_child_index].setParentIndex(index);
+    tree[right_child_index].setParentIndex(index);
   }
   else {
-    split_in_left_morton_code();
-    split_in_right_morton_code();
+    // Leaf node
+    // Check if node is leaf node
+    ZISC_ASSERT(internal_node_size <= index, "The index is for internal: ", index);
+    tree[index] = *(begin->node());
   }
-  ZISC_ASSERT(tree[left_child_index].parentIndex() == BvhNode::nonObjectIndex(),
-              "BVH node rewrite.");
-  ZISC_ASSERT(tree[right_child_index].parentIndex() == BvhNode::nonObjectIndex(),
-              "BVH node rewrite.");
-
-  // Left child node
-  tree[index].setLeftChildIndex(left_child_index);
-  tree[left_child_index].setParentIndex(index);
-
-  // Right child node
-  tree[index].setRightChildIndex(right_child_index);
-  tree[right_child_index].setParentIndex(index);
 }
 
 } // namespace nanairo

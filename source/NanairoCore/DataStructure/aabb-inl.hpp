@@ -11,14 +11,14 @@
 #define NANAIRO_AABB_INL_HPP
 
 #include "aabb.hpp"
-// Standard C++ library
-#include <tuple>
 // Zisc
 #include "zisc/math.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/intersection_test_result.hpp"
 #include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 
 namespace nanairo {
 
@@ -29,7 +29,7 @@ namespace nanairo {
 inline
 Point3 Aabb::centroid() const noexcept
 {
-  return point_[0] + (point_[1] - point_[0]) * 0.5;
+  return point_[0] + 0.5 * (point_[1] - point_[0]);
 }
 
 /*!
@@ -38,16 +38,28 @@ Point3 Aabb::centroid() const noexcept
   http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-box-intersection/
   */
 inline
-std::tuple<bool, Float> Aabb::testIntersection(const Ray& ray) const noexcept
+IntersectionTestResult Aabb::testIntersection(const Ray& ray) const noexcept
 {
+  const auto& origin = ray.origin();
+  const auto& inv_dir = ray.invDirection();
   const auto s = ray.sign();
-  const Point3 min_p{point_[s[0]][0], point_[s[1]][1], point_[s[2]][2]};
-  const Point3 max_p{point_[1-s[0]][0], point_[1-s[1]][1], point_[1-s[2]][2]};
-  auto t0 = (min_p - ray.origin()).data() * ray.inverseDirection().data();
-  auto t1 = (max_p - ray.origin()).data() * ray.inverseDirection().data();
-  const auto tmin = zisc::max(zisc::max(t0[0], t0[1]), t0[2]);
-  const auto tmax = zisc::min(zisc::min(t1[0], t1[1]), t1[2]);
-  return std::make_tuple(tmin <= tmax, tmin);
+
+  Float tmin = 0.0;
+  {
+    const Point3 min_p{point_[s[0]][0], point_[s[1]][1], point_[s[2]][2]};
+    auto t0 = (min_p - origin).data() * inv_dir.data();
+    tmin = zisc::max(zisc::max(t0[0], t0[1]), t0[2]);
+  }
+  Float tmax = 0.0;
+  {
+    const Point3 max_p{point_[1-s[0]][0], point_[1-s[1]][1], point_[1-s[2]][2]};
+    auto t1 = (max_p - origin).data() * inv_dir.data();
+    tmax = zisc::min(zisc::min(t1[0], t1[1]), t1[2]);
+  }
+
+  const auto result = (tmin <= tmax) ? IntersectionTestResult{tmin}
+                                     : IntersectionTestResult{};
+  return result;
 }
 
 /*!

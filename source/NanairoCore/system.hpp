@@ -11,6 +11,7 @@
 #define NANAIRO_SYSTEM_HPP
 
 // Standard C++ library
+#include <array>
 #include <memory>
 #include <tuple>
 #include <vector>
@@ -55,13 +56,13 @@ class System
   // System
   //! Calculate the range of indices
   template <typename Integer>
-  static std::tuple<Integer, Integer> calcThreadRange(const Integer num,
-                                                      const Integer num_of_threads,
+  static std::tuple<Integer, Integer> calcThreadRange(const Integer range,
+                                                      const uint num_of_threads,
                                                       const int thread_id) noexcept;
 
   //! Calculate the range of indices
   template <typename Integer>
-  std::tuple<Integer, Integer> calcThreadRange(const Integer num,
+  std::tuple<Integer, Integer> calcThreadRange(const Integer range,
                                                const int thread_id) const noexcept;
 
   //! Return the global memory pool
@@ -69,6 +70,9 @@ class System
 
   //! Return the global sampler
   Sampler& globalSampler() noexcept;
+
+  //! Return the image resolution 
+  const std::array<uint, 2>& imageResolution() const noexcept;
 
   //! Return the image height resolution
   uint imageHeightResolution() const noexcept;
@@ -117,8 +121,7 @@ class System
   std::unique_ptr<zisc::ThreadPool> thread_pool_;
   std::unique_ptr<XyzColorMatchingFunction> xyz_color_matching_function_;
   Float gamma_;
-  uint32 image_width_resolution_,
-         image_height_resolution_;
+  std::array<uint, 2> image_resolution_;
   RenderingColorMode color_mode_;
   ColorSpaceType color_space_;
 };

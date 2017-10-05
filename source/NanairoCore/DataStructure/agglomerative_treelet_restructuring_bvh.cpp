@@ -22,6 +22,7 @@
 // Nanairo
 #include "aabb.hpp"
 #include "binary_radix_tree_bvh.hpp"
+#include "bvh_building_node.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Data/object.hpp"
@@ -43,6 +44,16 @@ AgglomerativeTreeletRestructuringBvh::AgglomerativeTreeletRestructuringBvh(
 }
 
 /*!
+  */
+AgglomerativeTreeletRestructuringBvh::RestructuringData::RestructuringData(
+    const uint treelet_size) noexcept
+{
+  inner_index_list_.resize(treelet_size - 1);
+  leaf_index_list_.resize(treelet_size);
+  distance_matrix_.resize((treelet_size * (treelet_size - 1)) / 2);
+}
+
+/*!
   \details
   No detailed.
   */
@@ -51,7 +62,7 @@ void AgglomerativeTreeletRestructuringBvh::buildRelationship(
     const uint32 parent_index,
     const uint32 left_child_index,
     const uint32 right_child_index,
-    std::vector<BvhNode>& tree) const noexcept
+    std::vector<BvhBuildingNode>& tree) const noexcept
 {
   auto& parent = tree[parent_index];
   auto& left_child = tree[left_child_index];
@@ -59,7 +70,8 @@ void AgglomerativeTreeletRestructuringBvh::buildRelationship(
 
   parent.setLeftChildIndex(left_child_index);
   parent.setRightChildIndex(right_child_index);
-  parent.setBoundingBox(combine(left_child.boundingBox(), right_child.boundingBox()));
+  parent.setBoundingBox(combine(left_child.boundingBox(),
+                                right_child.boundingBox()));
 
   left_child.setParentIndex(parent_index);
   right_child.setParentIndex(parent_index);
@@ -69,28 +81,30 @@ void AgglomerativeTreeletRestructuringBvh::buildRelationship(
   \details
   No detailed.
   */
+inline
+Float AgglomerativeTreeletRestructuringBvh::calcNodeDistance(
+    const BvhBuildingNode& lhs,
+    const BvhBuildingNode& rhs) const noexcept
+{
+  return combine(lhs.boundingBox(), rhs.boundingBox()).surfaceArea();
+}
+
+/*!
+  \details
+  No detailed.
+  */
 void AgglomerativeTreeletRestructuringBvh::constructBvh(
     System& system,
     const std::vector<Object>& object_list,
-    std::vector<BvhNode>& tree) const noexcept
+    std::vector<BvhBuildingNode>& tree) const noexcept
 {
-  // Allocate memory
-  const auto num_of_nodes = object_list.size() * 2 - 1;
-  tree.resize(num_of_nodes);
-
+  // Make a simple BVH tree using fast construction algorithm
   BinaryRadixTreeBvh::constructBinaryRadixTreeBvh(system, object_list, tree);
 
-  std::vector<uint> inner_index_list;
-  std::vector<uint> leaf_index_list;
-  std::vector<Float> distance_matrix;
-  inner_index_list.reserve(treeletSize() - 1);
-  leaf_index_list.reserve(treeletSize());
-  distance_matrix.resize((treeletSize() * (treeletSize() - 1)) / 2);
-
+  RestructuringData data{treeletSize()};;
   for (uint i = 0; i < optimizationLoopCount(); ++i) {
     constexpr bool threading = threadingIsEnabled();
-    restructureTreelet<threading>(
-        system, 0, inner_index_list, leaf_index_list, distance_matrix, tree);
+    restructureTreelet<threading>(system, 0, data, tree);
   }
 }
 
@@ -98,19 +112,19 @@ void AgglomerativeTreeletRestructuringBvh::constructBvh(
   \details
   No detailed.
   */
-void AgglomerativeTreeletRestructuringBvh::constructOptimalTree(
-    std::vector<uint32>& inner_index_list,
-    std::vector<uint32>& leaf_index_list,
-    std::vector<Float>& distance_matrix,
-    std::vector<BvhNode>& tree) const noexcept
+void AgglomerativeTreeletRestructuringBvh::constructOptimalTreelet(
+    RestructuringData& data,
+    std::vector<BvhBuildingNode>& tree) const noexcept
 {
-  using zisc::cast;
+  initializeDistanceMatrix(tree, data);
 
-  initializeDistanceMatrix(leaf_index_list, tree, distance_matrix);
+  auto& inner_index_list = data.inner_index_list_;
+  auto& leaf_index_list = data.leaf_index_list_;
+  auto& distance_matrix = data.distance_matrix_;
   while (true) {
     // Find best match
-    const auto position = findBestMatch(cast<uint>(leaf_index_list.size()),
-                                        distance_matrix);
+    const uint num_of_leafs = zisc::cast<uint>(leaf_index_list.size());
+    const auto position = findBestMatch(num_of_leafs, distance_matrix);
     const auto row = std::get<0>(position);
     const auto column = std::get<1>(position);
     ZISC_ASSERT(column < row, "Column must be smaller than row.");
@@ -128,7 +142,7 @@ void AgglomerativeTreeletRestructuringBvh::constructOptimalTree(
     leaf_index_list.pop_back();
     if (leaf_index_list.size() == 2)
       break;
-    updateDistanceMatrix(leaf_index_list, tree, row, column, distance_matrix);
+    updateDistanceMatrix(tree, row, column, data);
   }
   ZISC_ASSERT(inner_index_list.size() == 1, 
               "The construction algorithm is not yet completed.");
@@ -140,15 +154,15 @@ void AgglomerativeTreeletRestructuringBvh::constructOptimalTree(
   No detailed.
   */
 std::tuple<uint, uint> AgglomerativeTreeletRestructuringBvh::findBestMatch(
-    const uint n,
+    const uint num_of_leafs,
     const std::vector<Float>& distance_matrix) const noexcept
 {
-  ZISC_ASSERT(2 < n, "Lack of leaf nodes.");
+  ZISC_ASSERT(2 < num_of_leafs, "Lack of leaf nodes.");
   uint row = 1,
        column = 0;
   uint index = 1;
   Float min_distance = distance_matrix[0];
-  for (uint r = 2; r < n; ++r) {
+  for (uint r = 2; r < num_of_leafs; ++r) {
     for (uint c = 0; c < r; ++c) {
       const Float distance = distance_matrix[index];
       if (distance < min_distance) {
@@ -159,7 +173,7 @@ std::tuple<uint, uint> AgglomerativeTreeletRestructuringBvh::findBestMatch(
       ++index;
     }
   }
-  ZISC_ASSERT(column < row, "Column must be smaller than row.");
+  ZISC_ASSERT(column < row, "The column must be smaller than the row.");
   return std::make_tuple(row, column);
 }
 
@@ -170,11 +184,13 @@ std::tuple<uint, uint> AgglomerativeTreeletRestructuringBvh::findBestMatch(
 void AgglomerativeTreeletRestructuringBvh::formTreelet(
     const uint treelet_size,
     const uint32 root_index,
-    const std::vector<BvhNode>& tree,
-    std::vector<uint>& inner_index_list,
-    std::vector<uint>& leaf_index_list) const noexcept
+    const std::vector<BvhBuildingNode>& tree,
+    RestructuringData& data) const noexcept
 {
   ZISC_ASSERT(3 <= treelet_size, "Treelet size is small: ", treelet_size);
+
+  auto& inner_index_list = data.inner_index_list_;
+  auto& leaf_index_list = data.leaf_index_list_;
 
   inner_index_list.clear();
   leaf_index_list.clear();
@@ -186,7 +202,7 @@ void AgglomerativeTreeletRestructuringBvh::formTreelet(
 
   while (leaf_index_list.size() < treelet_size) {
     uint32 inner_i = 0;
-    Float max_surface_area = std::numeric_limits<Float>::min();
+    Float max_surface_area = 0.0;
     // Choose the treelet leaf with the largest surface area
     for (uint i = 0; i < leaf_index_list.size(); ++i) {
       const auto& node = tree[leaf_index_list[i]];
@@ -204,26 +220,13 @@ void AgglomerativeTreeletRestructuringBvh::formTreelet(
     ZISC_ASSERT(!inner_node.isLeafNode(), "The selected node is leaf node.");
     inner_index_list.push_back(inner_index);
     leaf_index_list[inner_i] = leaf_index_list.back();
-    leaf_index_list.pop_back();
-    leaf_index_list.push_back(inner_node.leftChildIndex());
+    leaf_index_list.back() = inner_node.leftChildIndex();
     leaf_index_list.push_back(inner_node.rightChildIndex());
   }
   ZISC_ASSERT(inner_index_list.size() == (treelet_size - 1), 
               "The number of inner nodes is invalid");
   ZISC_ASSERT(leaf_index_list.size() == treelet_size, 
               "The number of leaf nodes is invalid");
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-Float AgglomerativeTreeletRestructuringBvh::getNodeDistance(
-    const BvhNode& node1,
-    const BvhNode& node2) const noexcept
-{
-  return combine(node1.boundingBox(), node2.boundingBox()).surfaceArea();
 }
 
 /*!
@@ -251,21 +254,20 @@ void AgglomerativeTreeletRestructuringBvh::initialize(
   No detailed.
   */
 void AgglomerativeTreeletRestructuringBvh::initializeDistanceMatrix(
-    const std::vector<uint>& leaf_index_list,
-    const std::vector<BvhNode>& tree,
-    std::vector<Float>& distance_matrix) const noexcept
+    const std::vector<BvhBuildingNode>& tree,
+    RestructuringData& data) const noexcept
 {
-  using zisc::cast;
+  const auto& leaf_index_list = data.leaf_index_list_;
 
-  const uint n = cast<uint>(leaf_index_list.size());
+  const uint n = zisc::cast<uint>(leaf_index_list.size());
   ZISC_ASSERT(2 < n, "Lack of leaf nodes: ", n);
   uint index = 0;
   for (uint row = 1; row < n; ++row) {
-    const auto& node2 = tree[leaf_index_list[row]];
+    const auto& rhs = tree[leaf_index_list[row]];
     for (uint column = 0; column < row; ++column) {
       ZISC_ASSERT(index < ((n * (n - 1)) / 2), "The matrix is buffer overrun.");
-      const auto& node1 = tree[leaf_index_list[column]];
-      distance_matrix[index] = getNodeDistance(node1, node2);
+      const auto& lhs = tree[leaf_index_list[column]];
+      data.distance_matrix_[index] = calcNodeDistance(lhs, rhs);
       ++index;
     }
   }
@@ -290,69 +292,49 @@ template <bool threading>
 uint AgglomerativeTreeletRestructuringBvh::restructureTreelet(
     System& system,
     const uint32 index,
-    std::vector<uint>& inner_index_list,
-    std::vector<uint>& leaf_index_list,
-    std::vector<Float>& distance_matrix,
-    std::vector<BvhNode>& tree) const noexcept
+    RestructuringData& data,
+    std::vector<BvhBuildingNode>& tree) const noexcept
 {
   ZISC_ASSERT(index < tree.size(), "BVH tree is buffer overrun!!.");
   auto& root = tree[index];
   uint num_of_subtree_nodes = 1;
-  if (root.isLeafNode())
-    return num_of_subtree_nodes;
-
-  auto restructure_left_treelet =
-  [this, &system, &root, &inner_index_list, &leaf_index_list, &distance_matrix, &tree]()
-  {
+  if (!root.isLeafNode()) {
     if (threading) {
-      auto inner_list = inner_index_list;
-      auto leaf_list = leaf_index_list;
-      auto matrix = distance_matrix;
-      return restructureTreelet<false>(
-          system, root.leftChildIndex(), inner_list, leaf_list, matrix, tree);
+      auto restructure_left_treelet = [this, &system, &root, &data, &tree]()
+      {
+        return restructureTreelet<>(system, root.leftChildIndex(), data, tree);
+      };
+      auto restructure_right_treelet = [this, &system, &root, &tree]()
+      {
+        RestructuringData d{treeletSize()};
+        return restructureTreelet<>(system, root.rightChildIndex(), d, tree);
+      };
+      auto& thread_pool = system.threadPool();
+      auto left_result = thread_pool.enqueue<uint>(restructure_left_treelet);
+      auto right_result = thread_pool.enqueue<uint>(restructure_right_treelet);
+      num_of_subtree_nodes += left_result.get();
+      num_of_subtree_nodes += right_result.get();
     }
     else {
-      auto& inner_list = inner_index_list;
-      auto& leaf_list = leaf_index_list;
-      auto& matrix = distance_matrix;
-      return restructureTreelet<false>(
-          system, root.leftChildIndex(), inner_list, leaf_list, matrix, tree);
+      num_of_subtree_nodes +=
+          restructureTreelet<>(system, root.leftChildIndex(), data, tree);
+      num_of_subtree_nodes +=
+          restructureTreelet<>(system, root.rightChildIndex(), data, tree);
     }
-  };
-  auto restructure_right_treelet =
-  [this, &system, &root, &inner_index_list, &leaf_index_list, &distance_matrix, &tree]()
-  {
-    auto& inner_list = inner_index_list;
-    auto& leaf_list = leaf_index_list;
-    auto& matrix = distance_matrix;
-    return restructureTreelet<false>(
-        system, root.rightChildIndex(), inner_list, leaf_list, matrix, tree);
-  };
 
-  if (threading) {
-    auto& thread_pool = system.threadPool();
-    auto left_result = thread_pool.enqueue<uint>(restructure_left_treelet);
-    auto right_result = thread_pool.enqueue<uint>(restructure_right_treelet);
-    num_of_subtree_nodes += left_result.get();
-    num_of_subtree_nodes += right_result.get();
-  }
-  else {
-    num_of_subtree_nodes += restructure_left_treelet();
-    num_of_subtree_nodes += restructure_right_treelet();
-  }
-
-  ZISC_ASSERT(3 <= num_of_subtree_nodes, "Lack of nodes.");
-  // Check the number of nodes in the subtree
-  if (num_of_subtree_nodes == 3) {
-    buildRelationship(index, root.leftChildIndex(), root.rightChildIndex(), tree);
-  }
-  else {
-    const auto num_of_leafs = (num_of_subtree_nodes >> 1) + 1;
-    const auto treelet_size = (num_of_leafs < treeletSize())
-        ? num_of_leafs
-        : treeletSize();
-    formTreelet(treelet_size, index, tree, inner_index_list, leaf_index_list);
-    constructOptimalTree(inner_index_list, leaf_index_list, distance_matrix, tree);
+    ZISC_ASSERT(3 <= num_of_subtree_nodes, "Lack of nodes.");
+    // Check the number of nodes in the subtree
+    if (num_of_subtree_nodes == 3) {
+      buildRelationship(index, root.leftChildIndex(), root.rightChildIndex(), tree);
+    }
+    else {
+      const auto num_of_leafs = (num_of_subtree_nodes >> 1) + 1;
+      const auto treelet_size = (num_of_leafs < treeletSize())
+          ? num_of_leafs
+          : treeletSize();
+      formTreelet(treelet_size, index, tree, data);
+      constructOptimalTreelet(data, tree);
+    }
   }
   return num_of_subtree_nodes;
 }
@@ -368,56 +350,52 @@ uint AgglomerativeTreeletRestructuringBvh::treeletSize() const noexcept
 }
 
 /*!
-  \details
-  No detailed.
   */
 void AgglomerativeTreeletRestructuringBvh::updateDistanceMatrix(
-    const std::vector<uint>& leaf_index_list,
-    const std::vector<BvhNode>& tree,
+    const std::vector<BvhBuildingNode>& tree,
     const uint row,
     const uint column,
-    std::vector<Float>& distance_matrix) const noexcept
+    RestructuringData& data) const noexcept
 {
-  using zisc::cast;
+  auto& leaf_index_list = data.leaf_index_list_;
+  auto& distance_matrix = data.distance_matrix_;
 
-  ZISC_ASSERT(column < row, "Column must be smaller than row.");
-  const uint n = cast<uint>(leaf_index_list.size());
-  const uint k = (n * (n - 1)) / 2;
-  // Re-calculation fase
-  const auto& new_node = tree[leaf_index_list[column]];
+  ZISC_ASSERT(column < row, "The column must be smaller than the row.");
+  const uint num_of_leafs = zisc::cast<uint>(leaf_index_list.size());
+  const uint matrix_size = (num_of_leafs * (num_of_leafs - 1)) / 2;
+  // Re-calculate the distance
   uint index = (column * (column - 1)) / 2;
   for (uint i = 0; i < column; ++i) {
-    ZISC_ASSERT(index < k, "The distance matrix is buffer overrun.");
-    const auto& node = tree[leaf_index_list[i]];
-    distance_matrix[index] = getNodeDistance(node, new_node);
+    ZISC_ASSERT(index < matrix_size, "The index is out of matrix range: ", index);
+    const auto& lhs = tree[leaf_index_list[i]];
+    const auto& rhs = tree[leaf_index_list[column]];
+    distance_matrix[index] = calcNodeDistance(lhs, rhs);
     ++index;
   }
-  index = (((column + 1) * (column + 2)) / 2) - 1;
-  for (uint i = column + 1; i < n; ++i) {
-    ZISC_ASSERT(index < k, "The distance matrix is buffer overrun.");
-    const auto& node = tree[leaf_index_list[i]];
-    distance_matrix[index] = getNodeDistance(node, new_node);
+  index = ((column + 2) * (column + 1)) / 2 - 1;
+  for (uint i = column + 1; i < num_of_leafs; ++i) {
+    ZISC_ASSERT(index < matrix_size, "The index is out of matrix range: ", index);
+    const auto& lhs = tree[leaf_index_list[column]];
+    const auto& rhs = tree[leaf_index_list[i]];
+    distance_matrix[index] = calcNodeDistance(lhs, rhs);
     index += i;
   }
-
-  // Copy fase
-  if (row == n)
+  // Copy
+  if (row == num_of_leafs)
     return;
   index = (row * (row - 1)) / 2;
-  uint source_index = k;
+  uint source_index = matrix_size;
   for (uint i = 0; i < row; ++i) {
-    ZISC_ASSERT(index < k, "The distance matrix is buffer overrun.");
-    ZISC_ASSERT(source_index < (k + n + 1), "The distance matrix is buffer overrun.");
+    ZISC_ASSERT(index < matrix_size, "The index is out of matrix range: ", index);
     if (i != column)
       distance_matrix[index] = distance_matrix[source_index];
     ++index;
     ++source_index;
   }
-  index = (((row + 1) * (row + 2)) / 2) - 1;
+  index = ((row + 2) * (row + 1)) / 2 - 1;
   ++source_index;
-  for (uint i = row + 1; i < n; ++i) {
-    ZISC_ASSERT(index < k, "The distance matrix is buffer overrun.");
-    ZISC_ASSERT(source_index < (k + n + 1), "The distance matrix is buffer overrun.");
+  for (uint i = row + 1; i < num_of_leafs; ++i) {
+    ZISC_ASSERT(index < matrix_size, "The index is out of matrix range: ", index);
     distance_matrix[index] = distance_matrix[source_index];
     index += i;
     ++source_index;

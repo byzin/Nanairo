@@ -31,8 +31,8 @@ class SceneDocument
 {
  public:
   //! Check if a file is Nanairo scene file
-  static bool checkDocumentInfo(const QString& file_path,
-                                QString& error_message) noexcept;
+  static bool isSceneDocument(const QString& file_path,
+                              QString& error_message) noexcept;
 
   //! Load a scene document
   static bool loadDocument(const QUrl& file_url,

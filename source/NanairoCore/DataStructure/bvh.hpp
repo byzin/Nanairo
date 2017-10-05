@@ -17,7 +17,7 @@
 // Zisc
 #include "zisc/algorithm.hpp"
 // Nanairo
-#include "bvh_node.hpp"
+#include "bvh_building_node.hpp"
 #include "bvh_tree_node.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/object.hpp"
@@ -37,8 +37,6 @@ class System;
 enum class BvhType : uint32
 {
   kBinaryRadixTree            = zisc::toHash32("BinaryRadixTree"),
-  kApproximateAgglomerativeClustering
-                              = zisc::toHash32("ApproximateAgglomerativeClustering"),
   kAgglomerativeTreeletRestructuring
                               = zisc::toHash32("AgglomerativeTreeletRestructuring")
 };
@@ -76,40 +74,37 @@ class Bvh
   //! Build BVH
   virtual void constructBvh(System& system,
                             const std::vector<Object>& object_list,
-                            std::vector<BvhNode>& tree) const noexcept = 0;
+                            std::vector<BvhBuildingNode>& tree) const noexcept = 0;
 
   //! Check if multi-threading is enabled
   static constexpr bool threadingIsEnabled() noexcept;
 
   //! Set the bounding box of the node
-  template <bool threading>
-  static void setBoundingBox(System& system,
-                             std::vector<BvhNode>& tree,
-                             const uint32 index) noexcept;
+  template <bool threading = false>
+  static void setupBoundingBoxes(System& system,
+                                 std::vector<BvhBuildingNode>& tree,
+                                 const uint32 index) noexcept;
 
   //! Set the bounding box of the node
-  static void setBoundingBox(std::vector<BvhNode>& tree,
-                             const uint32 index) noexcept;
+  static void setupBoundingBox(std::vector<BvhBuildingNode>& tree,
+                               const uint32 index) noexcept;
 
  private:
-  //! Return the end index of the ray traversal
-  uint32 endIndex() const noexcept;
-
   //! Set the tree node and the object list
-  void setTreeInfo(const std::vector<BvhNode>& tree,
+  void setTreeInfo(const std::vector<BvhBuildingNode>& tree,
                    std::vector<Object>& object_list,
                    const uint32 failure_next_index,
                    const uint32 index) noexcept;
 
-  //! Set
-  void setUniqueObject(std::vector<Object>& object_list) noexcept;
+  //! Set the tree with a object
+  void setTreeInfo(std::vector<Object>& object_list) noexcept;
 
   //! Sort nodes by the search order
-  void sortTreeNode(std::vector<BvhNode>& tree) const noexcept;
+  void sortTreeNode(std::vector<BvhBuildingNode>& tree) const noexcept;
 
   //! Sort nodes by the search order
-  void sortTreeNode(const std::vector<BvhNode>& old_tree,
-                    std::vector<BvhNode>& tree,
+  void sortTreeNode(const std::vector<BvhBuildingNode>& tree,
+                    std::vector<BvhBuildingNode>& new_tree,
                     const uint32 old_index,
                     uint32& index) const noexcept;
 
@@ -121,7 +116,6 @@ class Bvh
 
   std::vector<BvhTreeNode> tree_;
   std::vector<Object> object_list_;
-  uint32 end_index_;
 };
 
 //! \} Core

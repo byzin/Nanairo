@@ -12,6 +12,7 @@
 
 #include "ray.hpp"
 // Standard C++ library
+#include <array>
 #include <limits>
 // Zisc
 #include "zisc/math.hpp"
@@ -28,8 +29,9 @@ namespace nanairo {
   */
 inline
 Ray::Ray() noexcept :
-    is_alive_{false}
+    is_alive_{kFalse}
 {
+  initialize();
 }
 
 /*!
@@ -40,9 +42,9 @@ inline
 Ray::Ray(const Point3& origin, const Vector3& direction) noexcept :
     origin_{origin},
     direction_{direction},
-    is_alive_{true}
+    is_alive_{kTrue}
 {
-  setInverseDirection();
+  initialize();
 }
 
 /*!
@@ -60,9 +62,9 @@ const Vector3& Ray::direction() const noexcept
   No detailed.
   */
 inline
-const Vector3& Ray::inverseDirection() const noexcept
+const Vector3& Ray::invDirection() const noexcept
 {
-  return inverse_direction_;
+  return inv_direction_;
 }
 
 /*!
@@ -72,7 +74,7 @@ const Vector3& Ray::inverseDirection() const noexcept
 inline
 bool Ray::isAlive() const noexcept
 {
-  return is_alive_;
+  return is_alive_ == kTrue;
 }
 
 /*!
@@ -93,23 +95,7 @@ inline
 void Ray::setDirection(const Vector3& direction) noexcept
 {
   direction_ = direction;
-  setInverseDirection();
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-void Ray::setInverseDirection() noexcept
-{
-  constexpr Float max = std::numeric_limits<Float>::max();
-  inverse_direction_[0] = (direction_[0] != 0.0) ? zisc::invert(direction_[0]) : max;
-  inverse_direction_[1] = (direction_[1] != 0.0) ? zisc::invert(direction_[1]) : max;
-  inverse_direction_[2] = (direction_[2] != 0.0) ? zisc::invert(direction_[2]) : max;
-  sign_[0] = (inverse_direction_[0] < 0.0) ? 1 : 0;
-  sign_[1] = (inverse_direction_[1] < 0.0) ? 1 : 0;
-  sign_[2] = (inverse_direction_[2] < 0.0) ? 1 : 0;
+  initInvDirection();
 }
 
 /*!
@@ -129,7 +115,7 @@ void Ray::setOrigin(const Point3& origin) noexcept
 inline
 void Ray::setAlive(const bool is_alive) noexcept
 {
-  is_alive_ = is_alive;
+  is_alive_ = is_alive ? kTrue : kFalse;
 }
 
 /*!
@@ -137,9 +123,34 @@ void Ray::setAlive(const bool is_alive) noexcept
   No detailed.
   */
 inline
-const uint8* Ray::sign() const noexcept
+std::array<uint8, 3> Ray::sign() const noexcept
 {
   return sign_;
+}
+
+/*!
+  */
+inline
+void Ray::initialize() noexcept
+{
+  initInvDirection();
+  // Avoid warnings
+  for (uint i = 0; i < 4; ++i)
+    padding_[i] = 0;
+}
+
+/*!
+  */
+inline
+void Ray::initInvDirection() noexcept
+{
+  inv_direction_ = invert(direction());
+  // Set the sign of the direction
+  static_assert(kTrue == 1, "");
+  static_assert(kFalse == 0, "");
+  sign_[0] = (inv_direction_[0] < 0.0) ? kTrue : kFalse;
+  sign_[1] = (inv_direction_[1] < 0.0) ? kTrue : kFalse;
+  sign_[2] = (inv_direction_[2] < 0.0) ? kTrue : kFalse;
 }
 
 } // namespace nanairo

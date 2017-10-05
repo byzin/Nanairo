@@ -26,7 +26,6 @@ NSettingBlock {
     backgroundColor: bvh_setting_block.color
 
     model: [Nanairo.binaryRadixTreeBvh,
-            Nanairo.approximateAgglomerativeClusteringBvh,
             Nanairo.agglomerativeTreeletRestructuringBvh]
   }
 

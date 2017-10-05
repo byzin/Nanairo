@@ -25,19 +25,6 @@ namespace nanairo {
 
 // BinaryRadixTree has no parameter
 
-//! ApproximateAgglomerativeClustering parameters
-struct ApproximateAgglomerativeClusteringParameters : public NodeParameterBase
-{
-  //! Read the parameters from the stream
-  void readData(std::istream* data_stream) noexcept override;
-
-  //! Write the parameters to the stream
-  void writeData(std::ostream* data_stream) const noexcept override;
-
-  double epsilon_ = 0.2;
-  uint32 delta_ = 4;
-};
-
 //! AgglomerativeTreeletRestructuring parameters
 struct AgglomerativeTreeletRestructuringParameters : public NodeParameterBase
 {
@@ -56,14 +43,6 @@ struct AgglomerativeTreeletRestructuringParameters : public NodeParameterBase
 class BvhSettingNode : public SettingNodeBase
 {
  public:
-  //! Return the ApproximateAgglomerativeClustering parameters
-  ApproximateAgglomerativeClusteringParameters&
-  approximateAgglomerativeClusteringParameters() noexcept;
-
-  //! Return the ApproximateAgglomerativeClustering parameters 
-  const ApproximateAgglomerativeClusteringParameters&
-  approximateAgglomerativeClusteringParameters() const noexcept;
-
   //! Return the AgglomerativeTreeletRestructuring parameters
   AgglomerativeTreeletRestructuringParameters&
   agglomerativeTreeletRestructuringParameters() noexcept;

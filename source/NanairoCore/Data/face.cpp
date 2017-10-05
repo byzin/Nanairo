@@ -23,7 +23,7 @@ Face::Face() noexcept :
     vertex_indices_{{kInvalidIndex, kInvalidIndex, kInvalidIndex, kInvalidIndex}},
     vnormal_indices_{{kInvalidIndex, kInvalidIndex, kInvalidIndex, kInvalidIndex}},
     vuv_indices_{{kInvalidIndex, kInvalidIndex, kInvalidIndex, kInvalidIndex}},
-    smoothing_{SettingNodeBase::kFalse},
+    smoothing_{kFalse},
     padding_{{0, 0, 0}}
 {
 }
@@ -34,7 +34,7 @@ Face::Face(const uint32 v0, const uint32 v1, const uint32 v2) noexcept :
     vertex_indices_{{v0, v1, v2, kInvalidIndex}},
     vnormal_indices_{{kInvalidIndex, kInvalidIndex, kInvalidIndex, kInvalidIndex}},
     vuv_indices_{{kInvalidIndex, kInvalidIndex, kInvalidIndex, kInvalidIndex}},
-    smoothing_{SettingNodeBase::kFalse}
+    smoothing_{kFalse}
 {
   static_assert(sizeof(Face) == sizeof(uint32) * 13, "The size of face is invalid.");
   padding_.fill(0);
@@ -46,7 +46,7 @@ Face::Face(const uint32 v0, const uint32 v1, const uint32 v2, const uint32 v3) n
     vertex_indices_{{v0, v1, v2, v3}},
     vnormal_indices_{{kInvalidIndex, kInvalidIndex, kInvalidIndex, kInvalidIndex}},
     vuv_indices_{{kInvalidIndex, kInvalidIndex, kInvalidIndex, kInvalidIndex}},
-    smoothing_{SettingNodeBase::kFalse}
+    smoothing_{kFalse}
 {
   static_assert(sizeof(Face) == sizeof(uint32) * 13, "The size of face is invalid.");
   padding_.fill(0);
@@ -108,14 +108,14 @@ const std::array<uint32, 4>& Face::quadrangleVuvIndices() const noexcept
   */
 void Face::setSmoothing(const bool flag) noexcept
 {
-  smoothing_ = (flag) ? SettingNodeBase::kTrue : SettingNodeBase::kFalse;
+  smoothing_ = (flag) ? kTrue : kFalse;
 }
 
 /*!
   */
 bool Face::smoothing() const noexcept
 {
-  return (smoothing_ == SettingNodeBase::kTrue);
+  return (smoothing_ == kTrue);
 }
 
 /*!
