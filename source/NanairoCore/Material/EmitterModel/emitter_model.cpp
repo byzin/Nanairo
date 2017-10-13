@@ -49,7 +49,7 @@ EmitterModel::EmitterModel(const SettingNodeBase* settings) noexcept
   */
 std::unique_ptr<EmitterModel> EmitterModel::makeEmitter(
     const SettingNodeBase* settings,
-    const std::vector<const TextureModel*>& texture_list) noexcept
+    const std::vector<TextureModel*>& texture_list) noexcept
 {
   const auto emitter_settings = castNode<EmitterSettingNode>(settings);
 

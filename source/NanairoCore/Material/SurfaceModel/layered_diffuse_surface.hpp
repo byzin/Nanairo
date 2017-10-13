@@ -51,7 +51,7 @@ class LayeredDiffuseSurface : public SurfaceModel
   //! Create a rough dielectric surface
   LayeredDiffuseSurface(
       const SettingNodeBase* settings,
-      const std::vector<const TextureModel*>& texture_list) noexcept;
+      const std::vector<TextureModel*>& texture_list) noexcept;
 
 
   //! Make a interfaced lambertian BRDF
@@ -70,7 +70,7 @@ class LayeredDiffuseSurface : public SurfaceModel
 
   //! Initialize
   void initialize(const SettingNodeBase* settings,
-                  const std::vector<const TextureModel*>& texture_list) noexcept;
+                  const std::vector<TextureModel*>& texture_list) noexcept;
 
 
   SpectralDistribution ri_;

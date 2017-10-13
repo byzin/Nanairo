@@ -50,7 +50,7 @@ class SmoothConductorSurface : public SurfaceModel
   //! Create a smooth conductor surface
   SmoothConductorSurface(
       const SettingNodeBase* settingsx,
-      const std::vector<const TextureModel*>& texture_list) noexcept;
+      const std::vector<TextureModel*>& texture_list) noexcept;
 
 
   //! Make a Fresnel BRDF
@@ -66,7 +66,7 @@ class SmoothConductorSurface : public SurfaceModel
  private:
   //! Initialize
   void initialize(const SettingNodeBase* settings,
-                  const std::vector<const TextureModel*>& texture_list) noexcept;
+                  const std::vector<TextureModel*>& texture_list) noexcept;
 
 
   const TextureModel* outer_refractive_index_;

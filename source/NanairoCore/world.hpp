@@ -51,42 +51,40 @@ class World
   //! Return the bvh
   const Bvh& bvh() const noexcept;
 
+  //! Return the texture list
+  const std::vector<EmitterModel*>& emitterList() const noexcept;
+
   //! Return the light source list
   const std::vector<const Object*>& lightSourceList() const noexcept;
 
-  //! Make texture list
-  std::vector<const TextureModel*> textureList() const noexcept;
+  //! Return the object list
+  const std::vector<Object>& objectList() const noexcept;
+
+  //! Return the texture list
+  const std::vector<SurfaceModel*>& surfaceList() const noexcept;
+
+  //! Return the texture list
+  const std::vector<TextureModel*>& textureList() const noexcept;
 
  private:
   //! Initialize world
-  void initialize(
-      System& system,
-      const SettingNodeBase* settings) noexcept;
+  void initialize(System& system, const SettingNodeBase* settings) noexcept;
 
   //! Initialize emitter list
-  void initializeEmitter(
-      System& system,
-      const SettingNodeBase* settings,
-      const std::vector<const TextureModel*>& texture_list) noexcept;
+  void initializeEmitter(System& system, const SettingNodeBase* settings) noexcept;
 
   //! Initialize Objects
-  std::vector<Object> initializeObject(
-      System& system, 
-      const SettingNodeBase* settings) noexcept;
+  std::vector<Object> initializeObject(System& system,
+                                       const SettingNodeBase* settings) noexcept;
 
   //! Initialize the world information of light sources
   void initializeWorldLightSource() noexcept;
 
   //! Initialize surface scattering list
-  void initializeSurface(
-      System& system,
-      const SettingNodeBase* settings,
-      const std::vector<const TextureModel*>& texture_list) noexcept;
+  void initializeSurface(System& system, const SettingNodeBase* settings) noexcept;
 
   //! Initialize texture list
-  void initializeTexture(
-      System& system,
-      const SettingNodeBase* settings) noexcept;
+  void initializeTexture(System& system, const SettingNodeBase* settings) noexcept;
 
   //! Make objects
   std::vector<std::vector<Object>> makeObjects(

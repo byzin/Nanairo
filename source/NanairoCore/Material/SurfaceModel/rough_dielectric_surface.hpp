@@ -50,7 +50,7 @@ class RoughDielectricSurface : public SurfaceModel
   //! Create a rough dielectric surface
   RoughDielectricSurface(
       const SettingNodeBase* settings,
-      const std::vector<const TextureModel*>& texture_list) noexcept;
+      const std::vector<TextureModel*>& texture_list) noexcept;
 
 
   //! Make a GGX BSDF
@@ -66,7 +66,7 @@ class RoughDielectricSurface : public SurfaceModel
  private:
   //! Initialize
   void initialize(const SettingNodeBase* settings,
-                  const std::vector<const TextureModel*>& texture_list) noexcept;
+                  const std::vector<TextureModel*>& texture_list) noexcept;
 
 
   const TextureModel* outer_refractive_index_;

@@ -69,7 +69,7 @@ class EmitterModel
   //! Make a emitter model
   static std::unique_ptr<EmitterModel> makeEmitter(
       const SettingNodeBase* settings,
-      const std::vector<const TextureModel*>& texture_list) noexcept;
+      const std::vector<TextureModel*>& texture_list) noexcept;
 
   //! Make a light shader model
   virtual ShaderPointer makeLight(const Point2& texture_coordinate,

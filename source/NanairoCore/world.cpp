@@ -65,19 +65,6 @@ World::~World() noexcept
   \details
   No detailed.
   */
-std::vector<const TextureModel*> World::textureList() const noexcept
-{
-  std::vector<const TextureModel*> texture_list;
-  texture_list.reserve(texture_list_.size());
-  for (const auto& texture : texture_list_)
-    texture_list.emplace_back(texture.get());
-  return texture_list;
-}
-
-/*!
-  \details
-  No detailed.
-  */
 void World::initialize(System& system, const SettingNodeBase* settings) noexcept
 {
   const auto scene_settings = castNode<SceneSettingNode>(settings);
@@ -89,25 +76,18 @@ void World::initialize(System& system, const SettingNodeBase* settings) noexcept
 
   // Initialize surface scattering
   {
-    const auto texture_list = textureList();
-    initializeSurface(system,
-                      scene_settings->surfaceModelSettingNode(),
-                      texture_list);
+    initializeSurface(system, scene_settings->surfaceModelSettingNode());
   }
 
   // Initialize emitter
   {
-    const auto texture_list = textureList();
-    initializeEmitter(system,
-                      scene_settings->emitterModelSettingNode(),
-                      texture_list);
+    initializeEmitter(system, scene_settings->emitterModelSettingNode());
   }
 
-  // Initialize objects
-  auto object_list = initializeObject(system, scene_settings->objectSettingNode());
-
-  // Initialize a BVH
   {
+    // Initialize objects
+    auto object_list = initializeObject(system, scene_settings->objectSettingNode());
+    // Initialize a BVH
     bvh_ = Bvh::makeBvh(scene_settings->bvhSettingNode());
     bvh_->construct(system, std::move(object_list));
   }
@@ -121,10 +101,8 @@ void World::initialize(System& system, const SettingNodeBase* settings) noexcept
   \details
   No detailed.
   */
-void World::initializeEmitter(
-    System& system,
-    const SettingNodeBase* settings,
-    const std::vector<const TextureModel*>& texture_list) noexcept
+void World::initializeEmitter(System& system,
+                              const SettingNodeBase* settings) noexcept
 {
   const auto emitter_model_settings = castNode<EmitterModelSettingNode>(settings);
 
@@ -132,18 +110,18 @@ void World::initializeEmitter(
   emitter_list_.resize(num_of_emitters);
 
   const auto& emitter_setting_list = emitter_model_settings->materialList();
-  auto make_emitter =
-  [this, &emitter_setting_list, &texture_list](const uint index)
+  auto make_emitter = [this, &emitter_setting_list](const uint index)
   {
     const auto emitter_settings = emitter_setting_list[index];
-    emitter_list_[index] = EmitterModel::makeEmitter(emitter_settings, texture_list);
+    const auto& texture_list = textureList();
+    emitter_list_[index] = EmitterModel::makeEmitter(emitter_settings,  
+                                                     texture_list);
   };
 
   auto& thread_pool = system.threadPool();
   constexpr uint start = 0;
   auto result = thread_pool.enqueueLoop(make_emitter, start, num_of_emitters);
   result.get();
-
   ZISC_ASSERT(0 < emitter_list_.size(), "The scene has no emitter.");
 }
 
@@ -151,9 +129,8 @@ void World::initializeEmitter(
   \details
   No detailed.
   */
-std::vector<Object> World::initializeObject(
-    System& system,
-    const SettingNodeBase* settings) noexcept
+std::vector<Object> World::initializeObject(System& system,
+                                            const SettingNodeBase* settings) noexcept
 {
   // Make objects
   auto object_list_array = makeObjects(system, settings);
@@ -178,10 +155,8 @@ std::vector<Object> World::initializeObject(
   \details
   No detailed.
   */
-void World::initializeSurface(
-    System& system,
-    const SettingNodeBase* settings,
-    const std::vector<const TextureModel*>& texture_list) noexcept
+void World::initializeSurface(System& system,
+                              const SettingNodeBase* settings) noexcept
 {
   const auto surface_model_settings = castNode<SurfaceModelSettingNode>(settings);
 
@@ -189,11 +164,12 @@ void World::initializeSurface(
   surface_list_.resize(num_of_surfaces);
 
   const auto& surface_setting_list = surface_model_settings->materialList();
-  auto make_surface =
-  [this, &surface_setting_list, &texture_list](const uint index)
+  auto make_surface = [this, &surface_setting_list](const uint index)
   {
     const auto surface_settings = surface_setting_list[index];
-    surface_list_[index] = SurfaceModel::makeSurface(surface_settings, texture_list);
+    const auto& texture_list = textureList();
+    surface_list_[index] = SurfaceModel::makeSurface(surface_settings,
+                                                     texture_list);
   };
 
   auto& thread_pool = system.threadPool();
@@ -207,9 +183,8 @@ void World::initializeSurface(
   \details
   No detailed.
   */
-void World::initializeTexture(
-    System& system,
-    const SettingNodeBase* settings) noexcept
+void World::initializeTexture(System& system,
+                              const SettingNodeBase* settings) noexcept
 {
   const auto texture_model_settings = castNode<TextureModelSettingNode>(settings);
 
@@ -217,8 +192,7 @@ void World::initializeTexture(
   texture_list_.resize(num_of_textures);
 
   const auto& texture_setting_list = texture_model_settings->materialList();
-  auto make_texture =
-  [this, &system, &texture_setting_list](const uint index)
+  auto make_texture = [this, &system, &texture_setting_list](const uint index)
   {
     const auto texture_settings = texture_setting_list[index];
     texture_list_[index] = TextureModel::makeTexture(system, texture_settings);
@@ -237,14 +211,12 @@ void World::initializeTexture(
   */
 void World::initializeWorldLightSource() noexcept
 {
-  std::list<const Object*> light_source_list;
-  for (const auto& object : bvh().objectList()) {
+  light_source_list_.clear();
+  for (const auto& object : objectList()) {
     if (object.material().isLightSource())
-      light_source_list.emplace_back(&object);
+      light_source_list_.emplace_back(&object);
   }
-  light_source_list_.resize(light_source_list.size());
-  std::copy(light_source_list.begin(), light_source_list.end(),
-            light_source_list_.begin());
+  light_source_list_.shrink_to_fit();
 }
 
 /*!

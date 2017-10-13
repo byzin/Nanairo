@@ -37,7 +37,7 @@ namespace nanairo {
   */
 RoughConductorSurface::RoughConductorSurface(
     const SettingNodeBase* settings,
-    const std::vector<const TextureModel*>& texture_list) noexcept
+    const std::vector<TextureModel*>& texture_list) noexcept
 {
   initialize(settings, texture_list);
 }
@@ -88,7 +88,7 @@ SurfaceType RoughConductorSurface::type() const noexcept
   */
 void RoughConductorSurface::initialize(
     const SettingNodeBase* settings,
-    const std::vector<const TextureModel*>& texture_list) noexcept
+    const std::vector<TextureModel*>& texture_list) noexcept
 {
   const auto surface_settings = castNode<SurfaceSettingNode>(settings);
 

@@ -33,7 +33,7 @@ namespace nanairo {
   */
 NonDirectionalEmitter::NonDirectionalEmitter(
     const SettingNodeBase* settings,
-    const std::vector<const TextureModel*>& texture_list) noexcept
+    const std::vector<TextureModel*>& texture_list) noexcept
         : EmitterModel(settings)
 {
   initialize(settings, texture_list);
@@ -72,7 +72,7 @@ EmitterType NonDirectionalEmitter::type() const noexcept
   */
 void NonDirectionalEmitter::initialize(
     const SettingNodeBase* settings,
-    const std::vector<const TextureModel*>& texture_list) noexcept
+    const std::vector<TextureModel*>& texture_list) noexcept
 {
   const auto emitter_settings = castNode<EmitterSettingNode>(settings);
 

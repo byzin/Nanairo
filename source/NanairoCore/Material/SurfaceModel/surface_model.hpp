@@ -79,7 +79,7 @@ class SurfaceModel
   //! Make a surface scattering model
   static std::unique_ptr<SurfaceModel> makeSurface(
       const SettingNodeBase* settings,
-      const std::vector<const TextureModel*>& texture_list) noexcept;
+      const std::vector<TextureModel*>& texture_list) noexcept;
 
   //! Return the surface type
   virtual SurfaceType type() const noexcept = 0;
