@@ -12,19 +12,28 @@
 // Zisc
 #include "zisc/cumulative_distribution_function.hpp"
 // Nanairo
+#include "light_source_sampler.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Data/light_source_reference.hpp"
-#include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Data/light_source_info.hpp"
 
 namespace nanairo {
 
 /*!
   */
 inline
-auto PowerWeightedLightSourceSampler::lightSourceCdf() const noexcept
-    -> const LightSourceCdf&
+std::vector<LightSourceInfo>&
+PowerWeightedLightSourceSampler::infoList() noexcept
 {
-  return *light_source_cdf_;
+  return info_list_;
+}
+
+/*!
+  */
+inline
+const std::vector<LightSourceInfo>&
+PowerWeightedLightSourceSampler::infoList() const noexcept
+{
+  return info_list_;
 }
 
 /*!
@@ -39,33 +48,10 @@ auto PowerWeightedLightSourceSampler::lightSourceCdf() noexcept ->
 /*!
   */
 inline
-const std::vector<LightSourceReference>&
-PowerWeightedLightSourceSampler::referenceList() const noexcept
+auto PowerWeightedLightSourceSampler::lightSourceCdf() const noexcept
+    -> const LightSourceCdf&
 {
-  return reference_list_;
-}
-
-/*!
-  */
-inline
-std::vector<LightSourceReference>&
-PowerWeightedLightSourceSampler::referenceList() noexcept
-{
-  return reference_list_;
-}
-
-/*!
-  */
-inline
-const LightSourceReference& PowerWeightedLightSourceSampler::sample(
-    Sampler& sampler) const noexcept
-{
-  const auto& light_source_cdf = lightSourceCdf();
-
-  const Float y = sampler.sample();
-  const auto sampled_lihgt_source = light_source_cdf.inverseFunction(y);
-
-  return *sampled_lihgt_source;
+  return *light_source_cdf_;
 }
 
 } // namespace nanairo

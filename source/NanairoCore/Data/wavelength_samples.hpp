@@ -10,6 +10,8 @@
 #ifndef NANAIRO_WAVELENGTH_SAMPLE_HPP
 #define NANAIRO_WAVELENGTH_SAMPLE_HPP
 
+// Standard C++ library
+#include <array>
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 
@@ -33,11 +35,14 @@ class WavelengthSamples
   uint16& operator[](const uint index) noexcept;
 
   //! Return the wavelength by the index
-  uint16 operator[](const uint index) const noexcept;
+  const uint16& operator[](const uint index) const noexcept;
 
 
   //! Return the inverse probability of selection of primary wavelength
   static constexpr Float primaryInverseProbability() noexcept;
+
+  //! Return the probability of selection of primary wavelength
+  static constexpr Float primaryProbability() noexcept;
 
   //! Return the primary wavelength index
   uint primaryWavelengthIndex() const noexcept;
@@ -50,7 +55,7 @@ class WavelengthSamples
 
  private:
   uint16 primary_index_; //!< The index of primary wavelength
-  uint16 wavelengths_[CoreConfig::wavelengthSampleSize()];
+  std::array<uint16, CoreConfig::wavelengthSampleSize()> wavelengths_;
 };
 
 //! \} Core

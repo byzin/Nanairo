@@ -13,6 +13,7 @@
 // Standard C++ library
 #include <cstddef>
 #include <memory>
+#include <string>
 #include <vector>
 // Zisc
 #include "zisc/algorithm.hpp"
@@ -81,6 +82,12 @@ class SurfaceModel
       const SettingNodeBase* settings,
       const std::vector<TextureModel*>& texture_list) noexcept;
 
+  //! Return the surface name
+  const std::string* name() const noexcept;
+
+  //! Set the surface name
+  void setName(const std::string& name) noexcept;
+
   //! Return the surface type
   virtual SurfaceType type() const noexcept = 0;
 
@@ -104,6 +111,11 @@ class SurfaceModel
   static Float evalRoughness(
       const TextureModel* roughness_texture,
       const Point2& uv) noexcept;
+
+ private:
+#ifdef Z_DEBUG_MODE
+  std::string name_;
+#endif // Z_DEBUG_MODE
 };
 
 //! \} Core

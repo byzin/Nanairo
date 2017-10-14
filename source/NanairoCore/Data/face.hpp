@@ -48,6 +48,12 @@ class Face
   //! Check if the face has uv
   bool hasVuv() const noexcept;
 
+  //! Return the null index
+  static constexpr uint32 nullIndex() noexcept
+  {
+    return std::numeric_limits<uint32>::max();
+  }
+
   //! Return the vertex indices of quadrangle
   const std::array<uint32, 4>& quadrangleVertexIndices() const noexcept;
 
@@ -106,8 +112,6 @@ class Face
   const std::array<uint32, 3>& triangleVuvIndices() const noexcept;
 
  private:
-  static constexpr uint32 kInvalidIndex = std::numeric_limits<uint32>::max();
-
   std::array<uint32, 4> vertex_indices_;
   std::array<uint32, 4> vnormal_indices_;
   std::array<uint32, 4> vuv_indices_;

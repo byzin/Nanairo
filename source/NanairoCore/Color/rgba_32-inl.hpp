@@ -13,6 +13,7 @@
 #include "rgba_32.hpp"
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/math.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -25,6 +26,7 @@ inline
 Rgba32::Rgba32() noexcept :
     row_data_{kAlphaMask}
 {
+  static_assert(4 <= alignof(Rgba32), "RGBA32 must be 32bit aligned.");
 }
 
 /*!
@@ -311,7 +313,7 @@ uint32 Rgba32::toIntColor(const Float c) const noexcept
 inline
 Float Rgba32::toFloatColor(const uint8 c) const noexcept
 {
-  constexpr Float k = zisc::cast<Float>(1.0 / 255.0);
+  constexpr Float k = zisc::cast<Float>(zisc::invert(255.0));
   const Float v = k * zisc::cast<Float>(c);
   ZISC_ASSERT(zisc::isInClosedBounds(v, 0.0, 1.0),
               "The color is ouf of range [0, 1]");

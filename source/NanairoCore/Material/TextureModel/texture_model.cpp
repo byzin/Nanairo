@@ -10,6 +10,7 @@
 #include "texture_model.hpp"
 // Standard C++ library
 #include <memory>
+#include <string>
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
@@ -65,7 +66,29 @@ std::unique_ptr<TextureModel> TextureModel::makeTexture(
       break;
     }
   }
+  texture->setName(texture_settings->name());
   return texture;
+}
+
+/*!
+  */
+const std::string* TextureModel::name() const noexcept
+{
+  const std::string* object_name = nullptr;
+#ifdef Z_DEBUG_MODE
+  object_name = &name_;
+#endif // Z_DEBUG_MODE
+  return object_name;
+}
+
+/*!
+  */
+void TextureModel::setName(const std::string& name) noexcept
+{
+#ifdef Z_DEBUG_MODE
+  name_ = name;
+#endif // Z_DEBUG_MODE
+  static_cast<void>(name);
 }
 
 } // namespace nanairo

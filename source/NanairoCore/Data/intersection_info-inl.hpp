@@ -12,10 +12,12 @@
 
 #include "intersection_info.hpp"
 // Standard C++ library
+#include <array>
 #include <limits>
 // Nanairo
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
+#include "NanairoCore/nanairo_core_config.hpp"
 
 namespace nanairo {
 
@@ -26,8 +28,10 @@ namespace nanairo {
 inline
 IntersectionInfo::IntersectionInfo() noexcept :
     object_{nullptr},
-    is_reverse_face_{false}
+    is_reverse_face_{kFalse}
 {
+  // Avoid warnings
+  static_cast<void>(padding_);
 }
 
 /*!
@@ -42,9 +46,9 @@ IntersectionInfo::IntersectionInfo(const Point3& point,
     point_{point},
     normal_{is_reverse_face ? -normal : normal},
     object_{object},
-    ray_distance_{0.0},
-    is_reverse_face_{is_reverse_face}
+    ray_distance_{0.0}
 {
+  setReverseFace(is_reverse_face);
 }
 
 /*!
@@ -61,9 +65,9 @@ IntersectionInfo::IntersectionInfo(const Point3& point,
     normal_{is_reverse_face ? -normal : normal},
     texture_coordinate_{texture_coordinate},
     object_{object},
-    ray_distance_{0.0},
-    is_reverse_face_{is_reverse_face}
+    ray_distance_{0.0}
 {
+  setReverseFace(is_reverse_face);
 }
 
 /*!
@@ -83,7 +87,8 @@ bool IntersectionInfo::isIntersected() const noexcept
 inline
 bool IntersectionInfo::isReverseFace() const noexcept
 {
-  return is_reverse_face_;
+  const bool is_reverse_face = (is_reverse_face_ == kTrue);
+  return is_reverse_face;
 }
 
 /*!
@@ -131,7 +136,7 @@ Float IntersectionInfo::rayDistance() const noexcept
 inline
 void IntersectionInfo::setReverseFace(const bool is_reverse_face) noexcept
 {
-  is_reverse_face_ = is_reverse_face;
+  is_reverse_face_ = (is_reverse_face) ? kTrue : kFalse;
 }
 
 /*!
@@ -141,7 +146,7 @@ void IntersectionInfo::setReverseFace(const bool is_reverse_face) noexcept
 inline
 void IntersectionInfo::setNormal(const Vector3& normal) noexcept
 {
-  normal_ = is_reverse_face_ ? -normal : normal;
+  normal_ = (isReverseFace()) ? -normal : normal;
 }
 
 /*!

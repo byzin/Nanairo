@@ -145,7 +145,7 @@ void BinaryRadixTreeBvh::split(System& system,
       split<>(system, key, right_child_index, tree, first, split_position, end);
     }
 
-    ZISC_ASSERT(tree[index].parentIndex() == BvhBuildingNode::nonObjectIndex(),
+    ZISC_ASSERT(tree[index].parentIndex() == BvhBuildingNode::nullIndex(),
                 "The node is rewrited.");
     tree[index].setLeftChildIndex(left_child_index);
     tree[index].setRightChildIndex(right_child_index);

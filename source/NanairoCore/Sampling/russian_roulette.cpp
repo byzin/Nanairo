@@ -52,7 +52,7 @@ RouletteResult RussianRoulette::playWithAverage(
   const Float average = weight.average();
   const Float probability = zisc::min(1.0, average);
   const bool result = sampler.sample() < probability;
-  return RouletteResult{result, result ? probability : 1.0 - probability};
+  return (result) ? RouletteResult{probability} : RouletteResult{};
 }
 
 /*!
@@ -66,7 +66,7 @@ RouletteResult RussianRoulette::playWithMax(
   const Float max = weight.max();
   const Float probability = zisc::min(1.0, max);
   const bool result = sampler.sample() < probability;
-  return RouletteResult{result, result ? probability : 1.0 - probability};
+  return (result) ? RouletteResult{probability} : RouletteResult{};
 }
 
 /*!
@@ -75,7 +75,7 @@ RouletteResult RussianRoulette::playWithMax(
   */
 RouletteResult RussianRoulette::playWithPath(const uint path) const noexcept
 {
-  return RouletteResult{path < max_path_, 1.0};
+  return (path < max_path_) ? RouletteResult{1.0} : RouletteResult{};
 }
 
 } // namespace nanairo

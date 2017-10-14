@@ -135,8 +135,7 @@ void Ray::initialize() noexcept
 {
   initInvDirection();
   // Avoid warnings
-  for (uint i = 0; i < 4; ++i)
-    padding_[i] = 0;
+  static_cast<void>(padding_);
 }
 
 /*!

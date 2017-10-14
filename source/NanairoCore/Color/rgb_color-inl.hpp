@@ -46,9 +46,8 @@ RgbColor::RgbColor(const Float red, const Float green, const Float blue) noexcep
 inline
 void RgbColor::correctGamma(const Float gamma) noexcept
 {
-  color_.setElements(zisc::pow(red(), gamma),
-                     zisc::pow(green(), gamma),
-                     zisc::pow(blue(), gamma));
+  for (uint i = 0; i < 3; ++i)
+    color_[i] = zisc::pow(color_[i], gamma);
 }
 
 /*!

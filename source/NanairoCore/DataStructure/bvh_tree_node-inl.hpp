@@ -148,7 +148,7 @@ constexpr uint32 BvhTreeNode::numOfObjectsShift() noexcept
 inline
 constexpr uint32 BvhTreeNode::objectIndexMask() noexcept
 {
-  constexpr uint32 mask = BvhBuildingNode::maxNumOfLeafNodes();
+  constexpr uint32 mask = BvhBuildingNode::maxNumOfLeafs();
   return mask;
 }
 

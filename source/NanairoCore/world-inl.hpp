@@ -18,6 +18,7 @@
 // Nanairo
 #include "Data/object.hpp"
 #include "DataStructure/bvh.hpp"
+#include "Material/material.hpp"
 #include "Material/EmitterModel/emitter_model.hpp"
 #include "Material/SurfaceModel/surface_model.hpp"
 #include "Material/TextureModel/texture_model.hpp"
@@ -54,6 +55,16 @@ inline
 const std::vector<const Object*>& World::lightSourceList() const noexcept
 {
   return light_source_list_;
+}
+
+/*!
+  */
+inline
+const std::vector<Material*>& World::materialList() const noexcept
+{
+  const auto material_list =
+      zisc::treatAs<const std::vector<Material*>*>(&material_list_);
+  return *material_list;
 }
 
 /*!

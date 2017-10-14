@@ -89,7 +89,7 @@ IntersectionInfo Bvh::castRay(const Ray& ray,
   */
 void Bvh::construct(System& system, std::vector<Object>&& object_list) noexcept
 {
-  ZISC_ASSERT(object_list.size() <= BvhBuildingNode::maxNumOfLeafNodes(),
+  ZISC_ASSERT(object_list.size() <= BvhBuildingNode::maxNumOfLeafs(),
               "The size of objects is over.");
   // Allocate memory
   object_list_.reserve(object_list.size());

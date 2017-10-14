@@ -16,7 +16,7 @@
 #include "zisc/cumulative_distribution_function.hpp"
 // Nanairo
 #include "light_source_sampler.hpp"
-#include "NanairoCore/Data/light_source_reference.hpp"
+#include "NanairoCore/Data/light_source_info.hpp"
 
 namespace nanairo {
 
@@ -35,44 +35,49 @@ class World;
 class PowerWeightedLightSourceSampler : public LightSourceSampler
 {
  public:
-  using LightSourceCdf =
-      zisc::CumulativeDistributionFunction<const LightSourceReference*, Float>;
+  using LightSourceCdf = zisc::CumulativeDistributionFunction<const LightSourceInfo*,
+                                                              Float>;
 
 
   //! Create a light source sampler
   PowerWeightedLightSourceSampler(const World& world) noexcept;
 
 
-  //! Return the light source reference by the light source
-  const LightSourceReference& getReference(
-      const IntersectionInfo& info,
-      const Object* light_source) const noexcept override;
+  //! Return the light source info by the light source
+  LightSourceInfo getInfo(const IntersectionInfo& info,
+                          const Object* light_source) const noexcept override;
 
-  //! Return the light source CDF
-  const LightSourceCdf& lightSourceCdf() const noexcept;
+  //! Return the info list of light source
+  std::vector<LightSourceInfo>& infoList() noexcept;
+
+  //! Return the info list of light source
+  const std::vector<LightSourceInfo>& infoList() const noexcept;
 
   //! Return the light source CDF
   LightSourceCdf& lightSourceCdf() noexcept;
 
-  //! Return the reference list of light source
-  const std::vector<LightSourceReference>& referenceList() const noexcept;
+  //! Return the light source CDF
+  const LightSourceCdf& lightSourceCdf() const noexcept;
 
-  //! Return the reference list of light source
-  std::vector<LightSourceReference>& referenceList() noexcept;
+  //! Sample a light source for a light path tracer
+  LightSourceInfo sample(Sampler& sampler) const noexcept override;
 
-  //! Sample a light source
-  const LightSourceReference& sample(Sampler& sampler) const noexcept;
-
-  //! Sample a light source
-  const LightSourceReference& sample(const IntersectionInfo& info,
-                                     Sampler& sampler) const noexcept override;
+  //! Sample a light source for a eye path tracer
+  LightSourceInfo sample(const IntersectionInfo& info,
+                         Sampler& sampler) const noexcept override;
 
  private:
+  //! Return the light source info by the light source
+  LightSourceInfo getInfo(const Object* light_source) const noexcept;
+
   //! Initialize
   void initialize(const World& world) noexcept;
 
+  //! Sample a light source
+  const LightSourceInfo& sampleInfo(Sampler& sampler) const noexcept;
 
-  std::vector<LightSourceReference> reference_list_;
+
+  std::vector<LightSourceInfo> info_list_;
   std::unique_ptr<LightSourceCdf> light_source_cdf_;
 };
 

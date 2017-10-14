@@ -11,6 +11,7 @@
 // Standard C++ library
 #include <cstddef>
 #include <memory>
+#include <string>
 #include <vector>
 // Zisc
 #include "zisc/algorithm.hpp"
@@ -86,7 +87,29 @@ std::unique_ptr<SurfaceModel> SurfaceModel::makeSurface(
     break;
    }
   }
+  surface->setName(surface_settings->name());
   return surface;
+}
+
+/*!
+  */
+const std::string* SurfaceModel::name() const noexcept
+{
+  const std::string* object_name = nullptr;
+#ifdef Z_DEBUG_MODE
+  object_name = &name_;
+#endif // Z_DEBUG_MODE
+  return object_name;
+}
+
+/*!
+  */
+void SurfaceModel::setName(const std::string& name) noexcept
+{
+#ifdef Z_DEBUG_MODE
+  name_ = name;
+#endif // Z_DEBUG_MODE
+  static_cast<void>(name);
 }
 
 } // namespace nanairo

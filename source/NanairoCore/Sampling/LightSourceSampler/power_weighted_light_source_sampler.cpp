@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 // Zisc
+#include "zisc/error.hpp"
 #include "zisc/compensated_summation.hpp"
 #include "zisc/cumulative_distribution_function.hpp"
 #include "zisc/math.hpp"
@@ -20,8 +21,10 @@
 #include "light_source_sampler.hpp"
 #include "NanairoCore/world.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Data/light_source_reference.hpp"
+#include "NanairoCore/Data/light_source_info.hpp"
 #include "NanairoCore/Data/object.hpp"
+#include "NanairoCore/Material/material.hpp"
+#include "NanairoCore/Sampling/sampler.hpp"
 #include "NanairoCore/Shape/shape.hpp"
 
 namespace nanairo {
@@ -38,24 +41,56 @@ PowerWeightedLightSourceSampler::PowerWeightedLightSourceSampler(
 
 /*!
   */
-const LightSourceReference& PowerWeightedLightSourceSampler::getReference(
+LightSourceInfo PowerWeightedLightSourceSampler::getInfo(
     const IntersectionInfo& /* info */,
     const Object* light_source) const noexcept
 {
-  return LightSourceSampler::getReference(referenceList(), light_source);
+  return getInfo(light_source);
 }
 
 /*!
   \details
   No detailed.
   */
-const LightSourceReference& PowerWeightedLightSourceSampler::sample(
+LightSourceInfo PowerWeightedLightSourceSampler::sample(
+    Sampler& sampler) const noexcept
+{
+  return sampleInfo(sampler);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+LightSourceInfo PowerWeightedLightSourceSampler::sample(
     const IntersectionInfo& /* info */,
     Sampler& sampler) const noexcept
 {
-  return sample(sampler);
+  return sampleInfo(sampler);
 }
 
+/*!
+  */
+inline
+LightSourceInfo PowerWeightedLightSourceSampler::getInfo(
+    const Object* light_source) const noexcept
+{
+  ZISC_ASSERT(light_source != nullptr, "The light source is null.");
+  ZISC_ASSERT(light_source->material().isLightSource(),
+              "The object isn't light source.");
+  const auto comp = [](const LightSourceInfo& lhs, const Object* rhs)
+  {
+    return lhs.object() < rhs;
+  };
+  const auto& info_list = infoList();
+  auto info = std::lower_bound(info_list.begin(),
+                               info_list.end(),
+                               light_source,
+                               comp);
+  ZISC_ASSERT((info != info_list.end()) && (info->object() == light_source),
+              "The light source isn't in the light source list.");
+  return *info;
+}
 
 /*!
   \details
@@ -73,36 +108,47 @@ void PowerWeightedLightSourceSampler::initialize(
                         light_source->material().emitter().radiantExitance();
       total_flux.add(flux);
     }
-    // Initialize references
-    reference_list_.reserve(light_source_list.size());
+    // Initialize info list
+    info_list_.reserve(light_source_list.size());
     for (const auto light_source : light_source_list) {
       const auto flux = light_source->shape().surfaceArea() *
                         light_source->material().emitter().radiantExitance();
-      reference_list_.emplace_back(light_source, flux / total_flux.get());
+      info_list_.emplace_back(light_source, flux / total_flux.get());
     }
-    // Sort reference list
-    const auto comp = [](const LightSourceReference& lhs,
-                         const LightSourceReference& rhs)
+    // Sort the info list
+    const auto comp = [](const LightSourceInfo& lhs, const LightSourceInfo& rhs)
     {
       return lhs.object() < rhs.object();
     };
-    std::sort(reference_list_.begin(), reference_list_.end(), comp);
+    std::sort(info_list_.begin(), info_list_.end(), comp);
   }
-
   {
-    std::vector<const LightSourceReference*> reference_list;
+    std::vector<const LightSourceInfo*> info_list;
     std::vector<Float> pdf_list;
 
-    reference_list.reserve(reference_list_.size());
-    pdf_list.reserve(reference_list_.size());
-    for (const auto& light_source : reference_list_) {
-      reference_list.emplace_back(&light_source);
-      pdf_list.emplace_back(light_source.weight());
+    info_list.reserve(info_list_.size());
+    pdf_list.reserve(info_list_.size());
+    for (const auto& info : info_list_) {
+      info_list.emplace_back(&info);
+      pdf_list.emplace_back(info.weight());
     }
 
-    light_source_cdf_ = std::make_unique<LightSourceCdf>(std::move(reference_list),
+    light_source_cdf_ = std::make_unique<LightSourceCdf>(std::move(info_list),
                                                          std::move(pdf_list));
   }
 }
+
+/*!
+  */
+inline
+const LightSourceInfo& PowerWeightedLightSourceSampler::sampleInfo(
+    Sampler& sampler) const noexcept
+{
+  const auto& light_source_cdf = lightSourceCdf();
+  const Float y = sampler.sample();
+  const auto sampled_lihgt_source = light_source_cdf.inverseFunction(y);
+  return *sampled_lihgt_source;
+}
+
 
 } // namespace nanairo

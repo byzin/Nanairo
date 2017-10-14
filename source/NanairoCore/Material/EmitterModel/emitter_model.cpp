@@ -10,6 +10,7 @@
 #include "emitter_model.hpp"
 // Standard C++ library
 #include <memory>
+#include <string>
 #include <vector>
 // Zisc
 #include "zisc/algorithm.hpp"
@@ -64,7 +65,29 @@ std::unique_ptr<EmitterModel> EmitterModel::makeEmitter(
     break;
    }
   }
+  emitter->setName(emitter_settings->name());
   return emitter;
+}
+
+/*!
+  */
+const std::string* EmitterModel::name() const noexcept
+{
+  const std::string* object_name = nullptr;
+#ifdef Z_DEBUG_MODE
+  object_name = &name_;
+#endif // Z_DEBUG_MODE
+  return object_name;
+}
+
+/*!
+  */
+void EmitterModel::setName(const std::string& name) noexcept
+{
+#ifdef Z_DEBUG_MODE
+  name_ = name;
+#endif // Z_DEBUG_MODE
+  static_cast<void>(name);
 }
 
 /*!

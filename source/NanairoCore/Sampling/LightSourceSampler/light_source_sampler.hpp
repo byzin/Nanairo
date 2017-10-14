@@ -16,7 +16,7 @@
 // Zisc
 #include "zisc/algorithm.hpp"
 // Nanairo
-#include "NanairoCore/Data/light_source_reference.hpp"
+#include "NanairoCore/Data/light_source_info.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
@@ -47,13 +47,13 @@ class LightSourceSampler
   //! Create a light source sampler
   LightSourceSampler() noexcept;
 
+  //!
   virtual ~LightSourceSampler() noexcept;
 
 
-  //! Return the light source reference by the light source
-  virtual const LightSourceReference& getReference(
-      const IntersectionInfo& info,
-      const Object* light_source) const noexcept = 0;
+  //! Return the light source info by the light source
+  virtual LightSourceInfo getInfo(const IntersectionInfo& info,
+                                  const Object* light_source) const noexcept = 0;
 
   //! Make a light source sampler
   static std::unique_ptr<LightSourceSampler> makeSampler(
@@ -61,31 +61,20 @@ class LightSourceSampler
       const World& world,
       System& system) noexcept;
 
-  //! Sample a light source
-  virtual const LightSourceReference& sample(const IntersectionInfo& info,
-                                             Sampler& sampler) const noexcept = 0;
+  //! Sample a light source for a light path tracer
+  virtual LightSourceInfo sample(Sampler& sampler) const noexcept = 0;
 
- protected:
-  //! Return the light source reference by the light source
-  const LightSourceReference& getReference(
-      const std::vector<LightSourceReference>& reference_list,
-      const Object* light_source) const noexcept;
+  //! Sample a light source for a eye path tracer
+  virtual LightSourceInfo sample(const IntersectionInfo& info,
+                                 Sampler& sampler) const noexcept = 0;
 
  private:
   //! Initialize
   void initialize() noexcept;
-
-  //! Return the invalid reference
-  const LightSourceReference& invalidReference() const noexcept;
-
-
-  LightSourceReference invalid_reference_;
 };
 
 //! \} Core
 
 } // namespace nanairo
-
-#include "light_source_sampler-inl.hpp"
 
 #endif // NANAIRO_LIGHT_SOURCE_SAMPLER_HPP

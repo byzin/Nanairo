@@ -19,70 +19,9 @@
 #include "sampled_spectra.hpp"
 #include "sampler.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/roulette_result.hpp"
 
 namespace nanairo {
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-RouletteResult::RouletteResult() noexcept :
-    probability_{1.0},
-    result_{true}
-{
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-RouletteResult::RouletteResult(const bool result, const Float probability) noexcept :
-    probability_{probability},
-    result_{result}
-{
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-Float RouletteResult::probability() const noexcept
-{
-  return probability_;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-bool RouletteResult::result() const noexcept
-{
-  return result_;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-void RouletteResult::setProbability(const Float probability) noexcept
-{
-  probability_ = probability;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-void RouletteResult::setResult(const bool result) noexcept
-{
-  result_ = result;
-}
 
 /*!
   */

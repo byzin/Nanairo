@@ -31,10 +31,9 @@ namespace nanairo {
 
 //! Calculate the range of indices
 template <typename Integer> inline
-std::tuple<Integer, Integer> System::calcThreadRange(
-    const Integer range,
-    const uint num_of_threads,
-    const int thread_id) noexcept
+std::array<Integer, 2> System::calcThreadRange(const Integer range,
+                                               const uint num_of_threads,
+                                               const int thread_id) noexcept
 {
   static_assert(std::is_integral<Integer>::value, "The Integer isn't integer type.");
   // Set the calculation range 
@@ -46,14 +45,13 @@ std::tuple<Integer, Integer> System::calcThreadRange(
   const Integer begin = id * per_thread;
   const Integer end = (begin + per_thread) + 
       (((id + 1) == threads) ? (range % threads) : 0);
-  return std::make_tuple(begin, end);
+  return std::array<Integer, 2>{{begin, end}};
 }
 
 //! Calculate the range of indices
 template <typename Integer> inline
-std::tuple<Integer, Integer> System::calcThreadRange(
-    const Integer range,
-    const int thread_id) const noexcept
+std::array<Integer, 2> System::calcThreadRange(const Integer range,
+                                               const int thread_id) const noexcept
 {
   return calcThreadRange(range, threadPool().numOfThreads(), thread_id);
 }

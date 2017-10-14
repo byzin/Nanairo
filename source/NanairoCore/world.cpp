@@ -132,18 +132,31 @@ void World::initializeEmitter(System& system,
 std::vector<Object> World::initializeObject(System& system,
                                             const SettingNodeBase* settings) noexcept
 {
-  // Make objects
-  auto object_list_array = makeObjects(system, settings);
-  // Calc the num of objects
+  auto results = makeObjects(system, settings);
+
+  // Initialize materials
+  {
+    const std::size_t num_of_materials = results.size();
+    material_list_.reserve(num_of_materials);
+    for (auto& result : results) {
+      auto& material = std::get<1>(result);
+      material_list_.emplace_back(std::move(material));
+    }
+  }
+
+  // Initialize objects
   std::size_t num_of_objects = 0;
-  for (const auto& objects : object_list_array)
+  for (const auto& result : results) {
+    const auto& objects = std::get<0>(result);
     num_of_objects += objects.size();
+  }
   ZISC_ASSERT(0 < num_of_objects, "The scene has no object.");
 
   // Merge all lists into a list
   std::vector<Object> object_list;
   object_list.reserve(num_of_objects);
-  for (auto& objects : object_list_array) {
+  for (auto& result : results) {
+    auto& objects = std::get<0>(result);
     for (auto& object : objects) {
       object_list.emplace_back(std::move(object));
     }
@@ -217,22 +230,24 @@ void World::initializeWorldLightSource() noexcept
       light_source_list_.emplace_back(&object);
   }
   light_source_list_.shrink_to_fit();
+  std::sort(light_source_list_.begin(), light_source_list_.end());
 }
 
 /*!
   \details
   No detailed.
   */
-std::vector<std::vector<Object>> World::makeObjects(
-    System& system,
-    const SettingNodeBase* settings) const noexcept
+auto World::makeObjects(System& system,
+                        const SettingNodeBase* settings) const noexcept
+    -> std::vector<ObjectSet>
 {
-  std::list<std::future<std::vector<Object>>> results;
+  std::list<std::future<ObjectSet>> results;
   {
     const auto transformation = Transformation::makeIdentity();
-    makeObjects(system, settings, transformation, results);
+    std::string object_name = "";
+    makeObjects(system, settings, object_name, transformation, results);
   }
-  std::vector<std::vector<Object>> object_list;
+  std::vector<ObjectSet> object_list;
   {
     object_list.reserve(results.size());
     for (auto& result : results)
@@ -246,8 +261,9 @@ std::vector<std::vector<Object>> World::makeObjects(
 void World::makeObjects(
     System& system,
     const SettingNodeBase* settings,
+    const std::string& name,
     Matrix4x4 transformation,
-    std::list<std::future<std::vector<Object>>>& results) const noexcept
+    std::list<std::future<ObjectSet>>& results) const noexcept
 {
   const auto object_model_settings = castNode<ObjectModelSettingNode>(settings);
   if (object_model_settings->visibility()) {
@@ -257,12 +273,15 @@ void World::makeObjects(
       transformation = transformation *
                        Transformation::makeTransformation(transformation_list);
     }
+    auto object_name = (name.empty())
+        ? object_model_settings->name()
+        : name + "/" + object_model_settings->name();
     // Object
     const auto object_settings = object_model_settings->objectSettingNode();
     if (object_settings->type() == SettingNodeType::kGroupObject)
-      makeGroupObject(system, object_settings, transformation, results);
+      makeGroupObject(system, object_settings, object_name, transformation, results);
     else
-      makeSingleObject(system, object_settings, transformation, results);
+      makeSingleObject(system, object_settings, std::move(object_name), transformation, results);
   }
 }
 
@@ -273,10 +292,11 @@ void World::makeObjects(
 void World::makeSingleObject(
     System& system,
     const SettingNodeBase* settings,
+    std::string&& name,
     const Matrix4x4& transformation,
-    std::list<std::future<std::vector<Object>>>& results) const noexcept
+    std::list<std::future<ObjectSet>>& results) const noexcept
 {
-  auto make_object = [this, settings, transformation]()
+  auto make_object = [this, settings, name = std::move(name), transformation]()
   {
     const auto object_settings = castNode<SingleObjectSettingNode>(settings);
     // Make geometries
@@ -294,17 +314,20 @@ void World::makeSingleObject(
       const auto emitter_index = object_settings->emitterIndex();
       emitter_model = emitter_list_[emitter_index].get();
     }
-    const Material material{surface_model, emitter_model};
+    // Make material
+    auto material = std::make_unique<Material>(surface_model, emitter_model);
     // Make objects
     std::vector<Object> object_list;
     object_list.reserve(shape_list.size());
-    for (auto& shape : shape_list)
-      object_list.emplace_back(material, std::move(shape));
-    return object_list;
+    for (auto& shape : shape_list) {
+      object_list.emplace_back(std::move(shape), material.get());
+      object_list.back().setName(name);
+    }
+    return std::make_tuple(std::move(object_list), std::move(material));
   };
 
   auto& thread_pool = system.threadPool();
-  auto result = thread_pool.enqueue<std::vector<Object>>(make_object);
+  auto result = thread_pool.enqueue<ObjectSet>(make_object);
   results.emplace_back(std::move(result));
 }
 
@@ -315,14 +338,15 @@ void World::makeSingleObject(
 void World::makeGroupObject(
     System& system,
     const SettingNodeBase* settings,
+    const std::string& name,
     const Matrix4x4& transformation,
-    std::list<std::future<std::vector<Object>>>& results) const noexcept
+    std::list<std::future<ObjectSet>>& results) const noexcept
 {
   const auto group_settings = castNode<GroupObjectSettingNode>(settings);
 
   const auto& object_list = group_settings->objectList();
   for (const auto object_settings : object_list)
-    makeObjects(system, object_settings, transformation, results);
+    makeObjects(system, object_settings, name, transformation, results);
 }
 
 } // namespace nanairo

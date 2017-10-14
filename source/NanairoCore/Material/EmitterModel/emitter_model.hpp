@@ -13,6 +13,7 @@
 // Standard C++ library
 #include <cstddef>
 #include <memory>
+#include <string>
 #include <vector>
 // Zisc
 #include "zisc/algorithm.hpp"
@@ -76,8 +77,14 @@ class EmitterModel
                                   const WavelengthSamples& wavelengths,
                                   zisc::MemoryPool& memory_pool) const noexcept = 0;
 
+  //! Return the emitter name 
+  const std::string* name() const noexcept;
+
   //! Return the radiant exitance
   Float radiantExitance() const noexcept;
+
+  //! Set the emitter name
+  void setName(const std::string& name) noexcept;
 
   //! Return the emitter type
   virtual EmitterType type() const noexcept = 0;
@@ -92,6 +99,9 @@ class EmitterModel
 
 
   Float radiant_exitance_;
+#ifdef Z_DEBUG_MODE
+  std::string name_;
+#endif // Z_DEBUG_MODE
 };
 
 //! \} Core

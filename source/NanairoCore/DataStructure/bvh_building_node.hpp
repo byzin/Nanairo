@@ -60,13 +60,13 @@ class BvhBuildingNode
 
 
   //! Return the max node index
-  static constexpr uint32 maxNodeIndex() noexcept;
+  static constexpr uint32 maxIndex() noexcept;
 
   //! Return the max num of objects
-  static constexpr uint32 maxNumOfLeafNodes() noexcept;
+  static constexpr uint32 maxNumOfLeafs() noexcept;
 
-  //! Return the non object index
-  static constexpr uint32 nonObjectIndex() noexcept;
+  //! Return the null index
+  static constexpr uint32 nullIndex() noexcept;
 
   //! Return the number of objects
   uint numOfObjects() const noexcept;

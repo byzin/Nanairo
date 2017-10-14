@@ -11,8 +11,11 @@
 #define NANAIRO_WAVELENGTH_SAMPLE_INL_HPP
 
 #include "wavelength_samples.hpp"
+// Standard C++ library
+#include <array>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/math.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -55,7 +58,7 @@ uint16& WavelengthSamples::operator[](const uint index) noexcept
   No detailed.
   */
 inline
-uint16 WavelengthSamples::operator[](const uint index) const noexcept
+const uint16& WavelengthSamples::operator[](const uint index) const noexcept
 {
   ZISC_ASSERT(zisc::isInBounds(index, 0u, size()), "The index is out of range.");
   return wavelengths_[index];
@@ -69,6 +72,17 @@ inline
 constexpr Float WavelengthSamples::primaryInverseProbability() noexcept
 {
   return zisc::cast<Float>(size());
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+constexpr Float WavelengthSamples::primaryProbability() noexcept
+{
+  constexpr Float probability = zisc::invert(primaryInverseProbability());
+  return probability;
 }
 
 /*!

@@ -69,10 +69,8 @@ void ToneMappingOperator::map(System& system,
   {
     // Set the calculation range
     const auto range = system.calcThreadRange(hdr_image.numOfPixels(), thread_id);
-    const auto begin = std::get<0>(range);
-    const auto end = std::get<1>(range);
     // Apply tonemap to each pixel
-    for (uint index = begin; index < end; ++index) {
+    for (uint index = range[0]; index < range[1]; ++index) {
       auto rgba32 = Rgba32{};
       if (0.0 < hdr_image[index].y()) {
         auto xyz = hdr_image[index];

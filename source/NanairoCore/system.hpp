@@ -56,14 +56,14 @@ class System
   // System
   //! Calculate the range of indices
   template <typename Integer>
-  static std::tuple<Integer, Integer> calcThreadRange(const Integer range,
-                                                      const uint num_of_threads,
-                                                      const int thread_id) noexcept;
+  static std::array<Integer, 2> calcThreadRange(const Integer range,
+                                                const uint num_of_threads,
+                                                const int thread_id) noexcept;
 
   //! Calculate the range of indices
   template <typename Integer>
-  std::tuple<Integer, Integer> calcThreadRange(const Integer range,
-                                               const int thread_id) const noexcept;
+  std::array<Integer, 2> calcThreadRange(const Integer range,
+                                         const int thread_id) const noexcept;
 
   //! Return the global memory pool
   zisc::MemoryPool& globalMemoryPool() noexcept;

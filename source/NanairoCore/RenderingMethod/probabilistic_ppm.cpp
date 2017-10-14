@@ -28,7 +28,7 @@
 #include "NanairoCore/scene.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/CameraModel/camera_model.hpp"
-#include "NanairoCore/Data/light_source_reference.hpp"
+#include "NanairoCore/Data/light_source_info.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
@@ -192,7 +192,7 @@ auto ProbabilisticPpm::generatePhoton(
   const auto& wavelengths = light_contribution->wavelengths();
   // Sample a light point
   const auto& light_sampler = lightPathLightSampler();
-  const auto& light_source_info = light_sampler.sample(sampler);
+  const auto light_source_info = light_sampler.sample(sampler);
   const auto light_source = light_source_info.object();
   const auto light_point_info = light_source->shape().samplePoint(sampler);
   const auto& point = std::get<0>(light_point_info);

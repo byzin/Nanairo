@@ -33,9 +33,9 @@ namespace nanairo {
   */
 inline
 BvhBuildingNode::BvhBuildingNode() noexcept :
-    parent_index_{nonObjectIndex()},
-    left_child_index_{nonObjectIndex()},
-    right_child_index_{nonObjectIndex()},
+    parent_index_{nullIndex()},
+    left_child_index_{nullIndex()},
+    right_child_index_{nullIndex()},
     cost_{std::numeric_limits<float>::max()}
 {
   object_list_.fill(nullptr);
@@ -48,9 +48,9 @@ BvhBuildingNode::BvhBuildingNode() noexcept :
 inline
 BvhBuildingNode::BvhBuildingNode(const Object* object) noexcept :
     bounding_box_{object->shape().boundingBox()},
-    parent_index_{BvhBuildingNode::nonObjectIndex()},
-    left_child_index_{BvhBuildingNode::nonObjectIndex()},
-    right_child_index_{BvhBuildingNode::nonObjectIndex()},
+    parent_index_{BvhBuildingNode::nullIndex()},
+    left_child_index_{BvhBuildingNode::nullIndex()},
+    right_child_index_{BvhBuildingNode::nullIndex()},
     cost_{std::numeric_limits<float>::max()}
 {
   object_list_.fill(nullptr);
@@ -124,7 +124,7 @@ uint32 BvhBuildingNode::leftChildIndex() const noexcept
 /*!
   */
 inline
-constexpr uint32 BvhBuildingNode::maxNodeIndex() noexcept
+constexpr uint32 BvhBuildingNode::maxIndex() noexcept
 {
   constexpr uint32 max_node_index = std::numeric_limits<uint32>::max() - 1;
   return max_node_index;
@@ -133,7 +133,7 @@ constexpr uint32 BvhBuildingNode::maxNodeIndex() noexcept
 /*!
   */
 inline
-constexpr uint32 BvhBuildingNode::maxNumOfLeafNodes() noexcept
+constexpr uint32 BvhBuildingNode::maxNumOfLeafs() noexcept
 {
   uint32 node_objects = CoreConfig::maxNumOfNodeObjects() >> 1;
   uint32 max_leaf_nodes = std::numeric_limits<uint32>::max() >> 1;
@@ -147,7 +147,7 @@ constexpr uint32 BvhBuildingNode::maxNumOfLeafNodes() noexcept
 /*!
   */
 inline
-constexpr uint32 BvhBuildingNode::nonObjectIndex() noexcept
+constexpr uint32 BvhBuildingNode::nullIndex() noexcept
 {
   return std::numeric_limits<uint32>::max();
 }

@@ -73,7 +73,7 @@ class Ray
           inv_direction_;
   std::array<uint8, 3> sign_;
   uint8 is_alive_;
-  uint8 padding_[4];
+  std::array<uint8, 4> padding_;
 };
 
 //! \} Core

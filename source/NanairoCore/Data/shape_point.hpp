@@ -73,7 +73,7 @@ class ShapePoint
   const Point2& uv() const noexcept;
 
  private:
-  SampledPoint point_; 
+  SampledPoint point_;
   Vector3 normal_;
   Point2 uv_; //!< Texture coordinate
   Point2 st_; //!< Shape coordinate

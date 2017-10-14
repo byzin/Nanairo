@@ -34,7 +34,7 @@ const Shape& Object::shape() const noexcept
 inline
 const Material& Object::material() const noexcept
 {
-  return material_;
+  return *material_;
 }
 
 /*!

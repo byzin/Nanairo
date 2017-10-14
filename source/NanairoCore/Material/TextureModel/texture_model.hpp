@@ -13,6 +13,7 @@
 // Standard C+ library
 #include <cstddef>
 #include <memory>
+#include <string>
 #include <vector>
 // Zisc
 #include "zisc/algorithm.hpp"
@@ -67,6 +68,9 @@ class TextureModel
       const System& system,
       const SettingNodeBase* settings) noexcept;
 
+  //! Return the texture name
+  const std::string* name() const noexcept;
+
   //! Evaluate the reflective value by the wavelength at the uv coordinate
   virtual Float reflectiveValue(
       const Point2& uv,
@@ -76,6 +80,9 @@ class TextureModel
   virtual SampledSpectra reflectiveValue(
       const Point2& uv,
       const WavelengthSamples& wavelengths) const noexcept = 0;
+
+  //! Set the name of the texture
+  void setName(const std::string& name) noexcept;
 
   //! Evaluate the spectra value by the wavelength at the uv coordinate
   virtual Float spectraValue(
@@ -89,6 +96,11 @@ class TextureModel
 
   //! Return the texture type
   virtual TextureType type() const noexcept = 0;
+
+ private:
+#ifdef Z_DEBUG_MODE
+  std::string name_;
+#endif // Z_DEBUG_MODE
 };
 
 //! \} Core

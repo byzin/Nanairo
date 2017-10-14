@@ -15,9 +15,11 @@
 #include <future>
 #include <list>
 #include <memory>
+#include <tuple>
 #include <vector>
 // Nanairo
 #include "Data/object.hpp"
+#include "Material/material.hpp"
 #include "Material/EmitterModel/emitter_model.hpp"
 #include "Material/SurfaceModel/surface_model.hpp"
 #include "Material/TextureModel/texture_model.hpp"
@@ -57,6 +59,9 @@ class World
   //! Return the light source list
   const std::vector<const Object*>& lightSourceList() const noexcept;
 
+  //! Return the material list
+  const std::vector<Material*>& materialList() const noexcept;
+
   //! Return the object list
   const std::vector<Object>& objectList() const noexcept;
 
@@ -67,6 +72,9 @@ class World
   const std::vector<TextureModel*>& textureList() const noexcept;
 
  private:
+  using ObjectSet = std::tuple<std::vector<Object>, std::unique_ptr<Material>>;
+
+
   //! Initialize world
   void initialize(System& system, const SettingNodeBase* settings) noexcept;
 
@@ -87,7 +95,7 @@ class World
   void initializeTexture(System& system, const SettingNodeBase* settings) noexcept;
 
   //! Make objects
-  std::vector<std::vector<Object>> makeObjects(
+  std::vector<ObjectSet> makeObjects(
       System& system,
       const SettingNodeBase* settings) const noexcept;
 
@@ -95,26 +103,30 @@ class World
   void makeObjects(
       System& system,
       const SettingNodeBase* settings,
+      const std::string& name,
       Matrix4x4 transformation,
-      std::list<std::future<std::vector<Object>>>& results) const noexcept;
+      std::list<std::future<ObjectSet>>& results) const noexcept;
 
   //! Make a single object
   void makeSingleObject(
       System& system,
       const SettingNodeBase* settings,
+      std::string&& name,
       const Matrix4x4& transformation,
-      std::list<std::future<std::vector<Object>>>& results) const noexcept;
+      std::list<std::future<ObjectSet>>& results) const noexcept;
 
   void makeGroupObject(
       System& system,
       const SettingNodeBase* settings,
+      const std::string& name,
       const Matrix4x4& transformation,
-      std::list<std::future<std::vector<Object>>>& results) const noexcept;
+      std::list<std::future<ObjectSet>>& results) const noexcept;
 
 
   std::vector<std::unique_ptr<EmitterModel>> emitter_list_;
   std::vector<std::unique_ptr<SurfaceModel>> surface_list_;
   std::vector<std::unique_ptr<TextureModel>> texture_list_;
+  std::vector<std::unique_ptr<Material>> material_list_;
   std::vector<const Object*> light_source_list_;
   std::unique_ptr<Bvh> bvh_;
 };

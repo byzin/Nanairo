@@ -1,5 +1,5 @@
 /*!
-  \file light_source_reference.hpp
+  \file light_source_info.hpp.hpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2017 Sho Ikeda
@@ -7,11 +7,9 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-#ifndef NANAIRO_LIGHT_SOURCE_REFERENCE_HPP
-#define NANAIRO_LIGHT_SOURCE_REFERENCE_HPP
+#ifndef NANAIRO_LIGHT_SOURCE_INFO_HPP
+#define NANAIRO_LIGHT_SOURCE_INFO_HPP
 
-// Standard C++ library
-#include <vector>
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 
@@ -27,23 +25,23 @@ class Object;
   \details
   No detailed.
   */
-class LightSourceReference
+class LightSourceInfo
 {
  public:
-  //! Create a invalid light source reference
-  LightSourceReference() noexcept;
+  //! Create a invalid light source info
+  LightSourceInfo() noexcept;
 
-  //! Create a light source reference
-  LightSourceReference(const Object* light_source) noexcept;
+  //! Create a light source info
+  LightSourceInfo(const Object* light_source) noexcept;
 
-  //! Create a light source reference
-  LightSourceReference(const Object* light_source, const Float weight) noexcept;
+  //! Create a light source info
+  LightSourceInfo(const Object* light_source, const Float weight) noexcept;
 
 
   //! Return the inverse weight of this light source
   Float inverseWeight() const noexcept;
 
-  //! Check if the reference is valid
+  //! Check if the info is valid
   bool isValid() const noexcept;
 
   //! Return the light source object
@@ -68,6 +66,6 @@ class LightSourceReference
 
 } // namespace nanairo
 
-#include "light_source_reference-inl.hpp"
+#include "light_source_info-inl.hpp"
 
-#endif // NANAIRO_LIGHT_SOURCE_REFERENCE_HPP
+#endif // NANAIRO_LIGHT_SOURCE_INFO_HPP

@@ -152,23 +152,26 @@ Ray RenderingMethod::sampleNextRay(const uint length,
   if (inverse_direction_pdf != nullptr)
     *inverse_direction_pdf = sampled_vout.inversePdf();
 
+  Ray next_ray;
+
   // Play russian roulette
   const auto next_weight = *ray_weight * weight;
   const auto roulette_result = playRussianRoulette(length, next_weight, sampler);
-  if (!roulette_result.result())
-    return Ray{};
-  // Update ray weight
-  const Float inverse_probability = zisc::invert(roulette_result.probability());
-  *ray_weight = *ray_weight * inverse_probability;
-  *next_ray_weight = next_weight * inverse_probability;
+  if (roulette_result) {
+    // Update ray weight
+    const Float inverse_probability = zisc::invert(roulette_result.probability());
+    *ray_weight = *ray_weight * inverse_probability;
+    *next_ray_weight = next_weight * inverse_probability;
 
-  // Create a next ray
-  const Float cos_theta_no = zisc::dot(normal, sampled_vout.direction());
-  const auto ray_epsilon = (0.0 < cos_theta_no)
-      ? rayCastEpsilon() * normal
-      : -rayCastEpsilon() * normal;
-  ZISC_ASSERT(!isZeroVector(ray_epsilon), "The ray epsilon is zero vector.");
-  return Ray{intersection.point() + ray_epsilon, sampled_vout.direction()};
+    // Create a next ray
+    const Float cos_theta_no = zisc::dot(normal, sampled_vout.direction());
+    const auto ray_epsilon = (0.0 < cos_theta_no)
+        ? rayCastEpsilon() * normal
+        : -rayCastEpsilon() * normal;
+    ZISC_ASSERT(!isZeroVector(ray_epsilon), "The ray epsilon is zero vector.");
+    next_ray = Ray{intersection.point() + ray_epsilon, sampled_vout.direction()};
+  }
+  return next_ray;
 }
 
 /*!

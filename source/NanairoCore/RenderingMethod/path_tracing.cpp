@@ -26,7 +26,7 @@
 #include "NanairoCore/world.hpp"
 #include "NanairoCore/CameraModel/camera_model.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
-#include "NanairoCore/Data/light_source_reference.hpp"
+#include "NanairoCore/Data/light_source_info.hpp"
 #include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
 #include "NanairoCore/DataStructure/bvh.hpp"
@@ -93,8 +93,8 @@ void PathTracing::evalExplicitConnection(
 
   // Select a light source and sample a point on the light source
   const auto& light_sampler = eyePathLightSampler();
-  const auto& sampled_light_source = light_sampler.sample(intersection, sampler);
-  const auto light_source = sampled_light_source.object();
+  const auto light_source_info = light_sampler.sample(intersection, sampler);
+  const auto light_source = light_source_info.object();
   const auto light_point_info = light_source->shape().samplePoint(sampler);
   const auto& light_point = std::get<0>(light_point_info);
 
@@ -148,7 +148,7 @@ void PathTracing::evalExplicitConnection(
   ZISC_ASSERT(0.0 < geometry_term, "Geometry term is negative.");
 
   // Calculate the MIS weight
-  const Float inverse_selection_pdf = sampled_light_source.inverseWeight() *
+  const Float inverse_selection_pdf = light_source_info.inverseWeight() *
                                       light_point.inversePdf();
   const Float mis_weight = implicitConnectionIsEnabled()
       ? calcMisWeight(direction_pdf, inverse_selection_pdf)
@@ -198,8 +198,8 @@ void PathTracing::evalImplicitConnection(
 
   // Calculate the MIS weight
   const auto& light_sampler = eyePathLightSampler();
-  const auto& light_reference = light_sampler.getReference(intersection, object);
-  const Float selection_pdf = zisc::invert(light_reference.inverseWeight() *
+  const auto light_source_info = light_sampler.getInfo(intersection, object);
+  const Float selection_pdf = zisc::invert(light_source_info.inverseWeight() *
                                            object->shape().surfaceArea());
   const Float mis_weight = (explicitConnectionIsEnabled() && mis)
       ? calcMisWeight(selection_pdf, inverse_direction_pdf)

@@ -14,6 +14,7 @@
 #include "zisc/algorithm.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/roulette_result.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
@@ -30,37 +31,6 @@ enum class RouletteType : uint32
   kMaxWeight                   = zisc::toHash32("MaxWeight"),
   kAverageWeight               = zisc::toHash32("AverageWeight"),
   kPathLength                  = zisc::toHash32("PathLength")
-};
-
-/*!
-  \details
-  No detailed.
-  */
-class RouletteResult
-{
- public:
-  //! Create result
-  RouletteResult() noexcept;
-
-  //! Create result
-  RouletteResult(const bool result, const Float probability) noexcept;
-
-
-  //! Return the probability
-  Float probability() const noexcept;
-
-  //! Return the result
-  bool result() const noexcept;
-
-  //! Set probability
-  void setProbability(const Float probability) noexcept;
-
-  //! Set result
-  void setResult(const bool result) noexcept;
-
- private:
-  Float probability_;
-  bool result_;
 };
 
 /*!

@@ -10,9 +10,12 @@
 #ifndef NANAIRO_INTERSECTION_INFO_HPP
 #define NANAIRO_INTERSECTION_INFO_HPP
 
+// Standard C++ library
+#include <array>
 // Nanairo
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
+#include "NanairoCore/nanairo_core_config.hpp"
 
 namespace nanairo {
 
@@ -99,7 +102,8 @@ class IntersectionInfo
   Point2 st_coordinate_;
   const Object* object_;
   Float ray_distance_;
-  bool is_reverse_face_;
+  uint8 is_reverse_face_;
+  std::array<uint8, 7> padding_;
 };
 
 //! \} Core

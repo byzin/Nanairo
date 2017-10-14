@@ -12,6 +12,7 @@
 
 // Standard C++ library
 #include <memory>
+#include <string>
 #include <vector>
 // Nanairo
 #include "NanairoCore/Material/material.hpp"
@@ -30,25 +31,44 @@ class Object
 {
  public:
   //! Create object
-  Object(const Material& material, std::unique_ptr<Shape>&& shape) noexcept;
+  Object(std::unique_ptr<Shape>&& shape, const Material* material) noexcept;
 
-  //! Move object
-  Object(Object&& object) noexcept;
+  //! Move object data
+  Object(Object&& other) noexcept;
 
 
-  //! Get shape
-  const Shape& shape() const noexcept;
+  //! Move object data
+  Object& operator=(Object&& ohter) noexcept;
+
+
+  //! Return the name of the object
+  const std::string* name() const noexcept;
 
   //! Get material
   const Material& material() const noexcept;
 
+  //! Set the name of the object
+  void setName(const std::string& object_name) noexcept;
+
+  //! Get shape
+  const Shape& shape() const noexcept;
+
+  //! Swap object data
+  void swap(Object& other) noexcept;
+
  private:
-  Material material_;
   std::unique_ptr<Shape> shape_;
+  const Material* material_;
+#ifdef Z_DEBUG_MODE
+  std::string name_;
+#endif // Z_DEBUG_MODE
 };
 
 //! Check if two objects are same
 bool isSameObject(const Object* object1, const Object* object2) noexcept;
+
+//! Swap object data
+void swap(Object& lhs, Object& rhs) noexcept;
 
 //! \} Core
 
