@@ -43,6 +43,14 @@ ShapePoint::ShapePoint(const SampledPoint& point,
 /*!
   */
 inline
+Float ShapePoint::inversePdf() const noexcept
+{
+  return point_.inversePdf();
+}
+
+/*!
+  */
+inline
 const Vector3& ShapePoint::normal() const noexcept
 {
   return normal_;

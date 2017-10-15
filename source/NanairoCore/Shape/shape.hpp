@@ -11,11 +11,8 @@
 #define NANAIRO_SHAPE_HPP
 
 // Standard C++ library
-#include <cstddef>
 #include <memory>
 #include <vector>
-#include <tuple>
-#include <utility>
 // Zisc
 #include "zisc/algorithm.hpp"
 // Nanairo
@@ -23,7 +20,6 @@
 #include "NanairoCore/Data/shape_point.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
-#include "NanairoCore/Sampling/sampled_point.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
@@ -60,7 +56,7 @@ class Shape
   virtual Aabb boundingBox() const noexcept = 0;
 
   //! Return the point and the normal by the st coordinate
-  virtual ShapePoint getPoint(const Point2& st) const noexcept;
+  virtual ShapePoint getPoint(const Point2& st) const noexcept = 0;
 
   //! Return the ray traversal cost
   virtual Float getTraversalCost() const noexcept = 0;
@@ -77,8 +73,7 @@ class Shape
                                 IntersectionInfo* intersection) const noexcept = 0;
 
   //! Sample a point randomly on the surface of the shape
-  virtual std::tuple<SampledPoint, Vector3, Point2> samplePoint(
-      Sampler& sampler) const noexcept = 0;
+  virtual ShapePoint samplePoint(Sampler& sampler) const noexcept = 0;
 
   //! Set surface area of shape
   void setSurfaceArea(const Float surface_area) noexcept;

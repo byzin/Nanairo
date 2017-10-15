@@ -54,20 +54,20 @@ auto LayeredDiffuseSurface::makeBxdf(
     Sampler& sampler,
     zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
-  const auto& uv = info.textureCoordinate();
   const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];
 
   // Evaluate the reflectance
-  const Float k_d = reflectance_->reflectiveValue(uv, wavelength);
+  const Float k_d = reflectance_->reflectiveValue(info.uv(), wavelength);
   // Evaluate the roughness
-  const Float roughness = evalRoughness(roughness_, uv);
+  const Float roughness = evalRoughness(roughness_, info.uv());
   // Evaluate the refractive index
   const Float n = evalRefractiveIndex(outer_refractive_index_,
                                       inner_refractive_index_,
-                                      uv,
+                                      info.uv(),
                                       wavelength,
-                                      info.isReverseFace());
+                                      info.isBackFace());
   const Float ri = ri_.getByWavelength(wavelength);
+
 
   // Make a interfaced lambertian BRDF
   using Brdf = InterfacedLambertianBrdf;

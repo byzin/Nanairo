@@ -51,17 +51,17 @@ auto RoughDielectricSurface::makeBxdf(
     Sampler& /* sampler */,
     zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
-  const auto& uv = info.textureCoordinate();
   const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];
 
   // Evaluate the roughness
-  const Float roughness = evalRoughness(roughness_, uv);
+  const Float roughness = evalRoughness(roughness_, info.uv());
   // Evaluate the refractive index
   const Float n = evalRefractiveIndex(outer_refractive_index_,
                                       inner_refractive_index_,
-                                      uv,
+                                      info.uv(),
                                       wavelength,
-                                      info.isReverseFace());
+                                      info.isBackFace());
+
 
   // Make GGX BSDF
   using Bsdf = GgxDielectricBsdf;

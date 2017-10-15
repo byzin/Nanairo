@@ -93,10 +93,10 @@ std::unique_ptr<Shape> TriangleMesh::makeSmoothedMesh(
   const auto c3 = zisc::dot(normal1, normal3);
   constexpr Float threshold = 0.9999;
   // If the mesh is mostly the same as flat, make a flat mesh instead of the smoothed.
-  if ((threshold < c1) && (threshold < c2) && (threshold < c3))
+//  if ((threshold < c1) && (threshold < c2) && (threshold < c3))
     mesh = std::make_unique<FlatMesh>(vertex1, vertex2, vertex3);
-  else
-    mesh = std::make_unique<SmoothedMesh>(vertex1, vertex2, vertex3, normal1, normal2, normal3);
+//  else
+//    mesh = std::make_unique<SmoothedMesh>(vertex1, vertex2, vertex3, normal1, normal2, normal3);
   return mesh;
 }
 

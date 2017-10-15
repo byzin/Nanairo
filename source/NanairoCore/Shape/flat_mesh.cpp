@@ -9,8 +9,7 @@
 
 #include "flat_mesh.hpp"
 // Standard C++ library
-#include <cstddef>
-#include <tuple>
+#include <utility>
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
@@ -118,10 +117,11 @@ bool FlatMesh::testIntersection(const Ray& ray,
     // Set the intersection info
     intersection->setPoint(point);
     const Float cos_theta = zisc::dot(normal_, ray.direction());
-    intersection->setReverseFace(0.0 < cos_theta);
-    intersection->setNormal(normal_);
+    const bool is_back_face = 0.0 < cos_theta;
+    intersection->setAsBackFace(is_back_face);
+    intersection->setNormal((is_back_face) ? -normal_ : normal_);
     intersection->setRayDistance(t);
-    intersection->setTextureCoordinate(textureCoordinate(u, v));
+    intersection->setUv(textureCoordinate(u, v));
     intersection->setSt(Point2{u, v});
   }
   return is_hit;
@@ -131,18 +131,18 @@ bool FlatMesh::testIntersection(const Ray& ray,
   \details
   No detailed.
   */
-std::tuple<SampledPoint, Vector3, Point2> FlatMesh::samplePoint(Sampler& sampler) const noexcept
+ShapePoint FlatMesh::samplePoint(Sampler& sampler) const noexcept
 {
-  Float u = sampler.sample();
-  Float v = sampler.sample();
-  if (1.0 < (u + v)) {
-    u = 1.0 - u;
-    v = 1.0 - v;
+  Point2 st{sampler.sample(), sampler.sample()};
+  if (1.0 < (st[0] + st[1])) {
+    st[0] = 1.0 - st[0];
+    st[1] = 1.0 - st[1];
   }
-  const auto point = vertex_ + u * edge_[0] + v * edge_[1];
-  return std::make_tuple(SampledPoint{point, surfaceArea()},
-                         normal_,
-                         textureCoordinate(u, v));
+  const auto point = vertex_ + st[0] * edge_[0] + st[1] * edge_[1];
+  return ShapePoint{SampledPoint{point, surfaceArea()},
+                    normal_,
+                    textureCoordinate(st[0], st[1]),
+                    st};
 }
 
 /*!

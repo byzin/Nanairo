@@ -36,6 +36,9 @@ class ShapePoint
              const Point2& st) noexcept;
 
 
+  //! Return the inverse pdf at the point
+  Float inversePdf() const noexcept;
+
   //! Return the normal
   const Vector3& normal() const noexcept;
 

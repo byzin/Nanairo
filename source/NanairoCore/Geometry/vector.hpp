@@ -22,6 +22,7 @@ namespace nanairo {
 
 using Vector2 = zisc::Vector<Float, 2>;
 using Vector3 = zisc::Vector<Float, 3>;
+using Vector4 = zisc::Vector<Float, 4>;
 
 //! Check if the vector contains the specified value
 bool hasValue(const Vector3& vector, const Float value) noexcept;

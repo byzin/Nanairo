@@ -149,7 +149,7 @@ void ProbabilisticPpm::evalImplicitConnection(
 {
   const auto object = intersection.object();
   const auto& material = object->material();
-  if (!material.isLightSource() || intersection.isReverseFace())
+  if (!material.isLightSource() || intersection.isBackFace())
     return;
 
   const auto& wavelengths = ray_weight.wavelengths();
@@ -158,9 +158,7 @@ void ProbabilisticPpm::evalImplicitConnection(
 
   // Get the light
   const auto& emitter = material.emitter();
-  const auto light = emitter.makeLight(intersection.textureCoordinate(),
-                                       wavelengths,
-                                       memory_pool);
+  const auto light = emitter.makeLight(intersection.uv(), wavelengths, memory_pool);
 
   // Evaluate the radiance
   const auto radiance = light->evalRadiance(&vin, nullptr, normal, wavelengths);
@@ -195,34 +193,26 @@ auto ProbabilisticPpm::generatePhoton(
   const auto light_source_info = light_sampler.sample(sampler);
   const auto light_source = light_source_info.object();
   const auto light_point_info = light_source->shape().samplePoint(sampler);
-  const auto& point = std::get<0>(light_point_info);
-  const auto& normal = std::get<1>(light_point_info);
-  const auto& texture_coordinate = std::get<2>(light_point_info);
-  ZISC_ASSERT(0.0 < point.pdf(), "The point pdf is negative.");
+  ZISC_ASSERT(0.0 < light_point_info.pdf(), "The point pdf is negative.");
 
   // Sample a direction
   const auto& emitter = light_source->material().emitter();
-  const IntersectionInfo intersection{point.point(),
-                                      normal,
-                                      texture_coordinate,
-                                      light_source,
-                                      false};
-  const auto light = emitter.makeLight(intersection.textureCoordinate(),
-                                       wavelengths,
-                                       memory_pool);
+  const IntersectionInfo intersection{light_source, light_point_info};
+  const auto light = emitter.makeLight(intersection.uv(), wavelengths, memory_pool);
+  const auto& normal = light_point_info.normal();
   const auto result = light->sample(nullptr, normal, wavelengths, sampler);
   const auto& sampled_vout = std::get<0>(result);
   ZISC_ASSERT(0.0 < sampled_vout.pdf(), "The vout pdf is negative.");
   // Evaluate the light contribution
   const auto& w = std::get<1>(result);
-  const auto k = (light_source_info.inverseWeight() * point.inversePdf()) *
+  const auto k = (light_source_info.inverseWeight() * light_point_info.inversePdf()) *
                  photon_power_scale_;
   ZISC_ASSERT(0.0 < k, "The photon coefficient is negative.");
   *light_contribution = k * w;
 
   const auto ray_epsilon = Method::rayCastEpsilon() * normal;
   ZISC_ASSERT(!isZeroVector(ray_epsilon), "Ray epsilon is zero vector.");
-  return Photon{point.point() + ray_epsilon, sampled_vout.direction()};
+  return Photon{light_point_info.point() + ray_epsilon, sampled_vout.direction()};
 }
 
 /*!

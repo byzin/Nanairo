@@ -48,15 +48,14 @@ auto SmoothDielectricSurface::makeBxdf(
     Sampler& /* sampler */,
     zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
-  const auto& uv = info.textureCoordinate();
   const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];
 
   // Evaluate the refractive index
   const Float n = evalRefractiveIndex(outer_refractive_index_,
                                       inner_refractive_index_,
-                                      uv,
+                                      info.uv(),
                                       wavelength,
-                                      info.isReverseFace());
+                                      info.isBackFace());
 
 
   using Bsdf = SpecularBsdf;

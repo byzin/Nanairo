@@ -10,9 +10,6 @@
 #ifndef NANAIRO_FLAT_MESH_HPP
 #define NANAIRO_FLAT_MESH_HPP
 
-// Standard C++ library
-#include <tuple>
-#include <utility>
 // Zisc
 #include "zisc/matrix.hpp"
 // Nanairo
@@ -22,7 +19,6 @@
 #include "NanairoCore/Data/shape_point.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
-#include "NanairoCore/Sampling/sampled_point.hpp"
 
 namespace nanairo {
 
@@ -62,8 +58,7 @@ class FlatMesh : public TriangleMesh
                         IntersectionInfo* intersection) const noexcept override;
 
   //! Sample a point randomly on the surface of the triangle
-  std::tuple<SampledPoint, Vector3, Point2> samplePoint(
-      Sampler& sampler) const noexcept override;
+  ShapePoint samplePoint(Sampler& sampler) const noexcept override;
 
   //! Apply affine transformation
   void transform(const Matrix4x4& matrix) noexcept override;

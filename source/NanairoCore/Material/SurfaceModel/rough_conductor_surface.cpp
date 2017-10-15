@@ -52,18 +52,16 @@ auto RoughConductorSurface::makeBxdf(
     Sampler& /* sampler */,
     zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
-  const auto& uv = info.textureCoordinate();
-
   // Evaluate the roughness
-  const Float roughness = evalRoughness(roughness_, uv);
+  const Float roughness = evalRoughness(roughness_, info.uv());
   // Evaluate the refractive index
   const auto n = evalRefractiveIndex(outer_refractive_index_,
                                      inner_refractive_index_,
-                                     uv,
+                                     info.uv(),
                                      wavelengths);
   const auto eta = evalRefractiveIndex(outer_refractive_index_,
                                        inner_extinction_,
-                                       uv,
+                                       info.uv(),
                                        wavelengths);
 
   // Make GGX BRDF

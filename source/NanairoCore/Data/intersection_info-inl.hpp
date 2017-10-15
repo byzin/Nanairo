@@ -15,6 +15,7 @@
 #include <array>
 #include <limits>
 // Nanairo
+#include "NanairoCore/Data/shape_point.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -28,27 +29,68 @@ namespace nanairo {
 inline
 IntersectionInfo::IntersectionInfo() noexcept :
     object_{nullptr},
-    is_reverse_face_{kFalse}
+    ray_distance_{0.0},
+    is_back_face_{kFalse}
 {
   // Avoid warnings
   static_cast<void>(padding_);
 }
 
 /*!
+  */
+inline
+IntersectionInfo::IntersectionInfo(const Object* object,
+                                   const ShapePoint& point) noexcept :
+    object_{object},
+    point_{point},
+    ray_distance_{0.0},
+    is_back_face_{kFalse}
+{
+}
+
+/*!
   \details
   No detailed.
   */
+//inline
+//IntersectionInfo::IntersectionInfo(const Point3& point,
+//                                   const Vector3& normal,
+//                                   const Object* object,
+//                                   const bool is_back_face) noexcept :
+//    point_{point},
+//    normal_{is_back_face ? -normal : normal},
+//    object_{object},
+//    ray_distance_{0.0}
+//{
+//  setReverseFace(is_back_face);
+//}
+
+/*!
+  \details
+  No detailed.
+  */
+//inline
+//IntersectionInfo::IntersectionInfo(const Point3& point,
+//                                   const Vector3& normal,
+//                                   const Point2& texture_coordinate,
+//                                   const Object* object,
+//                                   const bool is_back_face) noexcept :
+//    point_{point},
+//    normal_{is_back_face ? -normal : normal},
+//    texture_coordinate_{texture_coordinate},
+//    object_{object},
+//    ray_distance_{0.0}
+//{
+//  setReverseFace(is_back_face);
+//}
+
+/*!
+  */
 inline
-IntersectionInfo::IntersectionInfo(const Point3& point,
-                                   const Vector3& normal,
-                                   const Object* object,
-                                   const bool is_reverse_face) noexcept :
-    point_{point},
-    normal_{is_reverse_face ? -normal : normal},
-    object_{object},
-    ray_distance_{0.0}
+Vector3 IntersectionInfo::faceNormal() const noexcept
 {
-  setReverseFace(is_reverse_face);
+  const auto n = (isBackFace()) ? -normal() : normal();
+  return n;
 }
 
 /*!
@@ -56,18 +98,10 @@ IntersectionInfo::IntersectionInfo(const Point3& point,
   No detailed.
   */
 inline
-IntersectionInfo::IntersectionInfo(const Point3& point,
-                                   const Vector3& normal,
-                                   const Point2& texture_coordinate,
-                                   const Object* object,
-                                   const bool is_reverse_face) noexcept :
-    point_{point},
-    normal_{is_reverse_face ? -normal : normal},
-    texture_coordinate_{texture_coordinate},
-    object_{object},
-    ray_distance_{0.0}
+bool IntersectionInfo::isBackFace() const noexcept
 {
-  setReverseFace(is_reverse_face);
+  const bool is_back_face = (is_back_face_ == kTrue);
+  return is_back_face;
 }
 
 /*!
@@ -77,18 +111,8 @@ IntersectionInfo::IntersectionInfo(const Point3& point,
 inline
 bool IntersectionInfo::isIntersected() const noexcept
 {
-  return object_ != nullptr;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-bool IntersectionInfo::isReverseFace() const noexcept
-{
-  const bool is_reverse_face = (is_reverse_face_ == kTrue);
-  return is_reverse_face;
+  const bool is_intersected = object_ != nullptr;
+  return is_intersected;
 }
 
 /*!
@@ -98,7 +122,7 @@ bool IntersectionInfo::isReverseFace() const noexcept
 inline
 const Vector3& IntersectionInfo::normal() const noexcept
 {
-  return normal_;
+  return point_.normal();
 }
 
 /*!
@@ -118,7 +142,7 @@ const Object* IntersectionInfo::object() const noexcept
 inline
 const Point3& IntersectionInfo::point() const noexcept
 {
-  return point_;
+  return point_.point();
 }
 
 /*!
@@ -134,9 +158,9 @@ Float IntersectionInfo::rayDistance() const noexcept
   No detailed.
   */
 inline
-void IntersectionInfo::setReverseFace(const bool is_reverse_face) noexcept
+void IntersectionInfo::setAsBackFace(const bool is_back_face) noexcept
 {
-  is_reverse_face_ = (is_reverse_face) ? kTrue : kFalse;
+  is_back_face_ = (is_back_face) ? kTrue : kFalse;
 }
 
 /*!
@@ -146,7 +170,7 @@ void IntersectionInfo::setReverseFace(const bool is_reverse_face) noexcept
 inline
 void IntersectionInfo::setNormal(const Vector3& normal) noexcept
 {
-  normal_ = (isReverseFace()) ? -normal : normal;
+  point_.setNormal(normal);
 }
 
 /*!
@@ -166,7 +190,7 @@ void IntersectionInfo::setObject(const Object* object) noexcept
 inline
 void IntersectionInfo::setPoint(const Point3& point) noexcept
 {
-  point_ = point;
+  point_.setPoint(point);
 }
 
 /*!
@@ -180,9 +204,17 @@ void IntersectionInfo::setRayDistance(const Float distance) noexcept
 /*!
   */
 inline
+void IntersectionInfo::setShapePoint(const ShapePoint& point) noexcept
+{
+  point_ = point;
+}
+
+/*!
+  */
+inline
 void IntersectionInfo::setSt(const Point2& st) noexcept
 {
-  st_coordinate_ = st;
+  point_.setSt(st);
 }
 
 /*!
@@ -190,9 +222,17 @@ void IntersectionInfo::setSt(const Point2& st) noexcept
   No detailed.
   */
 inline
-void IntersectionInfo::setTextureCoordinate(const Point2& texture_coordinate) noexcept
+void IntersectionInfo::setUv(const Point2& uv) noexcept
 {
-  texture_coordinate_ = texture_coordinate;
+  point_.setUv(uv);
+}
+
+/*!
+  */
+inline
+const ShapePoint& IntersectionInfo::shapePoint() const noexcept
+{
+  return point_;
 }
 
 /*!
@@ -200,7 +240,7 @@ void IntersectionInfo::setTextureCoordinate(const Point2& texture_coordinate) no
 inline
 const Point2& IntersectionInfo::st() const noexcept
 {
-  return st_coordinate_;
+  return point_.st();
 }
 
 /*!
@@ -208,9 +248,9 @@ const Point2& IntersectionInfo::st() const noexcept
   No detailed.
   */
 inline
-const Point2& IntersectionInfo::textureCoordinate() const noexcept
+const Point2& IntersectionInfo::uv() const noexcept
 {
-  return texture_coordinate_;
+  return point_.uv();
 }
 
 } // namespace nanairo

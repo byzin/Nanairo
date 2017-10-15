@@ -50,10 +50,8 @@ auto ClothSurface::makeBxdf(
     Sampler& /* sampler */,
     zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
-  const auto& uv = info.textureCoordinate();
-
   // Get the roughness
-  const auto k_d = reflectance_->reflectiveValue(uv, wavelengths);
+  const auto k_d = reflectance_->reflectiveValue(info.uv(), wavelengths);
 
   // Make a microcylinder cloth BRDF
   using Brdf = MicrocylinderClothBrdf;

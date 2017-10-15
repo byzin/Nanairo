@@ -10,16 +10,12 @@
 #ifndef NANAIRO_PLANE_HPP
 #define NANAIRO_PLANE_HPP
 
-// Standard C++ library
-#include <cstddef>
-#include <tuple>
-#include <utility>
 // Nanairo
 #include "shape.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/shape_point.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
-#include "NanairoCore/Sampling/sampled_point.hpp"
 
 namespace nanairo {
 
@@ -46,6 +42,9 @@ class Plane : public Shape
   //! Get bounding box
   Aabb boundingBox() const noexcept override;
 
+  //! Return the point and the normal by the st coordinate
+  ShapePoint getPoint(const Point2& st) const noexcept override;
+
   //! Return the cost of a ray-plane intersection test
   Float getTraversalCost() const noexcept override;
 
@@ -54,8 +53,7 @@ class Plane : public Shape
                         IntersectionInfo* intersection) const noexcept override;
 
   //! Sample a point randomly on the surface of the plane 
-  std::tuple<SampledPoint, Vector3, Point2> samplePoint(
-      Sampler& sampler) const noexcept override;
+  ShapePoint samplePoint(Sampler& sampler) const noexcept override;
 
   //! Apply affine transformation
   void transform(const Matrix4x4& matrix) noexcept override;

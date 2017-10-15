@@ -9,8 +9,6 @@
 
 #include "plane.hpp"
 // Standard C++ library
-#include <cstddef>
-#include <tuple>
 #include <utility>
 // Zisc
 #include "zisc/arithmetic_array.hpp"
@@ -22,6 +20,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/ray.hpp"
+#include "NanairoCore/Data/shape_point.hpp"
 #include "NanairoCore/DataStructure/aabb.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
@@ -74,6 +73,14 @@ Float Plane::getTraversalCost() const noexcept
 }
 
 /*!
+  */
+ShapePoint Plane::getPoint(const Point2& st) const noexcept
+{
+  zisc::raiseError("Not implemented.");
+  return ShapePoint{};
+}
+
+/*!
  \details
   Please see the details of this algorithm below RUL.
  http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-plane-and-ray-disk-intersection/
@@ -101,8 +108,9 @@ bool Plane::testIntersection(const Ray& ray,
   if (is_hit) {
     // Set the intersection info
     intersection->setPoint(point);
-    intersection->setReverseFace(0.0 < cos_theta);
-    intersection->setNormal(normal_);
+    const bool is_back_face = 0.0 < cos_theta;
+    intersection->setAsBackFace(is_back_face);
+    intersection->setNormal((is_back_face) ? -normal_ : normal_);
     intersection->setRayDistance(t);
     const Float u = dot_axis1_am * inverse_square_width_;
     const Float v = dot_axis2_am * inverse_square_height_;
@@ -110,7 +118,7 @@ bool Plane::testIntersection(const Ray& ray,
                 "Texture coordinate u is must be [0, 1].");
     ZISC_ASSERT(zisc::isInClosedBounds(v, 0.0, 1.0),
                 "Texture coordinate v is must be [0, 1].");
-    intersection->setTextureCoordinate(Point2{u, v});
+    intersection->setUv(Point2{u, v});
   }
   return is_hit;
 }
@@ -119,13 +127,11 @@ bool Plane::testIntersection(const Ray& ray,
   \details
   No detailed.
   */
-std::tuple<SampledPoint, Vector3, Point2> Plane::samplePoint(
-    Sampler& sampler) const noexcept
+ShapePoint Plane::samplePoint(Sampler& sampler) const noexcept
 {
-  const Float u = sampler.sample();
-  const Float v = sampler.sample();
-  const auto point = top_left_ + u * axis1_ + v * axis2_;
-  return std::make_tuple(SampledPoint{point, surfaceArea()}, normal_, Point2{u, v});
+  const Point2 uv{sampler.sample(), sampler.sample()};
+  const auto point = top_left_ + uv[0] * axis1_ + uv[1] * axis2_;
+  return ShapePoint{SampledPoint{point, surfaceArea()}, normal_, uv, uv};
 }
 
 /*!

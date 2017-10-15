@@ -96,12 +96,11 @@ void PathTracing::evalExplicitConnection(
   const auto light_source_info = light_sampler.sample(intersection, sampler);
   const auto light_source = light_source_info.object();
   const auto light_point_info = light_source->shape().samplePoint(sampler);
-  const auto& light_point = std::get<0>(light_point_info);
 
   // Make a shadow ray
   const auto& normal = intersection.normal();
   const auto shadow_ray = Method::makeShadowRay(intersection.point(),
-                                                light_point.point(),
+                                                light_point_info.point(),
                                                 normal);
   const Float cos_no = zisc::dot(normal, shadow_ray.direction());
   // If the shadow ray hits the back face of the light source, quit connectino
@@ -109,14 +108,14 @@ void PathTracing::evalExplicitConnection(
     return;
 
   // Check the visibility of the light source
-  const Float diff2 = (light_point.point() - shadow_ray.origin()).squareNorm();
+  const Float diff2 = (light_point_info.point() - shadow_ray.origin()).squareNorm();
   ZISC_ASSERT(0.0 < diff2, "The diff2 isn't greater than 0.");
   const Float max_shadow_ray_distance = Method::calcShadowRayDistance(diff2);
   const auto shadow_intersection = Method::castRay(world,
                                                    shadow_ray,
                                                    max_shadow_ray_distance);
   if (shadow_intersection.object() != light_source ||
-      shadow_intersection.isReverseFace())
+      shadow_intersection.isBackFace())
     return;
 
   // Evaluate the surface reflectance
@@ -132,7 +131,7 @@ void PathTracing::evalExplicitConnection(
 
   // Evaluate the light radiance
   const auto& emitter = light_source->material().emitter();
-  const auto light = emitter.makeLight(shadow_intersection.textureCoordinate(),
+  const auto light = emitter.makeLight(shadow_intersection.uv(),
                                        wavelengths,
                                        memory_pool);
   const auto& shadow_normal = shadow_intersection.normal();
@@ -149,7 +148,7 @@ void PathTracing::evalExplicitConnection(
 
   // Calculate the MIS weight
   const Float inverse_selection_pdf = light_source_info.inverseWeight() *
-                                      light_point.inversePdf();
+                                      light_point_info.inversePdf();
   const Float mis_weight = implicitConnectionIsEnabled()
       ? calcMisWeight(direction_pdf, inverse_selection_pdf)
       : 1.0;
@@ -180,7 +179,7 @@ void PathTracing::evalImplicitConnection(
 
   const auto object = intersection.object();
   const auto& material = object->material();
-  if (!material.isLightSource() || intersection.isReverseFace())
+  if (!material.isLightSource() || intersection.isBackFace())
     return;
 
   const auto& wavelengths = ray_weight.wavelengths();
@@ -189,9 +188,7 @@ void PathTracing::evalImplicitConnection(
 
   // Get the light
   const auto& emitter = material.emitter();
-  const auto light = emitter.makeLight(intersection.textureCoordinate(),
-                                       wavelengths,
-                                       memory_pool);
+  const auto light = emitter.makeLight(intersection.uv(), wavelengths, memory_pool);
 
   // Evaluate the radiance
   const auto radiance = light->evalRadiance(&vin, nullptr, normal, wavelengths);

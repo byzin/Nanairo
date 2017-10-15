@@ -47,10 +47,9 @@ auto SmoothDiffuseSurface::makeBxdf(
     Sampler& /* sampler */,
     zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
-  const auto& uv = info.textureCoordinate();
-
   // Evaluate the reflectance
-  const auto k_d = reflectance_->reflectiveValue(uv, wavelengths);
+  const auto k_d = reflectance_->reflectiveValue(info.uv(), wavelengths);
+
 
   using Brdf = LambertBrdf;
   auto chunk = memory_pool.allocate<Brdf>();

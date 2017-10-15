@@ -30,6 +30,7 @@
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/light_source_info.hpp"
 #include "NanairoCore/Data/ray.hpp"
+#include "NanairoCore/Data/shape_point.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
 #include "NanairoCore/DataStructure/bvh.hpp"
 #include "NanairoCore/Geometry/point.hpp"
@@ -162,29 +163,22 @@ Ray LightTracing::generateRay(const World& world,
   const auto light_source_info = light_sampler.sample(sampler);
   const auto light_source = light_source_info.object();
   const auto light_point_info = light_source->shape().samplePoint(sampler);
-  const auto& point = std::get<0>(light_point_info);
-  const auto& normal = std::get<1>(light_point_info);
-  const auto& texture_coordinate = std::get<2>(light_point_info);
-  ZISC_ASSERT(0.0 < point.pdf(), "The point pdf is negative.");
+  ZISC_ASSERT(0.0 < light_point_info.pdf(), "The point pdf is negative.");
 
   // Sample a direction
   const auto& emitter = light_source->material().emitter();
-  const IntersectionInfo intersection{point.point(),
-                                      normal,
-                                      texture_coordinate,
-                                      light_source,
-                                      false};
-  const auto light = emitter.makeLight(intersection.textureCoordinate(),
-                                       wavelengths,
-                                       memory_pool);
+  const IntersectionInfo intersection{light_source, light_point_info};
+  const auto light = emitter.makeLight(intersection.uv(), wavelengths, memory_pool);
 
   // Evaluate the explicit connection
-  const auto k = light_source_info.inverseWeight() * point.inversePdf();
+  const auto k = light_source_info.inverseWeight() *
+                 light_point_info.inversePdf();
   ZISC_ASSERT(0.0 < k, "The light ray coefficient is negative.");
   *light_contribution = k * (*light_contribution);
   evalExplicitConnection(world, nullptr, light, intersection,
                          *light_contribution, ray_weight, camera, memory_pool);
   // Sample a ray direction
+  const auto& normal = light_point_info.normal();
   const auto result = light->sample(nullptr, normal, wavelengths, sampler);
   const auto& sampled_vout = std::get<0>(result);
   ZISC_ASSERT(0.0 < sampled_vout.pdf(), "The ray direction pdf is negative.");
@@ -195,7 +189,7 @@ Ray LightTracing::generateRay(const World& world,
   // Generate a ray
   const auto ray_epsilon = Method::rayCastEpsilon() * normal;
   ZISC_ASSERT(!isZeroVector(ray_epsilon), "Ray epsilon is zero vector.");
-  return Ray{point.point() + ray_epsilon, sampled_vout.direction()};
+  return Ray{light_point_info.point() + ray_epsilon, sampled_vout.direction()};
 }
 
 /*!
