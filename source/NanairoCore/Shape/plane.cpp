@@ -9,6 +9,7 @@
 
 #include "plane.hpp"
 // Standard C++ library
+#include <array>
 #include <utility>
 // Zisc
 #include "zisc/arithmetic_array.hpp"
@@ -19,6 +20,7 @@
 #include "shape.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
+#include "NanairoCore/Data/intersection_test_result.hpp"
 #include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/Data/shape_point.hpp"
 #include "NanairoCore/DataStructure/aabb.hpp"
@@ -35,12 +37,9 @@ namespace nanairo {
  No detailed.
  */
 Plane::Plane() noexcept :
-    top_left_{-0.5, 0.0, -0.5},
-    normal_{0.0, 1.0, 0.0},
-    axis1_{1.0, 0.0, 0.0},
-    axis2_{0.0, 0.0, 1.0},
-    square_width_{1.0},
-    square_height_{1.0}
+    vertex0_{-0.5, 0.0, -0.5},
+    edge_{{Vector3{1.0, 0.0, 0.0}, Vector3{0.0, 0.0, 1.0}}},
+    normal_{0.0, 1.0, 0.0}
 {
   initialize();
 }
@@ -51,16 +50,27 @@ Plane::Plane() noexcept :
  */
 Aabb Plane::boundingBox() const noexcept
 {
-  auto min_point = top_left_.data();
-  auto max_point = top_left_.data();
-  Point3 plane_points[] = {top_left_ + axis1_,
-                           top_left_ + axis2_,
-                           top_left_ + axis1_ + axis2_};
+  const auto& v = vertex0();
+  const auto& e = edge();
+
+  auto min_point = v.data();
+  auto max_point = v.data();
+  Point3 plane_points[] = {v + e[0], v + e[1], v + e[0] + e[1]};
   for (const auto& point : plane_points) {
     min_point = zisc::minElements(min_point, point.data());
     max_point = zisc::maxElements(max_point, point.data());
   }
   return Aabb{Point3{min_point}, Point3{max_point}};
+}
+
+/*!
+  */
+ShapePoint Plane::getPoint(const Point2& st) const noexcept
+{
+  const auto& v = vertex0();
+  const auto& e = edge();
+  const auto point = v + st[0] * e[0] + st[1] * e[1];
+  return ShapePoint{SampledPoint{point, surfaceArea()}, normal(), st, st};
 }
 
 /*!
@@ -73,52 +83,64 @@ Float Plane::getTraversalCost() const noexcept
 }
 
 /*!
-  */
-ShapePoint Plane::getPoint(const Point2& st) const noexcept
+ */
+IntersectionTestResult Plane::testIntersection(
+    const Ray& ray,
+    IntersectionInfo* intersection) const noexcept
 {
-  zisc::raiseError("Not implemented.");
-  return ShapePoint{};
+  const bool is_hit = testIntersection(vertex0(),
+                                       edge(),
+                                       normal(),
+                                       ray,
+                                       intersection->rayDistance(),
+                                       nullptr,
+                                       intersection);
+  return (is_hit)
+      ? IntersectionTestResult{intersection->rayDistance()}
+      : IntersectionTestResult{};
 }
 
 /*!
  \details
   Please see the details of this algorithm below RUL.
- http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-plane-and-ray-disk-intersection/
- */
-bool Plane::testIntersection(const Ray& ray,
-                             IntersectionInfo* intersection) const noexcept
+  http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-plane-and-ray-disk-intersection/
+  */
+bool Plane::testIntersection(const Point3& v,
+                             const std::array<Vector3, 2>& e,
+                             const Vector3& normal,
+                             const Ray& ray,
+                             const Float max_distance,
+                             Point2* st,
+                             IntersectionInfo* intersection) noexcept
 {
-  // Rayが平面と交差するまでの時間tを求めます
-  const Float cos_theta = zisc::dot(normal_, ray.direction());
-  // 平面の法線とレイの方向が垂直な関係にある場合は当たらない
+  const Float cos_theta = -zisc::dot(normal, ray.direction());
+  // In the case that the ray is parallel to the normal
   if (cos_theta == 0.0)
     return false;
-
-  const Float t = zisc::dot(top_left_ - ray.origin(), normal_) / cos_theta;
-  if (!zisc::isInOpenBounds(t, 0.0, intersection->rayDistance()))
+  // Calculate the time that ray hit plane
+  const Float t = zisc::dot(normal, ray.origin() - v) / cos_theta;
+  if (!zisc::isInOpenBounds(t, 0.0, max_distance))
     return false;
-
-  //  交点が矩形の内側にあるか確認します
+  // Check if the hit point is in the plane
   const auto point = ray.origin() + (t * ray.direction());
-  const auto am = point - top_left_;
-  const Float dot_axis1_am = zisc::dot(am, axis1_);
-  const Float dot_axis2_am = zisc::dot(am, axis2_);
-  const bool is_hit = zisc::isInClosedBounds(dot_axis1_am, 0.0, square_width_) &&
-                      zisc::isInClosedBounds(dot_axis2_am, 0.0, square_height_);
+  const auto am = point - v;
+  const Float x = zisc::dot(am, e[0]);
+  const Float y = zisc::dot(am, e[1]);
+  const bool is_hit = zisc::isInClosedBounds(x, 0.0, e[0].squareNorm()) &&
+                      zisc::isInClosedBounds(y, 0.0, e[1].squareNorm());
   if (is_hit) {
-    // Set the intersection info
-    intersection->setPoint(point);
-    const bool is_back_face = 0.0 < cos_theta;
-    intersection->setAsBackFace(is_back_face);
-    intersection->setNormal((is_back_face) ? -normal_ : normal_);
-    intersection->setRayDistance(t);
-    const Float u = dot_axis1_am * inverse_square_width_;
-    const Float v = dot_axis2_am * inverse_square_height_;
-    ZISC_ASSERT(zisc::isInClosedBounds(u, 0.0, 1.0),
-                "Texture coordinate u is must be [0, 1].");
-    ZISC_ASSERT(zisc::isInClosedBounds(v, 0.0, 1.0),
-                "Texture coordinate v is must be [0, 1].");
-    intersection->setUv(Point2{u, v});
+    const Point2 st_coordinate{x / e[0].squareNorm(), y / e[1].squareNorm()};
+    if (st != nullptr)
+      *st = st_coordinate;
+    if (intersection != nullptr) {
+      const bool is_back_face = cos_theta < 0.0;
+      intersection->setPoint(point);
+      intersection->setNormal((!is_back_face) ? normal : -normal);
+      intersection->setAsBackFace(is_back_face);
+      intersection->setRayDistance(t);
+      intersection->setSt(st_coordinate);
+      intersection->setUv(st_coordinate);
+    }
   }
   return is_hit;
 }
@@ -129,32 +151,22 @@ bool Plane::testIntersection(const Ray& ray,
   */
 ShapePoint Plane::samplePoint(Sampler& sampler) const noexcept
 {
-  const Point2 uv{sampler.sample(), sampler.sample()};
-  const auto point = top_left_ + uv[0] * axis1_ + uv[1] * axis2_;
-  return ShapePoint{SampledPoint{point, surfaceArea()}, normal_, uv, uv};
+  const auto& v = vertex0();
+  const auto& e = edge();
+
+  const Point2 st{sampler.sample(),
+                  sampler.sample()};
+  const auto point = v + st[0] * e[0] + st[1] * e[1];
+  return ShapePoint{SampledPoint{point, surfaceArea()}, normal(), st, st};
 }
 
 /*!
- \details
- No detailed.
- */
-void Plane::transform(const Matrix4x4& matrix) noexcept
+  */
+Float Plane::calcSurfaceArea() const noexcept
 {
-  Transformation::affineTransform(matrix, &top_left_);
-  Transformation::affineTransform(matrix, &axis1_);
-  Transformation::affineTransform(matrix, &axis2_);
-
-  square_width_ = axis1_.squareNorm();
-  square_height_ = axis2_.squareNorm();
-  ZISC_ASSERT(0.0 < square_width_, "The width of the plane is minus.");
-  ZISC_ASSERT(0.0 < square_height_, "The height of the plane is minus.");
-  inverse_square_width_ = zisc::invert(square_width_);
-  inverse_square_height_ = zisc::invert(square_height_);
-  normal_ = cross(axis2_, axis1_).normalized();
-  ZISC_ASSERT(isUnitVector(normal_), "Normal isn't unit vector.");
-
-  const auto area = zisc::cross(axis1_, axis2_).norm();
-  setSurfaceArea(area);
+  const auto& e = edge();
+  const Float surface_area = zisc::cross(e[0], e[1]).norm();
+  return surface_area;
 }
 
 /*!
@@ -163,7 +175,20 @@ void Plane::transform(const Matrix4x4& matrix) noexcept
   */
 void Plane::initialize() noexcept
 {
-  setSurfaceArea(axis1_.norm() * axis2_.norm());
+  setSurfaceArea(calcSurfaceArea());
+}
+
+/*!
+ \details
+ No detailed.
+ */
+void Plane::transformShape(const Matrix4x4& matrix) noexcept
+{
+  Transformation::affineTransform(matrix, &vertex0_);
+  Transformation::affineTransform(matrix, &edge_[0]);
+  Transformation::affineTransform(matrix, &edge_[1]);
+  normal_ = cross(edge_[1], edge_[0]).normalized();
+  ZISC_ASSERT(isUnitVector(normal_), "Normal isn't unit vector.");
 }
 
 } // namespace nanairo

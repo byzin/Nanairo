@@ -19,6 +19,7 @@
 #include <vector>
 // Nanairo
 #include "Data/object.hpp"
+#include "Geometry/transformation.hpp"
 #include "Material/material.hpp"
 #include "Material/EmitterModel/emitter_model.hpp"
 #include "Material/SurfaceModel/surface_model.hpp"

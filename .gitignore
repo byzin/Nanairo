@@ -54,9 +54,6 @@
 !/source/NanairoCore/Geometry/
 !/source/NanairoCore/Geometry/*.hpp
 !/source/NanairoCore/Geometry/*.cpp
-!/source/NanairoCore/LinearAlgebra/
-!/source/NanairoCore/LinearAlgebra/*.hpp
-!/source/NanairoCore/LinearAlgebra/*.cpp
 !/source/NanairoCore/Material/
 !/source/NanairoCore/Material/*.hpp
 !/source/NanairoCore/Material/*.cpp
@@ -81,6 +78,9 @@
 !/source/NanairoCore/RenderingMethod/
 !/source/NanairoCore/RenderingMethod/*.hpp
 !/source/NanairoCore/RenderingMethod/*.cpp
+!/source/NanairoCore/Shape/
+!/source/NanairoCore/Shape/*.hpp
+!/source/NanairoCore/Shape/*.cpp
 !/source/NanairoCore/Setting/
 !/source/NanairoCore/Setting/*.hpp
 !/source/NanairoCore/Setting/*.cpp

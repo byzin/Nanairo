@@ -40,22 +40,9 @@ class IntersectionInfo
   //! Create a intersection data
   IntersectionInfo(const Object* object, const ShapePoint& point) noexcept;
 
-  //! Create a intersection data
-//  IntersectionInfo(const Point3& point,
-//                   const Vector3& normal,
-//                   const Object* object,
-//                   const bool is_reverse_face) noexcept;
-//
-//  //! Create a intersection data
-//  IntersectionInfo(const Point3& point,
-//                   const Vector3& normal,
-//                   const Point2& texture_coordinate,
-//                   const Object* object,
-//                   const bool is_reverse_face) noexcept;
-
 
   //! Return the face normal which is oriented to the front side
-  Vector3 faceNormal() const noexcept;
+  Vector3 frontNormal() const noexcept;
 
   //! Check if the intersection point is back face
   bool isBackFace() const noexcept;
@@ -109,10 +96,6 @@ class IntersectionInfo
   const Point2& uv() const noexcept;
 
  private:
-//  Point3 point_;
-//  Vector3 normal_;
-//  Point2 texture_coordinate_;
-//  Point2 st_coordinate_;
   const Object* object_;
   ShapePoint point_;
   Float ray_distance_;

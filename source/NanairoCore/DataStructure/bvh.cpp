@@ -274,8 +274,8 @@ void Bvh::testRayObjectsIntersection(const Ray& ray,
   for (uint i = 0; i < leaf_node.numOfObjects(); ++i) {
     const auto object_index = leaf_node.objectIndex() + i;
     const auto& object = object_list[object_index];
-    const bool ray_hits_object = object.shape().testIntersection(ray, intersection);
-    if (ray_hits_object)
+    const auto result = object.shape().testIntersection(ray, intersection);
+    if (result)
       intersection->setObject(&object);
   }
 }

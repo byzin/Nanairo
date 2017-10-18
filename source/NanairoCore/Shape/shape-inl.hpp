@@ -13,6 +13,7 @@
 #include "shape.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 
 namespace nanairo {
 
@@ -24,6 +25,14 @@ inline
 Float Shape::surfaceArea() const noexcept
 {
   return surface_area_;
+}
+
+/*!
+  */
+inline
+const Matrix4x4& Shape::toLocalMatrix() const noexcept
+{
+  return *to_local_;
 }
 
 } // namespace nanairo

@@ -20,6 +20,7 @@
 #include "plane.hpp"
 #include "triangle_mesh.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/single_object_setting_node.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
@@ -28,18 +29,16 @@ namespace nanairo {
 
 /*!
   */
-Shape::~Shape() noexcept
+Shape::Shape() noexcept :
+    surface_area_{0.0},
+    to_local_{std::make_unique<Matrix4x4>(Transformation::makeIdentity())}
 {
 }
 
 /*!
-  \details
-  No detailed.
   */
-void Shape::setSurfaceArea(const Float surface_area) noexcept
+Shape::~Shape() noexcept
 {
-  ZISC_ASSERT(0.0 < surface_area, "The surface area of the shape is minus.");
-  surface_area_ = surface_area;
 }
 
 /*!
@@ -67,6 +66,25 @@ std::vector<std::unique_ptr<Shape>> Shape::makeShape(
    }
   }
   return shape_list;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+void Shape::setSurfaceArea(const Float surface_area) noexcept
+{
+  ZISC_ASSERT(0.0 < surface_area, "The surface area of the shape is minus.");
+  surface_area_ = surface_area;
+}
+
+/*!
+  */
+void Shape::transform(const Matrix4x4& matrix) noexcept
+{
+  *to_local_ = *to_local_ * matrix;
+  transformShape(matrix);
+  calcSurfaceArea();
 }
 
 } // namespace nanairo

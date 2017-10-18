@@ -17,8 +17,10 @@
 #include "zisc/algorithm.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/intersection_test_result.hpp"
 #include "NanairoCore/Data/shape_point.hpp"
 #include "NanairoCore/Geometry/point.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 
@@ -48,6 +50,9 @@ enum class ShapeType : uint32
 class Shape
 {
  public:
+  //! Create a shape
+  Shape() noexcept;
+
   //!
   virtual ~Shape() noexcept;
 
@@ -69,8 +74,9 @@ class Shape
   Float surfaceArea() const noexcept;
 
   //! Test ray-shape intersection
-  virtual bool testIntersection(const Ray& ray,
-                                IntersectionInfo* intersection) const noexcept = 0;
+  virtual IntersectionTestResult testIntersection(
+      const Ray& ray,
+      IntersectionInfo* intersection) const noexcept = 0;
 
   //! Sample a point randomly on the surface of the shape
   virtual ShapePoint samplePoint(Sampler& sampler) const noexcept = 0;
@@ -78,10 +84,21 @@ class Shape
   //! Set surface area of shape
   void setSurfaceArea(const Float surface_area) noexcept;
 
+  //! Return the matrix to transform local coordinate
+  const Matrix4x4& toLocalMatrix() const noexcept;
+
   //! Apply affine transformation
-  virtual void transform(const Matrix4x4& matrix) noexcept = 0;
+  void transform(const Matrix4x4& matrix) noexcept;
+
+ protected:
+  //! Calculate the surface area of the front side of the shape
+  virtual Float calcSurfaceArea() const noexcept = 0;
+
+  //! Apply affine transformation
+  virtual void transformShape(const Matrix4x4& matrix) noexcept = 0;
 
  private:
+  std::unique_ptr<Matrix4x4> to_local_;
   Float surface_area_;
 };
 

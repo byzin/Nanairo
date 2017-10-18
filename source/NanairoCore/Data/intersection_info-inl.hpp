@@ -49,45 +49,9 @@ IntersectionInfo::IntersectionInfo(const Object* object,
 }
 
 /*!
-  \details
-  No detailed.
-  */
-//inline
-//IntersectionInfo::IntersectionInfo(const Point3& point,
-//                                   const Vector3& normal,
-//                                   const Object* object,
-//                                   const bool is_back_face) noexcept :
-//    point_{point},
-//    normal_{is_back_face ? -normal : normal},
-//    object_{object},
-//    ray_distance_{0.0}
-//{
-//  setReverseFace(is_back_face);
-//}
-
-/*!
-  \details
-  No detailed.
-  */
-//inline
-//IntersectionInfo::IntersectionInfo(const Point3& point,
-//                                   const Vector3& normal,
-//                                   const Point2& texture_coordinate,
-//                                   const Object* object,
-//                                   const bool is_back_face) noexcept :
-//    point_{point},
-//    normal_{is_back_face ? -normal : normal},
-//    texture_coordinate_{texture_coordinate},
-//    object_{object},
-//    ray_distance_{0.0}
-//{
-//  setReverseFace(is_back_face);
-//}
-
-/*!
   */
 inline
-Vector3 IntersectionInfo::faceNormal() const noexcept
+Vector3 IntersectionInfo::frontNormal() const noexcept
 {
   const auto n = (isBackFace()) ? -normal() : normal();
   return n;

@@ -17,9 +17,8 @@
 #include "zisc/error.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
-#include "flat_mesh.hpp"
+#include "flat_triangle.hpp"
 #include "shape.hpp"
-#include "smoothed_mesh.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/face.hpp"
 #include "NanairoCore/Geometry/point.hpp"
@@ -46,58 +45,50 @@ std::vector<std::unique_ptr<Shape>> TriangleMesh::makeMeshes(
   //! \todo Add smoothed mesh
   //! \todo Add quadrangle mesh
   for (const auto& face : parameters.face_list_) {
-    std::array<Point3, 3> vertices;
-    {
-      const auto& vertex_indices = face.triangleVertexIndices();
-      for (uint i = 0; i < 3; ++i) {
-        auto& vertex = vertices[i];
-        const auto& vertex_data = parameters.vertex_list_[vertex_indices[i]];
-        for (uint axis = 0; axis < 3; ++axis)
-          vertex[axis] = zisc::cast<Float>(vertex_data[axis]);
-      }
-    }
-    auto mesh = std::make_unique<FlatMesh>(vertices[0], vertices[1], vertices[2]);
+    const auto vertices = getVertices(parameters, face);
+    auto mesh = std::make_unique<FlatTriangle>(vertices[0], vertices[1], vertices[2]);
     if (face.hasVuv()) {
-      std::array<Point2, 3> vuvs;
-      const auto& vuv_indices = face.triangleVuvIndices();
-      for (uint i = 0; i < 3; ++i) {
-        auto& vuv = vuvs[i];
-        const auto& vuv_data = parameters.vuv_list_[vuv_indices[i]];
-        for (uint axis = 0; axis < 2; ++axis)
-          vuv[axis] = zisc::cast<Float>(vuv_data[axis]);
-      }
-      mesh->setTextureCoordinate(vuvs[0], vuvs[1], vuvs[2]);
+      const auto vuvs = getUvs(parameters, face);
+      mesh->setUv(vuvs[0], vuvs[1], vuvs[2]);
     }
     mesh_list.emplace_back(std::move(mesh));
   }
-
   return mesh_list;
 }
 
 /*!
-  \details
-  No detailed.
   */
-std::unique_ptr<Shape> TriangleMesh::makeSmoothedMesh(
-    const Point3& vertex1,
-    const Point3& vertex2,
-    const Point3& vertex3,
-    const Vector3& normal1,
-    const Vector3& normal2,
-    const Vector3& normal3) noexcept
+std::array<Point3, 3> TriangleMesh::getVertices(
+    const MeshParameters& parameters,
+    const Face& face) noexcept
 {
-  std::unique_ptr<Shape> mesh;
+  std::array<Point3, 3> vertices;
+  {
+    const auto& vertex_indices = face.triangleVertexIndices();
+    for (uint i = 0; i < 3; ++i) {
+      auto& vertex = vertices[i];
+      const auto& vertex_data = parameters.vertex_list_[vertex_indices[i]];
+      for (uint axis = 0; axis < 3; ++axis)
+        vertex[axis] = zisc::cast<Float>(vertex_data[axis]);
+    }
+  }
+  return vertices;
+}
 
-  const auto c1 = zisc::dot(normal1, normal2);
-  const auto c2 = zisc::dot(normal2, normal3);
-  const auto c3 = zisc::dot(normal1, normal3);
-  constexpr Float threshold = 0.9999;
-  // If the mesh is mostly the same as flat, make a flat mesh instead of the smoothed.
-//  if ((threshold < c1) && (threshold < c2) && (threshold < c3))
-    mesh = std::make_unique<FlatMesh>(vertex1, vertex2, vertex3);
-//  else
-//    mesh = std::make_unique<SmoothedMesh>(vertex1, vertex2, vertex3, normal1, normal2, normal3);
-  return mesh;
+/*!
+  */
+std::array<Point2, 3> TriangleMesh::getUvs(const MeshParameters& parameters,
+                                           const Face& face) noexcept
+{
+  std::array<Point2, 3> uvs;
+  const auto& uv_indices = face.triangleVuvIndices();
+  for (uint i = 0; i < 3; ++i) {
+    auto& uv = uvs[i];
+    const auto& uv_data = parameters.vuv_list_[uv_indices[i]];
+    for (uint axis = 0; axis < 2; ++axis)
+      uv[axis] = zisc::cast<Float>(uv_data[axis]);
+  }
+  return uvs;
 }
 
 } // namespace nanairo

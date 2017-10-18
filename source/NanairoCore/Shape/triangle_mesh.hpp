@@ -11,7 +11,6 @@
 #define NANAIRO_TRIANGLE_MESH_HPP
 
 // Standard C++ library
-#include <cstddef>
 #include <memory>
 #include <vector>
 // Nanairo
@@ -24,7 +23,8 @@
 namespace nanairo {
 
 // Forward declaration
-class Ray;
+class Face;
+struct MeshParameters;
 
 //! \addtogroup Core
 //! \{
@@ -44,38 +44,25 @@ enum class MeshType : int
   \details
   No detailed.
   */
-class TriangleMesh : public Shape
+class TriangleMesh
 {
  public:
   //! Make meshes
   static std::vector<std::unique_ptr<Shape>> makeMeshes(
       const SettingNodeBase* settings) noexcept;
 
-  //! Make a smoothed mesh
-  static std::unique_ptr<Shape> makeSmoothedMesh(const Point3& vertex1,
-                                                 const Point3& vertex2,
-                                                 const Point3& vertex3,
-                                                 const Vector3& normal1,
-                                                 const Vector3& normal2,
-                                                 const Vector3& normal3) noexcept;
-
-  //! Set vertex texture coordinate
-  void setTextureCoordinate(const Point2& texture_coordinate1,
-                            const Point2& texture_coordinate2,
-                            const Point2& texture_coordinate3) noexcept;
-
-  //! Calculate the texture coordinate using Barycentric coordinate system
-  Point2 textureCoordinate(const Float u, const Float v) const noexcept;
-
  private:
-  Point2 texture_coordinate_;
-  Vector2 texture_edge_[2];
+  //! Return the vertices of the face
+  static std::array<Point3, 3> getVertices(const MeshParameters& parameters,
+                                           const Face& face) noexcept;
+
+  //! Return the UVs of the face
+  static std::array<Point2, 3> getUvs(const MeshParameters& parameters,
+                                      const Face& face) noexcept;
 };
 
 //! \} Core
 
 } // namespace nanairo
-
-#include "triangle_mesh-inl.hpp"
 
 #endif // NANAIRO_TRIANGLE_MESH_HPP
