@@ -41,15 +41,21 @@ enum class TransformationType : uint32
 class Transformation
 {
  public:
-  //! Make axises of orthogonal basis from a normal
-  static std::tuple<Vector3, Vector3> makeAxisesOfBasis(
-      const Vector3& normal) noexcept;
+  //! Calculate the default tangent and bitangent vectors from the normal vector
+  static std::tuple<Vector3, Vector3> calcDefaultTangent(const Vector3& normal)
+      noexcept;
 
-  //! Make a change of basis matrix for converting to the standard basis
-  static Matrix3x3 makeChangeOfBasisFromLocal(const Vector3& normal) noexcept;
+  //! Change the basis of the basis from local into global coordinate
+  static Vector3 fromLocal(const Vector3& e1,
+                           const Vector3& e2,
+                           const Vector3& e3,
+                           const Vector3& v) noexcept;
 
-  //! Make a change of basis matrix for converting to the standard basis
-  static Matrix3x3 makeChangeOfBasisToLocal(const Vector3& normal) noexcept;
+  //! Change the basis of the basis into local coordinate
+  static Vector3 toLocal(const Vector3& e1,
+                         const Vector3& e2,
+                         const Vector3& e3,
+                         const Vector3& v) noexcept;
 
   //! Make identity matrix
   static Matrix4x4 makeIdentity() noexcept;

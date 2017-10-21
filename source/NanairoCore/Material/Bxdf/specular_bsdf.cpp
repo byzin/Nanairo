@@ -16,9 +16,10 @@
 #include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
-#include "NanairoCore/Material/SurfaceModel/fresnel.hpp"
+#include "NanairoCore/Material/SurfaceModel/Surface/fresnel.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 
@@ -39,12 +40,13 @@ SpecularBsdf::SpecularBsdf(const Float n) noexcept :
   */
 std::tuple<SampledDirection, SampledSpectra> SpecularBsdf::sample(
     const Vector3* vin,
-    const Vector3& normal,
     const WavelengthSamples& wavelengths,
-    Sampler& sampler) const noexcept
+    Sampler& sampler,
+    const IntersectionInfo* info) const noexcept
 {
+  ZISC_ASSERT(info != nullptr, "The info is null.");
   // Evaluate the fresnel term
-  const Float cos_ni = -zisc::dot(normal, *vin);
+  const Float cos_ni = -zisc::dot(info->normal(), *vin);
   ZISC_ASSERT(zisc::isInClosedBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
   const auto result = Fresnel::evalG(n_, cos_ni);
   const bool is_perfect_reflection = !std::get<0>(result);
@@ -58,13 +60,13 @@ std::tuple<SampledDirection, SampledSpectra> SpecularBsdf::sample(
   // Determine a reflection or a refraction
   const bool is_reflection = (sampler.sample() < fresnel);
   const auto vout = (is_reflection)
-      ? Fresnel::calcReflectionDirection(*vin, normal)
-      : Fresnel::calcRefractionDirection(*vin, normal, n_, g);
+      ? Fresnel::calcReflectionDirection(*vin, info->normal())
+      : Fresnel::calcRefractionDirection(*vin, info->normal(), n_, g);
 
   SampledSpectra weight{wavelengths};
   weight.setIntensity(wavelengths.primaryWavelengthIndex(), 1.0);
 
-  return std::make_tuple(SampledDirection{vout, 1.0}, std::move(weight));
+  return std::make_tuple(SampledDirection{vout, 1.0}, weight);
 }
 
 /*!

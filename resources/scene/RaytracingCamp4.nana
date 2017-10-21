@@ -43,7 +43,7 @@
             "Transformation": [
                 {
                     "Angle": -32,
-                    "Axis": "Y Axis",
+                    "Axis": "Z Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
@@ -53,8 +53,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        -0.5,
-                        -9
+                        -9,
+                        -0.5
                     ]
                 }
             ],
@@ -83,8 +83,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        -1,
-                        0
+                        0,
+                        -1
                     ]
                 },
                 {
@@ -92,8 +92,8 @@
                     "Type": "Scaling",
                     "Value": [
                         20,
-                        1,
-                        20
+                        20,
+                        1
                     ]
                 }
             ],
@@ -114,8 +114,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        2.5,
-                        10
+                        10,
+                        2.5
                     ]
                 },
                 {
@@ -130,8 +130,8 @@
                     "Type": "Scaling",
                     "Value": [
                         20,
-                        1,
-                        7
+                        7,
+                        1
                     ]
                 }
             ],
@@ -151,14 +151,14 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        10,
-                        2.5,
-                        0
+                        -10,
+                        0,
+                        2.5
                     ]
                 },
                 {
                     "Angle": 90,
-                    "Axis": "Z Axis",
+                    "Axis": "Y Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
@@ -168,8 +168,8 @@
                     "Type": "Scaling",
                     "Value": [
                         7,
-                        1,
-                        20
+                        20,
+                        1
                     ]
                 }
             ],
@@ -189,14 +189,14 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        -10,
-                        2.5,
-                        0
+                        10,
+                        0,
+                        2.5
                     ]
                 },
                 {
-                    "Angle": 90,
-                    "Axis": "Z Axis",
+                    "Angle": -90,
+                    "Axis": "Y Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
@@ -206,8 +206,8 @@
                     "Type": "Scaling",
                     "Value": [
                         7,
-                        1,
-                        20
+                        20,
+                        1
                     ]
                 }
             ],
@@ -228,12 +228,12 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        2.5,
-                        -10
+                        -10,
+                        2.5
                     ]
                 },
                 {
-                    "Angle": 90,
+                    "Angle": -90,
                     "Axis": "X Axis",
                     "Enabled": true,
                     "Type": "Rotation",
@@ -244,8 +244,8 @@
                     "Type": "Scaling",
                     "Value": [
                         20,
-                        1,
-                        7
+                        7,
+                        1
                     ]
                 }
             ],
@@ -266,8 +266,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        6,
-                        0
+                        0,
+                        6
                     ]
                 },
                 {
@@ -275,8 +275,8 @@
                     "Type": "Scaling",
                     "Value": [
                         20,
-                        1,
-                        20
+                        20,
+                        1
                     ]
                 }
             ],
@@ -297,9 +297,9 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        4.5,
-                        -1,
-                        6
+                        -4.5,
+                        6,
+                        -1
                     ]
                 },
                 {
@@ -329,18 +329,18 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        2.3,
-                        0,
-                        -1
+                        -2.3,
+                        -1,
+                        0
                     ]
                 },
                 {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        -2,
-                        -1,
-                        -2.1
+                        2,
+                        -2.1,
+                        -1
                     ]
                 },
                 {
@@ -364,9 +364,9 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        4.15,
-                        -1,
-                        2.1
+                        -4.15,
+                        2.1,
+                        -1
                     ]
                 },
                 {
@@ -374,8 +374,8 @@
                     "Type": "Scaling",
                     "Value": [
                         0.8,
-                        2.5,
-                        0.2
+                        0.2,
+                        2.5
                     ]
                 },
                 {
@@ -383,8 +383,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        0.5,
-                        0
+                        0,
+                        0.5
                     ]
                 }
             ],
@@ -401,14 +401,116 @@
             "SurfaceIndex": 5,
             "Transformation": [
                 {
+                    "Angle": 90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "LabelPlane",
+            "ShapeType": "PlaneObject",
+            "Smoothing": false,
+            "SurfaceIndex": 6,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        10,
+                        0
+                    ]
+                },
+                {
                     "Angle": -90,
                     "Axis": "X Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "LabelPlane",
+            "ShapeType": "PlaneObject",
+            "Smoothing": false,
+            "SurfaceIndex": 6,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        0.5
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "LabelPlane",
+            "ShapeType": "PlaneObject",
+            "Smoothing": false,
+            "SurfaceIndex": 6,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        -0.5
+                    ]
                 },
                 {
                     "Angle": 180,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "LabelPlane",
+            "ShapeType": "PlaneObject",
+            "Smoothing": false,
+            "SurfaceIndex": 6,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.5,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "Angle": -90,
                     "Axis": "Y Axis",
                     "Enabled": true,
                     "Type": "Rotation",
@@ -431,123 +533,14 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        0,
-                        0,
-                        1
-                    ]
-                },
-                {
-                    "Angle": 90,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
-                }
-            ],
-            "Type": "SingleObject"
-        },
-        {
-            "EmitterIndex": 0,
-            "Enabled": true,
-            "GroupLevel": 2,
-            "IsEmissiveObject": false,
-            "Name": "LabelPlane",
-            "ShapeType": "PlaneObject",
-            "Smoothing": false,
-            "SurfaceIndex": 6,
-            "Transformation": [
-                {
-                    "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0,
-                        0.5,
-                        0
-                    ]
-                }
-            ],
-            "Type": "SingleObject"
-        },
-        {
-            "EmitterIndex": 0,
-            "Enabled": true,
-            "GroupLevel": 2,
-            "IsEmissiveObject": false,
-            "Name": "LabelPlane",
-            "ShapeType": "PlaneObject",
-            "Smoothing": false,
-            "SurfaceIndex": 6,
-            "Transformation": [
-                {
-                    "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0,
-                        -0.5,
-                        0
-                    ]
-                },
-                {
-                    "Angle": 180,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
-                }
-            ],
-            "Type": "SingleObject"
-        },
-        {
-            "EmitterIndex": 0,
-            "Enabled": true,
-            "GroupLevel": 2,
-            "IsEmissiveObject": false,
-            "Name": "LabelPlane",
-            "ShapeType": "PlaneObject",
-            "Smoothing": false,
-            "SurfaceIndex": 6,
-            "Transformation": [
-                {
-                    "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
                         0.5,
                         0,
                         0
                     ]
                 },
                 {
-                    "Angle": -90,
-                    "Axis": "Z Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
-                }
-            ],
-            "Type": "SingleObject"
-        },
-        {
-            "EmitterIndex": 0,
-            "Enabled": true,
-            "GroupLevel": 2,
-            "IsEmissiveObject": false,
-            "Name": "LabelPlane",
-            "ShapeType": "PlaneObject",
-            "Smoothing": false,
-            "SurfaceIndex": 6,
-            "Transformation": [
-                {
-                    "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        -0.5,
-                        0,
-                        0
-                    ]
-                },
-                {
                     "Angle": 90,
-                    "Axis": "Z Axis",
+                    "Axis": "Y Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
@@ -564,14 +557,14 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        -5,
-                        -1,
-                        2
+                        8,
+                        6,
+                        -1
                     ]
                 },
                 {
-                    "Angle": -30,
-                    "Axis": "Y Axis",
+                    "Angle": 150,
+                    "Axis": "Z Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
@@ -604,8 +597,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        0,
-                        1
+                        1,
+                        0
                     ]
                 },
                 {
@@ -619,7 +612,7 @@
                 },
                 {
                     "Angle": 180,
-                    "Axis": "Y Axis",
+                    "Axis": "Z Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
@@ -639,18 +632,18 @@
             "SurfaceIndex": 3,
             "Transformation": [
                 {
-                    "Enabled": false,
+                    "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        -5,
-                        -1,
-                        3
+                        0.2,
+                        3,
+                        0.5
                     ]
                 },
                 {
-                    "Angle": -45,
-                    "Axis": "Y Axis",
-                    "Enabled": false,
+                    "Angle": 90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
                 },
@@ -681,14 +674,14 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        2,
-                        -1,
-                        -2
+                        -2,
+                        -2,
+                        -1
                     ]
                 },
                 {
-                    "Angle": 160,
-                    "Axis": "Y Axis",
+                    "Angle": -20,
+                    "Axis": "Z Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
@@ -719,9 +712,9 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        -8,
-                        0,
-                        8
+                        8,
+                        8,
+                        0
                     ]
                 },
                 {
@@ -729,19 +722,19 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        4,
-                        0
+                        0,
+                        4
                     ]
                 },
                 {
                     "Angle": -45,
-                    "Axis": "Y Axis",
+                    "Axis": "Z Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
                 },
                 {
-                    "Angle": 195,
+                    "Angle": 135,
                     "Axis": "X Axis",
                     "Enabled": true,
                     "Type": "Rotation",

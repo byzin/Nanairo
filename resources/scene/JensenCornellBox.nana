@@ -16,7 +16,7 @@
         {
             "EmissiveColorIndex": 3,
             "Name": "Emitter",
-            "RadiantExitance": 1024,
+            "RadiantExitance": 512,
             "Type": "NonDirectionalEmitter"
         }
     ],
@@ -34,8 +34,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        0,
-                        -5
+                        -5,
+                        0
                     ]
                 }
             ],
@@ -55,7 +55,8 @@
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Floor",
-            "ShapeType": "PlaneObject",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -64,8 +65,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        -1.5,
-                        0.75
+                        0.75,
+                        -1.5
                     ]
                 },
                 {
@@ -73,8 +74,8 @@
                     "Type": "Scaling",
                     "Value": [
                         3,
-                        1,
-                        4.5
+                        4.5,
+                        1
                     ]
                 }
             ],
@@ -86,7 +87,8 @@
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "LeftWall",
-            "ShapeType": "PlaneObject",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 2,
             "Transformation": [
@@ -94,14 +96,14 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        1.5,
-                        0,
-                        0.75
+                        -1.5,
+                        0.75,
+                        0
                     ]
                 },
                 {
                     "Angle": 90,
-                    "Axis": "Z Axis",
+                    "Axis": "Y Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
@@ -111,8 +113,8 @@
                     "Type": "Scaling",
                     "Value": [
                         3,
-                        1,
-                        4.5
+                        4.5,
+                        1
                     ]
                 }
             ],
@@ -124,7 +126,8 @@
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "RightWall",
-            "ShapeType": "PlaneObject",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 1,
             "Transformation": [
@@ -132,14 +135,14 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        -1.5,
-                        0,
-                        0.75
+                        1.5,
+                        0.75,
+                        0
                     ]
                 },
                 {
                     "Angle": -90,
-                    "Axis": "Z Axis",
+                    "Axis": "Y Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
@@ -149,8 +152,8 @@
                     "Type": "Scaling",
                     "Value": [
                         3,
-                        1,
-                        4.5
+                        4.5,
+                        1
                     ]
                 }
             ],
@@ -162,7 +165,8 @@
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "BackWall",
-            "ShapeType": "PlaneObject",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -171,12 +175,12 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        0,
-                        3
+                        3,
+                        0
                     ]
                 },
                 {
-                    "Angle": -90,
+                    "Angle": 90,
                     "Axis": "X Axis",
                     "Enabled": true,
                     "Type": "Rotation",
@@ -187,8 +191,8 @@
                     "Type": "Scaling",
                     "Value": [
                         3,
-                        1,
-                        3
+                        3,
+                        1
                     ]
                 }
             ],
@@ -200,7 +204,8 @@
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Ceiling",
-            "ShapeType": "PlaneObject",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -209,8 +214,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        1.5,
-                        0.75
+                        0.75,
+                        1.5
                     ]
                 },
                 {
@@ -225,8 +230,8 @@
                     "Type": "Scaling",
                     "Value": [
                         3,
-                        1,
-                        4.5
+                        4.5,
+                        1
                     ]
                 }
             ],
@@ -247,9 +252,9 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        0.7,
-                        -1.5,
-                        1
+                        -0.7,
+                        1,
+                        -1.5
                     ]
                 }
             ],
@@ -270,9 +275,9 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        -0.7,
-                        -1.5,
-                        0
+                        0.7,
+                        0,
+                        -1.5
                     ]
                 }
             ],
@@ -284,7 +289,8 @@
             "GroupLevel": 1,
             "IsEmissiveObject": true,
             "Name": "Light",
-            "ShapeType": "PlaneObject",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -293,8 +299,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        1.49,
-                        0.75
+                        0.75,
+                        1.49
                     ]
                 },
                 {
@@ -309,8 +315,8 @@
                     "Type": "Scaling",
                     "Value": [
                         0.75,
-                        1,
-                        0.75
+                        0.75,
+                        0
                     ]
                 }
             ],
@@ -318,7 +324,7 @@
         }
     ],
     "RenderingMethod": {
-        "EyePathLightSampler": "PowerWeightedLightSampler",
+        "EyePathLightSampler": "UniformLightSampler",
         "LightSamplerMaxSurfaceSplit": 10,
         "LightSamplerNumOfPhotons": 32768,
         "PathLength": 3,

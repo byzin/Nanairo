@@ -15,9 +15,10 @@
 #include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
-#include "NanairoCore/Material/SurfaceModel/microfacet_ggx.hpp"
+#include "NanairoCore/Material/SurfaceModel/Surface/microfacet_ggx.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 
@@ -41,10 +42,11 @@ GgxDielectricBsdf::GgxDielectricBsdf(const Float roughness,
 Float GgxDielectricBsdf::evalPdf(
     const Vector3* vin,
     const Vector3* vout,
-    const Vector3& normal,
-    const WavelengthSamples& /* wavelengths */) const noexcept
+    const WavelengthSamples& /* wavelengths */,
+    const IntersectionInfo* info) const noexcept
 {
-  const Float cos_no = zisc::dot(normal, *vout);
+  ZISC_ASSERT(info != nullptr, "The info is null.");
+  const Float cos_no = zisc::dot(info->normal(), *vout);
   const bool is_reflection = (0.0 < cos_no);
   Float pdf = 0.0;
   if (is_reflection) { // Reflection direction pdf
@@ -52,14 +54,14 @@ Float GgxDielectricBsdf::evalPdf(
     const Float cos_mi = -zisc::dot(m_normal, *vin);
     const Float fresnel = Fresnel::evalFresnel(n_, cos_mi);
     pdf = fresnel *
-          MicrofacetGgx::evalReflectionPdf(roughness_, *vin, *vout, normal);
+          MicrofacetGgx::evalReflectionPdf(roughness_, *vin, *vout, info->normal());
   }
   else { // Refraction direction pdf
     const auto m_normal = Microfacet::calcRefractionHalfVector(*vin, *vout, n_);
     const Float cos_mi = -zisc::dot(m_normal, *vin);
     const Float fresnel = Fresnel::evalFresnel(n_, cos_mi);
     pdf = (1.0 - fresnel) *
-          MicrofacetGgx::evalRefractionPdf(roughness_, *vin, *vout, normal, n_);
+          MicrofacetGgx::evalRefractionPdf(roughness_, *vin, *vout, info->normal(), n_);
   }
   return pdf;
 }
@@ -71,14 +73,15 @@ Float GgxDielectricBsdf::evalPdf(
 SampledSpectra GgxDielectricBsdf::evalRadiance(
     const Vector3* vin,
     const Vector3* vout,
-    const Vector3& normal,
-    const WavelengthSamples& wavelengths) const noexcept
+    const WavelengthSamples& wavelengths,
+    const IntersectionInfo* info) const noexcept
 {
-  const Float cos_no = zisc::dot(normal, *vout);
+  ZISC_ASSERT(info != nullptr, "The info is null.");
+  const Float cos_no = zisc::dot(info->normal(), *vout);
   const bool is_reflection = (0.0 < cos_no);
   const Float f = (is_reflection)
-      ? MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, normal, n_)
-      : MicrofacetGgx::evalTransmittance(roughness_, *vin, *vout, normal, n_);
+      ? MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, info->normal(), n_)
+      : MicrofacetGgx::evalTransmittance(roughness_, *vin, *vout, info->normal(), n_);
 
   SampledSpectra radiance{wavelengths};
   radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
@@ -92,15 +95,16 @@ SampledSpectra GgxDielectricBsdf::evalRadiance(
 std::tuple<SampledSpectra, Float> GgxDielectricBsdf::evalRadianceAndPdf(
     const Vector3* vin,
     const Vector3* vout,
-    const Vector3& normal,
-    const WavelengthSamples& wavelengths) const noexcept
+    const WavelengthSamples& wavelengths,
+    const IntersectionInfo* info) const noexcept
 {
-  const Float cos_no = zisc::dot(normal, *vout);
+  ZISC_ASSERT(info != nullptr, "The info is null.");
+  const Float cos_no = zisc::dot(info->normal(), *vout);
   const bool is_reflection = (0.0 < cos_no);
   Float pdf = 0.0;
   const Float f = (is_reflection)
-      ? MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, normal, n_, &pdf)
-      : MicrofacetGgx::evalTransmittance(roughness_, *vin, *vout, normal, n_, &pdf);
+      ? MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, info->normal(), n_, &pdf)
+      : MicrofacetGgx::evalTransmittance(roughness_, *vin, *vout, info->normal(), n_, &pdf);
 
   SampledSpectra radiance{wavelengths};
   radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
@@ -119,23 +123,24 @@ std::tuple<SampledSpectra, Float> GgxDielectricBsdf::evalRadianceAndPdf(
     pdf = (1.0 - fresnel) * pdf;
   }
 
-  return std::make_tuple(std::move(radiance), pdf);
+  return std::make_tuple(radiance, pdf);
 }
 
 /*!
   */
 std::tuple<SampledDirection, SampledSpectra> GgxDielectricBsdf::sample(
     const Vector3* vin,
-    const Vector3& normal,
     const WavelengthSamples& wavelengths,
-    Sampler& sampler) const noexcept
+    Sampler& sampler,
+    const IntersectionInfo* info) const noexcept
 {
+  ZISC_ASSERT(info != nullptr, "The info is null.");
   // Sample a microfacet normal
   const auto m_normal = MicrofacetGgx::sampleNormal(roughness_,
                                                     *vin,
-                                                    normal,
+                                                    info->shapePoint(),
                                                     sampler);
-  const Float cos_ni = -zisc::dot(normal, *vin),
+  const Float cos_ni = -zisc::dot(info->normal(), *vin),
               cos_mi = -zisc::dot(m_normal.direction(), *vin);
   ZISC_ASSERT(zisc::isInClosedBounds(cos_ni, 0.0, 1.0),
               "The cos(ni) isn't [0.0, 1.0].");
@@ -157,7 +162,7 @@ std::tuple<SampledDirection, SampledSpectra> GgxDielectricBsdf::sample(
       : Microfacet::calcRefractionDirection(*vin, m_normal, n_, g);
 
   SampledSpectra weight{wavelengths};
-  const Float cos_no = zisc::dot(normal, vout.direction());
+  const Float cos_no = zisc::dot(info->normal(), vout.direction());
   if ((is_reflection && (0.0 < cos_no)) ||
       (!is_reflection && (cos_no < 0.0))) {
     vout.setInversePdf((is_reflection)
@@ -166,7 +171,7 @@ std::tuple<SampledDirection, SampledSpectra> GgxDielectricBsdf::sample(
 
     // Evaluate the weight
     const Float cos_mo = zisc::dot(m_normal.direction(), vout.direction());
-    const Float cos_nm = zisc::dot(m_normal.direction(), normal);
+    const Float cos_nm = zisc::dot(m_normal.direction(), info->normal());
     const Float w = MicrofacetGgx::evalWeight(roughness_,
                                               cos_ni, cos_no,
                                               cos_mi, cos_mo,
@@ -177,7 +182,7 @@ std::tuple<SampledDirection, SampledSpectra> GgxDielectricBsdf::sample(
   else {
     vout.setPdf(0.0);
   }
-  return std::make_tuple(std::move(vout), std::move(weight));
+  return std::make_tuple(vout, weight);
 }
 
 /*!

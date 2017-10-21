@@ -73,7 +73,7 @@ class EmitterModel
       const std::vector<TextureModel*>& texture_list) noexcept;
 
   //! Make a light shader model
-  virtual ShaderPointer makeLight(const Point2& texture_coordinate,
+  virtual ShaderPointer makeLight(const Point2& uv,
                                   const WavelengthSamples& wavelengths,
                                   zisc::MemoryPool& memory_pool) const noexcept = 0;
 

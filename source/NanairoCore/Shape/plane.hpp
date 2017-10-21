@@ -79,6 +79,9 @@ class Plane : public Shape
   const Point3& vertex0() const noexcept;
 
  private:
+  //! Calculate the normal of the plane
+  Vector3 calcNormal() const noexcept;
+
   //! Calculate the surface area of the front side of the plane
   Float calcSurfaceArea() const noexcept override;
 

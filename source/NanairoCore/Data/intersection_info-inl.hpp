@@ -51,6 +51,14 @@ IntersectionInfo::IntersectionInfo(const Object* object,
 /*!
   */
 inline
+const Vector3& IntersectionInfo::bitangent() const noexcept
+{
+  return point_.bitangent();
+}
+
+/*!
+  */
+inline
 Vector3 IntersectionInfo::frontNormal() const noexcept
 {
   const auto n = (isBackFace()) ? -normal() : normal();
@@ -128,6 +136,14 @@ void IntersectionInfo::setAsBackFace(const bool is_back_face) noexcept
 }
 
 /*!
+  */
+inline
+void IntersectionInfo::setBitangent(const Vector3& bitangent) noexcept
+{
+  point_.setBitangent(bitangent);
+}
+
+/*!
   \details
   No detailed.
   */
@@ -182,6 +198,14 @@ void IntersectionInfo::setSt(const Point2& st) noexcept
 }
 
 /*!
+  */
+inline
+void IntersectionInfo::setTangent(const Vector3& tangent) noexcept
+{
+  point_.setTangent(tangent);
+}
+
+/*!
   \details
   No detailed.
   */
@@ -205,6 +229,14 @@ inline
 const Point2& IntersectionInfo::st() const noexcept
 {
   return point_.st();
+}
+
+/*!
+  */
+inline
+const Vector3& IntersectionInfo::tangent() const noexcept
+{
+  return point_.tangent();
 }
 
 /*!

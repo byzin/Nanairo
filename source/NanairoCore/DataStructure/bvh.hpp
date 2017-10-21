@@ -59,7 +59,9 @@ class Bvh
   const std::vector<BvhTreeNode>& bvhTree() const noexcept;
 
   //! Cast the ray and find the intersection closest to the ray origin
-  IntersectionInfo castRay(const Ray& ray, const Float max_distance) const noexcept;
+  IntersectionInfo castRay(const Ray& ray,
+                           const Float max_distance,
+                           const bool expect_no_hit = false) const noexcept;
 
   //! Build BVH
   void construct(System& system, std::vector<Object>&& object_list) noexcept;

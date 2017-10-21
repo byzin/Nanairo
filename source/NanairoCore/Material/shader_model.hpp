@@ -28,6 +28,7 @@ namespace nanairo {
 
 // Forward declaration
 //class IntersectionInfo;
+class IntersectionInfo;
 class SampledDirection;
 class SampledSpectra;
 class Sampler;
@@ -74,29 +75,29 @@ class ShaderModel
   virtual Float evalPdf(
       const Vector3* vin,
       const Vector3* vout,
-      const Vector3& normal,
-      const WavelengthSamples& wavelengths) const noexcept;
+      const WavelengthSamples& wavelengths,
+      const IntersectionInfo* info = nullptr) const noexcept;
 
   //! Evaluate the radiance
   virtual SampledSpectra evalRadiance(
       const Vector3* vin,
       const Vector3* vout,
-      const Vector3& normal,
-      const WavelengthSamples& wavelengths) const noexcept;
+      const WavelengthSamples& wavelengths,
+      const IntersectionInfo* info = nullptr) const noexcept;
 
   //! Evaluate the radiance and pdf
   virtual std::tuple<SampledSpectra, Float> evalRadianceAndPdf(
       const Vector3* vin,
       const Vector3* vout,
-      const Vector3& normal,
-      const WavelengthSamples& wavelengths) const noexcept;
+      const WavelengthSamples& wavelengths,
+      const IntersectionInfo* info = nullptr) const noexcept;
 
   //! Sample a reflection direction and evaluate a reflection weight
   virtual std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin, 
-      const Vector3& normal,
       const WavelengthSamples& wavelengths,
-      Sampler& sampler) const noexcept;
+      Sampler& sampler,
+      const IntersectionInfo* info = nullptr) const noexcept;
 
   //! Return the shader type
   virtual ShaderType type() const noexcept = 0;

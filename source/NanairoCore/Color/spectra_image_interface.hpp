@@ -12,6 +12,8 @@
 
 // Standard C++ library
 #include <cstddef>
+// Zisc
+#include "zisc/point.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
@@ -36,20 +38,34 @@ class SpectraImageInterface
   //! Initialize the spectra image
   SpectraImageInterface(const uint width, const uint height) noexcept;
 
+  //! Initialize the spectra image
+  SpectraImageInterface(const Index2d& resolution) noexcept;
+
   //! Finalize the spectra image
   virtual ~SpectraImageInterface() noexcept;
 
 
   //! Add radiance from a sample
-  virtual void addContribution(const uint x,
-                               const uint y,
+  virtual void addContribution(const uint pixel_index,
                                const SampledSpectra& contribution) noexcept = 0;
+
+  //! Add radiance from a sample
+  void addContribution(const uint x,
+                       const uint y,
+                       const SampledSpectra& contribution) noexcept;
+
+  //! Add radiance from a sample
+  void addContribution(const Index2d& index,
+                       const SampledSpectra& contribution) noexcept;
 
   //! Clear the buffer value to 0
   virtual void clear() noexcept = 0;
 
   //! Return the height resolution
   uint heightResolution() const noexcept;
+
+  //! Return the resolution
+  const Index2d& resolution() const noexcept;
 
   //! Convert the spectra image to the HDR image
   virtual void toHdrImage(System& system,
@@ -63,8 +79,11 @@ class SpectraImageInterface
   uint widthResolution() const noexcept;
 
  private:
-  uint width_,
-       height_;
+  //! Return the index from xy 
+  uint toIndex(const uint x, const uint y) const noexcept;
+
+
+  Index2d resolution_;
 };
 
 //! \} Core

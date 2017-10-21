@@ -14,7 +14,6 @@
 #include "zisc/error.hpp"
 #include "zisc/memory_pool.hpp"
 // Nanairo
-#include "fresnel.hpp"
 #include "surface_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"

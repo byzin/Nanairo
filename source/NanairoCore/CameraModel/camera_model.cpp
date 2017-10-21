@@ -13,6 +13,7 @@
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
+#include "zisc/math.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "pinhole_camera.hpp"
@@ -51,8 +52,12 @@ Matrix4x4 CameraModel::rotate(const Vector2& value) noexcept
 {
   const auto& p = position();
   auto matrix = Transformation::makeTranslation(-p[0], -p[1], -p[2]);
-  matrix = Transformation::makeYAxisRotation(value[0]) * matrix;
-  matrix = Transformation::makeXAxisRotation(-value[1]) * matrix;
+  {
+    const auto rotation_matrix = (zisc::abs(value[0]) < zisc::abs(value[1]))
+        ? Transformation::makeXAxisRotation(-value[1])
+        : Transformation::makeZAxisRotation(value[0]);
+    matrix = rotation_matrix * matrix;
+  }
   matrix = Transformation::makeTranslation(p[0], p[1], p[2]) * matrix;
   transform(matrix);
   return matrix;
@@ -64,7 +69,7 @@ Matrix4x4 CameraModel::rotate(const Vector2& value) noexcept
   */
 Matrix4x4 CameraModel::translateHorizontally(const Vector2& value) noexcept
 {
-  const auto v = xAxis() * -value[0] + yAxis() * -value[1];
+  const auto v = -value[0] * xAxis() + value[1] * yAxis();
   auto matrix = Transformation::makeTranslation(v[0], v[1], v[2]);
   transform(matrix);
   return matrix;
@@ -76,7 +81,7 @@ Matrix4x4 CameraModel::translateHorizontally(const Vector2& value) noexcept
   */
 Matrix4x4 CameraModel::translateVertically(const Vector2& value) noexcept
 {
-  const auto v = normal() * (value[0] + value[1]);
+  const auto v = (value[0] + value[1]) * zAxis();
   const auto matrix = Transformation::makeTranslation(v[0], v[1], v[2]);
   transform(matrix);
   return matrix;

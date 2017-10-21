@@ -58,6 +58,20 @@ const Vector3& Ray::direction() const noexcept
 }
 
 /*!
+  */
+inline
+void Ray::initInvDirection() noexcept
+{
+  inv_direction_ = invert(direction());
+  // Set the sign of the direction
+  static_assert(kTrue == 1, "");
+  static_assert(kFalse == 0, "");
+  sign_[0] = (inv_direction_[0] < 0.0) ? kTrue : kFalse;
+  sign_[1] = (inv_direction_[1] < 0.0) ? kTrue : kFalse;
+  sign_[2] = (inv_direction_[2] < 0.0) ? kTrue : kFalse;
+}
+
+/*!
   \details
   No detailed.
   */
@@ -75,6 +89,17 @@ inline
 bool Ray::isAlive() const noexcept
 {
   return is_alive_ == kTrue;
+}
+
+/*!
+  */
+template <bool init_inv_direction> inline
+Ray Ray::makeRay(const Point3& origin, const Vector3& direction) noexcept
+{
+  Ray ray{origin, direction};
+  if (init_inv_direction)
+    ray.initInvDirection();
+  return ray;
 }
 
 /*!
@@ -133,23 +158,8 @@ std::array<uint8, 3> Ray::sign() const noexcept
 inline
 void Ray::initialize() noexcept
 {
-  initInvDirection();
   // Avoid warnings
   static_cast<void>(padding_);
-}
-
-/*!
-  */
-inline
-void Ray::initInvDirection() noexcept
-{
-  inv_direction_ = invert(direction());
-  // Set the sign of the direction
-  static_assert(kTrue == 1, "");
-  static_assert(kFalse == 0, "");
-  sign_[0] = (inv_direction_[0] < 0.0) ? kTrue : kFalse;
-  sign_[1] = (inv_direction_[1] < 0.0) ? kTrue : kFalse;
-  sign_[2] = (inv_direction_[2] < 0.0) ? kTrue : kFalse;
 }
 
 } // namespace nanairo

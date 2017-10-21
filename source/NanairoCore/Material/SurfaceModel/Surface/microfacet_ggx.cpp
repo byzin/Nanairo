@@ -17,7 +17,6 @@
 #include "fresnel.hpp"
 #include "microfacet.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
@@ -183,19 +182,16 @@ Float MicrofacetGgx::evalTransmittance(const Float roughness,
   */
 SampledDirection MicrofacetGgx::sampleNormal(const Float roughness,
                                              const Vector3& vin,
-                                             const Vector3& normal,
                                              Sampler& sampler,
                                              const bool calc_pdf) noexcept
 {
   // Change of basis of the incident vector
-  const auto transformation = Transformation::makeChangeOfBasisToLocal(normal);
-  const auto incident_vector = transformation * -vin;
-  ZISC_ASSERT(isUnitVector(incident_vector), "Incident vector isn't unit vector.");
+  ZISC_ASSERT(isUnitVector(vin), "Incident vector isn't unit vector.");
 
-  auto m_normal = sampleMicrofacetNormal(roughness, incident_vector, sampler);
+  auto m_normal = MicrofacetGgx::sampleMicrofacetNormal(roughness, -vin, sampler);
 
-  const Float cos_ni = incident_vector[2];
-  const Float cos_mi = zisc::dot(m_normal, incident_vector);
+  const Float cos_ni = -vin[2];
+  const Float cos_mi = -zisc::dot(m_normal, vin);
   const Float cos_nm = m_normal[2];
   ZISC_ASSERT(zisc::isInClosedBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
   ZISC_ASSERT(zisc::isInClosedBounds(cos_mi, 0.0, 1.0), "cos_mi isn't [0, 1].");
@@ -210,10 +206,33 @@ SampledDirection MicrofacetGgx::sampleNormal(const Float roughness,
     ZISC_ASSERT(0.0 < inverse_pdf, "The pdf is negative.");
   }
 
-  m_normal = transformation.transposedMatrix() * m_normal;
   ZISC_ASSERT(isUnitVector(m_normal), "Microfacet normal isn't unit vector.");
   return SampledDirection{m_normal, inverse_pdf};
 }
+
+/*!
+  */
+SampledDirection MicrofacetGgx::sampleNormal(const Float roughness,
+                                             const Vector3& vin,
+                                             const ShapePoint& point,
+                                             Sampler& sampler,
+                                             const bool calc_pdf) noexcept
+{
+  const auto vin_d = Transformation::toLocal(point.tangent(),
+                                             point.bitangent(),
+                                             point.normal(),
+                                             vin);
+  auto normal = sampleNormal(roughness, vin_d, sampler, calc_pdf);
+  {
+    const auto normal_d = Transformation::fromLocal(point.tangent(),
+                                                    point.bitangent(),
+                                                    point.normal(),
+                                                    normal.direction());
+    normal.setDirection(normal_d);
+  }
+  return normal;
+}
+
 
 /*!
   \details

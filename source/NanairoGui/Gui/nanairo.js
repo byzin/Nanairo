@@ -187,7 +187,6 @@ var causticsTestScene = "CausticsTest";
 var dispersionTestScene = "DispersionTest";
 var veachMisTestScene = "VeachMisTest";
 var veachBdptTestScene = "VeachBdptTest";
-var materialTestScene = "MaterialTest";
 var smoothDiffuseTestScene = "SurfaceTest-SmoothDiffuse";
 var smoothDielectricTestScene = "SurfaceTest-SmoothDielectric";
 var smoothConductorTestScene = "SurfaceTest-SmoothConductor";

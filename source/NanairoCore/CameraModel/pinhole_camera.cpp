@@ -9,8 +9,8 @@
 
 #include "pinhole_camera.hpp"
 // Standard C++ library
+#include <array>
 #include <cmath>
-#include <tuple>
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
@@ -19,11 +19,13 @@
 // Nanairo
 #include "camera_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Shape/plane.hpp"
 #include "NanairoCore/Setting/camera_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 
@@ -36,9 +38,7 @@ namespace nanairo {
 PinholeCamera::PinholeCamera(const SettingNodeBase* settings) noexcept :
     CameraModel(settings),
     pinhole_position_{0.0, 0.0, 0.0},
-    film_position_{0.0, 0.0, -1.0},
-    film_axis1_{-1.0, 0.0, 0.0},
-    film_axis2_{0.0, -1.0, 0.0}
+    film_shape_{Point3{0.0, -1.0, 0.0}}
 {
   initialize(settings);
 }
@@ -49,9 +49,11 @@ PinholeCamera::PinholeCamera(const SettingNodeBase* settings) noexcept :
   */
 Float PinholeCamera::calcPdf(const Vector3& vout) const noexcept
 {
-  const Float cos_theta_no = zisc::dot(normal(), vout);
-  const Float pdf = zisc::invert(filmArea() * zisc::power<3>(cos_theta_no));
-  ZISC_ASSERT(0.0 < pdf, "The pdf is minus.");
+  const auto& shape = filmShape();
+
+  const Float cos_theta_no = zisc::dot(shape.normal(), vout);
+  const Float pdf = zisc::invert(shape.surfaceArea() * zisc::power<3>(cos_theta_no));
+  ZISC_ASSERT(0.0 < pdf, "The pdf is minus: ", pdf);
   return pdf;
 }
 
@@ -59,63 +61,58 @@ Float PinholeCamera::calcPdf(const Vector3& vout) const noexcept
   */
 Float PinholeCamera::calcRadiance(const Vector3& vout) const noexcept
 {
-  const Float cos_theta_no = zisc::dot(normal(), vout);
-  const Float f = zisc::invert(filmArea() * zisc::power<4>(cos_theta_no));
-  ZISC_ASSERT(0.0 < f, "The radiance is minus.");
+  const auto& shape = filmShape();
+
+  const Float cos_theta_no = zisc::dot(shape.normal(), vout);
+  const Float f = zisc::invert(shape.surfaceArea() * zisc::power<4>(cos_theta_no));
+  ZISC_ASSERT(0.0 < f, "The radiance is minus: ", f);
   return f;
 }
 
 /*!
   */
-std::tuple<Float, Float> PinholeCamera::calcRadianceAndPdf(
-    const Vector3& vout) const noexcept
+std::array<Float, 2> PinholeCamera::calcRadianceAndPdf(const Vector3& vout)
+    const noexcept
 {
-  const Float cos_theta_no = zisc::dot(normal(), vout);
-  const Float f = zisc::invert(filmArea() * zisc::power<4>(cos_theta_no));
+  const auto& shape = filmShape();
+
+  const Float cos_theta_no = zisc::dot(shape.normal(), vout);
+  const Float f = zisc::invert(shape.surfaceArea() * zisc::power<4>(cos_theta_no));
   const Float pdf = f * cos_theta_no;
   ZISC_ASSERT(0.0 < f, "The radiance is minus.");
   ZISC_ASSERT(0.0 < pdf, "The pdf is minus.");
-  return std::make_tuple(f, pdf);
+  return std::array<Float, 2>{{f, pdf}};
 }
 
 /*!
   \details
   No detailed.
   */
-bool PinholeCamera::getPixelLocation(const Vector3& ray_direction, 
-                                     uint* x, 
-                                     uint* y) const noexcept
+bool PinholeCamera::calcPixelLocation(const Vector3& ray_direction, 
+                                      Index2d* index) const noexcept
 {
-  using zisc::cast;
+  ZISC_ASSERT(index != nullptr, "The index is null.");
 
-  const Float cos_theta = zisc::dot(normal(), ray_direction);
-  if (cos_theta == 0.0)
-    return false;
-  const auto& lens_point = sampledLensPoint();
-  const auto film_top_left = film_position_ - 0.5 * (film_axis1_ + film_axis2_);
-  const Float t = zisc::dot(normal(), film_top_left - lens_point) / cos_theta;
-  if (t < 0.0)
-    return false;
+  const auto& shape = filmShape();
 
-  const auto hit_point = lens_point + (t * ray_direction);
-  const auto am = hit_point - film_top_left;
-  const Float dot_axis1_am = zisc::dot(am, film_axis1_);
-  const Float dot_axis2_am = zisc::dot(am, film_axis2_);
-  const bool is_hit = zisc::isInClosedBounds(dot_axis1_am, 0.0, square_axis1_) &&
-                      zisc::isInClosedBounds(dot_axis2_am, 0.0, square_axis2_);
+  const auto ray = Ray::makeRay<false>(sampledLensPoint(), ray_direction);
+  Point2 st;
+  const bool is_hit = shape.testIntersection(ray, &st);
   if (is_hit) {
-    const Float pixel_x = (1.0 - dot_axis1_am * inverse_square_axis1_);
-    const Float pixel_y = (1.0 - dot_axis2_am * inverse_square_axis2_);
-    ZISC_ASSERT(zisc::isInBounds(pixel_x, 0.0, 1.0),
-                "Pixel x is out of film range [0.0, 1.0)");
-    ZISC_ASSERT(zisc::isInBounds(pixel_y, 0.0, 1.0),
-                "Pixel y is out of film range [0.0, 1.0)");
-    const auto width = cast<Float>(widthResolution());
-    const auto height = cast<Float>(heightResolution());
-    *x = cast<uint>(pixel_x * width);
-    *y = cast<uint>(pixel_y * height);
+    const auto w = zisc::cast<Float>(widthResolution());
+    const auto h = zisc::cast<Float>(heightResolution());
+    (*index)[0] = zisc::cast<uint32>(st[0] * w);
+    (*index)[1] = zisc::cast<uint32>(st[1] * h);
   }
   return is_hit;
+}
+
+/*!
+  */
+Vector3 PinholeCamera::getNormal(const Index2d& /* index */) const noexcept
+{
+  const auto& shape = filmShape();
+  return shape.normal();
 }
 
 /*!
@@ -131,24 +128,29 @@ const Point3& PinholeCamera::position() const noexcept
   \details
   No detailed.
   */
-SampledDirection PinholeCamera::sampleDirection(const uint x, const uint y) const noexcept
+SampledDirection PinholeCamera::sampleDirection(const Index2d& index) const noexcept
 {
-  using zisc::cast;
-
   // Pinhole point
   const auto& pinhole_point = sampledLensPoint();
   // Film point
-  const auto p = film().coordinate(x, y, jittering());
-  const auto film_point = film_position_ +
-                          p[0] * film_axis1_ +
-                          p[1] * film_axis2_;
+  const auto& shape = filmShape();
+  const auto& e = shape.edge();
+  const auto st = film().coordinate(index, jittering());
+  const auto film_point = shape.vertex0() + (st[0] * e[0] + st[1] * e[1]);
   // Ray direction
   const auto direction = (pinhole_point - film_point).normalized();
 
-  const Float cos_theta = zisc::dot(normal(), direction);
+  const Float cos_theta = zisc::dot(shape.normal(), direction);
   ZISC_ASSERT(zisc::isInClosedBounds(cos_theta, 0.0, 1.0),
               "Invalid direction is sampled.");
   return SampledDirection{direction, calcInversePdf(cos_theta)};
+}
+
+/*!
+  */
+const Point3& PinholeCamera::sampledLensPoint() const noexcept
+{
+  return pinhole_position_;
 }
 
 /*!
@@ -157,7 +159,6 @@ SampledDirection PinholeCamera::sampleDirection(const uint x, const uint y) cons
   */
 void PinholeCamera::sampleLensPoint(Sampler& /* sampler */) noexcept
 {
-  setSampledLensPoint(pinhole_position_);
 }
 
 /*!
@@ -170,13 +171,47 @@ CameraType PinholeCamera::type() const noexcept
 }
 
 /*!
+ \details
+ No detailed.
+ */
+void PinholeCamera::transform(const Matrix4x4& matrix) noexcept
+{
+  Transformation::affineTransform(matrix, &pinhole_position_);
+  film_shape_.transform(matrix);
+  {
+    const auto film_center = pinhole_position_ - film_shape_.normal();
+    film_shape_.setCenter(film_center);
+  }
+}
+
+/*!
   \details
   No detailed.
   */
-inline
-Float PinholeCamera::calcInversePdf(const Float cos_theta) const noexcept
+Vector3 PinholeCamera::xAxis() const noexcept
 {
-  return filmArea() * zisc::power<3>(cos_theta);
+  const auto& shape = filmShape();
+  const auto& e = shape.edge();
+  return -e[0].normalized();
+}
+
+/*!
+  \details
+  No detailed.
+  */
+Vector3 PinholeCamera::yAxis() const noexcept
+{
+  const auto& shape = filmShape();
+  const auto& e = shape.edge();
+  return e[1].normalized();
+}
+
+/*!
+  */
+Vector3 PinholeCamera::zAxis() const noexcept
+{
+  const auto& shape = filmShape();
+  return shape.normal();
 }
 
 /*!
@@ -184,9 +219,20 @@ Float PinholeCamera::calcInversePdf(const Float cos_theta) const noexcept
   No detailed.
   */
 inline
-Float PinholeCamera::filmArea() const noexcept
+Float PinholeCamera::calcInversePdf(const Float cos_theta) const noexcept
 {
-  return film_area_;
+  const auto& shape = filmShape();
+  const auto inv_pdf = shape.surfaceArea() * zisc::power<3>(cos_theta);
+  return inv_pdf;
+}
+
+/*!
+  */
+void PinholeCamera::initFilmShape() noexcept
+{
+  const Float aspect_ratio = film().aspectRatio();
+  const Float angle_of_view = angleOfView();
+  film_shape_.initialize(aspect_ratio, angle_of_view);
 }
 
 /*!
@@ -203,68 +249,51 @@ void PinholeCamera::initialize(const SettingNodeBase* settings) noexcept
     ZISC_ASSERT(zisc::isInBounds(angle_of_view_, 0.0, zisc::kPi<Float>),
                 "The angle of view is out of the range [0, pi).");
   }
-  setNormal((pinhole_position_ - film_position_).normalized());
+}
+
+/*!
+  */
+PinholeCamera::FilmShape::FilmShape(const Point3& c) noexcept :
+    surface_area_{1.0},
+    edge_{{Vector3{-1.0, 0.0, 0.0}, Vector3{0.0, 0.0, 1.0}}}
+{
+  normal_ = calcNormal();
+  setCenter(c);
 }
 
 /*!
   \details
   No detailed.
   */
-void PinholeCamera::initializeFilm() noexcept
+void PinholeCamera::FilmShape::initialize(const Float aspect_ratio,
+                             const Float angle_of_view) noexcept
 {
-  const Float theta = 0.5 * angle_of_view_;
-  const Float phi = std::atan(film().inverseAspectRatio());
+  ZISC_ASSERT(zisc::isInBounds(angle_of_view, 0.0, zisc::kPi<Float>),
+              "The angle of view is invalid: ", angle_of_view);
+
+  const Float theta = 0.5 * angle_of_view;
+  const Float phi = std::atan(zisc::invert(aspect_ratio));
 
   const Float r = std::tan(theta);
   const Float w = 2.0 * r * std::cos(phi);
   const Float h = 2.0 * r * std::sin(phi);
 
-  film_axis1_ = w * film_axis1_.normalized();
-  film_axis2_ = h * film_axis2_.normalized();
-  square_axis1_ = film_axis1_.squareNorm();
-  square_axis2_ = film_axis2_.squareNorm();
-  inverse_square_axis1_ = zisc::invert(square_axis1_);
-  inverse_square_axis2_ = zisc::invert(square_axis2_);
+  edge_[0] = w * edge_[0].normalized();
+  edge_[1] = h * edge_[1].normalized();
 
-  film_area_ = w * h;
+  surface_area_ = w * h;
 }
 
 /*!
- \details
- No detailed.
- */
-void PinholeCamera::transform(const Matrix4x4& matrix) noexcept
-{
-  Transformation::affineTransform(matrix, &pinhole_position_);
-  Transformation::affineTransform(matrix, &film_position_);
-  Transformation::affineTransform(matrix, &film_axis1_);
-  Transformation::affineTransform(matrix, &film_axis2_);
-
-  square_axis1_ = film_axis1_.squareNorm();
-  square_axis2_ = film_axis2_.squareNorm();
-  inverse_square_axis1_ = zisc::invert(square_axis1_);
-  inverse_square_axis2_ = zisc::invert(square_axis2_);
-
-  setNormal((pinhole_position_ - film_position_).normalized());
-  film_position_ = pinhole_position_ - normal();
-}
-
-/*!
-  \details
-  No detailed.
   */
-Vector3 PinholeCamera::xAxis() const noexcept
+void PinholeCamera::FilmShape::transform(const Matrix4x4& matrix) noexcept
 {
-  return film_axis1_.normalized();
-}
+  // Scaling is prevented
+  Transformation::affineTransform(matrix, &vertex0_);
+  Transformation::affineTransform(matrix, &edge_[0]);
+  Transformation::affineTransform(matrix, &edge_[1]);
 
-/*!
-  \details
-  No detailed.
-  */
-Vector3 PinholeCamera::yAxis() const noexcept
-{
-  return film_axis2_.normalized();
+  normal_ = calcNormal();
 }
 
 } // namespace nanairo

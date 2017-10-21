@@ -14,6 +14,7 @@
 // Standard C++ library
 #include <vector>
 // Zisc
+#include "zisc/point.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "xyz_color.hpp"
@@ -85,7 +86,7 @@ inline
 XyzColor& HdrImage::get(const uint x, const uint y) noexcept
 {
   const uint index = toIndex(x, y);
-  return buffer_[index];
+  return get(index);
 }
 
 /*!
@@ -96,7 +97,29 @@ inline
 const XyzColor& HdrImage::get(const uint x, const uint y) const noexcept
 {
   const uint index = toIndex(x, y);
-  return buffer_[index];
+  return get(index);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+XyzColor& HdrImage::get(const Index2d& index) noexcept
+{
+  const uint i = toIndex(index[0], index[1]);
+  return get(i);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+const XyzColor& HdrImage::get(const Index2d& index) const noexcept
+{
+  const uint i = toIndex(index[0], index[1]);
+  return get(i);
 }
 
 /*!
@@ -106,7 +129,8 @@ const XyzColor& HdrImage::get(const uint x, const uint y) const noexcept
 inline
 uint HdrImage::heightResolution() const noexcept
 {
-  return height_;
+  const auto& r = resolution();
+  return zisc::cast<uint>(r[1]);
 }
 
 /*!
@@ -128,6 +152,14 @@ uint HdrImage::numOfPixels() const noexcept
 /*!
   */
 inline
+const Index2d& HdrImage::resolution() const noexcept
+{
+  return resolution_;
+}
+
+/*!
+  */
+inline
 uint HdrImage::size() const noexcept
 {
   return zisc::cast<uint>(buffer_.size());
@@ -138,10 +170,31 @@ uint HdrImage::size() const noexcept
   No detailed.
   */
 inline
+void HdrImage::set(const uint index, const XyzColor& color) noexcept
+{
+  buffer_[index] = color;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
 void HdrImage::set(const uint x, const uint y, const XyzColor& color) noexcept
 {
   const uint index = toIndex(x, y);
-  buffer_[index] = color;
+  set(index, color);
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+void HdrImage::set(const Index2d& index, const XyzColor& color) noexcept
+{
+  const uint i = toIndex(index[0], index[1]);
+  set(i, color);
 }
 
 /*!
@@ -151,7 +204,8 @@ void HdrImage::set(const uint x, const uint y, const XyzColor& color) noexcept
 inline
 uint HdrImage::widthResolution() const noexcept
 {
-  return width_;
+  const auto& r = resolution();
+  return zisc::cast<uint>(r[0]);
 }
 
 /*!

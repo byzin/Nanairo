@@ -15,6 +15,7 @@
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
+#include "zisc/point.hpp"
 #include "zisc/thread_pool.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -42,16 +43,24 @@ SpectraImage::SpectraImage(const uint width, const uint height) noexcept :
   \details
   No detailed.
   */
+SpectraImage::SpectraImage(const Index2d& resolution) noexcept :
+    SpectraImageInterface(resolution)
+{
+  initialize();
+}
+
+/*!
+  \details
+  No detailed.
+  */
 void SpectraImage::addContribution(
-    const uint x,
-    const uint y,
+    const uint pixel_index,
     const SampledSpectra& contribution) noexcept
 {
   volatile Float c = 0.0;
   volatile Float tmp1 = 0.0;
   volatile Float tmp2 = 0.0;
 
-  const uint pixel_index = widthResolution() * y + x;
   auto& pixel = buffer_[pixel_index];
   auto& compensation = compensation_[pixel_index];
   for (uint i = 0; i < SampledSpectra::size(); ++i) {
@@ -122,7 +131,8 @@ RenderingColorMode SpectraImage::type() const noexcept
   */
 void SpectraImage::initialize() noexcept
 {
-  const uint buffer_size = widthResolution() * heightResolution();
+  const auto& r = resolution();
+  const uint buffer_size = r[0] * r[1];
   buffer_.resize(buffer_size);
   compensation_.resize(buffer_size);
 }

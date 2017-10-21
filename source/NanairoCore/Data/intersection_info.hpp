@@ -41,6 +41,9 @@ class IntersectionInfo
   IntersectionInfo(const Object* object, const ShapePoint& point) noexcept;
 
 
+  //! Return the bitangent vector
+  const Vector3& bitangent() const noexcept;
+
   //! Return the face normal which is oriented to the front side
   Vector3 frontNormal() const noexcept;
 
@@ -65,6 +68,9 @@ class IntersectionInfo
   //! Set the intersection point to as back face
   void setAsBackFace(const bool is_back_face) noexcept;
 
+  //! Set the bitangent vector
+  void setBitangent(const Vector3& bitangent) noexcept;
+
   //! Set normal direction
   void setNormal(const Vector3& normal) noexcept;
 
@@ -83,6 +89,9 @@ class IntersectionInfo
   //! Set the st coordinate
   void setSt(const Point2& st) noexcept;
 
+  //! Set the tangent vector
+  void setTangent(const Vector3& tangent) noexcept;
+
   //! Set texture coordinate
   void setUv(const Point2& uv) noexcept;
 
@@ -91,6 +100,9 @@ class IntersectionInfo
 
   //! Return the st coordinate
   const Point2& st() const noexcept;
+
+  //! Return the tangent vector
+  const Vector3& tangent() const noexcept;
 
   //! Return the texture coordinate
   const Point2& uv() const noexcept;

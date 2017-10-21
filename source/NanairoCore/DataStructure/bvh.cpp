@@ -58,7 +58,8 @@ Bvh::~Bvh() noexcept
   No detailed.
   */
 IntersectionInfo Bvh::castRay(const Ray& ray,
-                              const Float max_distance) const noexcept 
+                              const Float max_distance,
+                              const bool expect_no_hit) const noexcept 
 {
   ZISC_ASSERT(0.0 < max_distance, "The max_distance is minus.");
   IntersectionInfo intersection;
@@ -66,7 +67,7 @@ IntersectionInfo Bvh::castRay(const Ray& ray,
   uint32 index = 0;
   const auto& bvh_tree = bvhTree();
   const uint32 end_index = zisc::cast<uint32>(bvh_tree.size());
-  while (index != end_index) {
+  while ((index != end_index) && !(intersection.isIntersected() && expect_no_hit)) {
     const auto& node = bvh_tree[index];
     const auto result = node.boundingBox().testIntersection(ray);
     // If the ray hits the bounding box of the node, enter the node

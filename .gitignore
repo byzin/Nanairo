@@ -72,6 +72,9 @@
 !/source/NanairoCore/Material/SurfaceModel/
 !/source/NanairoCore/Material/SurfaceModel/*.hpp
 !/source/NanairoCore/Material/SurfaceModel/*.cpp
+!/source/NanairoCore/Material/SurfaceModel/Surface/
+!/source/NanairoCore/Material/SurfaceModel/Surface/*.hpp
+!/source/NanairoCore/Material/SurfaceModel/Surface/*.cpp
 !/source/NanairoCore/Material/Texture/
 !/source/NanairoCore/Material/Texture/*.hpp
 !/source/NanairoCore/Material/Texture/*.cpp

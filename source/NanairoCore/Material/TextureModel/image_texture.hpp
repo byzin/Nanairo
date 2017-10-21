@@ -74,8 +74,11 @@ class ImageTexture : public TextureModel
   TextureType type() const noexcept override;
 
  private:
+  //! Return the color index by the texture coordinate
+  uint getColorIndex(const Point2& uv) const noexcept;
+
   //! Return the image pixel index by the texture coordinate
-  uint getPixelIndex(const Point2& coordinate) const noexcept;
+  uint getPixelIndex(const Point2& uv) const noexcept;
 
   //! Initialize
   void initialize(const System& system, const SettingNodeBase* settings) noexcept;
@@ -88,7 +91,7 @@ class ImageTexture : public TextureModel
   std::vector<SpectralDistribution> reflective_value_table_;
   std::vector<Float> gray_scale_table_;
   std::vector<uint> color_index_table_;
-  std::array<uint, 2> resolution_;
+  Index2d resolution_;
 };
 
 //! \} Core

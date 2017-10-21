@@ -153,11 +153,12 @@ Float LayeredDiffuse::evalBodyReflectance(const Float roughness,
                                           Float* pdf) noexcept
 {
   // Sample a microfacet normal
-  const auto m_normal = MicrofacetGgx::sampleNormal(roughness,
-                                                    vin,
-                                                    normal,
-                                                    sampler,
-                                                    false);
+//  const auto m_normal = MicrofacetGgx::sampleNormal(roughness,
+//                                                    vin,
+//                                                    normal,
+//                                                    sampler,
+//                                                    false);
+  SampledDirection m_normal;
   const Float cos_no = zisc::dot(normal, vout),
               cos_mo = zisc::dot(m_normal.direction(), vout);
   ZISC_ASSERT(zisc::isInClosedBounds(cos_no, 0.0, 1.0),
@@ -238,10 +239,11 @@ SampledDirection LayeredDiffuse::sampleReflectionDirection(const Float roughness
   SampledDirection sampled_vout;
   const Float u = sampler.sample();
   if (u < ps) { // Glossy term sampling
-    const auto m_normal = MicrofacetGgx::sampleNormal(roughness,
-                                                      vin,
-                                                      normal,
-                                                      sampler);
+//    const auto m_normal = MicrofacetGgx::sampleNormal(roughness,
+//                                                      vin,
+//                                                      normal,
+//                                                      sampler);
+    SampledDirection m_normal;
     sampled_vout = Microfacet::calcReflectionDirection(vin, m_normal);
     const auto& vout = sampled_vout.direction();
     Float pdf = 0.0;
@@ -254,7 +256,8 @@ SampledDirection LayeredDiffuse::sampleReflectionDirection(const Float roughness
     sampled_vout.setPdf(pdf);
   }
   else { // Body term sampling
-    sampled_vout = SampledDirection::sampleOnHemisphere<1>(normal, sampler);
+//    sampled_vout = SampledDirection::sampleOnHemisphere<1>(normal, sampler);
+    SampledDirection sampled_vout;
     const auto& vout = sampled_vout.direction();
     const Float pdf_b = sampled_vout.pdf();
     const Float pdf_s = MicrofacetGgx::evalReflectionPdf(roughness,

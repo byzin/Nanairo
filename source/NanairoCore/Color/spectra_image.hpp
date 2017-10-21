@@ -15,6 +15,7 @@
 #include <vector>
 // Zisc
 #include "zisc/arithmetic_array.hpp"
+#include "zisc/point.hpp"
 // Nanairo
 #include "spectral_distribution.hpp"
 #include "spectra_image_interface.hpp"
@@ -41,10 +42,12 @@ class SpectraImage : public SpectraImageInterface
   //! Create a spectra image
   SpectraImage(const uint width, const uint height) noexcept;
 
+  //! Create a spectra image
+  SpectraImage(const Index2d& resolution) noexcept;
+
 
   //! Add radiance from a sample
-  void addContribution(const uint x,
-                       const uint y,
+  void addContribution(const uint pixel_index,
                        const SampledSpectra& contribution) noexcept override;
 
   //! Clear the spectra image buffer to 0

@@ -30,8 +30,7 @@ namespace nanairo {
 /*!
   */
 Shape::Shape() noexcept :
-    surface_area_{0.0},
-    to_local_{std::make_unique<Matrix4x4>(Transformation::makeIdentity())}
+    surface_area_{0.0}
 {
 }
 
@@ -82,9 +81,8 @@ void Shape::setSurfaceArea(const Float surface_area) noexcept
   */
 void Shape::transform(const Matrix4x4& matrix) noexcept
 {
-  *to_local_ = *to_local_ * matrix;
   transformShape(matrix);
-  calcSurfaceArea();
+  setSurfaceArea(calcSurfaceArea());
 }
 
 } // namespace nanairo

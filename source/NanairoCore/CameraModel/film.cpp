@@ -45,8 +45,8 @@ void Film::initialize(const System& system, const SettingNodeBase* /* settings *
   // Image resolution
   const auto width = system.imageWidthResolution();
   const auto height = system.imageHeightResolution();
-  inverse_width_ = zisc::invert(cast<Float>(width));
-  inverse_height_ = zisc::invert(cast<Float>(height));
+  inverse_resolution_[0] = zisc::invert(cast<Float>(width));
+  inverse_resolution_[1] = zisc::invert(cast<Float>(height));
 
   // Initialize buffer
   switch (system.colorMode()) {

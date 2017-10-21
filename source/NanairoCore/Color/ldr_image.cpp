@@ -14,6 +14,7 @@
 #include <vector>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/point.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "rgba_32.hpp"
@@ -26,6 +27,13 @@ namespace nanairo {
 LdrImage::LdrImage(const uint width, const uint height) noexcept
 {
   setResolution(width, height);
+}
+
+/*!
+  */
+LdrImage::LdrImage(const Index2d& resolution) noexcept
+{
+  setResolution(resolution);
 }
 
 /*!
@@ -49,15 +57,22 @@ std::size_t LdrImage::memoryUsage() const noexcept
   */
 void LdrImage::setResolution(const uint width, const uint height) noexcept
 {
+  setResolution(Index2d{zisc::cast<uint32>(width),
+                        zisc::cast<uint32>(height)});
+}
+
+/*!
+  */
+void LdrImage::setResolution(const Index2d& resolution) noexcept
+{
   {
-    ZISC_ASSERT(width != 0, "The width resolution is 0.");
-    ZISC_ASSERT(height != 0, "The height resolution is 0.");
-    resolution_[0] = width;
-    resolution_[1] = height;
+    ZISC_ASSERT(resolution[0] != 0, "The width resolution is 0.");
+    ZISC_ASSERT(resolution[1] != 0, "The height resolution is 0.");
+    resolution_ = resolution;
   }
   {
     auto& buffer = data();
-    buffer.resize(width * height);
+    buffer.resize(resolution[0] * resolution[1]);
   }
   {
     const Rgba32 black;

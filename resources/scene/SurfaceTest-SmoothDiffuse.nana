@@ -9,14 +9,12 @@
         "ColorSpace": "sRGB (D65)",
         "Exposure": 1,
         "Gamma": 2.2,
-        "StandardIllumination": "CIE D65",
-        "StandardObserver": "CIE 2deg color matching function",
         "ToneMapping": "Reinhard",
         "WavelengthSampling": "Regular sampling"
     },
     "EmitterModel": [
         {
-            "EmissiveColorIndex": 2,
+            "EmissiveColorIndex": 0,
             "Name": "Emitter",
             "RadiantExitance": 256,
             "Type": "NonDirectionalEmitter"
@@ -24,7 +22,7 @@
     ],
     "Object": [
         {
-            "AngleOfView": 70,
+            "AngleOfView": 60,
             "CameraType": "PinholeCamera",
             "Enabled": true,
             "GroupLevel": 0,
@@ -36,12 +34,12 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        0.4,
-                        -1.5
+                        -3.8,
+                        1.5
                     ]
                 },
                 {
-                    "Angle": 45,
+                    "Angle": -35,
                     "Axis": "X Axis",
                     "Enabled": true,
                     "Type": "Rotation",
@@ -61,131 +59,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
-            "Name": "Floor",
-            "Smoothing": false,
-            "SurfaceIndex": 0,
-            "Transformation": [
-                {
-                    "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0,
-                        -1.5,
-                        0.75
-                    ]
-                },
-                {
-                    "Enabled": true,
-                    "Type": "Scaling",
-                    "Value": [
-                        3,
-                        1,
-                        4.5
-                    ]
-                }
-            ],
-            "Type": "SingleObject"
-        },
-        {
-            "EmitterIndex": 0,
-            "Enabled": true,
-            "ShapeType": "PlaneObject",
-            "GroupLevel": 1,
-            "IsEmissiveObject": false,
-            "Name": "LeftWall",
-            "Smoothing": false,
-            "SurfaceIndex": 0,
-            "Transformation": [
-                {
-                    "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        1.5,
-                        0,
-                        0.75
-                    ]
-                },
-                {
-                    "Angle": 180,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
-                },
-                {
-                    "Angle": 90,
-                    "Axis": "Z Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
-                },
-                {
-                    "Enabled": true,
-                    "Type": "Scaling",
-                    "Value": [
-                        3,
-                        1,
-                        4.5
-                    ]
-                }
-            ],
-            "Type": "SingleObject"
-        },
-        {
-            "EmitterIndex": 0,
-            "Enabled": true,
-            "ShapeType": "PlaneObject",
-            "GroupLevel": 1,
-            "IsEmissiveObject": false,
-            "Name": "RightWall",
-            "Smoothing": false,
-            "SurfaceIndex": 0,
-            "Transformation": [
-                {
-                    "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        -1.5,
-                        0,
-                        0.75
-                    ]
-                },
-                {
-                    "Angle": 180,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
-                },
-                {
-                    "Angle": -90,
-                    "Axis": "Z Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
-                },
-                {
-                    "Enabled": true,
-                    "Type": "Scaling",
-                    "Value": [
-                        3,
-                        1,
-                        4.5
-                    ]
-                }
-            ],
-            "Type": "SingleObject"
-        },
-        {
-            "EmitterIndex": 0,
-            "Enabled": true,
-            "ShapeType": "PlaneObject",
-            "GroupLevel": 1,
-            "IsEmissiveObject": false,
-            "Name": "BackWall",
+            "Name": "BackDrop",
+            "ObjectFilePath": "resources/models/BackDrop.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 1,
             "Transformation": [
@@ -194,24 +72,17 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        0,
-                        3
+                        -0.4,
+                        -1.5
                     ]
-                },
-                {
-                    "Angle": -90,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 },
                 {
                     "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
-                        3,
-                        1,
-                        3
+                        7.5,
+                        7.5,
+                        7.5
                     ]
                 }
             ],
@@ -220,10 +91,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
-            "IsEmissiveObject": false,
-            "Name": "Ceiling",
+            "IsEmissiveObject": true,
+            "Name": "Light1",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -232,20 +104,57 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        1.5,
-                        0.75
+                        0,
+                        2
                     ]
                 },
                 {
                     "Angle": 180,
-                    "Axis": "Y Axis",
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 1,
+            "IsEmissiveObject": true,
+            "Name": "Light2",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Angle": -50,
+                    "Axis": "Z Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
                 },
                 {
-                    "Angle": 180,
-                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        2.8,
+                        0,
+                        0.3
+                    ]
+                },
+                {
+                    "Angle": 15,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 240,
+                    "Axis": "Y Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
@@ -254,9 +163,9 @@
                     "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
-                        3,
-                        1,
-                        4.5
+                        2,
+                        2,
+                        1
                     ]
                 }
             ],
@@ -265,27 +174,20 @@
         {
             "Enabled": true,
             "GroupLevel": 1,
-            "Name": "Orb",
+            "Name": "Orb1",
             "Transformation": [
                 {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
+                        -1.35,
                         0,
-                        -1.5,
-                        0
+                        -1.49
                     ]
                 },
                 {
                     "Angle": 15,
-                    "Axis": "Y Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
-                },
-                {
-                    "Angle": 180,
-                    "Axis": "Y Axis",
+                    "Axis": "Z Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
@@ -296,11 +198,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Base",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 3,
             "Transformation": [
@@ -310,13 +212,13 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "InnerSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
-            "SurfaceIndex": 3,
+            "SurfaceIndex": 2,
             "Transformation": [
             ],
             "Type": "SingleObject"
@@ -324,11 +226,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "OuterSphere",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 3,
             "Transformation": [
@@ -338,11 +240,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 2,
             "IsEmissiveObject": false,
             "Name": "Equation",
             "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 3,
             "Transformation": [
@@ -350,69 +252,162 @@
             "Type": "SingleObject"
         },
         {
-            "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
-            "IsEmissiveObject": true,
-            "Name": "Light1",
-            "Smoothing": false,
-            "SurfaceIndex": 2,
+            "Name": "Orb2",
             "Transformation": [
                 {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
                         0,
-                        1.49,
-                        0
+                        0,
+                        -1.49
                     ]
                 },
                 {
-                    "Angle": 180,
-                    "Axis": "X Axis",
+                    "Angle": 15,
+                    "Axis": "Z Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
                 }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Base",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 4,
+            "Transformation": [
             ],
             "Type": "SingleObject"
         },
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
-            "GroupLevel": 1,
-            "IsEmissiveObject": true,
-            "Name": "Light2",
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "InnerSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 2,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "OuterSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 4,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Equation",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 4,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "Orb3",
             "Transformation": [
                 {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        1.49,
-                        -0.5,
-                        0
+                        1.35,
+                        0,
+                        -1.49
                     ]
                 },
                 {
-                    "Angle": 90,
+                    "Angle": 15,
                     "Axis": "Z Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
-                },
-                {
-                    "Enabled": true,
-                    "Type": "Scaling",
-                    "Value": [
-                        0.5,
-                        1,
-                        0.5
-                    ]
                 }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Base",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbBase.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 5,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "InnerSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbInner.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 2,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "OuterSphere",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquationOrbOuter.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 5,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Equation",
+            "ObjectFilePath": "resources/models/LightTransportEquationOrb/LightTransportEquation.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 5,
+            "Transformation": [
             ],
             "Type": "SingleObject"
         }
@@ -431,23 +426,33 @@
     },
     "SurfaceModel": [
         {
-            "Name": "CheckerboardSurface1",
-            "ReflectanceIndex": 0,
-            "Type": "SmoothDiffuseSurface"
-        },
-        {
-            "Name": "CheckerboardSurface2",
+            "Name": "EmitterSurface",
             "ReflectanceIndex": 1,
             "Type": "SmoothDiffuseSurface"
         },
         {
-            "Name": "EmitterSurface",
+            "Name": "BackDropSurface",
+            "ReflectanceIndex": 2,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "InnerBallSurface",
+            "ReflectanceIndex": 1,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "TestSurface1",
             "ReflectanceIndex": 3,
             "Type": "SmoothDiffuseSurface"
         },
         {
-            "Name": "TestSurface",
+            "Name": "TestSurface2",
             "ReflectanceIndex": 4,
+            "Type": "SmoothDiffuseSurface"
+        },
+        {
+            "Name": "TestSurface3",
+            "ReflectanceIndex": 5,
             "Type": "SmoothDiffuseSurface"
         }
     ],
@@ -465,76 +470,48 @@
     },
     "TextureModel": [
         {
-            "Color1": {
-                "ColorMode": "RGB",
-                "Value": [
-                    0.7529411764705882,
-                    0.7529411764705882,
-                    0.7529411764705882
-                ]
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/reflectance/macbeth_19_white.csv"
             },
-            "Color2": {
-                "ColorMode": "RGB",
-                "Value": [
-                    0.25098039215686274,
-                    0.25098039215686274,
-                    0.25098039215686274
-                ]
-            },
-            "ImageResolution": [
-                15,
-                20
-            ],
-            "Name": "CheckerboardTexture1",
-            "Type": "CheckerboardTexture"
-        },
-        {
-            "Color1": {
-                "ColorMode": "RGB",
-                "Value": [
-                    0.7529411764705882,
-                    0.7529411764705882,
-                    0.7529411764705882
-                ]
-            },
-            "Color2": {
-                "ColorMode": "RGB",
-                "Value": [
-                    0.25098039215686274,
-                    0.25098039215686274,
-                    0.25098039215686274
-                ]
-            },
-            "ImageResolution": [
-                15,
-                15
-            ],
-            "Name": "CheckerboardTexture2",
-            "Type": "CheckerboardTexture"
+            "Name": "WhiteTexture",
+            "Type": "UnicolorTexture"
         },
         {
             "Color": {
                 "ColorMode": "Spectra",
-                "Value": "resources/spectrum/illuminant/cie_si_d65.csv"
+                "Value": "resources/spectrum/reflectance/macbeth_23_neutral_3_5.csv"
             },
-            "Name": "EmitterTexture",
+            "Name": "GrayTexture",
             "Type": "UnicolorTexture"
         },
         {
-            "Name": "EmitterSurfaceTexture",
-            "Type": "ValueTexture",
-            "Value": 0.8
+            "ImageFilePath": "resources/image/uvchecker.png",
+            "Name": "UVChecker",
+            "Type": "ImageTexture"
         },
         {
             "Color": {
-                "ColorMode": "RGB",
-                "Value": [
-                    0.7164873731593805,
-                    0.3956511787594415,
-                    0.3956511787594415
-                ]
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/reflectance/macbeth_19_white.csv"
             },
-            "Name": "TestSurfaceTexture",
+            "Name": "Orb1Color",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/reflectance/macbeth_19_white.csv"
+            },
+            "Name": "Orb2Color",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/reflectance/macbeth_19_white.csv"
+            },
+            "Name": "Orb3Color",
             "Type": "UnicolorTexture"
         }
     ]

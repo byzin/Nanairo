@@ -24,11 +24,13 @@
 
 namespace nanairo {
 
+
 /*!
+  \details
+  "Building an Orthonormal Basis from a 3D Unit Vector Without Normalization".
   */
 inline
-std::tuple<Vector3, Vector3> Transformation::makeAxisesOfBasis(
-    const Vector3& normal) noexcept
+std::tuple<Vector3, Vector3> Transformation::calcDefaultTangent(const Vector3& normal) noexcept
 {
   const auto& n = normal;
   ZISC_ASSERT(isUnitVector(n), "The normal isn't unit vector.");
@@ -42,37 +44,31 @@ std::tuple<Vector3, Vector3> Transformation::makeAxisesOfBasis(
 }
 
 /*!
-  \details
-  Make a change of basis matrix for converting from the standard basis 
-  using "Building an Orthonormal Basis from a 3D Unit Vector Without Normalization".
   */
 inline
-Matrix3x3 Transformation::makeChangeOfBasisFromLocal(const Vector3& normal) noexcept
+Vector3 Transformation::fromLocal(const Vector3& e1,
+                                  const Vector3& e2,
+                                  const Vector3& e3,
+                                  const Vector3& v) noexcept
 {
-  const auto& n = normal;
-  const auto axises = makeAxisesOfBasis(n);
-  const auto& b1 = std::get<0>(axises);
-  const auto& b2 = std::get<1>(axises);
-  return Matrix3x3{b1[0], b2[0], n[0],
-                   b1[1], b2[1], n[1],
-                   b1[2], b2[2], n[2]};
+  Vector3 v_dash;
+  for (uint i = 0; i < 3; ++i) {
+    const Vector3 e{e1[i], e2[i], e3[i]};
+    v_dash[i] = zisc::dot(e, v);
+  }
+  return v_dash;
 }
 
 /*!
-  \details
-  Make a change of basis matrix for converting to the standard basis 
-  using "Building an Orthonormal Basis from a 3D Unit Vector Without Normalization".
   */
 inline
-Matrix3x3 Transformation::makeChangeOfBasisToLocal(const Vector3& normal) noexcept
+Vector3 Transformation::toLocal(const Vector3& e1,
+                                const Vector3& e2,
+                                const Vector3& e3,
+                                const Vector3& v) noexcept
 {
-  const auto& n = normal;
-  const auto axises = makeAxisesOfBasis(n);
-  const auto& b1 = std::get<0>(axises);
-  const auto& b2 = std::get<1>(axises);
-  return Matrix3x3{b1[0], b1[1], b1[2],
-                   b2[0], b2[1], b2[2],
-                    n[0],  n[1],  n[2]};
+  const Vector3 v_dash{zisc::dot(e1, v), zisc::dot(e2, v), zisc::dot(e3, v)};
+  return v_dash;
 }
 
 /*!

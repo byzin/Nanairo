@@ -15,11 +15,14 @@
 #include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
-#include "NanairoCore/Material/SurfaceModel/layered_diffuse.hpp"
+#include "NanairoCore/Material/SurfaceModel/Surface/layered_diffuse.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
+
+#include "NanairoCore/Material/SurfaceModel/Surface/diffuse.hpp"
 
 namespace nanairo {
 
@@ -48,10 +51,16 @@ InterfacedLambertianBrdf::InterfacedLambertianBrdf(
 Float InterfacedLambertianBrdf::evalPdf(
     const Vector3* vin,
     const Vector3* vout,
-    const Vector3& normal,
-    const WavelengthSamples& /* wavelengths */) const noexcept
+    const WavelengthSamples& /* wavelengths */,
+    const IntersectionInfo* info) const noexcept
 {
-  return LayeredDiffuse::evalPdf(roughness_, *vin, *vout, normal, n_, k_d_, ri_);
+  ZISC_ASSERT(info != nullptr, "The info is null.");
+//  return LayeredDiffuse::evalPdf(
+//      roughness_, *vin, *vout, info->normal(),
+//      n_, k_d_, ri_);
+
+  const Float pdf = Diffuse::evalPdf(*vout, info->normal());
+  return pdf;
 }
 
 /*!
@@ -61,13 +70,18 @@ Float InterfacedLambertianBrdf::evalPdf(
 SampledSpectra InterfacedLambertianBrdf::evalRadiance(
     const Vector3* vin,
     const Vector3* vout,
-    const Vector3& normal,
-    const WavelengthSamples& wavelengths) const noexcept
+    const WavelengthSamples& wavelengths,
+    const IntersectionInfo* info) const noexcept
 {
-  const Float f = LayeredDiffuse::evalReflectance(roughness_, *vin, *vout, normal,
-                                                  n_, k_d_, ri_, *sampler_);
-  SampledSpectra radiance{wavelengths};
-  radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
+  ZISC_ASSERT(info != nullptr, "The info is null.");
+//  const Float f = LayeredDiffuse::evalReflectance(
+//      roughness_, *vin, *vout, info->normal(),
+//      n_, k_d_, ri_, *sampler_);
+//  SampledSpectra radiance{wavelengths};
+//  radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
+//  return radiance;
+
+  const auto radiance = Diffuse::evalRadiance(SampledSpectra{wavelengths, 0.8});
   return radiance;
 }
 
@@ -78,31 +92,41 @@ SampledSpectra InterfacedLambertianBrdf::evalRadiance(
 std::tuple<SampledSpectra, Float> InterfacedLambertianBrdf::evalRadianceAndPdf(
     const Vector3* vin,
     const Vector3* vout,
-    const Vector3& normal,
-    const WavelengthSamples& wavelengths) const noexcept
+    const WavelengthSamples& wavelengths,
+    const IntersectionInfo* info) const noexcept
 {
-  Float pdf = 0.0;
-  const Float f = LayeredDiffuse::evalReflectance(roughness_, *vin, *vout, normal,
-                                                  n_, k_d_, ri_, *sampler_, &pdf);
-  SampledSpectra radiance{wavelengths};
-  radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
-  return std::make_tuple(std::move(radiance), pdf);
+  ZISC_ASSERT(info != nullptr, "The info is null.");
+//  Float pdf = 0.0;
+//  const Float f = LayeredDiffuse::evalReflectance(
+//      roughness_, *vin, *vout, info->normal(),
+//      n_, k_d_, ri_, *sampler_, &pdf);
+//  SampledSpectra radiance{wavelengths};
+//  radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
+//  return std::make_tuple(std::move(radiance), pdf);
+
+  const auto radiance = Diffuse::evalRadiance(SampledSpectra{wavelengths, 0.8});
+  const Float pdf = Diffuse::evalPdf(*vout, info->normal());
+  return std::make_tuple(radiance, pdf);
 }
 
 /*!
   */
 std::tuple<SampledDirection, SampledSpectra> InterfacedLambertianBrdf::sample(
     const Vector3* vin,
-    const Vector3& normal,
     const WavelengthSamples& wavelengths,
-    Sampler& sampler) const noexcept
+    Sampler& sampler,
+    const IntersectionInfo* info) const noexcept
 {
-  const auto result = LayeredDiffuse::sample(roughness_, *vin, normal,
-                                             n_, k_d_, ri_, sampler);
-  const Float w = std::get<1>(result);
-  SampledSpectra weight{wavelengths};
-  weight.setIntensity(wavelengths.primaryWavelengthIndex(), w);
-  return std::make_tuple(std::move(std::get<0>(result)), std::move(weight));
+  ZISC_ASSERT(info != nullptr, "The info is null.");
+//  const auto result = LayeredDiffuse::sample(roughness_, *vin, info->normal(),
+//                                             n_, k_d_, ri_, sampler);
+//  const Float w = std::get<1>(result);
+//  SampledSpectra weight{wavelengths};
+//  weight.setIntensity(wavelengths.primaryWavelengthIndex(), w);
+//  return std::make_tuple(std::move(std::get<0>(result)), std::move(weight));
+
+  const auto vout = Diffuse::sample(info->shapePoint(), sampler);
+  return std::make_tuple(vout, SampledSpectra{wavelengths, 0.8});
 }
 
 /*!
@@ -111,7 +135,8 @@ std::tuple<SampledDirection, SampledSpectra> InterfacedLambertianBrdf::sample(
   */
 bool InterfacedLambertianBrdf::wavelengthIsSelected() const noexcept
 {
-  return true;
+//  return true;
+  return false;
 }
 
 } // namespace nanairo

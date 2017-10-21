@@ -55,8 +55,8 @@ SampledSpectra ImageTexture::emissiveValue(
     const Point2& uv,
     const WavelengthSamples& wavelengths) const noexcept
 {
-  const uint index = getPixelIndex(uv);
-  return sample(emissive_value_table_[color_index_table_[index]], wavelengths);
+  const uint index = getColorIndex(uv);
+  return sample(emissive_value_table_[index], wavelengths);
 }
 
 /*!
@@ -65,8 +65,8 @@ SampledSpectra ImageTexture::emissiveValue(
   */
 Float ImageTexture::grayScaleValue(const Point2& uv) const noexcept
 {
-  const uint index = getPixelIndex(uv);
-  return gray_scale_table_[color_index_table_[index]];
+  const uint index = getColorIndex(uv);
+  return gray_scale_table_[index];
 }
 
 /*!
@@ -76,8 +76,8 @@ Float ImageTexture::grayScaleValue(const Point2& uv) const noexcept
 Float ImageTexture::reflectiveValue(const Point2& uv,
                                     const uint16 wavelength) const noexcept
 {
-  const uint index = getPixelIndex(uv);
-  return reflective_value_table_[color_index_table_[index]].getByWavelength(wavelength);
+  const uint index = getColorIndex(uv);
+  return reflective_value_table_[index].getByWavelength(wavelength);
 }
 
 /*!
@@ -88,8 +88,8 @@ SampledSpectra ImageTexture::reflectiveValue(
     const Point2& uv,
     const WavelengthSamples& wavelengths) const noexcept
 {
-  const uint index = getPixelIndex(uv);
-  return sample(reflective_value_table_[color_index_table_[index]], wavelengths);
+  const uint index = getColorIndex(uv);
+  return sample(reflective_value_table_[index], wavelengths);
 }
 
 /*!
@@ -99,8 +99,8 @@ SampledSpectra ImageTexture::reflectiveValue(
 Float ImageTexture::spectraValue(const Point2& uv,
                                  const uint16 wavelength) const noexcept
 {
-  const uint index = getPixelIndex(uv);
-  return reflective_value_table_[color_index_table_[index]].getByWavelength(wavelength);
+  const uint index = getColorIndex(uv);
+  return reflective_value_table_[index].getByWavelength(wavelength);
 }
 
 /*!
@@ -111,8 +111,8 @@ SampledSpectra ImageTexture::spectraValue(
     const Point2& uv,
     const WavelengthSamples& wavelengths) const noexcept
 {
-  const uint index = getPixelIndex(uv);
-  return sample(reflective_value_table_[color_index_table_[index]], wavelengths);
+  const uint index = getColorIndex(uv);
+  return sample(reflective_value_table_[index], wavelengths);
 }
 
 /*!
@@ -127,10 +127,20 @@ TextureType ImageTexture::type() const noexcept
 /*!
   */
 inline
+uint ImageTexture::getColorIndex(const Point2& uv) const noexcept
+{
+  const uint pixel_index = getPixelIndex(uv);
+  const uint index = color_index_table_[pixel_index];
+  return index;
+}
+
+/*!
+  */
+inline
 uint ImageTexture::getPixelIndex(const Point2& uv) const noexcept
 {
   const auto x = zisc::cast<uint>(uv[0] * zisc::cast<Float>(resolution_[0]));
-  const auto y = zisc::cast<uint>(uv[1] * zisc::cast<Float>(resolution_[1]));
+  const auto y = zisc::cast<uint>((1.0 - uv[1]) * zisc::cast<Float>(resolution_[1]));
   return x + y * resolution_[0];
 }
 

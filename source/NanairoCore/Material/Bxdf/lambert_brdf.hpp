@@ -23,6 +23,7 @@
 namespace nanairo {
 
 // Forward declaration
+class IntersectionInfo;
 class Sampler;
 class WavelengthSamples;
 
@@ -41,31 +42,32 @@ class LambertBrdf : public DiffuseShaderModel
 
 
   //! Evaluate the pdf
-  Float evalPdf(const Vector3* vin,
-                const Vector3* vout,
-                const Vector3& normal,
-                const WavelengthSamples& wavelengths) const noexcept override;
+  Float evalPdf(
+      const Vector3* vin,
+      const Vector3* vout,
+      const WavelengthSamples& wavelengths,
+      const IntersectionInfo* info) const noexcept override;
 
   //! Evaluate the BRDF of the area sampling
   SampledSpectra evalRadiance(
       const Vector3* vin,
       const Vector3* vout,
-      const Vector3& normal,
-      const WavelengthSamples& wavelengths) const noexcept override;
+      const WavelengthSamples& wavelengths,
+      const IntersectionInfo* info) const noexcept override;
 
   //! Evaluate the BRDF of the area sampling
   std::tuple<SampledSpectra, Float> evalRadianceAndPdf(
       const Vector3* vin,
       const Vector3* vout,
-      const Vector3& normal,
-      const WavelengthSamples& wavelengths) const noexcept override;
+      const WavelengthSamples& wavelengths,
+      const IntersectionInfo* info) const noexcept override;
 
   //! Sample a reflection direction and evaluate a reflection weight
   std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin,
-      const Vector3& normal,
       const WavelengthSamples& wavelengths,
-      Sampler& sampler) const noexcept override;
+      Sampler& sampler,
+      const IntersectionInfo* info) const noexcept override;
 
   //! Check is wavelength selection occured
   bool wavelengthIsSelected() const noexcept override;

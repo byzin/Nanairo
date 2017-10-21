@@ -115,7 +115,7 @@ auto ProbabilisticPpm::estimateRadiance(
     // Evaluate reflectance
     const auto photon_cache = std::get<1>(photon_point);
     const auto vout = -photon_cache->incidentDirection();
-    const auto f = bxdf->evalRadiance(&vin, &vout, normal, wavelengths);
+    const auto f = bxdf->evalRadiance(&vin, &vout, wavelengths, &intersection);
     ZISC_ASSERT(!f.hasNegative(), "The f has negative value.");
     // Calculate the photon weight
     const Float distance = zisc::sqrt(std::get<0>(photon_point));
@@ -154,14 +154,13 @@ void ProbabilisticPpm::evalImplicitConnection(
 
   const auto& wavelengths = ray_weight.wavelengths();
   const auto& vin = ray.direction();
-  const auto& normal = intersection.normal();
 
   // Get the light
   const auto& emitter = material.emitter();
   const auto light = emitter.makeLight(intersection.uv(), wavelengths, memory_pool);
 
   // Evaluate the radiance
-  const auto radiance = light->evalRadiance(&vin, nullptr, normal, wavelengths);
+  const auto radiance = light->evalRadiance(&vin, nullptr, wavelengths, &intersection);
 
   // Calculate the contribution
   const auto c = camera_contribution * ray_weight * radiance;
@@ -199,8 +198,7 @@ auto ProbabilisticPpm::generatePhoton(
   const auto& emitter = light_source->material().emitter();
   const IntersectionInfo intersection{light_source, light_point_info};
   const auto light = emitter.makeLight(intersection.uv(), wavelengths, memory_pool);
-  const auto& normal = light_point_info.normal();
-  const auto result = light->sample(nullptr, normal, wavelengths, sampler);
+  const auto result = light->sample(nullptr, wavelengths, sampler, &intersection);
   const auto& sampled_vout = std::get<0>(result);
   ZISC_ASSERT(0.0 < sampled_vout.pdf(), "The vout pdf is negative.");
   // Evaluate the light contribution
@@ -210,9 +208,11 @@ auto ProbabilisticPpm::generatePhoton(
   ZISC_ASSERT(0.0 < k, "The photon coefficient is negative.");
   *light_contribution = k * w;
 
+  const auto& normal = light_point_info.normal();
   const auto ray_epsilon = Method::rayCastEpsilon() * normal;
   ZISC_ASSERT(!isZeroVector(ray_epsilon), "Ray epsilon is zero vector.");
-  return Photon{light_point_info.point() + ray_epsilon, sampled_vout.direction()};
+  return Photon::makeRay(light_point_info.point() + ray_epsilon,
+                         sampled_vout.direction());
 }
 
 /*!
@@ -232,12 +232,12 @@ Ray ProbabilisticPpm::generateRay(
   // Sample a ray origin
   const auto& lens_point = camera.sampledLensPoint();
   // Sample a ray direction
-  auto sensor = camera.makeSensor(x, y, wavelengths, memory_pool);
-  const auto result = sensor->sample(nullptr, camera.normal(), wavelengths, sampler);
+  auto sensor = camera.makeSensor(Index2d{x, y}, wavelengths, memory_pool);
+  const auto result = sensor->sample(nullptr, wavelengths, sampler);
   const auto& sampled_vout = std::get<0>(result);
   const auto& w = std::get<1>(result);
   *weight = *weight * w;
-  return Ray{lens_point, sampled_vout.direction()};
+  return Ray::makeRay(lens_point, sampled_vout.direction());
 }
 
 /*!
@@ -408,7 +408,7 @@ void ProbabilisticPpm::traceCameraPath(
     }
     memory_pool.reset();
   }
-  camera.addContribution(x, y, contribution);
+  camera.addContribution(Index2d{x, y}, contribution);
   memory_pool.reset();
 }
 

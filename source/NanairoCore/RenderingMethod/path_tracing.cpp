@@ -98,11 +98,10 @@ void PathTracing::evalExplicitConnection(
   const auto light_point_info = light_source->shape().samplePoint(sampler);
 
   // Make a shadow ray
-  const auto& normal = intersection.normal();
   const auto shadow_ray = Method::makeShadowRay(intersection.point(),
                                                 light_point_info.point(),
-                                                normal);
-  const Float cos_no = zisc::dot(normal, shadow_ray.direction());
+                                                intersection.normal());
+  const Float cos_no = zisc::dot(intersection.normal(), shadow_ray.direction());
   // If the shadow ray hits the back face of the light source, quit connectino
   if (cos_no < 0.0)
     return;
@@ -111,9 +110,11 @@ void PathTracing::evalExplicitConnection(
   const Float diff2 = (light_point_info.point() - shadow_ray.origin()).squareNorm();
   ZISC_ASSERT(0.0 < diff2, "The diff2 isn't greater than 0.");
   const Float max_shadow_ray_distance = Method::calcShadowRayDistance(diff2);
+  constexpr bool expect_no_hit = true;
   const auto shadow_intersection = Method::castRay(world,
                                                    shadow_ray,
-                                                   max_shadow_ray_distance);
+                                                   max_shadow_ray_distance,
+                                                   expect_no_hit);
   if (shadow_intersection.object() != light_source ||
       shadow_intersection.isBackFace())
     return;
@@ -122,8 +123,8 @@ void PathTracing::evalExplicitConnection(
   const auto& wavelengths = ray_weight.wavelengths();
   const auto result = bxdf->evalRadianceAndPdf(&ray.direction(),
                                                &shadow_ray.direction(),
-                                               normal,
-                                               wavelengths);
+                                               wavelengths,
+                                               &intersection);
   const auto& f = std::get<0>(result);
   const auto& direction_pdf = std::get<1>(result);
   ZISC_ASSERT(!f.hasNegative(), "The f of BxDF has negative values.");
@@ -134,15 +135,14 @@ void PathTracing::evalExplicitConnection(
   const auto light = emitter.makeLight(shadow_intersection.uv(),
                                        wavelengths,
                                        memory_pool);
-  const auto& shadow_normal = shadow_intersection.normal();
   const auto light_dir = -shadow_ray.direction();
   const auto radiance = light->evalRadiance(nullptr,
                                             &light_dir,
-                                            shadow_normal,
-                                            wavelengths);
+                                            wavelengths,
+                                            &shadow_intersection);
 
   // Calculate the geometry term
-  const Float cos_sni = zisc::dot(shadow_normal, light_dir);
+  const Float cos_sni = zisc::dot(shadow_intersection.normal(), light_dir);
   const Float geometry_term = cos_sni * cos_no / diff2;
   ZISC_ASSERT(0.0 < geometry_term, "Geometry term is negative.");
 
@@ -184,14 +184,16 @@ void PathTracing::evalImplicitConnection(
 
   const auto& wavelengths = ray_weight.wavelengths();
   const auto& vin = ray.direction();
-  const auto& normal = intersection.normal();
 
   // Get the light
   const auto& emitter = material.emitter();
   const auto light = emitter.makeLight(intersection.uv(), wavelengths, memory_pool);
 
   // Evaluate the radiance
-  const auto radiance = light->evalRadiance(&vin, nullptr, normal, wavelengths);
+  const auto radiance = light->evalRadiance(&vin,
+                                            nullptr,
+                                            wavelengths,
+                                            &intersection);
 
   // Calculate the MIS weight
   const auto& light_sampler = eyePathLightSampler();
@@ -248,14 +250,14 @@ Ray PathTracing::generateRay(const CameraModel& camera,
   // Sample a ray origin
   const auto& lens_point = camera.sampledLensPoint();
   // Sample a ray direction
-  const auto sensor = camera.makeSensor(x, y, wavelengths, memory_pool);
-  const auto result = sensor->sample(nullptr, camera.normal(), wavelengths, sampler);
+  const auto sensor = camera.makeSensor(Index2d{x, y}, wavelengths, memory_pool);
+  const auto result = sensor->sample(nullptr, wavelengths, sampler);
   const auto& sampled_vout = std::get<0>(result);
   const auto& w = std::get<1>(result);
   *weight = *weight * w;
 
   *inverse_direction_pdf = sampled_vout.inversePdf();
-  return Ray{lens_point, sampled_vout.direction()};
+  return Ray::makeRay(lens_point, sampled_vout.direction());
 }
 
 /*!
@@ -386,7 +388,7 @@ void PathTracing::traceCameraPath(System& system,
     // Clear memory
     memory_pool.reset();
   }
-  camera.addContribution(x, y, contribution);
+  camera.addContribution(Index2d{x, y}, contribution);
   // Clear memory
   memory_pool.reset();
 }

@@ -104,12 +104,6 @@ ApplicationWindow {
 
       MenuItem {
         enabled: !isRenderingMode
-        text: Nanairo.materialTestScene
-        onTriggered: loadPresetSceneData(text)
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
         text: Nanairo.smoothDiffuseTestScene
         onTriggered: loadPresetSceneData(text)
       }

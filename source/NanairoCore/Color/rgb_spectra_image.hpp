@@ -13,6 +13,8 @@
 // Standard C++ library
 #include <cstddef>
 #include <vector>
+// Zisc
+#include "zisc/point.hpp"
 // Nanairo
 #include "rgb_color.hpp"
 #include "spectra_image_interface.hpp"
@@ -39,10 +41,12 @@ class RgbSpectraImage : public SpectraImageInterface
   //! Initialize the RGB image
   RgbSpectraImage(const uint width, const uint height) noexcept;
 
+  //! Initialize the RGB image
+  RgbSpectraImage(const Index2d& resolution) noexcept;
+
 
   //! Add radiance from a sample
-  void addContribution(const uint x,
-                       const uint y,
+  void addContribution(const uint pixel_index,
                        const SampledSpectra& contribution) noexcept override;
 
   //! Clear RGB image buffer

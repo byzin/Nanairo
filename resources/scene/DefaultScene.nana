@@ -20,7 +20,7 @@
     ],
     "Object": [
         {
-            "AngleOfView": 45,
+            "AngleOfView": 60,
             "CameraType": "PinholeCamera",
             "Enabled": true,
             "GroupLevel": 0,
@@ -32,8 +32,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        0,
-                        -6
+                        -6,
+                        0
                     ]
                 }
             ],
@@ -62,8 +62,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        -1,
-                        0
+                        0,
+                        -1
                     ]
                 },
                 {
@@ -71,8 +71,8 @@
                     "Type": "Scaling",
                     "Value": [
                         5,
-                        1,
-                        5
+                        5,
+                        1
                     ]
                 }
             ],
@@ -93,8 +93,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        1,
-                        0
+                        0,
+                        1
                     ]
                 },
                 {
@@ -109,7 +109,7 @@
         }
     ],
     "RenderingMethod": {
-        "EyePathLightSampler": "PowerWeightedLightSampler",
+        "EyePathLightSampler": "UniformLightSampler",
         "LightSamplerMaxSurfaceSplit": 10,
         "LightSamplerNumOfPhotons": 32768,
         "PathLength": 3,

@@ -17,6 +17,7 @@
 #include <vector>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/point.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "rgba_32.hpp"
@@ -81,7 +82,8 @@ const Rgba32& LdrImage::get(const uint index) const noexcept
 inline
 Rgba32& LdrImage::get(const uint x, const uint y) noexcept
 {
-  return get(toIndex(x, y));
+  const uint index = toIndex(x, y);
+  return get(index);
 }
 
 /*!
@@ -89,7 +91,26 @@ Rgba32& LdrImage::get(const uint x, const uint y) noexcept
 inline
 const Rgba32& LdrImage::get(const uint x, const uint y) const noexcept
 {
-  return get(toIndex(x, y));
+  const uint index = toIndex(x, y);
+  return get(index);
+}
+
+/*!
+  */
+inline
+Rgba32& LdrImage::get(const Index2d& index) noexcept
+{
+  const uint i = toIndex(index[0], index[1]);
+  return get(i);
+}
+
+/*!
+  */
+inline
+const Rgba32& LdrImage::get(const Index2d& index) const noexcept
+{
+  const uint i = toIndex(index[0], index[1]);
+  return get(i);
 }
 
 /*!
@@ -98,15 +119,41 @@ inline
 uint LdrImage::heightResolution() const noexcept
 {
   const auto& r = resolution();
-  return r[1];
+  return zisc::cast<uint>(r[1]);
 }
 
 /*!
   */
 inline
-const std::array<uint, 2>& LdrImage::resolution() const noexcept
+const Index2d& LdrImage::resolution() const noexcept
 {
   return resolution_;
+}
+
+/*!
+  */
+inline
+void LdrImage::set(const uint index, const Rgba32 color) noexcept
+{
+  get(index) = color;
+}
+
+/*!
+  */
+inline
+void LdrImage::set(const uint x, const uint y, const Rgba32 color) noexcept
+{
+  const uint index = toIndex(x, y);
+  set(index, color);
+}
+
+/*!
+  */
+inline
+void LdrImage::set(const Index2d& index, const Rgba32 color) noexcept
+{
+  const uint i = toIndex(index[0], index[1]);
+  set(i, color);
 }
 
 /*!
@@ -124,7 +171,7 @@ inline
 uint LdrImage::widthResolution() const noexcept
 {
   const auto& r = resolution();
-  return r[0];
+  return zisc::cast<uint>(r[0]);
 }
 
 /*!

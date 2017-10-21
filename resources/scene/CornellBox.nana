@@ -7,8 +7,6 @@
         "ColorSpace": "sRGB (D65)",
         "Exposure": 1,
         "Gamma": 2.2,
-        "StandardIllumination": "CIE D65",
-        "StandardObserver": "CIE 2deg color matching function",
         "ToneMapping": "Reinhard",
         "WavelengthSampling": "Regular sampling"
     },
@@ -22,7 +20,7 @@
     ],
     "Object": [
         {
-            "AngleOfView": 45,
+            "AngleOfView": 60,
             "CameraType": "PinholeCamera",
             "Enabled": true,
             "GroupLevel": 0,
@@ -34,8 +32,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        0,
-                        -7.5
+                        -5.8,
+                        0
                     ]
                 }
             ],
@@ -52,10 +50,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Floor",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -64,8 +62,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        -1.5,
-                        0.75
+                        0.75,
+                        -1.5
                     ]
                 },
                 {
@@ -73,8 +71,8 @@
                     "Type": "Scaling",
                     "Value": [
                         3,
-                        1,
-                        4.5
+                        4.5,
+                        1
                     ]
                 }
             ],
@@ -83,10 +81,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "LeftWall",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 2,
             "Transformation": [
@@ -94,14 +92,14 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        1.5,
-                        0,
-                        0.75
+                        -1.5,
+                        0.75,
+                        0
                     ]
                 },
                 {
                     "Angle": 90,
-                    "Axis": "Z Axis",
+                    "Axis": "Y Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
@@ -111,8 +109,8 @@
                     "Type": "Scaling",
                     "Value": [
                         3,
-                        1,
-                        4.5
+                        4.5,
+                        1
                     ]
                 }
             ],
@@ -121,10 +119,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "RightWall",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 1,
             "Transformation": [
@@ -132,14 +130,14 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        -1.5,
-                        0,
-                        0.75
+                        1.5,
+                        0.75,
+                        0
                     ]
                 },
                 {
                     "Angle": -90,
-                    "Axis": "Z Axis",
+                    "Axis": "Y Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
@@ -149,8 +147,8 @@
                     "Type": "Scaling",
                     "Value": [
                         3,
-                        1,
-                        4.5
+                        4.5,
+                        1
                     ]
                 }
             ],
@@ -159,10 +157,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "BackWall",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -171,12 +169,12 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        0,
-                        3
+                        3,
+                        0
                     ]
                 },
                 {
-                    "Angle": -90,
+                    "Angle": 90,
                     "Axis": "X Axis",
                     "Enabled": true,
                     "Type": "Rotation",
@@ -187,8 +185,8 @@
                     "Type": "Scaling",
                     "Value": [
                         3,
-                        1,
-                        3
+                        3,
+                        1
                     ]
                 }
             ],
@@ -197,10 +195,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Ceiling",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -209,8 +207,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        1.5,
-                        0.75
+                        0.75,
+                        1.5
                     ]
                 },
                 {
@@ -225,8 +223,8 @@
                     "Type": "Scaling",
                     "Value": [
                         3,
-                        1,
-                        4.5
+                        4.5,
+                        1
                     ]
                 }
             ],
@@ -235,59 +233,11 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "MeshObject",
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "TallBlock",
             "ObjectFilePath": "resources/models/Primitives/Cube.obj",
-            "Smoothing": false,
-            "SurfaceIndex": 0,
-            "Transformation": [
-                {
-                    "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0.5,
-                        -1.5,
-                        1
-                    ]
-                },
-                {
-                    "Angle": 15,
-                    "Axis": "Y Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
-                },
-                {
-                    "Enabled": true,
-                    "Type": "Scaling",
-                    "Value": [
-                        0.9,
-                        0.9,
-                        0.9
-                    ]
-                },
-                {
-                    "Enabled": true,
-                    "Type": "Scaling",
-                    "Value": [
-                        1,
-                        2,
-                        1
-                    ]
-                }
-            ],
-            "Type": "SingleObject"
-        },
-        {
-            "EmitterIndex": 0,
-            "Enabled": true,
             "ShapeType": "MeshObject",
-            "GroupLevel": 1,
-            "IsEmissiveObject": false,
-            "Name": "ShortBlock",
-            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -296,13 +246,61 @@
                     "Type": "Translation",
                     "Value": [
                         -0.5,
-                        -1.5,
-                        -0.4
+                        1,
+                        -1.5
+                    ]
+                },
+                {
+                    "Angle": 15,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.9,
+                        0.9,
+                        0.9
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        1,
+                        1,
+                        2
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 1,
+            "IsEmissiveObject": false,
+            "Name": "ShortBlock",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.5,
+                        -0.4,
+                        -1.5
                     ]
                 },
                 {
                     "Angle": -15,
-                    "Axis": "Y Axis",
+                    "Axis": "Z Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
@@ -322,10 +320,10 @@
         {
             "EmitterIndex": 0,
             "Enabled": true,
-            "ShapeType": "PlaneObject",
             "GroupLevel": 1,
             "IsEmissiveObject": true,
             "Name": "Light",
+            "ShapeType": "PlaneObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -334,8 +332,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        1.49,
-                        0.75
+                        0.75,
+                        1.49
                     ]
                 },
                 {
@@ -350,8 +348,8 @@
                     "Type": "Scaling",
                     "Value": [
                         0.75,
-                        1,
-                        0.75
+                        0.75,
+                        1
                     ]
                 }
             ],

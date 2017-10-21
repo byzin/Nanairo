@@ -11,6 +11,7 @@
 // Standard C++ library
 #include <vector>
 // Zisc
+#include "zisc/point.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "xyz_color.hpp"
@@ -23,8 +24,15 @@ namespace nanairo {
   No detailed.
   */
 HdrImage::HdrImage(const uint width, const uint height) noexcept :
-    width_{width},
-    height_{height}
+    resolution_{Index2d{zisc::cast<uint32>(width), zisc::cast<uint32>(height)}}
+{
+  initialize();
+}
+
+/*!
+  */
+HdrImage::HdrImage(const Index2d& resolution) noexcept :
+    resolution_{resolution}
 {
   initialize();
 }
@@ -35,7 +43,7 @@ HdrImage::HdrImage(const uint width, const uint height) noexcept :
   */
 void HdrImage::initialize() noexcept
 {
-  const uint buffer_size = width_ * height_;
+  const uint buffer_size = widthResolution() * heightResolution();
   buffer_.resize(buffer_size);
 }
 

@@ -79,7 +79,7 @@ Sampler& System::globalSampler() noexcept
 /*!
   */
 inline
-const std::array<uint, 2>& System::imageResolution() const noexcept
+const Index2d& System::imageResolution() const noexcept
 {
   return image_resolution_;
 }
@@ -92,7 +92,7 @@ inline
 uint System::imageHeightResolution() const noexcept
 {
   const auto& image_resolution = imageResolution();
-  return image_resolution[1];
+  return zisc::cast<uint>(image_resolution[1]);
 }
 
 /*!
@@ -103,7 +103,7 @@ inline
 uint System::imageWidthResolution() const noexcept
 {
   const auto& image_resolution = imageResolution();
-  return image_resolution[0];
+  return zisc::cast<uint>(image_resolution[0]);
 }
 
 /*!

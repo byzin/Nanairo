@@ -32,9 +32,14 @@ class ShapePoint
   //! Create a point data
   ShapePoint(const SampledPoint& point,
              const Vector3& normal,
+             const Vector3& tangent,
+             const Vector3& bitangent,
              const Point2& uv,
              const Point2& st) noexcept;
 
+
+  //! Return the bitangent vector
+  const Vector3& bitangent() const noexcept;
 
   //! Return the inverse pdf at the point
   Float inversePdf() const noexcept;
@@ -51,6 +56,9 @@ class ShapePoint
   //! Return the sampled point
   const SampledPoint& sampledPoint() const noexcept;
 
+  //! Set the bitangent vector
+  void setBitangent(const Vector3& bitangent) noexcept;
+
   //! Set the normal 
   void setNormal(const Vector3& normal) noexcept;
 
@@ -66,11 +74,17 @@ class ShapePoint
   //! Set the st coordinate
   void setSt(const Point2& st) noexcept;
 
+  //! Set the tangent vector
+  void setTangent(const Vector3& tangent) noexcept;
+
   //! Set the st coordinate
   void setUv(const Point2& uv) noexcept;
 
   //! Return the ST coordinate
   const Point2& st() const noexcept;
+
+  //! Return the tangent vector
+  const Vector3& tangent() const noexcept;
 
   //! Return the UV coordinate
   const Point2& uv() const noexcept;
@@ -78,6 +92,8 @@ class ShapePoint
  private:
   SampledPoint point_;
   Vector3 normal_;
+  Vector3 tangent_;
+  Vector3 bitangent_;
   Point2 uv_; //!< Texture coordinate
   Point2 st_; //!< Shape coordinate
 };

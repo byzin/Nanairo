@@ -84,9 +84,6 @@ class Shape
   //! Set surface area of shape
   void setSurfaceArea(const Float surface_area) noexcept;
 
-  //! Return the matrix to transform local coordinate
-  const Matrix4x4& toLocalMatrix() const noexcept;
-
   //! Apply affine transformation
   void transform(const Matrix4x4& matrix) noexcept;
 
@@ -98,7 +95,6 @@ class Shape
   virtual void transformShape(const Matrix4x4& matrix) noexcept = 0;
 
  private:
-  std::unique_ptr<Matrix4x4> to_local_;
   Float surface_area_;
 };
 

@@ -27,14 +27,6 @@ Float Shape::surfaceArea() const noexcept
   return surface_area_;
 }
 
-/*!
-  */
-inline
-const Matrix4x4& Shape::toLocalMatrix() const noexcept
-{
-  return *to_local_;
-}
-
 } // namespace nanairo
 
 #endif // NANAIRO_SHAPE_INL_HPP

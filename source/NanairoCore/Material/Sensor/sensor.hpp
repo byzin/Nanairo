@@ -20,6 +20,7 @@
 namespace nanairo {
 
 // Forward declaration
+class IntersectionInfo;
 class CameraModel;
 class SampledSpectra;
 class Sampler;
@@ -36,36 +37,36 @@ class Sensor : public GlossyShaderModel
 {
  public:
   //! Create a Camera sensor
-  Sensor(const CameraModel* camera, const uint x, const uint y) noexcept;
+  Sensor(const CameraModel* camera, const Index2d& index) noexcept;
 
 
   //! Evaluate the BRDF of the area sampling
   Float evalPdf(
       const Vector3* vin,
       const Vector3* vout,
-      const Vector3& normal,
-      const WavelengthSamples& wavelengths) const noexcept override;
+      const WavelengthSamples& wavelengths,
+      const IntersectionInfo* info) const noexcept override;
 
   //! Evaluate the BRDF of the area sampling
   SampledSpectra evalRadiance(
       const Vector3* vin,
       const Vector3* vout,
-      const Vector3& normal,
-      const WavelengthSamples& wavelengths) const noexcept override;
+      const WavelengthSamples& wavelengths,
+      const IntersectionInfo* info) const noexcept override;
 
   //! Evaluate the BRDF and pdf
   std::tuple<SampledSpectra, Float> evalRadianceAndPdf(
       const Vector3* vin,
       const Vector3* vout,
-      const Vector3& normal,
-      const WavelengthSamples& wavelengths) const noexcept override;
+      const WavelengthSamples& wavelengths,
+      const IntersectionInfo* info) const noexcept override;
 
   //! Sample a camera ray direction and evaluate a ray weight
   std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin,
-      const Vector3& normal, 
       const WavelengthSamples& wavelengths,
-      Sampler& sampler) const noexcept override;
+      Sampler& sampler,
+      const IntersectionInfo* info) const noexcept override;
 
   //! Check is wavelength selection occured
   bool wavelengthIsSelected() const noexcept override;
@@ -75,12 +76,11 @@ class Sensor : public GlossyShaderModel
   const CameraModel& camera() const noexcept;
 
   //! Initialize sensor
-  void initialize(const uint x, const uint y) noexcept;
+  void initialize() noexcept;
 
 
   const CameraModel* camera_;
-  uint x_,
-       y_;
+  Index2d pixel_index_;
 };
 
 //! \} Core

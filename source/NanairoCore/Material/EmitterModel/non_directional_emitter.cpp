@@ -44,11 +44,11 @@ NonDirectionalEmitter::NonDirectionalEmitter(
   No detailed.
   */
 auto NonDirectionalEmitter::makeLight(
-    const Point2& texture_coordinate,
+    const Point2& uv,
     const WavelengthSamples& wavelengths,
     zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
-  const auto color = color_->emissiveValue(texture_coordinate, wavelengths);
+  const auto color = color_->emissiveValue(uv, wavelengths);
   const auto radiant_exitance = color * radiantExitance();
 
   using Light = NonDirectionalLight;

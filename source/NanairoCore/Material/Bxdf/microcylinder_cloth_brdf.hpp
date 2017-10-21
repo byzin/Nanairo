@@ -23,6 +23,7 @@ namespace nanairo {
 
 // Forward declaration
 class ClothSurface;
+class IntersectionInfo;
 class Sampler;
 class WavelengthSamples;
 
@@ -44,29 +45,29 @@ class MicrocylinderClothBrdf : public GlossyShaderModel
   //! Evaluate the pdf
   Float evalPdf(const Vector3* vin,
                 const Vector3* vout,
-                const Vector3& normal,
-                const WavelengthSamples& wavelengths) const noexcept override;
+                const WavelengthSamples& wavelengths,
+                const IntersectionInfo* info) const noexcept override;
 
   //! Evaluate the radiance of the area sampling
   SampledSpectra evalRadiance(
       const Vector3* vin,
       const Vector3* vout,
-      const Vector3& normal,
-      const WavelengthSamples& wavelengths) const noexcept override;
+      const WavelengthSamples& wavelengths,
+      const IntersectionInfo* info) const noexcept override;
 
   //! Evaluate the radiance of the area sampling
   std::tuple<SampledSpectra, Float> evalRadianceAndPdf(
       const Vector3* vin,
       const Vector3* vout,
-      const Vector3& normal,
-      const WavelengthSamples& wavelengths) const noexcept override;
+      const WavelengthSamples& wavelengths,
+      const IntersectionInfo* info) const noexcept override;
 
   //! Sample a reflection direction and evaluate a reflection weight
   std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin,
-      const Vector3& normal,
       const WavelengthSamples& wavelengths,
-      Sampler& sampler) const noexcept override;
+      Sampler& sampler,
+      const IntersectionInfo* info) const noexcept override;
 
   //! Check if wavelength selection occured
   bool wavelengthIsSelected() const noexcept override;

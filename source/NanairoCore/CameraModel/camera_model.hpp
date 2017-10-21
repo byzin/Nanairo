@@ -12,7 +12,7 @@
 
 // Standard C++ library
 #include <memory>
-#include <tuple>
+#include <array>
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/memory_pool.hpp"
@@ -63,18 +63,22 @@ class CameraModel
 
 
   //! Add ray radiance to film
-  void addContribution(const uint x, 
-                       const uint y, 
+  void addContribution(const Index2d& index,
                        const SampledSpectra& contribution) noexcept;
 
   //! Calculate the pdf
   virtual Float calcPdf(const Vector3& vout) const noexcept = 0;
 
+  //! Get the pixel location of the film
+  virtual bool calcPixelLocation(const Vector3& ray_direction, 
+                                 Index2d* index) const noexcept = 0;
+
   //! Calculate the radiance
   virtual Float calcRadiance(const Vector3& vout) const noexcept = 0;
 
   //! Calculate the radiance and pdf
-  virtual std::tuple<Float, Float> calcRadianceAndPdf(const Vector3& vout) const noexcept = 0;
+  virtual std::array<Float, 2> calcRadianceAndPdf(const Vector3& vout)
+      const noexcept = 0;
 
   //! Return the film
   Film& film() noexcept;
@@ -82,20 +86,13 @@ class CameraModel
   //! Return the film
   const Film& film() const noexcept;
 
-  //! Get the pixel location of the film
-  virtual bool getPixelLocation(const Vector3& ray_direction, 
-                                uint* x, 
-                                uint* y) const noexcept = 0;
+  //! Return the normal of the camera
+  virtual Vector3 getNormal(const Index2d& index) const noexcept = 0;
 
   //! Make a sensor
-  ShaderPointer makeSensor(
-      const uint x,
-      const uint y,
-      const WavelengthSamples& wavelengths,
-      zisc::MemoryPool& memory_pool) const noexcept;
-
-  //! Return the camera normal
-  const Vector3& normal() const noexcept;
+  ShaderPointer makeSensor(const Index2d& index,
+                           const WavelengthSamples& wavelengths,
+                           zisc::MemoryPool& memory_pool) const noexcept;
 
   //! Return the height resolution of the film
   uint heightResolution() const noexcept;
@@ -122,14 +119,14 @@ class CameraModel
   //! Translate the camera vertically
   Matrix4x4 translateVertically(const Vector2& value) noexcept;
 
+  //! Sample ray direction
+  virtual SampledDirection sampleDirection(const Index2d& index) const noexcept = 0;
+
   //! Return the sampled point
-  const Point3& sampledLensPoint() const noexcept;
+  virtual const Point3& sampledLensPoint() const noexcept = 0;
 
   //! Sample lens point
   virtual void sampleLensPoint(Sampler& sampler) noexcept = 0;
-
-  //! Sample ray direction
-  virtual SampledDirection sampleDirection(const uint x, const uint y) const noexcept = 0;
 
   //! Set a film
   void setFilm(Film* film) noexcept;
@@ -143,30 +140,24 @@ class CameraModel
   //! Return the width resolution of the film
   uint widthResolution() const noexcept;
 
-  //! Return the X axis vector
+  //! Return the X axis vector of the camera coordinate
   virtual Vector3 xAxis() const noexcept = 0;
 
-  //! Return the Y axis vector
+  //! Return the Y axis vector of the camera coordinate
   virtual Vector3 yAxis() const noexcept = 0;
 
- protected:
-  //! Set normal
-  void setNormal(const Vector3& normal) noexcept;
-
-  //! Set sampled lens point
-  void setSampledLensPoint(const Point3& sampled_point) noexcept;
+  //! Return the Z axis vector of the camera coordinate
+  virtual Vector3 zAxis() const noexcept = 0;
 
  private:
   //! Initialize
   void initialize(const SettingNodeBase* settings) noexcept;
 
   //! Initialize camera film
-  virtual void initializeFilm() noexcept = 0;
+  virtual void initFilmShape() noexcept = 0;
 
 
   Film* film_;
-  Vector3 normal_;
-  Point3 sampled_lens_point_;
   Vector2 jittering_;
   bool is_jittering_enabled_;
 };

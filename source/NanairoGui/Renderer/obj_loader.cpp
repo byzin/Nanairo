@@ -204,8 +204,6 @@ void ObjLoader::loadMesh(QTextStream& obj_stream,
       double u = 0.0,
              v = 0.0;
       buffer >> u >> v;
-      u = zisc::clamp(u, 0.0, 1.0);
-      v = 1.0 - zisc::clamp(v, 0.0, 1.0);
       vuv_list->emplace_back(std::array<double, 2>{{u, v}});
       break;
      }

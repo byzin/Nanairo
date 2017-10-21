@@ -29,8 +29,9 @@ namespace nanairo {
 inline
 Float Film::aspectRatio() const noexcept
 {
-  using zisc::cast;
-  return cast<Float>(widthResolution()) * inverse_height_;
+  const auto& r = imageResolution();
+  const auto& inv_r = inverseResolution();
+  return zisc::cast<Float>(r[0]) * inv_r[1];
 }
 
 /*!
@@ -38,16 +39,17 @@ Float Film::aspectRatio() const noexcept
   No detailed.
   */
 inline
-Point2 Film::coordinate(const uint x, const uint y, const Vector2& jittering) const noexcept 
+Point2 Film::coordinate(const Index2d& index,
+                        const Vector2& jittering) const noexcept 
 {
-  using zisc::cast;
-  const Float u = 0.5 - (cast<Float>(x) + jittering[0]) * inverse_width_;
-  const Float v = 0.5 - (cast<Float>(y) + jittering[1]) * inverse_height_;
-  ZISC_ASSERT(zisc::isInClosedBounds(u, -0.5, 0.5),
-              "The coordinate u is out of the range [-0.5, 0.5].");
-  ZISC_ASSERT(zisc::isInClosedBounds(v, -0.5, 0.5),
-              "The coordinate v is out of the range [-0.5, 0.5].");
-  return Point2{u, v};
+  const auto& inv_r = inverseResolution();
+  const Float s = (zisc::cast<Float>(index[0]) + jittering[0]) * inv_r[0];
+  const Float t = (zisc::cast<Float>(index[1]) + jittering[1]) * inv_r[1];
+  ZISC_ASSERT(zisc::isInClosedBounds(s, 0.0, 1.0),
+              "The coordinate s is out of the range [0, 1].");
+  ZISC_ASSERT(zisc::isInClosedBounds(t, 0.0, 1.0),
+              "The coordinate t is out of the range [0, 1].");
+  return Point2{s, t};
 }
 
 /*!
@@ -75,8 +77,17 @@ uint Film::heightResolution() const noexcept
 inline
 Float Film::inverseAspectRatio() const noexcept
 {
-  using zisc::cast;
-  return cast<Float>(heightResolution()) * inverse_width_;
+  const auto& r = imageResolution();
+  const auto& inv_r = inverseResolution();
+  return zisc::cast<Float>(r[1]) * inv_r[0];
+}
+
+/*!
+  */
+inline
+const Index2d& Film::imageResolution() const noexcept
+{
+  return spectra_buffer_->resolution();
 }
 
 /*!
@@ -107,6 +118,14 @@ inline
 uint Film::widthResolution() const noexcept
 {
   return spectra_buffer_->widthResolution();
+}
+
+/*!
+  */
+inline
+const Point2& Film::inverseResolution() const noexcept
+{
+  return inverse_resolution_;
 }
 
 } // namespace nanairo

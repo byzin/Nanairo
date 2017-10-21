@@ -21,6 +21,7 @@
 namespace nanairo {
 
 // Forward declaration
+class IntersectionInfo;
 class Sampler;
 class WavelengthSamples;
 
@@ -41,9 +42,9 @@ class SpecularBrdf : public SpecularShaderModel
   //! Evalute the weight of solid angle sampling
   std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin,
-      const Vector3& normal,
       const WavelengthSamples& wavelengths,
-      Sampler& sampler) const noexcept override;
+      Sampler& sampler,
+      const IntersectionInfo* info) const noexcept override;
 
   //! Check if wavelength selection occured
   bool wavelengthIsSelected() const noexcept override;

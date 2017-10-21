@@ -68,11 +68,11 @@ inline
 Point2 FlatTriangle::calcUv(const Point2& st) const noexcept
 {
   const auto& uv_edge = uvEdge();
-  const Point2 uv = uv0() + st[0] * uv_edge[0] + st[1] * uv_edge[1];
-  ZISC_ASSERT(zisc::isInClosedBounds(uv[0], 0.0, 1.0),
-              "The u is out of range [0, 1]: ", uv[0]);
-  ZISC_ASSERT(zisc::isInClosedBounds(uv[1], 0.0, 1.0),
-              "The v is out of range [0, 1]: ", uv[1]);
+  Point2 uv = uv0() + st[0] * uv_edge[0] + st[1] * uv_edge[1];
+  for (uint i = 0; i < uv.size(); ++i) {
+    while (!zisc::isInClosedBounds(uv[i], 0.0, 1.0))
+      uv[i] = (uv[i] < 0.0) ? (uv[i] + 1.0) : (uv[i] - 1.0);
+  }
   return uv;
 }
 

@@ -8,6 +8,8 @@
   */
 
 #include "spectra_image_interface.hpp"
+// Zisc
+#include "zisc/point.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 
@@ -19,8 +21,16 @@ namespace nanairo {
   */
 SpectraImageInterface::SpectraImageInterface(const uint width,
                                              const uint height) noexcept :
-    width_{width},
-    height_{height}
+    resolution_{Index2d{width, height}}
+{
+}
+
+/*!
+  \details
+  No detailed.
+  */
+SpectraImageInterface::SpectraImageInterface(const Index2d& resolution) noexcept :
+    resolution_{resolution}
 {
 }
 

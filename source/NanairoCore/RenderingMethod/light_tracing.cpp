@@ -104,38 +104,39 @@ void LightTracing::evalExplicitConnection(
   const auto diff2 = (camera.sampledLensPoint() - shadow_ray.origin()).squareNorm();
   ZISC_ASSERT(0.0 < diff2, "Diff^2 isn't greater than 0.");
   const Float max_shadow_ray_distance = zisc::sqrt(diff2);
+  const bool expect_no_hit = true;
   const auto shadow_intersection = Method::castRay(world,
                                                    shadow_ray,
-                                                   max_shadow_ray_distance);
+                                                   max_shadow_ray_distance,
+                                                   expect_no_hit);
   if (shadow_intersection.isIntersected())
     return;
 
   // Get the pixel location
-  uint x = 0,
-       y = 0;
-  const bool ray_hits_film = camera.getPixelLocation(shadow_ray.direction(), &x, &y);
+  Index2d pixel_index;
+  const bool ray_hits_film = camera.calcPixelLocation(shadow_ray.direction(),
+                                                      &pixel_index);
   if (!ray_hits_film)
     return;
 
   // Evaluate the surface reflectance
   const auto& wavelengths = ray_weight.wavelengths();
+  //! \todo fix normal
   const auto f = bxdf->evalRadiance(vin,
                                     &shadow_ray.direction(),
-                                    normal,
-                                    wavelengths);
+                                    wavelengths,
+                                    &intersection);
   ZISC_ASSERT(!f.hasNegative(), "The f of BxDF has negative values.");
 
   // Evaluate the camera importance
-  const auto sensor = camera.makeSensor(x, y, wavelengths, memory_pool);
+  const auto sensor = camera.makeSensor(pixel_index, wavelengths, memory_pool);
   const auto camera_dir = -shadow_ray.direction();
-  const auto importance = sensor->evalRadiance(nullptr,
-                                               &camera_dir,
-                                               camera.normal(),
-                                               wavelengths);
+  const auto importance = sensor->evalRadiance(nullptr, &camera_dir, wavelengths);
   ZISC_ASSERT(!importance.hasNegative(), "The importance has negative values.");
 
   // Calculate the geometry term
-  const Float cos_cni = zisc::dot(camera.normal(), camera_dir);
+  const auto camera_normal = camera.getNormal(pixel_index);
+  const Float cos_cni = zisc::dot(camera_normal, camera_dir);
   const Float geometry_term = (cos_cni * cos_no) / diff2;
   ZISC_ASSERT(0.0 < geometry_term, "Geometry term is negative.");
 
@@ -143,7 +144,7 @@ void LightTracing::evalExplicitConnection(
   const auto contribution = (light_contribution * ray_weight * f * importance) *
                             geometry_term;
   ZISC_ASSERT(!contribution.hasNegative(), "The contribution has negative values.");
-  addLightContribution(camera, x, y, contribution);
+  addLightContribution(camera, pixel_index, contribution);
 }
 
 /*!
@@ -178,8 +179,7 @@ Ray LightTracing::generateRay(const World& world,
   evalExplicitConnection(world, nullptr, light, intersection,
                          *light_contribution, ray_weight, camera, memory_pool);
   // Sample a ray direction
-  const auto& normal = light_point_info.normal();
-  const auto result = light->sample(nullptr, normal, wavelengths, sampler);
+  const auto result = light->sample(nullptr, wavelengths, sampler, &intersection);
   const auto& sampled_vout = std::get<0>(result);
   ZISC_ASSERT(0.0 < sampled_vout.pdf(), "The ray direction pdf is negative.");
   // Evaluate the light_contribution
@@ -187,9 +187,11 @@ Ray LightTracing::generateRay(const World& world,
   *light_contribution = w * (*light_contribution);
 
   // Generate a ray
+  const auto& normal = light_point_info.normal();
   const auto ray_epsilon = Method::rayCastEpsilon() * normal;
   ZISC_ASSERT(!isZeroVector(ray_epsilon), "Ray epsilon is zero vector.");
-  return Ray{light_point_info.point() + ray_epsilon, sampled_vout.direction()};
+  return Ray::makeRay(light_point_info.point() + ray_epsilon,
+                      sampled_vout.direction());
 }
 
 /*!
@@ -198,13 +200,12 @@ Ray LightTracing::generateRay(const World& world,
   */
 inline
 void LightTracing::addLightContribution(CameraModel& camera,
-                                        const uint x,
-                                        const uint y,
+                                        const Index2d& index,
                                         const Spectra& contribution) noexcept
 {
   {
     std::unique_lock<std::mutex> locker{lock_};
-    camera.addContribution(x, y, contribution);
+    camera.addContribution(index, contribution);
   }
 }
 

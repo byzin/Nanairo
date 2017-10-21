@@ -13,6 +13,8 @@
 // Standard C++ library
 #include <cstddef>
 #include <vector>
+// Zisc
+#include "zisc/point.hpp"
 // Nanairo
 #include "xyz_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -31,6 +33,9 @@ class HdrImage
  public:
   //! Create a hdr image
   HdrImage(const uint width, const uint height) noexcept;
+
+  //! Create a hdr image
+  HdrImage(const Index2d& resolution) noexcept;
 
 
   //! Returh the pixel color by index
@@ -58,6 +63,12 @@ class HdrImage
   //! Return the pixel color
   const XyzColor& get(const uint x, const uint y) const noexcept;
 
+  //! Return the pixel color
+  XyzColor& get(const Index2d& index) noexcept;
+
+  //! Return the pixel color
+  const XyzColor& get(const Index2d& index) const noexcept;
+
   //! Return the height resolution
   uint heightResolution() const noexcept;
 
@@ -67,11 +78,20 @@ class HdrImage
   //! Return the num of pixels
   uint numOfPixels() const noexcept;
 
+  //! Return the resolution
+  const Index2d& resolution() const noexcept;
+
   //! Return the buffer length
   uint size() const noexcept;
 
   //! Set pixel color
+  void set(const uint ndex, const XyzColor& color) noexcept;
+
+  //! Set pixel color
   void set(const uint x, const uint y, const XyzColor& color) noexcept;
+
+  //! Set pixel color
+  void set(const Index2d& index, const XyzColor& color) noexcept;
 
   //! Return the height resolution
   uint widthResolution() const noexcept;
@@ -83,9 +103,9 @@ class HdrImage
   //! Convert a XY coordinate to a index
   uint toIndex(const uint x, const uint y) const noexcept;
 
+
   std::vector<XyzColor> buffer_;
-  uint width_,
-       height_;
+  Index2d resolution_;
 };
 
 //! \} Core

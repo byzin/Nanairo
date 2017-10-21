@@ -14,6 +14,7 @@
 // Standard C++ library
 #include <utility>
 // Zisc
+#include "zisc/error.hpp"
 #include "zisc/memory_pool.hpp"
 // Nanairo
 #include "film.hpp"
@@ -32,12 +33,11 @@ namespace nanairo {
   No detailed.
   */
 inline
-void CameraModel::addContribution(const uint x,
-                                  const uint y,
+void CameraModel::addContribution(const Index2d& index,
                                   const SampledSpectra& contribution) noexcept
 {
   auto& spectra_buffer = film().spectraBuffer();
-  spectra_buffer.addContribution(x, y, contribution);
+  spectra_buffer.addContribution(index, contribution);
 }
 
 /*!
@@ -47,6 +47,7 @@ void CameraModel::addContribution(const uint x,
 inline
 Film& CameraModel::film() noexcept
 {
+  ZISC_ASSERT(film_ != nullptr, "The film is null.");
   return *film_;
 }
 
@@ -57,6 +58,7 @@ Film& CameraModel::film() noexcept
 inline
 const Film& CameraModel::film() const noexcept
 {
+  ZISC_ASSERT(film_ != nullptr, "The film is null.");
   return *film_;
 }
 
@@ -66,24 +68,13 @@ const Film& CameraModel::film() const noexcept
   */
 inline
 auto CameraModel::makeSensor(
-    const uint x,
-    const uint y,
+    const Index2d& index,
     const WavelengthSamples& /* wavelengths */,
     zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
   auto chunk = memory_pool.allocate<Sensor>();
-  ShaderPointer ptr = makeUnique<Sensor>(chunk, this, x, y);
+  ShaderPointer ptr = makeUnique<Sensor>(chunk, this, index);
   return ptr;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-const Vector3& CameraModel::normal() const noexcept
-{
-  return normal_;
 }
 
 /*!
@@ -122,20 +113,11 @@ const Vector2& CameraModel::jittering() const noexcept
   No detailed.
   */
 inline
-const Point3& CameraModel::sampledLensPoint() const noexcept
-{
-  return sampled_lens_point_;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
 void CameraModel::setFilm(Film* film) noexcept
 {
   film_ = film;
-  initializeFilm();
+  if (film != nullptr)
+    initFilmShape();
 }
 
 /*!
@@ -146,26 +128,6 @@ inline
 uint CameraModel::widthResolution() const noexcept
 {
   return film().widthResolution();
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-void CameraModel::setNormal(const Vector3& normal) noexcept
-{
-  normal_ = normal;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-void CameraModel::setSampledLensPoint(const Point3& sampled_point) noexcept
-{
-  sampled_lens_point_ = sampled_point;
 }
 
 } // namespace nanairo

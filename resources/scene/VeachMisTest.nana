@@ -16,7 +16,7 @@
         {
             "EmissiveColorIndex": 5,
             "Name": "Emitter1",
-            "RadiantExitance": 8e+06,
+            "RadiantExitance": 8000000,
             "Type": "NonDirectionalEmitter"
         },
         {
@@ -52,12 +52,12 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        3.5,
-                        -8
+                        -8,
+                        3.5
                     ]
                 },
                 {
-                    "Angle": 25,
+                    "Angle": -25,
                     "Axis": "X Axis",
                     "Enabled": true,
                     "Type": "Rotation",
@@ -83,9 +83,9 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        0.5,
-                        1.5,
-                        1.2
+                        -0.5,
+                        1.2,
+                        1.5
                     ]
                 }
             ],
@@ -106,9 +106,9 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        2.25,
-                        -0.01,
-                        0
+                        -2.25,
+                        0,
+                        -0.01
                     ]
                 },
                 {
@@ -138,9 +138,9 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        0.75,
-                        -0.05,
-                        0
+                        -0.75,
+                        0,
+                        -0.05
                     ]
                 },
                 {
@@ -170,9 +170,9 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        -0.75,
-                        -0.15,
-                        0
+                        0.75,
+                        0,
+                        -0.15
                     ]
                 },
                 {
@@ -202,9 +202,9 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        -2.75,
-                        -0.5,
-                        0
+                        2.75,
+                        0,
+                        -0.5
                     ]
                 }
             ],
@@ -216,7 +216,8 @@
             "GroupLevel": 1,
             "IsEmissiveObject": false,
             "Name": "Floor",
-            "ShapeType": "PlaneObject",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
             "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
@@ -225,8 +226,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        -1.5,
-                        0
+                        0,
+                        -1.5
                     ]
                 },
                 {
@@ -234,8 +235,8 @@
                     "Type": "Scaling",
                     "Value": [
                         20,
-                        1,
-                        20
+                        20,
+                        1
                     ]
                 }
             ],
@@ -251,8 +252,8 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        0,
-                        -1
+                        -1,
+                        0
                     ]
                 }
             ],
@@ -274,12 +275,12 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        0,
-                        2
+                        2,
+                        0
                     ]
                 },
                 {
-                    "Angle": -30,
+                    "Angle": 30,
                     "Axis": "X Axis",
                     "Enabled": true,
                     "Type": "Rotation",
@@ -290,8 +291,8 @@
                     "Type": "Scaling",
                     "Value": [
                         6,
-                        0.05,
-                        1
+                        1,
+                        0.05
                     ]
                 }
             ],
@@ -313,12 +314,12 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        -0.5,
-                        1
+                        1,
+                        -0.5
                     ]
                 },
                 {
-                    "Angle": -16,
+                    "Angle": 16,
                     "Axis": "X Axis",
                     "Enabled": true,
                     "Type": "Rotation",
@@ -329,8 +330,8 @@
                     "Type": "Scaling",
                     "Value": [
                         6,
-                        0.05,
-                        1
+                        1,
+                        0.05
                     ]
                 }
             ],
@@ -352,12 +353,12 @@
                     "Type": "Translation",
                     "Value": [
                         0,
-                        -0.83,
-                        0
+                        0,
+                        -0.83
                     ]
                 },
                 {
-                    "Angle": -7,
+                    "Angle": 7,
                     "Axis": "X Axis",
                     "Enabled": true,
                     "Type": "Rotation",
@@ -368,8 +369,8 @@
                     "Type": "Scaling",
                     "Value": [
                         6,
-                        0.05,
-                        1
+                        1,
+                        0.05
                     ]
                 }
             ],
@@ -407,8 +408,8 @@
                     "Type": "Scaling",
                     "Value": [
                         6,
-                        0.05,
-                        1
+                        1,
+                        0.05
                     ]
                 }
             ],

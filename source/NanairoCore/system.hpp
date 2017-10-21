@@ -18,6 +18,7 @@
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/memory_pool.hpp"
+#include "zisc/point.hpp"
 #include "zisc/thread_pool.hpp"
 // Nanairo
 #include "Color/color_space.hpp"
@@ -72,7 +73,7 @@ class System
   Sampler& globalSampler() noexcept;
 
   //! Return the image resolution 
-  const std::array<uint, 2>& imageResolution() const noexcept;
+  const Index2d& imageResolution() const noexcept;
 
   //! Return the image height resolution
   uint imageHeightResolution() const noexcept;
@@ -121,7 +122,7 @@ class System
   std::unique_ptr<zisc::ThreadPool> thread_pool_;
   std::unique_ptr<XyzColorMatchingFunction> xyz_color_matching_function_;
   Float gamma_;
-  std::array<uint, 2> image_resolution_;
+  Index2d image_resolution_;
   RenderingColorMode color_mode_;
   ColorSpaceType color_space_;
 };

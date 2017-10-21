@@ -31,8 +31,10 @@ Matrix4x4 Transformation::makeTransformation(
     const std::vector<SettingNodeBase*>& settings_list) noexcept
 {
   auto matrix = makeIdentity();
-  for (const auto settings : settings_list)
+  for (const auto settings : settings_list) {
+    // m = (next transformation) * (prev transformation)
     matrix = matrix * makeTransformation(settings);
+  }
   return matrix;
 }
 
@@ -130,7 +132,10 @@ Matrix4x4 Transformation::makeRotation(const SettingNodeBase* settings) noexcept
 void Transformation::affineTransform(const Matrix4x4& matrix,
                                      Point3* point) noexcept
 {
-  *point = takePoint3(matrix * makePoint4(*point, 1.0));
+  const auto new_point = matrix * makePoint4(*point, 1.0);
+  ZISC_ASSERT(zisc::isInBounds(new_point[3], 1.0 - 1.0e-6, 1.0 + 1.0e-6),
+              "The transformation is failed.");
+  *point = takePoint3(new_point);
 }
 
 /*!

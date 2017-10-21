@@ -99,7 +99,8 @@ class RenderingMethod
   IntersectionInfo castRay(
       const World& world,
       const Ray& ray,
-      const Float max_distance = std::numeric_limits<Float>::max()) const noexcept;
+      const Float max_distance = std::numeric_limits<Float>::max(),
+      const bool expect_no_hit = false) const noexcept;
 
   //! Make a shadow ray
   Ray makeShadowRay(const Point3& source,

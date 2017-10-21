@@ -91,10 +91,11 @@ Float RenderingMethod::calcShadowRayDistance(const Float diff2) const noexcept
 inline
 IntersectionInfo RenderingMethod::castRay(const World& world,
                                           const Ray& ray,
-                                          const Float max_distance) const noexcept
+                                          const Float max_distance,
+                                          const bool expect_no_hit) const noexcept
 {
   const auto& bvh = world.bvh();
-  return bvh.castRay(ray, max_distance);
+  return bvh.castRay(ray, max_distance, expect_no_hit);
 }
 
 /*!
@@ -108,7 +109,7 @@ Ray RenderingMethod::makeShadowRay(const Point3& source,
   ZISC_ASSERT(!isZeroVector(ray_epsilon), "Ray epsilon is zero vector.");
   const auto origin = source + ray_epsilon;
   const auto dir = (dest - source).normalized();
-  return Ray{origin, dir};
+  return Ray::makeRay(origin, dir);
 }
 
 /*!
@@ -143,9 +144,8 @@ Ray RenderingMethod::sampleNextRay(const uint length,
   // Sample next direction
   const auto& wavelengths = ray_weight->wavelengths();
   const auto& vin = ray.direction();
-  const auto& normal = intersection.normal();
 
-  const auto result = bxdf->sample(&vin, normal, wavelengths, sampler);
+  const auto result = bxdf->sample(&vin, wavelengths, sampler, &intersection);
   const auto& sampled_vout = std::get<0>(result);
   const auto& weight = std::get<1>(result);
 
@@ -164,12 +164,14 @@ Ray RenderingMethod::sampleNextRay(const uint length,
     *next_ray_weight = next_weight * inverse_probability;
 
     // Create a next ray
+    const auto& normal = intersection.normal();
     const Float cos_theta_no = zisc::dot(normal, sampled_vout.direction());
     const auto ray_epsilon = (0.0 < cos_theta_no)
         ? rayCastEpsilon() * normal
         : -rayCastEpsilon() * normal;
     ZISC_ASSERT(!isZeroVector(ray_epsilon), "The ray epsilon is zero vector.");
-    next_ray = Ray{intersection.point() + ray_epsilon, sampled_vout.direction()};
+    next_ray = Ray::makeRay(intersection.point() + ray_epsilon,
+                            sampled_vout.direction());
   }
   return next_ray;
 }

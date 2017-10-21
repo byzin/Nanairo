@@ -32,18 +32,22 @@ class Ray
   //! Create a dead ray
   Ray() noexcept;
 
-  //! Create ray
-  Ray(const Point3& origin, const Vector3& direction) noexcept;
-
 
   //! Return the direction
   const Vector3& direction() const noexcept;
+
+  //! Initialize the inverse direction
+  void initInvDirection() noexcept;
 
   //! Return the inverted direction
   const Vector3& invDirection() const noexcept;
 
   //! Check if the ray is alive
   bool isAlive() const noexcept;
+
+  //! Make a ray
+  template <bool init_inv_direction = true>
+  static Ray makeRay(const Point3& origin, const Vector3& direction) noexcept;
 
   //! Return the origin
   const Point3& origin() const noexcept;
@@ -61,11 +65,11 @@ class Ray
   std::array<uint8, 3> sign() const noexcept;
 
  private:
+  //! Create ray
+  Ray(const Point3& origin, const Vector3& direction) noexcept;
+
   //! Initialize the ray
   void initialize() noexcept;
-
-  //! Initialize the inverse direction
-  void initInvDirection() noexcept;
 
 
   Point3 origin_;

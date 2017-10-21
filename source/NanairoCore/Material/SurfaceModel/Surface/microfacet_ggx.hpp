@@ -21,6 +21,9 @@
 
 namespace nanairo {
 
+// Forward declaration
+class ShapePoint;
+
 //! \addtogroup Core
 //! \{
 
@@ -101,13 +104,18 @@ class MicrofacetGgx : public Microfacet
                           const Float cos_mo,
                           const Float cos_nm) noexcept;
 
-  //! Sample a GGX microfacet normal
+  //! Sample a GGX microfacet normal on the default basis
   static SampledDirection sampleNormal(const Float roughness,
                                        const Vector3& vin,
-                                       const Vector3& normal,
                                        Sampler& sampler,
                                        const bool calc_pdf = true) noexcept;
 
+  //! Sample a GGX microfacet normal on the point
+  static SampledDirection sampleNormal(const Float roughness,
+                                       const Vector3& vin,
+                                       const ShapePoint& point,
+                                       Sampler& sampler,
+                                       const bool calc_pdf = true) noexcept;
 
 //  static constexpr GgxMethodType kUsedType = GgxMethodType::kSmith;
   static constexpr GgxMethodType kUsedType = GgxMethodType::kVCavity;

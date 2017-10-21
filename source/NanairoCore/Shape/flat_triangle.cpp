@@ -78,7 +78,17 @@ ShapePoint FlatTriangle::getPoint(const Point2& st) const noexcept
 
   const auto point = v + st[0] * e[0] + st[1] * e[1];
   const auto uv = calcUv(st);
-  return ShapePoint{SampledPoint{point, surfaceArea()}, normal(), uv, st};
+
+  const auto tangents = Transformation::calcDefaultTangent(normal());
+  const auto& tangent = std::get<0>(tangents);
+  const auto& bitangent = std::get<1>(tangents);
+
+  return ShapePoint{SampledPoint{point, surfaceArea()},
+                    normal(),
+                    tangent,
+                    bitangent,
+                    uv,
+                    st};
 }
 
 /*!
@@ -120,8 +130,16 @@ IntersectionTestResult FlatTriangle::testIntersection(
   if (is_hit) {
     const Float cos_theta = -zisc::dot(normal(), ray.direction());
     const bool is_back_face = cos_theta < 0.0;
+
+    const auto n = (!is_back_face) ? normal() : -normal();
+    const auto tangents = Transformation::calcDefaultTangent(n);
+    const auto& tangent = std::get<0>(tangents);
+    const auto& bitangent = std::get<1>(tangents);
+
     intersection->setPoint(point);
-    intersection->setNormal((!is_back_face) ? normal_ : -normal_);
+    intersection->setNormal(n);
+    intersection->setTangent(tangent);
+    intersection->setBitangent(bitangent);
     intersection->setAsBackFace(is_back_face);
     intersection->setRayDistance(t);
     intersection->setSt(st);
@@ -148,7 +166,17 @@ ShapePoint FlatTriangle::samplePoint(Sampler& sampler) const noexcept
   }
   const auto point = v + st[0] * e[0] + st[1] * e[1];
   const auto uv = calcUv(st);
-  return ShapePoint{SampledPoint{point, surfaceArea()}, normal(), uv, st};
+
+  const auto tangents = Transformation::calcDefaultTangent(normal());
+  const auto& tangent = std::get<0>(tangents);
+  const auto& bitangent = std::get<1>(tangents);
+
+  return ShapePoint{SampledPoint{point, surfaceArea()},
+                    normal(),
+                    tangent,
+                    bitangent,
+                    uv,
+                    st};
 }
 
 /*!

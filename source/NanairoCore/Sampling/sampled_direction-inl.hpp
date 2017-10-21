@@ -90,15 +90,29 @@ Float SampledDirection::pdf() const noexcept
   No detailed.
   */
 template <uint kCosineWeight> inline
-SampledDirection SampledDirection::sampleOnHemisphere(
-    const Vector3& normal,
+SampledDirection SampledDirection::SampledDirection::sampleOnHemisphere(
     Sampler& sampler) noexcept
 {
-  auto sampled_direction = sampleOnHemisphere<kCosineWeight>(sampler);
-  const auto basis_matrix = Transformation::makeChangeOfBasisFromLocal(normal);
-  const auto& direction = sampled_direction.direction();
-  sampled_direction.direction() = basis_matrix * direction;
-  return sampled_direction;
+  using zisc::cast;
+
+  // Calculate phi and theta using inverse function method
+  const Float u1 = sampler.sample();
+  const Float u2 = sampler.sample();
+
+  constexpr Float exponent = zisc::invert(cast<Float>(kCosineWeight + 1));
+  const Float cos_theta = zisc::pow(1.0 - u1, exponent);
+  const Float sin_theta = zisc::sqrt(1.0 - cos_theta * cos_theta);
+  const Float phi = 2.0 * zisc::kPi<Float> * (u2 - 0.5);
+
+  const Vector3 direction{sin_theta * zisc::cos(phi),
+                          sin_theta * zisc::sin(phi),
+                          cos_theta};
+  ZISC_ASSERT(isUnitVector(direction), "The direction isn't unit vector.");
+
+  constexpr Float t = (2.0 * zisc::kPi<Float>) / cast<Float>(kCosineWeight + 1);
+  const Float inverse_pdf = t / zisc::power<kCosineWeight>(cos_theta);
+
+  return SampledDirection{direction, inverse_pdf};
 }
 
 /*!
@@ -129,36 +143,6 @@ inline
 void SampledDirection::setPdf(const Float pdf) noexcept
 {
   inverse_pdf_ = (pdf != 0.0) ? zisc::invert(pdf) : 0.0;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-template <uint kCosineWeight> inline
-SampledDirection SampledDirection::SampledDirection::sampleOnHemisphere(
-    Sampler& sampler) noexcept
-{
-  using zisc::cast;
-
-  // Calculate phi and theta using inverse function method
-  const Float u1 = sampler.sample();
-  const Float u2 = sampler.sample();
-
-  constexpr Float exponent = zisc::invert(cast<Float>(kCosineWeight + 1));
-  const Float cos_theta = zisc::pow(1.0 - u1, exponent);
-  const Float sin_theta = zisc::sqrt(1.0 - cos_theta * cos_theta);
-  const Float phi = 2.0 * zisc::kPi<Float> * (u2 - 0.5);
-
-  const Vector3 direction{sin_theta * zisc::cos(phi),
-                          sin_theta * zisc::sin(phi),
-                          cos_theta};
-  ZISC_ASSERT(isUnitVector(direction), "The direction isn't unit vector.");
-
-  constexpr Float t = (2.0 * zisc::kPi<Float>) / cast<Float>(kCosineWeight + 1);
-  const Float inverse_pdf = t / zisc::power<kCosineWeight>(cos_theta);
-
-  return SampledDirection{direction, inverse_pdf};
 }
 
 } // namespace nanairo

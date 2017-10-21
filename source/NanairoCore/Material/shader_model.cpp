@@ -24,6 +24,7 @@
 namespace nanairo {
 
 // Forward declaration
+class IntersectionInfo;
 class SampledDirection;
 class Sampler;
 class SurfaceModel;
@@ -63,8 +64,8 @@ void* ShaderModel::operator new(std::size_t, zisc::MemoryChunk* chunk) noexcept
 Float ShaderModel::evalPdf(
     const Vector3* /* vin */, 
     const Vector3* /* vout */,
-    const Vector3& /* normal */,
-    const WavelengthSamples& /* wavelengths */) const noexcept
+    const WavelengthSamples& /* wavelengths */,
+    const IntersectionInfo* /* info */) const noexcept
 {
   zisc::raiseError("The evalPdf function is not implemented.");
   return 0.0;
@@ -77,8 +78,8 @@ Float ShaderModel::evalPdf(
 SampledSpectra ShaderModel::evalRadiance(
     const Vector3* /* vin */, 
     const Vector3* /* vout */,
-    const Vector3& /* normal */,
-    const WavelengthSamples& wavelengths) const noexcept
+    const WavelengthSamples& wavelengths,
+    const IntersectionInfo* /* info */) const noexcept
 {
   zisc::raiseError("The evalPdf function is not implemented.");
   return SampledSpectra{wavelengths};
@@ -91,8 +92,8 @@ SampledSpectra ShaderModel::evalRadiance(
 std::tuple<SampledSpectra, Float> ShaderModel::evalRadianceAndPdf(
     const Vector3* /* vin */,
     const Vector3* /* vout */,
-    const Vector3& /* normal */,
-    const WavelengthSamples& wavelengths) const noexcept
+    const WavelengthSamples& wavelengths,
+    const IntersectionInfo* /* info */) const noexcept
 {
   zisc::raiseError("The evalRadianceAndPdf function is not implemented.");
   return std::make_tuple(SampledSpectra{wavelengths}, 0.0);
@@ -104,9 +105,9 @@ std::tuple<SampledSpectra, Float> ShaderModel::evalRadianceAndPdf(
   */
 std::tuple<SampledDirection, SampledSpectra> ShaderModel::sample(
     const Vector3* /* vin */,
-    const Vector3& /* normal */,
     const WavelengthSamples& wavelengths,
-    Sampler& /* sampler */) const noexcept
+    Sampler& /* sampler */,
+    const IntersectionInfo* /* info */) const noexcept
 {
   zisc::raiseError("The sample function is not implemented.");
   return std::make_tuple(SampledDirection{}, SampledSpectra{wavelengths});

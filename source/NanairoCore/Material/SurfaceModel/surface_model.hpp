@@ -98,7 +98,7 @@ class SurfaceModel
       const TextureModel* inner_refractive_index_texture,
       const Point2& uv,
       const uint16 wavelength,
-      const bool is_reverse_face) noexcept;
+      const bool is_back_face) noexcept;
 
   // Evaluate the refractive index
   static SampledSpectra evalRefractiveIndex(

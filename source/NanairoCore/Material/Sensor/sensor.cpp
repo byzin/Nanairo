@@ -29,13 +29,11 @@ namespace nanairo {
   No detailed.
   */
 Sensor::Sensor(const CameraModel* camera,
-               const uint x,
-               const uint y) noexcept :
+               const Index2d& index) noexcept :
     camera_{camera},
-    x_{x},
-    y_{y}
+    pixel_index_{index}
 {
-  initialize(x, y);
+  initialize();
 }
 
 /*!
@@ -45,8 +43,8 @@ Sensor::Sensor(const CameraModel* camera,
 Float Sensor::evalPdf(
     const Vector3* /* vin */,
     const Vector3* vout,
-    const Vector3& /* normal */,
-    const WavelengthSamples& /* wavelengths */) const noexcept
+    const WavelengthSamples& /* wavelengths */,
+    const IntersectionInfo* /* info */) const noexcept
 {
   ZISC_ASSERT(vout != nullptr, "The vout is NULL.");
   const Float pdf = camera().calcPdf(*vout);
@@ -60,8 +58,8 @@ Float Sensor::evalPdf(
 SampledSpectra Sensor::evalRadiance(
     const Vector3* /* vin */,
     const Vector3* vout,
-    const Vector3& /* normal */,
-    const WavelengthSamples& wavelengths) const noexcept
+    const WavelengthSamples& wavelengths,
+    const IntersectionInfo* /* info */) const noexcept
 {
   ZISC_ASSERT(vout != nullptr, "The vout is NULL.");
   const Float f = camera().calcRadiance(*vout);
@@ -75,8 +73,8 @@ SampledSpectra Sensor::evalRadiance(
 std::tuple<SampledSpectra, Float> Sensor::evalRadianceAndPdf(
     const Vector3* /* vin */,
     const Vector3* vout,
-    const Vector3& /* normal */,
-    const WavelengthSamples& wavelengths) const noexcept
+    const WavelengthSamples& wavelengths,
+    const IntersectionInfo* /* info */) const noexcept
 {
   ZISC_ASSERT(vout != nullptr, "The vout is NULL.");
   const auto result = camera().calcRadianceAndPdf(*vout);
@@ -91,11 +89,11 @@ std::tuple<SampledSpectra, Float> Sensor::evalRadianceAndPdf(
   */
 std::tuple<SampledDirection, SampledSpectra> Sensor::sample(
     const Vector3* /* vin */,
-    const Vector3& /* normal */,
     const WavelengthSamples& wavelengths,
-    Sampler& /* sampler */) const noexcept
+    Sampler& /* sampler */,
+    const IntersectionInfo* /* info */) const noexcept
 {
-  const auto vout = camera().sampleDirection(x_, y_);
+  const auto vout = camera().sampleDirection(pixel_index_);
   const auto weight = SampledSpectra{wavelengths, 1.0};
   return std::make_tuple(vout, weight);
 }
@@ -123,7 +121,7 @@ const CameraModel& Sensor::camera() const noexcept
   \details
   No detailed.
   */
-void Sensor::initialize(const uint /* x */, const uint /* y */) noexcept
+void Sensor::initialize() noexcept
 {
 }
 

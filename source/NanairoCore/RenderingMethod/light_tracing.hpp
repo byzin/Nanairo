@@ -70,8 +70,7 @@ class LightTracing : public RenderingMethod
  private:
   //! Add a light contribution to buffer
   void addLightContribution(CameraModel& camera,
-                            const uint x,
-                            const uint y,
+                            const Index2d& index,
                             const Spectra& contribution) noexcept;
 
   //! Evaluate the explicit connection

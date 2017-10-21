@@ -48,10 +48,9 @@ class SampledDirection
   //! Return the pdf (probability density function) of the sampled direction
   Float pdf() const noexcept;
 
-  //! Sample direction on hemisphere following cos theta pdf
+  //! Sample direction on hemisphere following cos(theta)^kN pdf
   template <uint kN>
-  static SampledDirection sampleOnHemisphere(const Vector3& normal,
-                                             Sampler& sampler) noexcept;
+  static SampledDirection sampleOnHemisphere(Sampler& sampler) noexcept;
 
   //! Set direction
   void setDirection(const Vector3& direction) noexcept;
@@ -63,11 +62,6 @@ class SampledDirection
   void setPdf(const Float pdf) noexcept;
 
  private:
-  //! Sample direction on hemisphere following cos(theta)^kN pdf
-  template <uint kN>
-  static SampledDirection sampleOnHemisphere(Sampler& sampler) noexcept;
-
-
   Vector3 direction_;
   Float inverse_pdf_;
 };

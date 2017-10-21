@@ -31,13 +31,25 @@ ShapePoint::ShapePoint() noexcept
 inline
 ShapePoint::ShapePoint(const SampledPoint& point,
                        const Vector3& normal,
+                       const Vector3& tangent,
+                       const Vector3& bitangent,
                        const Point2& uv,
                        const Point2& st) noexcept :
     point_{point},
     normal_{normal},
+    tangent_{tangent},
+    bitangent_{bitangent},
     uv_{uv},
     st_{st}
 {
+}
+
+/*!
+  */
+inline
+const Vector3& ShapePoint::bitangent() const noexcept
+{
+  return bitangent_;
 }
 
 /*!
@@ -83,6 +95,14 @@ const SampledPoint& ShapePoint::sampledPoint() const noexcept
 /*!
   */
 inline
+void ShapePoint::setBitangent(const Vector3& bitangent) noexcept
+{
+  bitangent_ = bitangent;
+}
+
+/*!
+  */
+inline
 void ShapePoint::setNormal(const Vector3& normal) noexcept
 {
   normal_ = normal;
@@ -123,6 +143,14 @@ void ShapePoint::setSt(const Point2& st) noexcept
 /*!
   */
 inline
+void ShapePoint::setTangent(const Vector3& tangent) noexcept
+{
+  tangent_ = tangent;
+}
+
+/*!
+  */
+inline
 void ShapePoint::setUv(const Point2& uv) noexcept
 {
   uv_ = uv;
@@ -134,6 +162,14 @@ inline
 const Point2& ShapePoint::st() const noexcept
 {
   return st_;
+}
+
+/*!
+  */
+inline
+const Vector3& ShapePoint::tangent() const noexcept
+{
+  return tangent_;
 }
 
 /*!

@@ -14,6 +14,8 @@
 #include <array>
 #include <cstddef>
 #include <vector>
+// Zisc
+#include "zisc/point.hpp"
 // Nanairo
 #include "rgba_32.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -30,6 +32,9 @@ class LdrImage
  public:
   //! Initialize as black image
   LdrImage(const uint width, const uint height) noexcept;
+
+  //! Initialize as black image
+  LdrImage(const Index2d& resolution) noexcept;
 
 
   //! Return the RGBA by the index
@@ -60,6 +65,12 @@ class LdrImage
   //! Return the RGBA by the index
   const Rgba32& get(const uint x, const uint y) const noexcept;
 
+  //! Return the RGBA by the index
+  Rgba32& get(const Index2d& index) noexcept;
+
+  //! Return the RGBA by the index
+  const Rgba32& get(const Index2d& index) const noexcept;
+
   //! Return the height resolution
   uint heightResolution() const noexcept;
 
@@ -67,13 +78,25 @@ class LdrImage
   std::size_t memoryUsage() const noexcept;
 
   //! Return the image resolution
-  const std::array<uint, 2>& resolution() const noexcept;
+  const Index2d& resolution() const noexcept;
+
+  //! Set the color
+  void set(const uint index, const Rgba32 color) noexcept;
+
+  //! Set the color
+  void set(const uint x, const uint y, const Rgba32 color) noexcept;
+
+  //! Set the color
+  void set(const Index2d& index, const Rgba32 color) noexcept;
 
   //! Return the num of pixels 
   uint size() const noexcept;
 
   //! Set the image resolution and initialize image as black image
   void setResolution(const uint width, const uint height) noexcept;
+
+  //! Set the image resolution and initialize image as black image
+  void setResolution(const Index2d& resolution) noexcept;
 
   //! Return the width resolution
   uint widthResolution() const noexcept;
@@ -84,7 +107,7 @@ class LdrImage
 
 
   std::vector<Rgba32> buffer_;
-  std::array<uint, 2> resolution_;
+  Index2d resolution_;
 };
 
 //! \} Core

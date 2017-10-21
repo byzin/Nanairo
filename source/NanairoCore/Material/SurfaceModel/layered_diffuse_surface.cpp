@@ -18,8 +18,6 @@
 #include "zisc/math.hpp"
 #include "zisc/memory_pool.hpp"
 // Nanairo
-#include "fresnel.hpp"
-#include "layered_diffuse.hpp"
 #include "surface_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
@@ -30,6 +28,7 @@
 #include "NanairoCore/Setting/surface_setting_node.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 #include "NanairoCore/Utility/value.hpp"
+#include "Surface/layered_diffuse.hpp"
 
 namespace nanairo {
 

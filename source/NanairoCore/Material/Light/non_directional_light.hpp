@@ -20,6 +20,7 @@
 namespace nanairo {
 
 // Forward declaration
+class IntersectionInfo;
 class SampledDirection;
 class Sampler;
 class WavelengthSamples;
@@ -42,15 +43,15 @@ class NonDirectionalLight : public DiffuseShaderModel
   SampledSpectra evalRadiance(
       const Vector3* vin,
       const Vector3* vout,
-      const Vector3& normal,
-      const WavelengthSamples& wavelengths) const noexcept override;
+      const WavelengthSamples& wavelengths,
+      const IntersectionInfo* info) const noexcept override;
 
   //! Sample a light ray direction and evaluate a ray weight
   std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin,
-      const Vector3& normal,
       const WavelengthSamples& wavelengths,
-      Sampler& sampler) const noexcept override;
+      Sampler& sampler,
+      const IntersectionInfo* info) const noexcept override;
 
   //! Check is wavelength selection occured
   bool wavelengthIsSelected() const noexcept override;

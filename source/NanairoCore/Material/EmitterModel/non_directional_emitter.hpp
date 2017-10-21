@@ -47,7 +47,7 @@ class NonDirectionalEmitter : public EmitterModel
 
 
   //! Make non-directional light
-  ShaderPointer makeLight(const Point2& texture_coordinate,
+  ShaderPointer makeLight(const Point2& uv,
                           const WavelengthSamples& wavelengths,
                           zisc::MemoryPool& memory_pool) const noexcept override;
 

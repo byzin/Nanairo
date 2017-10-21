@@ -12,6 +12,8 @@
 
 // Standard C++ library
 #include <memory>
+// Zisc
+#include "zisc/point.hpp"
 // Nanairo 
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectra_image_interface.hpp"
@@ -42,7 +44,7 @@ class Film
   Float aspectRatio() const noexcept;
 
   //! Sample film coordinate randomly
-  Point2 coordinate(const uint x, const uint y, const Vector2& jittering) const noexcept;
+  Point2 coordinate(const Index2d& index, const Vector2& jittering) const noexcept;
 
   //! Clear film buffers
   void clear() noexcept;
@@ -52,6 +54,9 @@ class Film
 
   //! Return the inverse aspect ratio
   Float inverseAspectRatio() const noexcept;
+
+  //! Return the image resolution
+  const Index2d& imageResolution() const noexcept;
 
   //! Return spectra pixel buffer
   SpectraImageInterface& spectraBuffer() noexcept;
@@ -66,10 +71,12 @@ class Film
   //! Initialize
   void initialize(const System& system, const SettingNodeBase* settings) noexcept;
 
+  //! Return the inverse resolution
+  const Point2& inverseResolution() const noexcept;
+
 
   std::unique_ptr<SpectraImageInterface> spectra_buffer_; //!< The buffer of spectra
-  Float inverse_width_,
-        inverse_height_;
+  Point2 inverse_resolution_;
 };
 
 //! \} Core 

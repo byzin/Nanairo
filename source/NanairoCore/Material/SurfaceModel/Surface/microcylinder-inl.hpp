@@ -215,7 +215,8 @@ Microcylinder::calcAngles(const Vector3& vin,
   using zisc::kPi;
 
   // Change of basis of the incident vector
-  const auto transformation = Transformation::makeChangeOfBasisToLocal(normal);
+//  const auto transformation = Transformation::makeChangeOfBasisToLocal(normal);
+  Matrix3x3 transformation;
   // Incident vector
   const auto incident_vector = transformation * -vin;
   ZISC_ASSERT(isUnitVector(incident_vector), "Incident vector isn't unit vector.");
