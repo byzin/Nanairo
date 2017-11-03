@@ -94,11 +94,13 @@ void ToneMappingOperator::map(System& system,
     }
   };
 
-  auto& thread_pool = system.threadPool();
-  constexpr uint begin = 0;
-  const uint end = thread_pool.numOfThreads();
-  auto result = thread_pool.enqueueLoop(map_luminance, begin, end);
-  result.get();
+  {
+    auto& thread_pool = system.threadPool();
+    constexpr uint begin = 0;
+    const uint end = thread_pool.numOfThreads();
+    auto result = thread_pool.enqueueLoop(map_luminance, begin, end);
+    result.get();
+  }
 }
 
 /*!

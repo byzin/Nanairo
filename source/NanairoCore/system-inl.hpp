@@ -41,10 +41,11 @@ std::array<Integer, 2> System::calcThreadRange(const Integer range,
   const Integer id = zisc::cast<Integer>(thread_id);
   ZISC_ASSERT(0 < range, "The range is minus.");
   ZISC_ASSERT(threads < range, "The num of threads is more than the range.");
-  const Integer per_thread = range / threads;
-  const Integer begin = id * per_thread;
-  const Integer end = (begin + per_thread) + 
-      (((id + 1) == threads) ? (range % threads) : 0);
+  const Integer range_per_thread = range / threads;
+  const Integer begin = id * range_per_thread;
+  const Integer end = (begin + range_per_thread) + ((id + 1 == threads)
+      ? (range % threads)
+      : 0);
   return std::array<Integer, 2>{{begin, end}};
 }
 

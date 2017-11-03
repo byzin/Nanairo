@@ -172,10 +172,10 @@ Ray LightTracing::generateRay(const World& world,
   const auto light = emitter.makeLight(intersection.uv(), wavelengths, memory_pool);
 
   // Evaluate the explicit connection
-  const auto k = light_source_info.inverseWeight() *
-                 light_point_info.inversePdf();
-  ZISC_ASSERT(0.0 < k, "The light ray coefficient is negative.");
-  *light_contribution = k * (*light_contribution);
+  const auto light_pdf = light_source_info.inverseWeight() *
+                         light_point_info.inversePdf();
+  ZISC_ASSERT(0.0 < light_pdf, "The light ray coefficient is negative.");
+  *light_contribution = light_pdf * (*light_contribution);
   evalExplicitConnection(world, nullptr, light, intersection,
                          *light_contribution, ray_weight, camera, memory_pool);
   // Sample a ray direction
@@ -243,25 +243,31 @@ void LightTracing::traceLightPath(
 {
   auto& sampler = system.globalSampler();
 
-  // Set camera
-  auto& camera = scene.camera();
-  camera.sampleLensPoint(sampler);
-  camera.jitter(sampler);
+  // Init camera
+  {
+    auto& camera = scene.camera();
+    camera.sampleLensPoint(sampler);
+  }
 
   auto trace_light_path =
   [this, &system, &scene, &sampled_wavelengths](const int thread_id, const uint)
   {
-    const auto& c = scene.camera();
-    for (uint x = 0; x < c.widthResolution(); ++x) {
+    const auto& camera = scene.camera();
+    const uint num_of_pixels = camera.widthResolution() * camera.heightResolution();
+
+    const auto range = system.calcThreadRange(num_of_pixels, thread_id);
+
+    for (uint i = range[0]; i < range[1]; ++i)
       traceLightPath(system, scene, sampled_wavelengths, thread_id);
-    }
   };
 
-  auto& thread_pool = system.threadPool();
-  constexpr uint start = 0;
-  const uint end = camera.heightResolution();
-  auto result = thread_pool.enqueueLoop(trace_light_path, start, end);
-  result.get();
+  {
+    auto& thread_pool = system.threadPool();
+    constexpr uint start = 0;
+    const uint end = thread_pool.numOfThreads();
+    auto result = thread_pool.enqueueLoop(trace_light_path, start, end);
+    result.get();
+  }
 }
 
 /*!

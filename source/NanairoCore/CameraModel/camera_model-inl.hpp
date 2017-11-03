@@ -63,6 +63,14 @@ const Film& CameraModel::film() const noexcept
 }
 
 /*!
+  */
+inline
+const Index2d& CameraModel::imageResolution() const noexcept
+{
+  return film().imageResolution();
+}
+
+/*!
   \details
   No detailed.
   */

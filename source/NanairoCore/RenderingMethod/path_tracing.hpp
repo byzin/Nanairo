@@ -100,8 +100,7 @@ class PathTracing : public RenderingMethod
 
   //! Generate a camera ray
   Ray generateRay(const CameraModel& camera,
-                  const uint x,
-                  const uint y,
+                  const Index2d& pixel_index,
                   Sampler& sampler,
                   zisc::MemoryPool& memory_pool,
                   Spectra* ray_weight,
@@ -125,8 +124,7 @@ class PathTracing : public RenderingMethod
                        Scene& scene,
                        const Wavelengths& sampled_wavelengths,
                        const int thread_id,
-                       const uint x,
-                       const uint y) noexcept;
+                       const Index2d& pixel_index) noexcept;
 
 
   std::unique_ptr<LightSourceSampler> eye_path_light_sampler_;

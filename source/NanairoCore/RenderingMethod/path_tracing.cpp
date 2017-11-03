@@ -239,8 +239,7 @@ constexpr bool PathTracing::implicitConnectionIsEnabled() noexcept
   */
 inline
 Ray PathTracing::generateRay(const CameraModel& camera,
-                             const uint x,
-                             const uint y,
+                             const Index2d& pixel_index,
                              Sampler& sampler,
                              zisc::MemoryPool& memory_pool,
                              Spectra* weight,
@@ -250,12 +249,13 @@ Ray PathTracing::generateRay(const CameraModel& camera,
   // Sample a ray origin
   const auto& lens_point = camera.sampledLensPoint();
   // Sample a ray direction
-  const auto sensor = camera.makeSensor(Index2d{x, y}, wavelengths, memory_pool);
+  const auto sensor = camera.makeSensor(pixel_index, wavelengths, memory_pool);
   const auto result = sensor->sample(nullptr, wavelengths, sampler);
   const auto& sampled_vout = std::get<0>(result);
   const auto& w = std::get<1>(result);
   *weight = *weight * w;
 
+  ZISC_ASSERT(inverse_direction_pdf != nullptr, "The pdf is null.");
   *inverse_direction_pdf = sampled_vout.inversePdf();
   return Ray::makeRay(lens_point, sampled_vout.direction());
 }
@@ -296,24 +296,35 @@ void PathTracing::traceCameraPath(System& system,
 {
   auto& sampler = system.globalSampler();
 
-  // Set camera
-  auto& camera = scene.camera();
-  camera.sampleLensPoint(sampler);
-  camera.jitter(sampler);
+  // Init camera
+  {
+    auto& camera = scene.camera();
+    camera.sampleLensPoint(sampler);
+    camera.jitter(sampler);
+  }
 
   auto trace_camera_path =
-  [this, &system, &scene, &sampled_wavelengths] (const int thread_id, const uint y)
+  [this, &system, &scene, &sampled_wavelengths](const int thread_id,
+                                                const uint index)
   {
-    const auto& c = scene.camera();
-    for (uint x = 0; x < c.widthResolution(); ++x)
-      traceCameraPath(system, scene, sampled_wavelengths, thread_id, x, y);
+    const auto& camera = scene.camera();
+    auto tile = RenderingMethod::getRenderingTile(camera.imageResolution(), index);
+
+    for (uint i = 0; i < tile.numOfPixels(); ++i) {
+      const auto& pixel_index = tile.current();
+      traceCameraPath(system, scene, sampled_wavelengths, thread_id, pixel_index);
+      tile.next();
+    }
   };
 
-  auto& thread_pool = system.threadPool();
-  constexpr uint start = 0;
-  const uint end = camera.heightResolution();
-  auto result = thread_pool.enqueueLoop(trace_camera_path, start, end);
-  result.get();
+  {
+    const auto& camera = scene.camera();
+    auto& thread_pool = system.threadPool();
+    constexpr uint start = 0;
+    const uint end = RenderingMethod::calcNumOfTiles(camera.imageResolution());
+    auto result = thread_pool.enqueueLoop(trace_camera_path, start, end);
+    result.get();
+  }
 }
 
 /*!
@@ -324,8 +335,7 @@ void PathTracing::traceCameraPath(System& system,
                                   Scene& scene,
                                   const Wavelengths& sampled_wavelengths,
                                   const int thread_id,
-                                  const uint x,
-                                  const uint y) noexcept
+                                  const Index2d& pixel_index) noexcept
 {
   // System
   auto& sampler = system.threadSampler(thread_id);
@@ -344,7 +354,7 @@ void PathTracing::traceCameraPath(System& system,
   // Generate a camera ray
   Float inverse_direction_pdf;
   Spectra ray_weight{wavelengths, 1.0};
-  auto ray = generateRay(camera, x, y, sampler, memory_pool,
+  auto ray = generateRay(camera, pixel_index, sampler, memory_pool,
                          &camera_contribution, &inverse_direction_pdf);
 
   while (true) {
@@ -388,7 +398,7 @@ void PathTracing::traceCameraPath(System& system,
     // Clear memory
     memory_pool.reset();
   }
-  camera.addContribution(Index2d{x, y}, contribution);
+  camera.addContribution(pixel_index, contribution);
   // Clear memory
   memory_pool.reset();
 }

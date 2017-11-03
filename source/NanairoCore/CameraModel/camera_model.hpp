@@ -97,6 +97,9 @@ class CameraModel
   //! Return the height resolution of the film
   uint heightResolution() const noexcept;
 
+  //! Return the image resolution
+  const Index2d& imageResolution() const noexcept;
+
   //! Jitter the point on the pixel
   void jitter(Sampler& sampler) noexcept;
 

@@ -19,6 +19,7 @@
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/ray.hpp"
+#include "NanairoCore/Data/rendering_tile.hpp"
 #include "NanairoCore/Sampling/russian_roulette.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
@@ -89,7 +90,10 @@ class RenderingMethod
                       const Wavelengths& sampled_wavelengths) noexcept = 0;
 
  protected:
-  //! Calculate the num of pixel blocks
+  //! Calculate the number of rendering tiles
+  uint calcNumOfTiles(const Index2d& resolution) const noexcept;
+
+  //! Calculate the number of pixel blocks
   uint calcPixelBlockSize(const uint width, const uint height) const noexcept;
 
   //! Calculate the max distance of the shadow ray
@@ -101,6 +105,10 @@ class RenderingMethod
       const Ray& ray,
       const Float max_distance = std::numeric_limits<Float>::max(),
       const bool expect_no_hit = false) const noexcept;
+
+  //! Get the rendering tile
+  RenderingTile getRenderingTile(const Index2d& resolution,
+                                 const uint index) const noexcept;
 
   //! Make a shadow ray
   Ray makeShadowRay(const Point3& source,

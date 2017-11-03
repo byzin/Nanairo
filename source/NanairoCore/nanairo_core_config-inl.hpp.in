@@ -139,6 +139,15 @@ constexpr uint CoreConfig::spectraSize() noexcept
 /*!
   */
 inline
+constexpr uint CoreConfig::renderingTileSize() noexcept
+{
+  constexpr uint tile_size = 32;
+  return tile_size;
+}
+
+/*!
+  */
+inline
 constexpr uint CoreConfig::maxNumOfNodeObjects() noexcept
 {
   constexpr uint max_num_of_node_objects = @NANAIRO_MAX_NUM_OF_OBJECTS@;

@@ -104,20 +104,21 @@ void RgbSpectraImage::toHdrImage(System& system,
   {
     // Set the calculation range
     const auto range = system.calcThreadRange(hdr_image->numOfPixels(), thread_id);
-    const auto begin = std::get<0>(range);
-    const auto end = std::get<1>(range);
     // Write to HDR image buffer
     const auto to_xyz_matrix = getRgbToXyzMatrix(system.colorSpace());
-    for (uint index = begin; index < end; ++index) {
+    for (uint index = range[0]; index < range[1]; ++index) {
       const auto rgb = averager * buffer_[index];
       (*hdr_image)[index] = ColorConversion::toXyz(rgb, to_xyz_matrix);
     }
   };
-  auto& thread_pool = system.threadPool();
-  constexpr uint start = 0;
-  const uint end = thread_pool.numOfThreads();
-  auto result = thread_pool.enqueueLoop(to_hdr_image, start, end);
-  result.get();
+
+  {
+    auto& thread_pool = system.threadPool();
+    constexpr uint start = 0;
+    const uint end = thread_pool.numOfThreads();
+    auto result = thread_pool.enqueueLoop(to_hdr_image, start, end);
+    result.get();
+  }
 }
 
 /*!

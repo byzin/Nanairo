@@ -20,12 +20,14 @@
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
+#include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/world.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/ray.hpp"
+#include "NanairoCore/Data/rendering_tile.hpp"
 #include "NanairoCore/DataStructure/bvh.hpp"
 #include "NanairoCore/Sampling/russian_roulette.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
@@ -76,6 +78,18 @@ Float RenderingMethod::rayCastEpsilon() const noexcept
 /*!
   */
 inline
+uint RenderingMethod::calcNumOfTiles(const Index2d& resolution) const noexcept
+{
+  constexpr uint s = CoreConfig::renderingTileSize();
+  const uint dx = (resolution[0] / s) + ((resolution[0] % s != 0) ? 1 : 0);
+  const uint dy = (resolution[1] / s) + ((resolution[1] % s != 0) ? 1 : 0);
+  const uint n = dx * dy;
+  return n;
+}
+
+/*!
+  */
+inline
 Float RenderingMethod::calcShadowRayDistance(const Float diff2) const noexcept
 {
   constexpr Float distance_epsilon = 0.000001;
@@ -96,6 +110,26 @@ IntersectionInfo RenderingMethod::castRay(const World& world,
 {
   const auto& bvh = world.bvh();
   return bvh.castRay(ray, max_distance, expect_no_hit);
+}
+
+/*!
+  */
+inline
+RenderingTile RenderingMethod::getRenderingTile(const Index2d& resolution,
+                                                const uint index) const noexcept
+{
+  constexpr uint s = CoreConfig::renderingTileSize();
+  const uint dx = (resolution[0] / s) + ((resolution[0] % s != 0) ? 1 : 0);
+
+  const uint x = index % dx;
+  const uint y = index / dx;
+
+  const Index2d begin{x * s, y * s};
+  const Index2d end{zisc::min((x + 1) * s, resolution[0]),
+                    zisc::min((y + 1) * s, resolution[1])};
+
+  const RenderingTile tile{begin, end};
+  return tile;
 }
 
 /*!
