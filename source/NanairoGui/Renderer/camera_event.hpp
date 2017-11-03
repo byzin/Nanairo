@@ -90,7 +90,7 @@ class CameraEvent
   static constexpr int kYAxis = 1;
   static constexpr Float kHorizontalTranslationEventScale = 0.005;
   static constexpr Float kVerticalTranslationEventScale = 0.01;
-  static constexpr Float kRotationEventScale = 0.005;
+  static constexpr Float kRotationEventScale = 0.001;
 
 
   Vector2 event_list_[3];

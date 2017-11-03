@@ -51,13 +51,31 @@ CameraModel::CameraModel(const SettingNodeBase* settings) noexcept
 Matrix4x4 CameraModel::rotate(const Vector2& value) noexcept
 {
   const auto& p = position();
+  // Translate to origin
   auto matrix = Transformation::makeTranslation(-p[0], -p[1], -p[2]);
+  // Change the basis to local coordinate
+  auto basis = Transformation::makeIdentity();
+  {
+    const auto x_axis = xAxis();
+    const auto y_axis = yAxis();
+    const auto z_axis = zAxis();
+    for (uint i = 0; i < 3; ++i) {
+      basis(0, i) = x_axis[i];
+      basis(1, i) = y_axis[i];
+      basis(2, i) = z_axis[i];
+    }
+  }
+  matrix = basis * matrix;
+  // Rotate
   {
     const auto rotation_matrix = (zisc::abs(value[0]) < zisc::abs(value[1]))
         ? Transformation::makeXAxisRotation(-value[1])
-        : Transformation::makeZAxisRotation(value[0]);
+        : Transformation::makeYAxisRotation(value[0]);
     matrix = rotation_matrix * matrix;
   }
+  // Change the bassi to global coordinate
+  matrix = basis.transposedMatrix() * matrix;
+  // Translate to camera position
   matrix = Transformation::makeTranslation(p[0], p[1], p[2]) * matrix;
   transform(matrix);
   return matrix;
@@ -69,7 +87,7 @@ Matrix4x4 CameraModel::rotate(const Vector2& value) noexcept
   */
 Matrix4x4 CameraModel::translateHorizontally(const Vector2& value) noexcept
 {
-  const auto v = -value[0] * xAxis() + value[1] * yAxis();
+  const auto v = value[0] * xAxis() + value[1] * yAxis();
   auto matrix = Transformation::makeTranslation(v[0], v[1], v[2]);
   transform(matrix);
   return matrix;

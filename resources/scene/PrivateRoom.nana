@@ -1,0 +1,1604 @@
+{
+    "Bvh": {
+        "OptimizationLoopCount": 2,
+        "TreeletSize": 9,
+        "Type": "AgglomerativeTreeletRestructuringBvh"
+    },
+    "Color": {
+        "ColorMode": "RGB",
+        "ColorSpace": "Adobe RGB (D65)",
+        "Exposure": 1,
+        "Gamma": 2.2,
+        "ToneMapping": "Filmic",
+        "WavelengthSampling": "Regular sampling"
+    },
+    "EmitterModel": [
+        {
+            "EmissiveColorIndex": 2,
+            "Name": "RoomEmitter",
+            "RadiantExitance": 2048,
+            "Type": "NonDirectionalEmitter"
+        },
+        {
+            "EmissiveColorIndex": 3,
+            "Name": "IndirectEmitter",
+            "RadiantExitance": 64,
+            "Type": "NonDirectionalEmitter"
+        },
+        {
+            "EmissiveColorIndex": 4,
+            "Name": "MonitorEmitter",
+            "RadiantExitance": 16,
+            "Type": "NonDirectionalEmitter"
+        },
+        {
+            "EmissiveColorIndex": 1,
+            "Name": "DoorEmitter",
+            "RadiantExitance": 512,
+            "Type": "NonDirectionalEmitter"
+        },
+        {
+            "EmissiveColorIndex": 5,
+            "Name": "BallLight",
+            "RadiantExitance": 64,
+            "Type": "NonDirectionalEmitter"
+        }
+    ],
+    "Object": [
+        {
+            "AngleOfView": 75,
+            "CameraType": "PinholeCamera",
+            "Enabled": true,
+            "GroupLevel": 0,
+            "Jittering": true,
+            "Name": "Camera",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.8,
+                        0,
+                        0.5
+                    ]
+                },
+                {
+                    "Angle": 55,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -3.9,
+                        0
+                    ]
+                },
+                {
+                    "Angle": -15,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "CameraObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 0,
+            "Name": "Room",
+            "Transformation": [
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "Walls",
+            "Transformation": [
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Floor",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        -1
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        8,
+                        6,
+                        1
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 2,
+            "Name": "DoorAndWall",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -3.5,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        -1
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        1.5,
+                        1,
+                        1.5
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 3,
+            "Name": "OpenedDoor",
+            "Transformation": [
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 4,
+            "IsEmissiveObject": false,
+            "Name": "DoorFrame",
+            "ObjectFilePath": "resources/models/OpenedDoor/OpenedDoorFrame.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 4,
+            "IsEmissiveObject": false,
+            "Name": "DoorPlate",
+            "ObjectFilePath": "resources/models/OpenedDoor/OpenedDoorPlate.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 4,
+            "IsEmissiveObject": false,
+            "Name": "DoorGlass",
+            "ObjectFilePath": "resources/models/OpenedDoor/OpenedDoorGlass.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 4,
+            "IsEmissiveObject": false,
+            "Name": "DoorKnob",
+            "ObjectFilePath": "resources/models/OpenedDoor/OpenedDoorKnob.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "DoorLeftWall",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        1,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        1.5,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        0.5
+                    ]
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "DoorRightWall",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -1,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        1.5,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        0.5
+                    ]
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "DoorUpWall",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        1.5
+                    ]
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 3,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": true,
+            "Name": "DoorLight",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.2,
+                        0.8,
+                        0.5
+                    ]
+                },
+                {
+                    "Angle": -25,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.3,
+                        1,
+                        1
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "RightWall",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        2.5,
+                        0.5
+                    ]
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        8,
+                        3,
+                        1
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "LeftWall",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -2.5,
+                        0.5
+                    ]
+                },
+                {
+                    "Angle": -90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        8,
+                        3,
+                        1
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "FarWall",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        4,
+                        0,
+                        0.5
+                    ]
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        3,
+                        6,
+                        1
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Ceiling",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        2
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        8,
+                        6,
+                        1
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "Interior",
+            "Transformation": [
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 2,
+            "Name": "Piano",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        2,
+                        2,
+                        -1
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        1.6,
+                        1.6,
+                        1.6
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "PianoBody",
+            "ObjectFilePath": "resources/models/Piano/PianoBody.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "PianoMetal",
+            "ObjectFilePath": "resources/models/Piano/PianoMetal.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "PianoWhiteKeyboard",
+            "ObjectFilePath": "resources/models/Piano/PianoWhiteKeyboard.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 2,
+            "Name": "Desk",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -1.25,
+                        2.15,
+                        -0.35
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "DeskPlate",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        -4.5,
+                        0.7,
+                        0.05
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "Leg",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        2.2,
+                        -0.3,
+                        -0.65
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.05,
+                        0.05,
+                        0.65
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 3,
+            "Name": "PC",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        1.6,
+                        0.1,
+                        0.05
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 4,
+            "Name": "PcMonitor",
+            "Transformation": [
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 5,
+            "IsEmissiveObject": false,
+            "Name": "Monitor",
+            "ObjectFilePath": "resources/models/PcMonitor/PcMonitor.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 5,
+            "IsEmissiveObject": false,
+            "Name": "Stand",
+            "ObjectFilePath": "resources/models/PcMonitor/PcMonitorStand.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 2,
+            "Enabled": true,
+            "GroupLevel": 5,
+            "IsEmissiveObject": true,
+            "Name": "MonitorLight",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -0.01,
+                        0.4
+                    ]
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.85,
+                        0.5,
+                        1
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 4,
+            "IsEmissiveObject": false,
+            "Name": "Keyboard",
+            "ObjectFilePath": "resources/models/Keyboard.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -0.25,
+                        0
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.7,
+                        0.7,
+                        0.7
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 4,
+            "IsEmissiveObject": false,
+            "Name": "Mouse",
+            "ObjectFilePath": "resources/models/Mouse.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.5,
+                        -0.25,
+                        0
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.18,
+                        0.18,
+                        0.18
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 2,
+            "Name": "OfficeChair",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.6,
+                        1.3,
+                        0
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        -1
+                    ]
+                },
+                {
+                    "Angle": 150,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "OfficeChairPlastic1",
+            "ObjectFilePath": "resources/models/OfficeChair/OfficeChairPlastic1.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "OfficeChairPlastic2",
+            "ObjectFilePath": "resources/models/OfficeChair/OfficeChairPlastic2.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "OfficeChairMetal",
+            "ObjectFilePath": "resources/models/OfficeChair/OfficeChairMetal.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "OfficeChairCushion",
+            "ObjectFilePath": "resources/models/OfficeChair/OfficeChairCushion.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 2,
+            "Name": "TV",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -2.8,
+                        -1.6,
+                        -1
+                    ]
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "TVRack",
+            "ObjectFilePath": "resources/models/Primitives/Cube.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        1,
+                        0.4,
+                        0.25
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "TVMonitor",
+            "ObjectFilePath": "resources/models/Television.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        0.25
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 2,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": true,
+            "Name": "TVMonitorLight",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -0.05,
+                        0.6
+                    ]
+                },
+                {
+                    "Angle": 90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.95,
+                        0.5,
+                        1
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 2,
+            "Name": "Sofa",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        1,
+                        -1.3,
+                        -1
+                    ]
+                },
+                {
+                    "Angle": -90,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        1.5,
+                        1.5,
+                        1.5
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "SofaBody",
+            "ObjectFilePath": "resources/models/Sofa/SofaBody.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "SofaFoot",
+            "ObjectFilePath": "resources/models/Sofa/SofaFoot.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 3,
+            "IsEmissiveObject": false,
+            "Name": "SofaCushion",
+            "ObjectFilePath": "resources/models/Sofa/SofaCushion.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "IndirectLights",
+            "Transformation": [
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 1,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": true,
+            "Name": "IndirectLight1",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -2.6,
+                        2.3,
+                        1
+                    ]
+                },
+                {
+                    "Angle": -90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.3,
+                        0.3,
+                        0.3
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 1,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": true,
+            "Name": "IndirectLight2",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -1,
+                        2.3,
+                        1
+                    ]
+                },
+                {
+                    "Angle": -90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.3,
+                        0.3,
+                        0.3
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 1,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": true,
+            "Name": "IndirectLight3",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.6,
+                        2.3,
+                        1
+                    ]
+                },
+                {
+                    "Angle": -90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.3,
+                        0.3,
+                        0.3
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 1,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": true,
+            "Name": "IndirectLight4",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        2.2,
+                        2.3,
+                        1
+                    ]
+                },
+                {
+                    "Angle": -90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.3,
+                        0.3,
+                        0.3
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 1,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": true,
+            "Name": "IndirectLight5",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -3.3,
+                        1.6,
+                        1
+                    ]
+                },
+                {
+                    "Angle": -90,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.3,
+                        0.3,
+                        0.3
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 1,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": true,
+            "Name": "IndirectLight6",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -3.3,
+                        0,
+                        1
+                    ]
+                },
+                {
+                    "Angle": -90,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.3,
+                        0.3,
+                        0.3
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 1,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": true,
+            "Name": "IndirectLight7",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -3.3,
+                        -1.6,
+                        1
+                    ]
+                },
+                {
+                    "Angle": -90,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.3,
+                        0.3,
+                        0.3
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "Enabled": true,
+            "GroupLevel": 1,
+            "Name": "RoomLight",
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        1.45,
+                        0,
+                        1.3
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ]
+                }
+            ],
+            "Type": "GroupObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": true,
+            "Name": "Light",
+            "ObjectFilePath": "resources/models/Primitives/Plane.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        0.25
+                    ]
+                },
+                {
+                    "Angle": 180,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.35,
+                        0.35,
+                        1
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        },
+        {
+            "EmitterIndex": 0,
+            "Enabled": true,
+            "GroupLevel": 2,
+            "IsEmissiveObject": false,
+            "Name": "Lamp",
+            "ObjectFilePath": "resources/models/Primitives/TrapezoidDirectionalHole.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
+            "Transformation": [
+                {
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        0.85,
+                        0.85,
+                        1
+                    ]
+                }
+            ],
+            "Type": "SingleObject"
+        }
+    ],
+    "RenderingMethod": {
+        "EyePathLightSampler": "PowerWeightedLightSampler",
+        "LightSamplerMaxSurfaceSplit": 10,
+        "LightSamplerNumOfPhotons": 32768,
+        "PathLength": 3,
+        "RayCastEpsilon": 1e-07,
+        "RussianRoulette": "Reflectance (Max)",
+        "Type": "PathTracing"
+    },
+    "Scene": {
+        "SceneName": "PrivateRoom"
+    },
+    "SurfaceModel": [
+        {
+            "Name": "DefaultSurface",
+            "ReflectanceIndex": 0,
+            "Type": "SmoothDiffuseSurface"
+        }
+    ],
+    "System": {
+        "ImageResolution": [
+            960,
+            540
+        ],
+        "NumOfThreads": 4,
+        "Power2CycleSaving": true,
+        "RandomSeed": 123456789,
+        "SavingInterval": 3600000,
+        "TerminationCycle": 2048,
+        "TerminationTime": 0
+    },
+    "TextureModel": [
+        {
+            "Name": "DefaultTexture",
+            "Type": "ValueTexture",
+            "Value": 0.8
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.9372549019607843,
+                    0.1607843137254902,
+                    0.1607843137254902
+                ]
+            },
+            "Name": "RedLightTexture",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.6627908751049058,
+                    0.9199969481956206,
+                    0.24840161745632106
+                ]
+            },
+            "Name": "GreenLightTexture",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.4470588235294118,
+                    0.6235294117647059,
+                    0.8117647058823529
+                ]
+            },
+            "Name": "BlueLightTexture",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Name": "OrangeLightTexture",
+            "Type": "ValueTexture",
+            "Value": 0.8
+        },
+        {
+            "Color": {
+                "ColorMode": "RGB",
+                "Value": [
+                    0.4588235294117647,
+                    0.3137254901960784,
+                    0.4823529411764706
+                ]
+            },
+            "Name": "PurpleLightTexture",
+            "Type": "UnicolorTexture"
+        }
+    ]
+}

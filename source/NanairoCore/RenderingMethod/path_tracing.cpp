@@ -110,11 +110,9 @@ void PathTracing::evalExplicitConnection(
   const Float diff2 = (light_point_info.point() - shadow_ray.origin()).squareNorm();
   ZISC_ASSERT(0.0 < diff2, "The diff2 isn't greater than 0.");
   const Float max_shadow_ray_distance = Method::calcShadowRayDistance(diff2);
-  constexpr bool expect_no_hit = true;
   const auto shadow_intersection = Method::castRay(world,
                                                    shadow_ray,
-                                                   max_shadow_ray_distance,
-                                                   expect_no_hit);
+                                                   max_shadow_ray_distance);
   if (shadow_intersection.object() != light_source ||
       shadow_intersection.isBackFace())
     return;

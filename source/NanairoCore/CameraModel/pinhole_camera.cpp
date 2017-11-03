@@ -192,7 +192,7 @@ Vector3 PinholeCamera::xAxis() const noexcept
 {
   const auto& shape = filmShape();
   const auto& e = shape.edge();
-  return -e[0].normalized();
+  return e[0].normalized();
 }
 
 /*!
@@ -257,7 +257,7 @@ PinholeCamera::FilmShape::FilmShape(const Point3& c) noexcept :
     surface_area_{1.0},
     edge_{{Vector3{-1.0, 0.0, 0.0}, Vector3{0.0, 0.0, 1.0}}}
 {
-  normal_ = calcNormal();
+  normal_ = calcNormal(edge_[0], edge_[1]);
   setCenter(c);
 }
 
@@ -290,10 +290,17 @@ void PinholeCamera::FilmShape::transform(const Matrix4x4& matrix) noexcept
 {
   // Scaling is prevented
   Transformation::affineTransform(matrix, &vertex0_);
-  Transformation::affineTransform(matrix, &edge_[0]);
-  Transformation::affineTransform(matrix, &edge_[1]);
-
-  normal_ = calcNormal();
+  {
+    std::array<Vector3, 2> e{{edge_[0], edge_[1]}};
+    const Float w = e[0].norm();
+    const Float h = e[1].norm();
+    Transformation::affineTransform(matrix, &e[0]);
+    Transformation::affineTransform(matrix, &e[1]);
+    normal_ = calcNormal(e[0], e[1]);
+    e[1] = zisc::cross(normal_, e[0]);
+    edge_[0] = w * e[0].normalized();
+    edge_[1] = h * e[1].normalized();
+  }
 }
 
 } // namespace nanairo

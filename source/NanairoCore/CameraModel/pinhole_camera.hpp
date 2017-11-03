@@ -75,7 +75,7 @@ class PinholeCamera : public CameraModel
 
    private:
     //! Calculate the normal vector
-    Vector3 calcNormal() const noexcept;
+    Vector3 calcNormal(const Vector3& e1, const Vector3& e2) const noexcept;
 
 
     Float surface_area_;

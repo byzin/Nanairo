@@ -404,9 +404,15 @@
             "Type": "GroupObject"
         },
         {
+            "EmitterIndex": 0,
             "Enabled": true,
             "GroupLevel": 2,
+            "IsEmissiveObject": false,
             "Name": "Spot",
+            "ObjectFilePath": "resources/models/Primitives/CylinderDirectionalHole.obj",
+            "ShapeType": "MeshObject",
+            "Smoothing": false,
+            "SurfaceIndex": 0,
             "Transformation": [
                 {
                     "Enabled": true,
@@ -417,34 +423,6 @@
                         0.45
                     ]
                 }
-            ],
-            "Type": "GroupObject"
-        },
-        {
-            "EmitterIndex": 0,
-            "Enabled": true,
-            "GroupLevel": 3,
-            "IsEmissiveObject": false,
-            "Name": "SpotSide",
-            "ObjectFilePath": "resources/models/Primitives/DirectionalCylinderHoleSide.obj",
-            "ShapeType": "MeshObject",
-            "Smoothing": false,
-            "SurfaceIndex": 0,
-            "Transformation": [
-            ],
-            "Type": "SingleObject"
-        },
-        {
-            "EmitterIndex": 0,
-            "Enabled": true,
-            "GroupLevel": 3,
-            "IsEmissiveObject": false,
-            "Name": "SpotBottom",
-            "ObjectFilePath": "resources/models/Primitives/DirectionalCylinderHoleUpDownSide.obj",
-            "ShapeType": "MeshObject",
-            "Smoothing": false,
-            "SurfaceIndex": 0,
-            "Transformation": [
             ],
             "Type": "SingleObject"
         },
@@ -523,7 +501,7 @@
         "Power2CycleSaving": true,
         "RandomSeed": 123456789,
         "SavingInterval": 3600000,
-        "TerminationCycle": 0,
+        "TerminationCycle": 2048,
         "TerminationTime": 0
     },
     "TextureModel": [

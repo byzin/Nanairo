@@ -116,10 +116,10 @@ const Point3& PinholeCamera::FilmShape::vertex0() const noexcept
 /*!
   */
 inline
-Vector3 PinholeCamera::FilmShape::calcNormal() const noexcept
+Vector3 PinholeCamera::FilmShape::calcNormal(const Vector3& e1,
+                                             const Vector3& e2) const noexcept
 {
-  const auto& e = edge();
-  const auto n = zisc::cross(e[0], e[1]).normalized();
+  const auto n = zisc::cross(e1, e2).normalized();
   return n;
 }
 

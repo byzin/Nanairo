@@ -161,6 +161,12 @@ ApplicationWindow {
         text: Nanairo.raytracingCamp4Scene
         onTriggered: loadPresetSceneData(text)
       }
+
+      MenuItem {
+        enabled: !isRenderingMode
+        text: Nanairo.privateRoomScene
+        onTriggered: loadPresetSceneData(text)
+      }
     }
 
     Menu {

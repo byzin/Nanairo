@@ -197,6 +197,7 @@ var clothTestScene = "SurfaceTest-Cloth";
 var colorCheckerSpectrumScene = "ColorChecker-Spectrum";
 var colorCheckerSRgbScene = "ColorChecker-sRGB";
 var raytracingCamp4Scene = "RaytracingCamp4";
+var privateRoomScene = "PrivateRoom";
 // Tab item
 var tabItemWidth = 960;
 var tabItemHeight = 494;

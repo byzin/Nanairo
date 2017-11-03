@@ -6,10 +6,10 @@
     },
     "Color": {
         "ColorMode": "RGB",
-        "ColorSpace": "sRGB (D65)",
+        "ColorSpace": "Adobe RGB (D65)",
         "Exposure": 1,
         "Gamma": 2.2,
-        "ToneMapping": "Reinhard",
+        "ToneMapping": "Filmic",
         "WavelengthSampling": "Regular sampling"
     },
     "EmitterModel": [
@@ -822,7 +822,7 @@
         "Power2CycleSaving": true,
         "RandomSeed": 123456789,
         "SavingInterval": 3600000,
-        "TerminationCycle": 0,
+        "TerminationCycle": 2048,
         "TerminationTime": 0
     },
     "TextureModel": [

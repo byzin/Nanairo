@@ -38,6 +38,7 @@ void RussianRoulette::initialize(const SettingNodeBase* settings) noexcept
 
   {
     type_ = method_settings->rouletteType();
+    max_path_ = method_settings->roulettePathLength();
   }
 }
 
