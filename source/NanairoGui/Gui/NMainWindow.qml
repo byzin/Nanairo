@@ -7,289 +7,162 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-import QtQuick 2.6
-import QtQuick.Controls 1.5
-import QtQuick.Layouts 1.3
-import "SettingBlockItems"
-import "nanairo.js" as Nanairo
+import QtQuick 2.9
+import QtQuick.Controls 2.2
+import QtQuick.Controls.Material 2.2
+import Qt.labs.platform 1.0
+import "Items"
+import "definitions.js" as Definitions
 
 ApplicationWindow {
-  id: main_window
+  id: mainWindow
 
-  readonly property string ctrlKey: Nanairo.ctrlKey
-  readonly property string nanairoFileFormat: Nanairo.nanairoFileFormat
-  property bool isRenderingMode: false
+  property bool isRenderMode: false
 
-  width: Nanairo.mainWindowWidth
-  height: Nanairo.mainWindowHeight
+  width: Definitions.mainWindowWidth
+  height: Definitions.mainWindowHeight
+  visible: true
+  maximumWidth: width
+  maximumHeight: height 
   minimumWidth: width
   minimumHeight: height
-  color: Nanairo.backgroundColor
-  visible: true
-  title: Nanairo.title
+  title: Definitions.projectName
 
-  menuBar: MenuBar {
-    id: menu_bar
+  header: NMainMenu {
+    id: mainMenu
 
-    Menu {
-      title: qsTr("File")
+    isRenderMode: mainWindow.isRenderMode
 
-      MenuItem {
-        enabled: !isRenderingMode
-        text: qsTr("Load scene")
-        shortcut: ctrlKey + "+L"
-        onTriggered: loading_scene_dialog.openDialog()
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: qsTr("Save scene")
-        shortcut: ctrlKey + "+S"
-        onTriggered: saving_scene_dialog.openDialog()
-      }
-
-      MenuSeparator {}
-      MenuItem {
-        enabled: !isRenderingMode
-        text: qsTr("Quit")
-        shortcut: ctrlKey + "+Q"
-        onTriggered: Qt.quit()
-      }
-    }
-
-    Menu {
-      title: qsTr("Scene")
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: Nanairo.defaultScene
-        onTriggered: loadPresetSceneData(text)
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: Nanairo.cornellBoxScene
-        onTriggered: loadPresetSceneData(text)
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: Nanairo.jensenCornellBoxScene
-        onTriggered: loadPresetSceneData(text)
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: Nanairo.causticsTestScene
-        onTriggered: loadPresetSceneData(text)
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: Nanairo.dispersionTestScene
-        onTriggered: loadPresetSceneData(text)
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: Nanairo.veachMisTestScene
-        onTriggered: loadPresetSceneData(text)
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: Nanairo.veachBdptTestScene
-        onTriggered: loadPresetSceneData(text)
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: Nanairo.smoothDiffuseTestScene
-        onTriggered: loadPresetSceneData(text)
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: Nanairo.smoothDielectricTestScene
-        onTriggered: loadPresetSceneData(text)
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: Nanairo.smoothConductorTestScene
-        onTriggered: loadPresetSceneData(text)
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: Nanairo.roughDielectricTestScene
-        onTriggered: loadPresetSceneData(text)
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: Nanairo.roughConductorTestScene
-        onTriggered: loadPresetSceneData(text)
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: Nanairo.layeredDiffuseTestScene
-        onTriggered: loadPresetSceneData(text)
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: Nanairo.clothTestScene
-        onTriggered: loadPresetSceneData(text)
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: Nanairo.colorCheckerSpectrumScene
-        onTriggered: loadPresetSceneData(text)
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: Nanairo.colorCheckerSRgbScene
-        onTriggered: loadPresetSceneData(text)
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: Nanairo.raytracingCamp4Scene
-        onTriggered: loadPresetSceneData(text)
-      }
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: Nanairo.privateRoomScene
-        onTriggered: loadPresetSceneData(text)
-      }
-    }
-
-    Menu {
-      title: qsTr("Render")
-
-      MenuItem {
-        enabled: !isRenderingMode
-        text: qsTr("Render")
-        shortcut: ctrlKey + "+R"
-        onTriggered: {
-          isRenderingMode = true;
-          invokeRendering(false);
+    onFileMenuSelected: {
+      sceneFileDialog.sceneDialogMode = menu;
+      switch (menu) {
+        case mainMenu.load: {
+          sceneFileDialog.title = "Load scene.";
+          sceneFileDialog.fileMode = FileDialog.OpenFile
+          break;
         }
-
-      }
-      MenuItem {
-        enabled: !isRenderingMode
-        text: qsTr("Preview")
-        shortcut: ctrlKey + "+P"
-        onTriggered: {
-          isRenderingMode = true;
-          invokeRendering(true);
+        case mainMenu.save: {
+          sceneFileDialog.title = "Save scene.";
+          sceneFileDialog.fileMode = FileDialog.SaveFile
+          break;
         }
       }
-
-      MenuItem {
-        enabled: isRenderingMode
-        text: qsTr("Stop")
-        shortcut: ctrlKey + "+F"
-        onTriggered: nanairoManager.stopRendering()
-      }
+      sceneFileDialog.open();
     }
 
-    Menu {
-      title: qsTr("Layout")
+    onSceneMenuSelected: {
+      loadPresetScene(menu);
+    }
 
-      MenuItem {
-        text: qsTr("Default layout")
-        shortcut: ctrlKey + "+B"
-        onTriggered: setDefaultLayout()
+    onRenderMenuSelected: {
+      switch (menu) {
+        case mainMenu.render: {
+          mainWindow.isRenderMode = true;
+          mainWindow.invokeRendering(false);
+          break;
+        }
+        case mainMenu.preview: {
+          mainWindow.isRenderMode = true;
+          mainWindow.invokeRendering(true);
+          break;
+        }
+        case mainMenu.stop: {
+          renderWindow.close();
+          break;
+        }
+      }
+    }
+  }
+
+  NSceneSettingView {
+    id: settingView
+
+    enabled: !mainWindow.isRenderMode
+    anchors.fill: parent
+    currentIndex: settingTabBar.currentIndex
+  }
+
+  footer: NTabBar {
+    id: settingTabBar
+
+    enabled: !mainWindow.isRenderMode
+    height: Definitions.defaultTabHeight
+    Repeater {
+      model: [qsTr("Tag"),
+              qsTr("System"),
+              qsTr("Color"),
+              qsTr("Method"),
+              qsTr("Texture"),
+              qsTr("Surface"),
+              qsTr("Emitter"),
+              qsTr("Object"),
+              qsTr("BVH")
+              ]
+      NTabButton {
+        text: modelData
+      }
+    }
+  }
+
+  NRenderWindow {
+    id: renderWindow
+  }
+
+  FileDialog {
+    id: sceneFileDialog
+
+    property int sceneDialogMode
+    nameFilters: ["Nanairo scene file (*.nana)"]
+
+    onAccepted: {
+      switch (sceneDialogMode) {
+        case mainMenu.load: {
+          loadScene(file);
+          break;
+        }
+        case mainMenu.save: {
+          saveScene(file);
+          break;
+        }
       }
     }
   }
 
   Connections {
     target: nanairoManager
-    onStarted: rendered_image_window.show()
-    onFinished: isRenderingMode = false
+    onStarted: renderWindow.show()
+    onFinished: isRenderMode = false
   }
 
-  NSceneSettingView {
-    id: scene_setting_view
-    anchors.fill: parent
-    enabled: !isRenderingMode
-    color: main_window.color
-  }
-
-  NRenderedImageWindow {
-    id: rendered_image_window
-    color: main_window.color
-  }
-
-  NFileDialog {
-    id: loading_scene_dialog
-    title: "Load scene file"
-    nameFilters: [qsTr("Scene setting file") + " (*." + nanairoFileFormat + ")"]
-    selectExisting: true 
-    onAccepted: loadSceneData(fileUrl)
-  }
-
-  NFileDialog {
-    id: saving_scene_dialog
-    title: "Save scene file"
-    nameFilters: [qsTr("Scene setting file") + " (*." + nanairoFileFormat + ")"]
-    selectExisting: false
-    onAccepted: saveSceneData(fileUrl)
-  }
-
-  Component.onCompleted: {
-    setDefaultLayout()
-    if (!nanairoManager.isDebugMode()) {
-      loadPresetSceneData(Nanairo.defaultScene)
-    }
-  }
+  Component.onCompleted: loadPresetScene(Definitions.defaultScene)
 
   function invokeRendering(isPreviewing) {
-    // Initialize rendered image dialog
-    rendered_image_window.title = scene_setting_view.getSceneName();
-    var imageResolution = scene_setting_view.getImageResolution();
-    rendered_image_window.imageWidth = imageResolution[0];
-    rendered_image_window.imageHeight = imageResolution[1];
+    // Initialize the rendered image dialog
+    renderWindow.title = settingView.getSceneName();
+    if (isPreviewing)
+      renderWindow.title = renderWindow.title + " (Preview)";
+    var imageResolution = settingView.getImageResolution();
+    renderWindow.imageWidth = imageResolution[0];
+    renderWindow.imageHeight = imageResolution[1];
     // Start rendering
-    rendered_image_window.initForRendering(isPreviewing);
-    var sceneData = getSceneData();
+    renderWindow.initForRendering(isPreviewing);
+    var sceneData = settingView.getSceneData();
     nanairoManager.invokeRendering(sceneData, isPreviewing);
   }
 
-  function getSceneData() {
-    var sceneData = scene_setting_view.getSceneData();
-    return sceneData;
+  function loadPresetScene(sceneName) {
+    var sceneFile = "qrc:/NanairoGui/scene/" + sceneName + "." + Definitions.nanairoFileFormat;
+    sceneFile = Qt.resolvedUrl(sceneFile);
+    loadScene(sceneFile);
   }
 
-  function setSceneData(sceneData) {
-    scene_setting_view.setSceneData(sceneData);
+  function loadScene(sceneFile) {
+    var sceneData = nanairoManager.loadSceneData(sceneFile);
+    settingView.setSceneData(sceneData);
   }
 
-  function loadSceneData(filePath) {
-    var sceneData = nanairoManager.loadSceneData(filePath);
-    setSceneData(sceneData);
-  }
-
-  function loadPresetSceneData(sceneName) {
-    var filePath = Qt.resolvedUrl("scene/" + sceneName + "." + nanairoFileFormat);
-    loadSceneData(filePath);
-  }
-
-  function saveSceneData(filePath) {
-    var sceneData = getSceneData();
-    nanairoManager.saveSceneData(filePath, sceneData);
-  }
-
-  function setDefaultLayout() {
-    main_window.width = Nanairo.mainWindowWidth
-    main_window.height = Nanairo.mainWindowHeight 
+  function saveScene(sceneFile) {
+    var sceneData = settingView.getSceneData();
+    nanairoManager.saveSceneData(sceneFile, sceneData);
   }
 }

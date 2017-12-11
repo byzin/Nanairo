@@ -7,64 +7,60 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-import QtQuick 2.6
+import QtQuick 2.9
+import "scene.js" as Scene
 
 QtObject {
+  function currentWorkingDir() {
+    return Qt.resolvedUrl(".").toString();
+  }
 
-  signal finished()
-
-  signal started()
-
-  signal stopping()
-
-  signal updated(string fps, string cycle, string time)
-
-  signal cameraEventHandled(matrix4x4 matrix)
-
-  signal previewEvent(int type, int axis_type, int value)
-
-  function currentWorkingDur() {
-    return ".";
+  function generateSeedRandomly() {
+    return 0;
   }
 
   function getFileName(filePath) {
-    return filePath.toString();
+    return filePath;
   }
 
-  function idealThreadCount() {
+  function getIdealThreadCount() {
     return 1;
   }
 
-  function invokeRendering() {
+  function getAbsolutePath(relativePath) {
+    return Qt.resolvedUrl(relativePath);
   }
 
-  function invokePreviewing() {
+  function getRelativePath(absolutePath) {
+    return absolutePath.toString();
   }
 
   function isDebugMode() {
     return true;
   }
 
-  function makeDir(dirPath) {
-  }
-
-  function random() {
-    return 1;
+  function invokeRendering(sceneData, isPreviewing) {
+    started();
   }
 
   function loadSceneData(filePath) {
-    var sceneData = {};
-    return sceneData;
+    return Scene.getCornellBoxScene();
   }
 
   function saveSceneData(filePath, sceneData) {
   }
 
-  function toAbsoluteFileUrl(relativePath) {
-    return Qt.resolvedUrl(relativePath);
-  }
+  onStopRendering: finished()
 
-  function toRelativeFilePath(absolutePath) {
-    return absolutePath.toString();
-  }
+  signal finished()
+
+  signal previewEvent(int transformationEventType,
+                      int axisEventType,
+                      int value)
+
+  signal started()
+
+  signal stopRendering()
+
+  signal notifyOfRenderingInfo(string info)
 }

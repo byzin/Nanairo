@@ -57,7 +57,7 @@ class LightSourceSampler
 
   //! Make a light source sampler
   static std::unique_ptr<LightSourceSampler> makeSampler(
-      const SettingNodeBase* settings,
+      const LightSourceSamplerType sampler_type,
       const World& world,
       System& system) noexcept;
 

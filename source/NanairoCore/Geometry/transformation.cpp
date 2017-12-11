@@ -33,7 +33,7 @@ Matrix4x4 Transformation::makeTransformation(
   auto matrix = makeIdentity();
   for (const auto settings : settings_list) {
     // m = (next transformation) * (prev transformation)
-    matrix = matrix * makeTransformation(settings);
+    matrix = makeTransformation(settings) * matrix;
   }
   return matrix;
 }

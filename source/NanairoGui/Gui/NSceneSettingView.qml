@@ -7,205 +7,131 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-import QtQuick 2.6
-import QtQuick.Controls 1.5
-import "Styles"
-import "nanairo.js" as Nanairo
+import QtQuick 2.9
+import QtQuick.Controls 2.2
+import QtQuick.Controls.Material 2.2
+import QtQuick.Layouts 1.3
+import "Items"
+import "SceneSettingViewItems"
+import "definitions.js" as Definitions
 
-Rectangle {
-  id: scene_setting_view
+NPane {
+  id: settingView
 
-  width: Nanairo.mainWindowWidth
-  height: Nanairo.mainWindowHeight
+  property int currentIndex: 0
+  property bool isEditMode: true
 
-  TabView {
-    id: setting_tab_view
+  StackLayout {
+    id: settingLayout
 
-    x: 0
-    y: 8
-    width: scene_setting_view.width
-    height: scene_setting_view.height - y
+    anchors.fill: parent
+    anchors.margins: Definitions.defaultItemSpace
+    currentIndex: settingView.currentIndex
 
-    style: tab_view_style
-
-    Tab {
-      title: Nanairo.scene
-      active: true
-      NSceneTabItem {
-        color: scene_setting_view.color
-      }
+    NTagSettingView {
+      id: tagSettingView
+      isEditMode: settingView.isEditMode
     }
 
-    Tab {
-      title: Nanairo.system
-      active: true
-      NSystemTabItem {
-        color: scene_setting_view.color
-      }
+    NSystemSettingView {
+      id: systemSettingView
+      isEditMode: settingView.isEditMode
     }
 
-    Tab {
-      title: Nanairo.color
-      active: true
-      NColorTabItem {
-        color: scene_setting_view.color
-      }
+    NColorSettingView {
+      id: colorSettingView
+      isEditMode: settingView.isEditMode
     }
 
-    Tab {
-      title: Nanairo.renderingMethod
-      active: true
-      NRenderingMethodTabItem {
-        color: scene_setting_view.color
-      }
+    NMethodSettingView {
+      id: methodSettingView
+      isEditMode: settingView.isEditMode
     }
 
-    Tab {
-      title: Nanairo.textureModel
-      active: true
-      NTextureModelTabItem {
-        color: scene_setting_view.color
-      }
+    NTextureSettingView {
+      id: textureSettingView
+      isEditMode: settingView.isEditMode
     }
 
-    Tab {
-      title: Nanairo.surfaceModel
-      active: true
-      NSurfaceModelTabItem {
-        color: scene_setting_view.color
-      }
+    NSurfaceSettingView {
+      id: surfaceSettingView
+      isEditMode: settingView.isEditMode
+      textureModelList: textureSettingView.textureModelList
     }
 
-    Tab {
-      title: Nanairo.emitterModel
-      active: true
-      NEmitterModelTabItem {
-        color: scene_setting_view.color
-      }
+    NEmitterSettingView {
+      id: emitterSettingView
+      isEditMode: settingView.isEditMode
+      textureModelList: textureSettingView.textureModelList
     }
 
-    Tab {
-      title: Nanairo.object
-      active: true
-      NObjectTabItem {
-        color: scene_setting_view.color
-      }
+    NObjectSettingView {
+      id: objectSettingView
+      isEditMode: settingView.isEditMode
+      surfaceModelList: surfaceSettingView.surfaceModelList
+      emitterModelList: emitterSettingView.emitterModelList
     }
 
-    Tab {
-      title: Nanairo.bvh
-      active: true
-      NBvhTabItem {
-        color: scene_setting_view.color
-      }
+    NBvhSettingView {
+      id: bvhSettingView
+      isEditMode: settingView.isEditMode
     }
-
-    onCountChanged: {
-      var textureTabIndex = 4;
-      var surfaceTabIndex = 5;
-      if ((count - 1) == surfaceTabIndex) {
-        var textureTab = getSettingTab(textureTabIndex);
-        var surfaceTab = getSettingTab(surfaceTabIndex);
-        surfaceTab.textureModel = textureTab.materialModel.model;
-      }
-      var emitterTabIndex = 6;
-      if ((count - 1) == emitterTabIndex) {
-        var textureTab = getSettingTab(textureTabIndex);
-        var emitterTab = getSettingTab(emitterTabIndex);
-        emitterTab.textureModel = textureTab.materialModel.model;
-      }
-      var objectTabIndex = 7
-      if ((count - 1) == objectTabIndex) {
-        var surfaceTab = getSettingTab(surfaceTabIndex);
-        var emitterTab = getSettingTab(emitterTabIndex);
-        var objectTab = getSettingTab(objectTabIndex);
-        objectTab.emitterModel = emitterTab.materialModel.model;
-        objectTab.surfaceModel = surfaceTab.materialModel.model;
-      }
-    }
-  }
-
-  Component {
-    id: tab_view_style
-
-    NTabViewStyle {
-      backgroundColor: scene_setting_view.color
-    }
-  }
-
-  function getSettingTab(tabIndex) {
-    return setting_tab_view.getTab(tabIndex).item;
-  }
-
-  function getSceneName() {
-    var sceneTab = getSettingTab(0);
-    return sceneTab.getSceneName();
-  }
-
-  function getImageResolution() {
-    var systemTab = getSettingTab(1);
-    return systemTab.getImageResolution();
   }
 
   function getSceneData() {
     var sceneData = {};
-    // Scene settings
-    var sceneTab = getSettingTab(0);
-    sceneData[Nanairo.scene] = sceneTab.getSceneData();
-    // System settings
-    var systemTab = getSettingTab(1);
-    sceneData[Nanairo.system] = systemTab.getSceneData();
-    // Color settings
-    var colorTab = getSettingTab(2);
-    sceneData[Nanairo.color] = colorTab.getSceneData();
-    // RenderingMethod settings
-    var renderingMethodTab = getSettingTab(3);
-    sceneData[Nanairo.renderingMethod] = renderingMethodTab.getSceneData();
-    // TextureModel settings
-    var textureModelTab = getSettingTab(4);
-    sceneData[Nanairo.textureModel] = textureModelTab.getSceneData();
-    // SurfaceModel settings
-    var surfaceModelTab = getSettingTab(5);
-    sceneData[Nanairo.surfaceModel] = surfaceModelTab.getSceneData();
-    // EmitterModel settings
-    var emitterModelTab = getSettingTab(6);
-    sceneData[Nanairo.emitterModel] = emitterModelTab.getSceneData();
-    // Object settings
-    var objectTab = getSettingTab(7);
-    sceneData[Nanairo.object] = objectTab.getSceneData();
-    // BVH settings
-    var bvhTab = getSettingTab(8);
-    sceneData[Nanairo.bvh] = bvhTab.getSceneData();
+
+    sceneData[Definitions.scene] = tagSettingView.getSceneData();
+    sceneData[Definitions.system] = systemSettingView.getSceneData();
+    sceneData[Definitions.color] = colorSettingView.getSceneData();
+    sceneData[Definitions.renderingMethod] = methodSettingView.getSceneData();
+    sceneData[Definitions.textureModel] = textureSettingView.getSceneData();
+    sceneData[Definitions.surfaceModel] = surfaceSettingView.getSceneData();
+    sceneData[Definitions.emitterModel] = emitterSettingView.getSceneData();
+    sceneData[Definitions.object] = objectSettingView.getSceneData();
+    sceneData[Definitions.bvh] = bvhSettingView.getSceneData();
+
     return sceneData;
   }
 
+  function getSceneName() {
+    return tagSettingView.getSceneName();
+  }
+
+  function getImageResolution() {
+    return systemSettingView.getImageResolution();
+  }
+
   function setSceneData(sceneData) {
-    // Scene settings
-    var sceneTab = getSettingTab(0);
-    sceneTab.setSceneData(sceneData[Nanairo.scene]);
-    // System settings
-    var systemTab = getSettingTab(1);
-    systemTab.setSceneData(sceneData[Nanairo.system]);
-    // Color settings
-    var colorTab = getSettingTab(2);
-    colorTab.setSceneData(sceneData[Nanairo.color]);
-    // RenderingMethod settings
-    var renderingMethodTab = getSettingTab(3);
-    renderingMethodTab.setSceneData(sceneData[Nanairo.renderingMethod]);
-    // TextureModel settings
-    var textureModelTab = getSettingTab(4);
-    textureModelTab.setSceneData(sceneData[Nanairo.textureModel]);
-    // SurfaceModel settings
-    var surfaceModelTab = getSettingTab(5);
-    surfaceModelTab.setSceneData(sceneData[Nanairo.surfaceModel]);
-    // EmitterModel settings
-    var emitterModelTab = getSettingTab(6);
-    emitterModelTab.setSceneData(sceneData[Nanairo.emitterModel]);
-    // Object settings
-    var objectTab = getSettingTab(7);
-    objectTab.setSceneData(sceneData[Nanairo.object]);
-    // BVH settings
-    var bvhTab = getSettingTab(8);
-    bvhTab.setSceneData(sceneData[Nanairo.bvh]);
+    isEditMode = false;
+
+    var tagData = Definitions.getProperty(sceneData, Definitions.scene);
+    tagSettingView.setSceneData(tagData);
+
+    var systemData = Definitions.getProperty(sceneData, Definitions.system);
+    systemSettingView.setSceneData(systemData);
+
+    var colorData = Definitions.getProperty(sceneData, Definitions.color);
+    colorSettingView.setSceneData(colorData);
+
+    var methodData = Definitions.getProperty(sceneData, Definitions.renderingMethod);
+    methodSettingView.setSceneData(methodData);
+
+    var textureData = Definitions.getProperty(sceneData, Definitions.textureModel);
+    textureSettingView.setSceneData(textureData);
+
+    var surfaceData = Definitions.getProperty(sceneData, Definitions.surfaceModel);
+    surfaceSettingView.setSceneData(surfaceData);
+
+    var emitterData = Definitions.getProperty(sceneData, Definitions.emitterModel);
+    emitterSettingView.setSceneData(emitterData);
+
+    var objectData = Definitions.getProperty(sceneData, Definitions.object);
+    objectSettingView.setSceneData(objectData);
+
+    var bvhData = Definitions.getProperty(sceneData, Definitions.bvh);
+    bvhSettingView.setSceneData(bvhData);
+
+    isEditMode = true;
   }
 }

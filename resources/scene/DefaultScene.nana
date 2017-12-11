@@ -54,18 +54,8 @@
             "IsEmissiveObject": false,
             "Name": "Floor",
             "ShapeType": "PlaneObject",
-            "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
-                {
-                    "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0,
-                        0,
-                        -1
-                    ]
-                },
                 {
                     "Enabled": true,
                     "Type": "Scaling",
@@ -73,6 +63,15 @@
                         5,
                         5,
                         1
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        -1
                     ]
                 }
             ],
@@ -85,9 +84,15 @@
             "IsEmissiveObject": true,
             "Name": "Light",
             "ShapeType": "PlaneObject",
-            "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
+                {
+                    "Angle": 180,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
                 {
                     "Enabled": true,
                     "Type": "Translation",
@@ -96,13 +101,6 @@
                         0,
                         1
                     ]
-                },
-                {
-                    "Angle": 180,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "SingleObject"
@@ -110,8 +108,6 @@
     ],
     "RenderingMethod": {
         "EyePathLightSampler": "UniformLightSampler",
-        "LightSamplerMaxSurfaceSplit": 10,
-        "LightSamplerNumOfPhotons": 32768,
         "PathLength": 3,
         "RayCastEpsilon": 1e-07,
         "RussianRoulette": "Reflectance (Max)",
@@ -130,7 +126,7 @@
     "System": {
         "ImageResolution": [
             320,
-            240
+            256
         ],
         "NumOfThreads": 1,
         "Power2CycleSaving": true,

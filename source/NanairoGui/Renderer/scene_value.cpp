@@ -339,26 +339,6 @@ void SceneValue::toRenderingMethodSetting(const QJsonObject& value,
     method_setting->setRoulettePathLength(path_length);
   }
   {
-    const auto light_sampler = toString(method_value, keyword::eyePathLightSampler);
-    const LightSourceSamplerType sampler_type =
-        (light_sampler == keyword::uniformLightSampler)
-            ? LightSourceSamplerType::kUniform :
-        (light_sampler == keyword::powerWeightedLightSampler)
-            ? LightSourceSamplerType::kPowerWeighted
-            : LightSourceSamplerType::kContributionWeighted;
-    method_setting->setLightSourceSamplerType(sampler_type);
-  }
-  {
-    const auto max_surface_split = toInt<uint32>(method_value,
-                                                 keyword::lightSamplerMaxSurfaceSplit);
-    method_setting->setLightSamplerMaxSurfaceSplit(max_surface_split);
-  }
-  {
-    const auto num_of_photons = toInt<uint32>(method_value,
-                                              keyword::lightSamplerNumOfPhotons);
-    method_setting->setLightSamplerNumOfPhotons(num_of_photons);
-  }
-  {
     const auto rendering_method = toString(method_value, keyword::type);
     const RenderingMethodType method =
         (rendering_method == keyword::pathTracing)
@@ -368,7 +348,37 @@ void SceneValue::toRenderingMethodSetting(const QJsonObject& value,
             : RenderingMethodType::kProbabilisticPpm;
     method_setting->setMethodType(method);
   }
+
+  auto getLightSourceSamplerType = [](const QString& light_sampler)
+  {
+    const LightSourceSamplerType sampler_type =
+        (light_sampler == keyword::uniformLightSampler)
+            ? LightSourceSamplerType::kUniform :
+        (light_sampler == keyword::powerWeightedLightSampler)
+            ? LightSourceSamplerType::kPowerWeighted
+            : LightSourceSamplerType::kContributionWeighted;
+    return sampler_type;
+  };
+
   switch (method_setting->methodType()) {
+   case RenderingMethodType::kPathTracing: {
+    auto& parameters = method_setting->pathTracingParameters();
+    {
+      const auto light_sampler = toString(method_value, keyword::eyePathLightSampler);
+      const auto sampler_type = getLightSourceSamplerType(light_sampler);
+      parameters.eye_path_light_sampler_type_ = sampler_type;
+    }
+    break;
+   }
+   case RenderingMethodType::kLightTracing: {
+    auto& parameters = method_setting->lightTracingParameters();
+    {
+      const auto light_sampler = toString(method_value, keyword::lightPathLightSampler);
+      const auto sampler_type = getLightSourceSamplerType(light_sampler);
+      parameters.light_path_light_sampler_type_ = sampler_type;
+    }
+    break;
+   }
    case RenderingMethodType::kProbabilisticPpm: {
     auto& parameters = method_setting->probabilisticPpmParameters();
     {
@@ -391,10 +401,13 @@ void SceneValue::toRenderingMethodSetting(const QJsonObject& value,
                                                            keyword::radiusReductionRate);
       parameters.radius_reduction_rate_ = radius_reduction_rate;
     }
+    {
+      const auto light_sampler = toString(method_value, keyword::lightPathLightSampler);
+      const auto sampler_type = getLightSourceSamplerType(light_sampler);
+      parameters.light_path_light_sampler_type_ = sampler_type;
+    }
     break;
    }
-   case RenderingMethodType::kPathTracing:
-   case RenderingMethodType::kLightTracing:
    default:
     break;
   }

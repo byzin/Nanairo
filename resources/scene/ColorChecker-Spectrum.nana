@@ -30,6 +30,13 @@
             "Name": "Camera",
             "Transformation": [
                 {
+                    "Angle": -10,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
@@ -37,13 +44,6 @@
                         -1,
                         -0.5
                     ]
-                },
-                {
-                    "Angle": -10,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "CameraObject"
@@ -68,6 +68,13 @@
             "SurfaceIndex": 0,
             "Transformation": [
                 {
+                    "Angle": 180,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
@@ -75,13 +82,6 @@
                         1.5,
                         1.49
                     ]
-                },
-                {
-                    "Angle": 180,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "SingleObject"
@@ -99,11 +99,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        -1,
-                        1,
-                        -0.5
+                        0.5,
+                        0.5,
+                        1
                     ]
                 },
                 {
@@ -115,11 +115,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        0.5,
-                        0.5,
-                        1
+                        -1,
+                        1,
+                        -0.5
                     ]
                 }
             ],
@@ -131,6 +131,13 @@
             "Name": "ColorChecker",
             "Transformation": [
                 {
+                    "Angle": 45,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
@@ -138,13 +145,6 @@
                         1.5,
                         -1
                     ]
-                },
-                {
-                    "Angle": 45,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "GroupObject"
@@ -185,20 +185,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        -0.75,
-                        0.45,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.75,
+                        0.45,
+                        0.0175
                     ]
                 }
             ],
@@ -217,20 +217,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        -0.45,
-                        0.45,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.45,
+                        0.45,
+                        0.0175
                     ]
                 }
             ],
@@ -249,20 +249,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        -0.15,
-                        0.45,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.15,
+                        0.45,
+                        0.0175
                     ]
                 }
             ],
@@ -281,20 +281,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0.15,
-                        0.45,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.15,
+                        0.45,
+                        0.0175
                     ]
                 }
             ],
@@ -313,20 +313,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0.45,
-                        0.45,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.45,
+                        0.45,
+                        0.0175
                     ]
                 }
             ],
@@ -345,20 +345,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0.75,
-                        0.45,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.75,
+                        0.45,
+                        0.0175
                     ]
                 }
             ],
@@ -377,20 +377,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        -0.75,
-                        0.15,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.75,
+                        0.15,
+                        0.0175
                     ]
                 }
             ],
@@ -409,20 +409,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        -0.45,
-                        0.15,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.45,
+                        0.15,
+                        0.0175
                     ]
                 }
             ],
@@ -441,20 +441,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        -0.15,
-                        0.15,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.15,
+                        0.15,
+                        0.0175
                     ]
                 }
             ],
@@ -473,20 +473,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0.15,
-                        0.15,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.15,
+                        0.15,
+                        0.0175
                     ]
                 }
             ],
@@ -505,20 +505,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0.45,
-                        0.15,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.45,
+                        0.15,
+                        0.0175
                     ]
                 }
             ],
@@ -537,20 +537,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0.75,
-                        0.15,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.75,
+                        0.15,
+                        0.0175
                     ]
                 }
             ],
@@ -569,20 +569,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        -0.75,
-                        -0.15,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.75,
+                        -0.15,
+                        0.0175
                     ]
                 }
             ],
@@ -601,20 +601,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        -0.45,
-                        -0.15,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.45,
+                        -0.15,
+                        0.0175
                     ]
                 }
             ],
@@ -633,20 +633,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        -0.15,
-                        -0.15,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.15,
+                        -0.15,
+                        0.0175
                     ]
                 }
             ],
@@ -665,20 +665,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0.15,
-                        -0.15,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.15,
+                        -0.15,
+                        0.0175
                     ]
                 }
             ],
@@ -697,20 +697,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0.45,
-                        -0.15,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.45,
+                        -0.15,
+                        0.0175
                     ]
                 }
             ],
@@ -729,20 +729,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0.75,
-                        -0.15,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.75,
+                        -0.15,
+                        0.0175
                     ]
                 }
             ],
@@ -761,20 +761,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        -0.75,
-                        -0.45,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.75,
+                        -0.45,
+                        0.0175
                     ]
                 }
             ],
@@ -793,20 +793,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        -0.45,
-                        -0.45,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.45,
+                        -0.45,
+                        0.0175
                     ]
                 }
             ],
@@ -825,20 +825,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        -0.15,
-                        -0.45,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.15,
+                        -0.45,
+                        0.0175
                     ]
                 }
             ],
@@ -857,20 +857,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0.15,
-                        -0.45,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.15,
+                        -0.45,
+                        0.0175
                     ]
                 }
             ],
@@ -889,20 +889,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0.45,
-                        -0.45,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.45,
+                        -0.45,
+                        0.0175
                     ]
                 }
             ],
@@ -921,20 +921,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0.75,
-                        -0.45,
-                        0.0175
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.27,
                         0.27,
                         0.01
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.75,
+                        -0.45,
+                        0.0175
                     ]
                 }
             ],
@@ -943,8 +943,6 @@
     ],
     "RenderingMethod": {
         "EyePathLightSampler": "PowerWeightedLightSampler",
-        "LightSamplerMaxSurfaceSplit": 10,
-        "LightSamplerNumOfPhotons": 32768,
         "PathLength": 3,
         "RayCastEpsilon": 1e-07,
         "RussianRoulette": "Reflectance (Max)",

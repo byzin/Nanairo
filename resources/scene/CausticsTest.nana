@@ -30,13 +30,11 @@
             "Name": "Camera",
             "Transformation": [
                 {
+                    "Angle": -45,
+                    "Axis": "X Axis",
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        1.3,
-                        0,
-                        0
-                    ]
+                    "Type": "Rotation",
+                    "Unit": "Degree"
                 },
                 {
                     "Angle": 45,
@@ -46,11 +44,13 @@
                     "Unit": "Degree"
                 },
                 {
-                    "Angle": -45,
-                    "Axis": "X Axis",
                     "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
+                    "Type": "Translation",
+                    "Value": [
+                        1.3,
+                        0,
+                        0
+                    ]
                 }
             ],
             "Type": "CameraObject"
@@ -76,20 +76,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0,
-                        0.75,
-                        -1.5
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         3,
                         4.5,
                         1
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0.75,
+                        -1.5
                     ]
                 }
             ],
@@ -108,19 +108,12 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        -1.5,
-                        0.75,
-                        0
+                        3,
+                        4.5,
+                        1
                     ]
-                },
-                {
-                    "Angle": 180,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 },
                 {
                     "Angle": 90,
@@ -130,12 +123,19 @@
                     "Unit": "Degree"
                 },
                 {
+                    "Angle": 180,
+                    "Axis": "X Axis",
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
                     "Value": [
-                        3,
-                        4.5,
-                        1
+                        -1.5,
+                        0.75,
+                        0
                     ]
                 }
             ],
@@ -154,19 +154,12 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        1.5,
-                        0.75,
-                        0
+                        3,
+                        4.5,
+                        1
                     ]
-                },
-                {
-                    "Angle": 180,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 },
                 {
                     "Angle": -90,
@@ -176,12 +169,19 @@
                     "Unit": "Degree"
                 },
                 {
+                    "Angle": 180,
+                    "Axis": "X Axis",
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
                     "Value": [
-                        3,
-                        4.5,
-                        1
+                        1.5,
+                        0.75,
+                        0
                     ]
                 }
             ],
@@ -200,11 +200,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        0,
                         3,
-                        0
+                        3,
+                        1
                     ]
                 },
                 {
@@ -216,11 +216,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
+                        0,
                         3,
-                        3,
-                        1
+                        0
                     ]
                 }
             ],
@@ -239,19 +239,12 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        0,
-                        0.75,
-                        1.5
+                        3,
+                        4.5,
+                        1
                     ]
-                },
-                {
-                    "Angle": 180,
-                    "Axis": "Z Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 },
                 {
                     "Angle": 180,
@@ -261,12 +254,19 @@
                     "Unit": "Degree"
                 },
                 {
+                    "Angle": 180,
+                    "Axis": "Z Axis",
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
                     "Value": [
-                        3,
-                        4.5,
-                        1
+                        0,
+                        0.75,
+                        1.5
                     ]
                 }
             ],
@@ -307,6 +307,13 @@
             "SurfaceIndex": 2,
             "Transformation": [
                 {
+                    "Angle": 18,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
@@ -314,13 +321,6 @@
                         1,
                         -1.35
                     ]
-                },
-                {
-                    "Angle": 18,
-                    "Axis": "Y Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "SingleObject"
@@ -338,11 +338,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        0,
-                        0,
-                        -0.5
+                        0.05,
+                        0.05,
+                        1
                     ]
                 },
                 {
@@ -354,11 +354,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        0.05,
-                        0.05,
-                        1
+                        0,
+                        0,
+                        -0.5
                     ]
                 }
             ],
@@ -366,9 +366,7 @@
         }
     ],
     "RenderingMethod": {
-        "EyePathLightSampler": "PowerWeightedLightSampler",
-        "LightSamplerMaxSurfaceSplit": 10,
-        "LightSamplerNumOfPhotons": 32768,
+        "LightPathLightSampler": "PowerWeightedLightSampler",
         "PathLength": 3,
         "RayCastEpsilon": 1e-07,
         "RussianRoulette": "Reflectance (Max)",

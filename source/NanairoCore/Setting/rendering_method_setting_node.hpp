@@ -26,9 +26,31 @@ namespace nanairo {
 //! \addtogroup Core
 //! \{
 
-// PathTracing has no parameter
+// PathTracing parameters
+struct PathTracingParameters : public NodeParameterBase
+{
+  //! Read the parameters from the stream
+  void readData(std::istream* data_stream) noexcept override;
 
-// LightTracing has no parameter
+  //! Write the parameters to the stream
+  void writeData(std::ostream* data_stream) const noexcept override;
+
+  LightSourceSamplerType eye_path_light_sampler_type_ =
+      LightSourceSamplerType::kPowerWeighted;
+};
+
+// LightTracing parameters
+struct LightTracingParameters : public NodeParameterBase
+{
+  //! Read the parameters from the stream
+  void readData(std::istream* data_stream) noexcept override;
+
+  //! Write the parameters to the stream
+  void writeData(std::ostream* data_stream) const noexcept override;
+
+  LightSourceSamplerType light_path_light_sampler_type_ =
+      LightSourceSamplerType::kPowerWeighted;
+};
 
 //! ProbabilisticPPM parameters
 struct ProbabilisticPpmParameters : public NodeParameterBase
@@ -43,6 +65,8 @@ struct ProbabilisticPpmParameters : public NodeParameterBase
   double radius_reduction_rate_ = 2.0 / 3.0;
   uint32 num_of_photons_ = 131072;
   uint32 k_nearest_neighbor_ = 8;
+  LightSourceSamplerType light_path_light_sampler_type_ =
+      LightSourceSamplerType::kPowerWeighted;
 };
 
 /*!
@@ -53,14 +77,17 @@ class RenderingMethodSettingNode : public SettingNodeBase
   //! Initialize a rendering method
   void initialize() noexcept override;
 
-  //! Return the max surface split
-  uint32 lightSamplerMaxSurfaceSplit() const noexcept;
+  //! Return the LightTracing parameters
+  LightTracingParameters& lightTracingParameters() noexcept;
 
-  //! Return the num of photons
-  uint32 lightSamplerNumOfPhotons() const noexcept;
+  //! Return the LightTracing parameters
+  const LightTracingParameters& lightTracingParameters() const noexcept;
 
-  //! Return the light source sampler type
-  LightSourceSamplerType lightSourceSamplerType() const noexcept;
+  //! Return the PathTracing parameters
+  PathTracingParameters& pathTracingParameters() noexcept;
+
+  //! Return the PathTracing parameters
+  const PathTracingParameters& pathTracingParameters() const noexcept;
 
   //! Return the ProbabilisticPPM parameters
   ProbabilisticPpmParameters& probabilisticPpmParameters() noexcept;
@@ -83,15 +110,6 @@ class RenderingMethodSettingNode : public SettingNodeBase
   //! Return the rendering method type
   RenderingMethodType methodType() const noexcept;
 
-  //! Set the max surface split
-  void setLightSamplerMaxSurfaceSplit(const uint max_surface_split) noexcept;
-
-  //! Set the num of photons
-  void setLightSamplerNumOfPhotons(const uint num_of_photons) noexcept;
-
-  //! Set the light source sampler type
-  void setLightSourceSamplerType(const LightSourceSamplerType sampler_type) noexcept;
-
   //! Set the rendering method type
   void setMethodType(const RenderingMethodType method_type) noexcept;
 
@@ -113,9 +131,6 @@ class RenderingMethodSettingNode : public SettingNodeBase
  private:
   std::unique_ptr<NodeParameterBase> parameters_;
   RenderingMethodType method_type_;
-  LightSourceSamplerType light_source_sampler_type_;
-  uint32 light_sampler_max_surface_split_;
-  uint32 light_sampler_num_of_photons_;
   double ray_cast_epsilon_;
   RouletteType roulette_type_;
   uint32 roulette_path_length_;

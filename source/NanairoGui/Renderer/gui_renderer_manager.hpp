@@ -51,23 +51,23 @@ class GuiRendererManager : public QObject, public CuiRendererManager
   //! Return the current working directory
   Q_INVOKABLE QString currentWorkingDir() const noexcept;
 
+  //! Generate a random seed randomly
+  Q_INVOKABLE int generateSeedRandomly() const noexcept;
+
   //! Get the file name from URL
   Q_INVOKABLE QString getFileName(const QUrl& file_path) const noexcept;
 
   //! Return the ideal thread counts
-  Q_INVOKABLE int idealThreadCount() const noexcept;
+  Q_INVOKABLE int getIdealThreadCount() const noexcept;
+
+  //! Convert a relative path to a url of absolute path
+  Q_INVOKABLE QUrl getAbsolutePath(const QString& relative_path) const noexcept;
+
+  //! Convert a url of absolute path to a relative path
+  Q_INVOKABLE QString getRelativePath(const QUrl& absolute_path) const noexcept;
 
   //! Check if the GUI is debug mode
   Q_INVOKABLE bool isDebugMode() const noexcept;
-
-  //! Return the random number
-  Q_INVOKABLE int random() const noexcept;
-
-  //! Convert a relative path to a url of absolute path
-  Q_INVOKABLE QUrl toAbsoluteFileUrl(const QString& relative_path) const noexcept;
-
-  //! Convert a url of absolute path to a relative path
-  Q_INVOKABLE QString toRelativeFilePath(const QUrl& absolute_path) const noexcept;
 
   //! Invoke the rendering function of the renderer
   Q_INVOKABLE void invokeRendering(const QVariant& scene_data,

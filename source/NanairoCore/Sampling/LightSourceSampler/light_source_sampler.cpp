@@ -45,14 +45,12 @@ LightSourceSampler::~LightSourceSampler() noexcept
 /*!
   */
 std::unique_ptr<LightSourceSampler> LightSourceSampler::makeSampler(
-    const SettingNodeBase* settings,
+    const LightSourceSamplerType sampler_type,
     const World& world,
     System& /* system */) noexcept
 {
-  const auto sampler_settings = castNode<RenderingMethodSettingNode>(settings);
-
   std::unique_ptr<LightSourceSampler> sampler;
-  switch (sampler_settings->lightSourceSamplerType()) {
+  switch (sampler_type) {
    case LightSourceSamplerType::kUniform: {
     sampler = std::make_unique<UniformLightSourceSampler>(world);
     break;

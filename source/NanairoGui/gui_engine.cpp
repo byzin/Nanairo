@@ -61,24 +61,10 @@ const GuiRendererManager& GuiEngine::rendererManager() const noexcept
   */
 void GuiEngine::initialize() noexcept
 {
-  initializeFont();
   manager_.setRenderedImageProvider(image_provider_);
   engine_.rootContext()->setContextProperty(QLatin1String("nanairoManager"),
                                             &manager_);
   engine_.addImageProvider("renderedImage", image_provider_);
-}
-
-/*!
-  */
-void GuiEngine::initializeFont() noexcept
-{
-  auto font = QGuiApplication::font();
-
-#ifdef Z_LINUX
-  font.setPixelSize(12);
-#endif // Z_LINUX
-
-  QGuiApplication::setFont(font);
 }
 
 } // namespace nanairo

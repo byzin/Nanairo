@@ -27,12 +27,41 @@ namespace nanairo {
 
 /*!
   */
+void PathTracingParameters::readData(std::istream* data_stream) noexcept
+{
+  zisc::read(&eye_path_light_sampler_type_, data_stream);
+}
+
+/*!
+  */
+void PathTracingParameters::writeData(std::ostream* data_stream) const noexcept
+{
+  zisc::write(&eye_path_light_sampler_type_, data_stream);
+}
+
+/*!
+  */
+void LightTracingParameters::readData(std::istream* data_stream) noexcept
+{
+  zisc::read(&light_path_light_sampler_type_, data_stream);
+}
+
+/*!
+  */
+void LightTracingParameters::writeData(std::ostream* data_stream) const noexcept
+{
+  zisc::write(&light_path_light_sampler_type_, data_stream);
+}
+
+/*!
+  */
 void ProbabilisticPpmParameters::readData(std::istream* data_stream) noexcept
 {
   zisc::read(&photon_search_radius_, data_stream);
   zisc::read(&radius_reduction_rate_, data_stream);
   zisc::read(&num_of_photons_, data_stream);
   zisc::read(&k_nearest_neighbor_, data_stream);
+  zisc::read(&light_path_light_sampler_type_, data_stream);
 }
 
 /*!
@@ -43,6 +72,7 @@ void ProbabilisticPpmParameters::writeData(std::ostream* data_stream) const noex
   zisc::write(&radius_reduction_rate_, data_stream);
   zisc::write(&num_of_photons_, data_stream);
   zisc::write(&k_nearest_neighbor_, data_stream);
+  zisc::write(&light_path_light_sampler_type_, data_stream);
 }
 
 /*!
@@ -57,23 +87,46 @@ void RenderingMethodSettingNode::initialize() noexcept
 
 /*!
   */
-uint32 RenderingMethodSettingNode::lightSamplerMaxSurfaceSplit() const noexcept
+LightTracingParameters&
+RenderingMethodSettingNode::lightTracingParameters() noexcept
 {
-  return light_sampler_max_surface_split_;
+  ZISC_ASSERT(methodType() == RenderingMethodType::kLightTracing,
+              "Invalid method type is specified.");
+  auto parameters = zisc::cast<LightTracingParameters*>(parameters_.get());
+  return *parameters;
 }
 
 /*!
   */
-uint32 RenderingMethodSettingNode::lightSamplerNumOfPhotons() const noexcept
+const LightTracingParameters&
+RenderingMethodSettingNode::lightTracingParameters() const noexcept
 {
-  return light_sampler_num_of_photons_;
+  ZISC_ASSERT(methodType() == RenderingMethodType::kLightTracing,
+              "Invalid method type is specified.");
+  auto parameters = zisc::cast<const LightTracingParameters*>(parameters_.get());
+  return *parameters;
 }
 
 /*!
   */
-LightSourceSamplerType RenderingMethodSettingNode::lightSourceSamplerType() const noexcept
+PathTracingParameters&
+RenderingMethodSettingNode::pathTracingParameters() noexcept
 {
-  return light_source_sampler_type_;
+  ZISC_ASSERT(methodType() == RenderingMethodType::kPathTracing,
+              "Invalid method type is specified.");
+  auto parameters = zisc::cast<PathTracingParameters*>(parameters_.get());
+  return *parameters;
+}
+
+/*!
+  */
+const PathTracingParameters&
+RenderingMethodSettingNode::pathTracingParameters() const noexcept
+{
+  ZISC_ASSERT(methodType() == RenderingMethodType::kPathTracing,
+              "Invalid method type is specified.");
+  auto parameters = zisc::cast<const PathTracingParameters*>(parameters_.get());
+  return *parameters;
 }
 
 /*!
@@ -113,9 +166,6 @@ void RenderingMethodSettingNode::readData(std::istream* data_stream) noexcept
     zisc::read(&method_type_, data_stream);
     setMethodType(method_type_);
   }
-  zisc::read(&light_source_sampler_type_, data_stream);
-  zisc::read(&light_sampler_max_surface_split_, data_stream);
-  zisc::read(&light_sampler_num_of_photons_, data_stream);
   zisc::read(&ray_cast_epsilon_, data_stream);
   zisc::read(&roulette_type_, data_stream);
   zisc::read(&roulette_path_length_, data_stream);
@@ -146,29 +196,6 @@ RenderingMethodType RenderingMethodSettingNode::methodType() const noexcept
 
 /*!
   */
-void RenderingMethodSettingNode::setLightSamplerMaxSurfaceSplit(
-    const uint32 max_surface_split) noexcept
-{
-  light_sampler_max_surface_split_ = max_surface_split;
-}
-
-/*!
-  */
-void RenderingMethodSettingNode::setLightSamplerNumOfPhotons(
-    const uint32 num_of_photons) noexcept
-{
-  light_sampler_num_of_photons_ = num_of_photons;
-}
-
-/*!
-  */
-void RenderingMethodSettingNode::setLightSourceSamplerType(const LightSourceSamplerType sampler_type) noexcept
-{
-  light_source_sampler_type_ = sampler_type;
-}
-
-/*!
-  */
 void RenderingMethodSettingNode::setMethodType(const RenderingMethodType method_type)
     noexcept
 {
@@ -176,12 +203,18 @@ void RenderingMethodSettingNode::setMethodType(const RenderingMethodType method_
   // Initialize parameters
   parameters_.reset(nullptr);
   switch (method_type_) {
+   case RenderingMethodType::kPathTracing: {
+    parameters_ = std::make_unique<PathTracingParameters>();
+    break;
+   }
+   case RenderingMethodType::kLightTracing: {
+    parameters_ = std::make_unique<LightTracingParameters>();
+    break;
+   }
    case RenderingMethodType::kProbabilisticPpm: {
     parameters_ = std::make_unique<ProbabilisticPpmParameters>();
     break;
    }
-   case RenderingMethodType::kPathTracing:
-   case RenderingMethodType::kLightTracing:
    default:
     break;
   }
@@ -226,9 +259,6 @@ void RenderingMethodSettingNode::writeData(std::ostream* data_stream)
   writeType(data_stream);
   // Write properties
   zisc::write(&method_type_, data_stream);
-  zisc::write(&light_source_sampler_type_, data_stream);
-  zisc::write(&light_sampler_max_surface_split_, data_stream);
-  zisc::write(&light_sampler_num_of_photons_, data_stream);
   zisc::write(&ray_cast_epsilon_, data_stream);
   zisc::write(&roulette_type_, data_stream);
   zisc::write(&roulette_path_length_, data_stream);

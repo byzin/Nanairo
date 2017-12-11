@@ -12,9 +12,13 @@
 #include <functional>
 #include <memory>
 // Qt
+#ifdef QT_WIDGETS_LIB
+#include <QApplication>
+#else // QT_WIDGETS_LIB
+#include <QGuiApplication>
+#endif // QT_WIDGETS_LIB
 #include <QCommandLineParser>
 #include <QCommandLineOption>
-#include <QCoreApplication>
 #include <QDateTime>
 #include <QDir>
 #include <QFont>
@@ -74,7 +78,13 @@ std::function<int ()> makeRenderRunner(
 int main(int argc, char** argv)
 {
   // Initialize application
-  QScopedPointer<QGuiApplication> application{new QGuiApplication{argc, argv}};
+  QScopedPointer<QGuiApplication> application{
+#ifdef QT_WIDGETS_LIB
+    new QApplication{argc, argv}
+#else // QT_WIDGETS_LIB
+    new QGuiApplication{argc, argv}
+#endif // QT_WIDGETS_LIB
+    };
   initQt();
 
   std::function<int ()> render_runner;
@@ -95,10 +105,13 @@ namespace {
 void initQt() noexcept
 {
   // Application info
-  QCoreApplication::setApplicationName(
+  QGuiApplication::setApplicationName(
       nanairo::GuiConfig::applicationName().c_str());
-  QCoreApplication::setApplicationVersion(
+  QGuiApplication::setApplicationVersion(
       nanairo::CoreConfig::versionString().c_str());
+
+  // Qt properties
+  QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
   // Random seed
   {

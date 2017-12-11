@@ -57,6 +57,13 @@ QString GuiRendererManager::currentWorkingDir() const noexcept
 }
 
 /*!
+  */
+int GuiRendererManager::generateSeedRandomly() const noexcept
+{
+  return qrand();
+}
+
+/*!
   \details
   No detailed.
   */
@@ -66,33 +73,15 @@ QString GuiRendererManager::getFileName(const QUrl& file_path) const noexcept
 }
 
 /*!
-  \details
-  No detailed.
   */
-int GuiRendererManager::idealThreadCount() const noexcept
+int GuiRendererManager::getIdealThreadCount() const noexcept
 {
   return QThread::idealThreadCount();
 }
 
 /*!
   */
-bool GuiRendererManager::isDebugMode() const noexcept
-{
-  return false;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-int GuiRendererManager::random() const noexcept
-{
-  return qrand();
-}
-
-/*!
-  */
-QUrl GuiRendererManager::toAbsoluteFileUrl(
+QUrl GuiRendererManager::getAbsolutePath(
     const QString& relative_path) const noexcept
 {
   QDir working_dir;
@@ -103,11 +92,24 @@ QUrl GuiRendererManager::toAbsoluteFileUrl(
 
 /*!
   */
-QString GuiRendererManager::toRelativeFilePath(
+QString GuiRendererManager::getRelativePath(
     const QUrl& absolute_path) const noexcept
 {
   const QDir working_dir;
   return QDir::cleanPath(working_dir.relativeFilePath(absolute_path.toLocalFile()));
+}
+
+/*!
+  */
+bool GuiRendererManager::isDebugMode() const noexcept
+{
+  constexpr bool is_debug_mode =
+#ifdef Z_RELEASE_MODE
+    false;
+#else // Z_RELEASE_MODE
+    true;
+#endif // Z_RELEASE_MODE
+  return is_debug_mode;
 }
 
 /*!

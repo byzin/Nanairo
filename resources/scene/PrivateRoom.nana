@@ -54,17 +54,8 @@
             "Name": "Camera",
             "Transformation": [
                 {
-                    "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0.8,
-                        0,
-                        0.5
-                    ]
-                },
-                {
-                    "Angle": 55,
-                    "Axis": "Z Axis",
+                    "Angle": -15,
+                    "Axis": "X Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
@@ -79,11 +70,20 @@
                     ]
                 },
                 {
-                    "Angle": -15,
-                    "Axis": "X Axis",
+                    "Angle": 55,
+                    "Axis": "Z Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.8,
+                        0,
+                        0.5
+                    ]
                 }
             ],
             "Type": "CameraObject"
@@ -117,20 +117,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0,
-                        0,
-                        -1
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         8,
                         6,
                         1
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        -1
                     ]
                 }
             ],
@@ -143,11 +143,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        1.5,
+                        1,
+                        1.5
+                    ]
+                },
+                {
+                    "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        -3.5,
                         0,
-                        0
+                        0,
+                        -1
                     ]
                 },
                 {
@@ -161,18 +170,9 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
+                        -3.5,
                         0,
-                        0,
-                        -1
-                    ]
-                },
-                {
-                    "Enabled": true,
-                    "Type": "Scaling",
-                    "Value": [
-                        1.5,
-                        1,
-                        1.5
+                        0
                     ]
                 }
             ],
@@ -254,12 +254,19 @@
             "SurfaceIndex": 0,
             "Transformation": [
                 {
+                    "Angle": 90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        1,
                         0,
-                        0
+                        0,
+                        0.5
                     ]
                 },
                 {
@@ -275,17 +282,10 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
+                        1,
                         0,
-                        0,
-                        0.5
+                        0
                     ]
-                },
-                {
-                    "Angle": 90,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "SingleObject"
@@ -302,12 +302,19 @@
             "SurfaceIndex": 0,
             "Transformation": [
                 {
+                    "Angle": 90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        -1,
                         0,
-                        0
+                        0,
+                        0.5
                     ]
                 },
                 {
@@ -323,17 +330,10 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
+                        -1,
                         0,
-                        0,
-                        0.5
+                        0
                     ]
-                },
-                {
-                    "Angle": 90,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "SingleObject"
@@ -350,6 +350,13 @@
             "SurfaceIndex": 0,
             "Transformation": [
                 {
+                    "Angle": 90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
@@ -357,13 +364,6 @@
                         0,
                         1.5
                     ]
-                },
-                {
-                    "Angle": 90,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "SingleObject"
@@ -381,19 +381,12 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        0.2,
-                        0.8,
-                        0.5
+                        0.3,
+                        1,
+                        1
                     ]
-                },
-                {
-                    "Angle": -25,
-                    "Axis": "Z Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 },
                 {
                     "Angle": 90,
@@ -403,12 +396,19 @@
                     "Unit": "Degree"
                 },
                 {
+                    "Angle": -25,
+                    "Axis": "Z Axis",
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
                     "Value": [
-                        0.3,
-                        1,
-                        1
+                        0.2,
+                        0.8,
+                        0.5
                     ]
                 }
             ],
@@ -427,11 +427,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        0,
-                        2.5,
-                        0.5
+                        8,
+                        3,
+                        1
                     ]
                 },
                 {
@@ -443,11 +443,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        8,
-                        3,
-                        1
+                        0,
+                        2.5,
+                        0.5
                     ]
                 }
             ],
@@ -466,11 +466,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        0,
-                        -2.5,
-                        0.5
+                        8,
+                        3,
+                        1
                     ]
                 },
                 {
@@ -482,11 +482,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        8,
-                        3,
-                        1
+                        0,
+                        -2.5,
+                        0.5
                     ]
                 }
             ],
@@ -505,11 +505,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        4,
-                        0,
-                        0.5
+                        3,
+                        6,
+                        1
                     ]
                 },
                 {
@@ -521,11 +521,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        3,
-                        6,
-                        1
+                        4,
+                        0,
+                        0.5
                     ]
                 }
             ],
@@ -544,20 +544,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0,
-                        0,
-                        2
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         8,
                         6,
                         1
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        2
                     ]
                 }
             ],
@@ -578,20 +578,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        2,
-                        2,
-                        -1
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         1.6,
                         1.6,
                         1.6
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        2,
+                        2,
+                        -1
                     ]
                 }
             ],
@@ -692,20 +692,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        2.2,
-                        -0.3,
-                        -0.65
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.05,
                         0.05,
                         0.65
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        2.2,
+                        -0.3,
+                        -0.65
                     ]
                 }
             ],
@@ -777,11 +777,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        0,
-                        -0.01,
-                        0.4
+                        0.85,
+                        0.5,
+                        1
                     ]
                 },
                 {
@@ -793,11 +793,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        0.85,
-                        0.5,
-                        1
+                        0,
+                        -0.01,
+                        0.4
                     ]
                 }
             ],
@@ -816,20 +816,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0,
-                        -0.25,
-                        0
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.7,
                         0.7,
                         0.7
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -0.25,
+                        0
                     ]
                 }
             ],
@@ -848,20 +848,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0.5,
-                        -0.25,
-                        0
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.18,
                         0.18,
                         0.18
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.5,
+                        -0.25,
+                        0
                     ]
                 }
             ],
@@ -873,13 +873,11 @@
             "Name": "OfficeChair",
             "Transformation": [
                 {
+                    "Angle": 150,
+                    "Axis": "Z Axis",
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0.6,
-                        1.3,
-                        0
-                    ]
+                    "Type": "Rotation",
+                    "Unit": "Degree"
                 },
                 {
                     "Enabled": true,
@@ -891,11 +889,13 @@
                     ]
                 },
                 {
-                    "Angle": 150,
-                    "Axis": "Z Axis",
                     "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
+                    "Type": "Translation",
+                    "Value": [
+                        0.6,
+                        1.3,
+                        0
+                    ]
                 }
             ],
             "Type": "GroupObject"
@@ -962,6 +962,13 @@
             "Name": "TV",
             "Transformation": [
                 {
+                    "Angle": 90,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
@@ -969,13 +976,6 @@
                         -1.6,
                         -1
                     ]
-                },
-                {
-                    "Angle": 90,
-                    "Axis": "Z Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "GroupObject"
@@ -1039,11 +1039,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        0,
-                        -0.05,
-                        0.6
+                        0.95,
+                        0.5,
+                        1
                     ]
                 },
                 {
@@ -1055,11 +1055,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        0.95,
-                        0.5,
-                        1
+                        0,
+                        -0.05,
+                        0.6
                     ]
                 }
             ],
@@ -1072,11 +1072,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        1,
-                        -1.3,
-                        -1
+                        1.5,
+                        1.5,
+                        1.5
                     ]
                 },
                 {
@@ -1088,11 +1088,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        1.5,
-                        1.5,
-                        1.5
+                        1,
+                        -1.3,
+                        -1
                     ]
                 }
             ],
@@ -1161,11 +1161,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        -2.6,
-                        2.3,
-                        1
+                        0.3,
+                        0.3,
+                        0.3
                     ]
                 },
                 {
@@ -1177,11 +1177,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        0.3,
-                        0.3,
-                        0.3
+                        -2.6,
+                        2.3,
+                        1
                     ]
                 }
             ],
@@ -1200,11 +1200,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        -1,
-                        2.3,
-                        1
+                        0.3,
+                        0.3,
+                        0.3
                     ]
                 },
                 {
@@ -1216,11 +1216,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        0.3,
-                        0.3,
-                        0.3
+                        -1,
+                        2.3,
+                        1
                     ]
                 }
             ],
@@ -1239,11 +1239,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        0.6,
-                        2.3,
-                        1
+                        0.3,
+                        0.3,
+                        0.3
                     ]
                 },
                 {
@@ -1255,11 +1255,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        0.3,
-                        0.3,
-                        0.3
+                        0.6,
+                        2.3,
+                        1
                     ]
                 }
             ],
@@ -1278,11 +1278,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        2.2,
-                        2.3,
-                        1
+                        0.3,
+                        0.3,
+                        0.3
                     ]
                 },
                 {
@@ -1294,11 +1294,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        0.3,
-                        0.3,
-                        0.3
+                        2.2,
+                        2.3,
+                        1
                     ]
                 }
             ],
@@ -1317,11 +1317,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        -3.3,
-                        1.6,
-                        1
+                        0.3,
+                        0.3,
+                        0.3
                     ]
                 },
                 {
@@ -1333,11 +1333,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        0.3,
-                        0.3,
-                        0.3
+                        -3.3,
+                        1.6,
+                        1
                     ]
                 }
             ],
@@ -1356,11 +1356,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        -3.3,
-                        0,
-                        1
+                        0.3,
+                        0.3,
+                        0.3
                     ]
                 },
                 {
@@ -1372,11 +1372,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        0.3,
-                        0.3,
-                        0.3
+                        -3.3,
+                        0,
+                        1
                     ]
                 }
             ],
@@ -1395,11 +1395,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        -3.3,
-                        -1.6,
-                        1
+                        0.3,
+                        0.3,
+                        0.3
                     ]
                 },
                 {
@@ -1411,11 +1411,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        0.3,
-                        0.3,
-                        0.3
+                        -3.3,
+                        -1.6,
+                        1
                     ]
                 }
             ],
@@ -1428,20 +1428,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        1.45,
-                        0,
-                        1.3
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.5,
                         0.5,
                         0.5
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        1.45,
+                        0,
+                        1.3
                     ]
                 }
             ],
@@ -1460,11 +1460,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        0,
-                        0,
-                        0.25
+                        0.35,
+                        0.35,
+                        1
                     ]
                 },
                 {
@@ -1476,11 +1476,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        0.35,
-                        0.35,
-                        1
+                        0,
+                        0,
+                        0.25
                     ]
                 }
             ],
@@ -1512,8 +1512,6 @@
     ],
     "RenderingMethod": {
         "EyePathLightSampler": "PowerWeightedLightSampler",
-        "LightSamplerMaxSurfaceSplit": 10,
-        "LightSamplerNumOfPhotons": 32768,
         "PathLength": 3,
         "RayCastEpsilon": 1e-07,
         "RussianRoulette": "Reflectance (Max)",

@@ -266,9 +266,15 @@ void PathTracing::initialize(System& system,
                              const SettingNodeBase* settings,
                              const Scene& scene) noexcept
 {
-  eye_path_light_sampler_ = LightSourceSampler::makeSampler(settings,
-                                                            scene.world(),
-                                                            system);
+  const auto method_settings = castNode<RenderingMethodSettingNode>(settings);
+  const auto& parameters = method_settings->pathTracingParameters();
+
+  {
+    const auto sampler_type = parameters.eye_path_light_sampler_type_;
+    eye_path_light_sampler_ = LightSourceSampler::makeSampler(sampler_type,
+                                                              scene.world(),
+                                                              system);
+  }
 }
 
 /*!

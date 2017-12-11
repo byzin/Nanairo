@@ -95,9 +95,9 @@ function(makeGuiResource gui_resource_dir gui_resource_file)
                 "    <file alias=\"${gui_alias}\">${gui_file}</file>\n")
   endforeach(gui_file)
   # Definitions file
-  configure_file(${__nanairo_gui_root__}/Gui/nanairo.js
-                 ${gui_resource_dir}/nanairo.js)
-  list(APPEND resource_file_code "    <file alias=\"nanairo.js\">${gui_resource_dir}/nanairo.js</file>\n")
+  configure_file(${__nanairo_gui_root__}/Gui/definitions.js
+                 ${gui_resource_dir}/definitions.js)
+  list(APPEND resource_file_code "    <file alias=\"definitions.js\">${gui_resource_dir}/definitions.js</file>\n")
   # Scene files
   set(scene_resource_dir ${PROJECT_SOURCE_DIR}/resources)
   file(GLOB_RECURSE scene_files ${scene_resource_dir}/scene/*.nana)

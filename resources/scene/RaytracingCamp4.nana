@@ -42,13 +42,6 @@
             "Name": "Camera",
             "Transformation": [
                 {
-                    "Angle": -32,
-                    "Axis": "Z Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
-                },
-                {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
@@ -56,6 +49,13 @@
                         -9,
                         -0.5
                     ]
+                },
+                {
+                    "Angle": -32,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
                 }
             ],
             "Type": "CameraObject"
@@ -75,18 +75,8 @@
             "IsEmissiveObject": false,
             "Name": "Floor",
             "ShapeType": "PlaneObject",
-            "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
-                {
-                    "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0,
-                        0,
-                        -1
-                    ]
-                },
                 {
                     "Enabled": true,
                     "Type": "Scaling",
@@ -94,6 +84,15 @@
                         20,
                         20,
                         1
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        -1
                     ]
                 }
             ],
@@ -106,16 +105,15 @@
             "IsEmissiveObject": false,
             "Name": "FarWall",
             "ShapeType": "PlaneObject",
-            "Smoothing": false,
             "SurfaceIndex": 2,
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        0,
-                        10,
-                        2.5
+                        20,
+                        7,
+                        1
                     ]
                 },
                 {
@@ -127,11 +125,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        20,
-                        7,
-                        1
+                        0,
+                        10,
+                        2.5
                     ]
                 }
             ],
@@ -144,16 +142,15 @@
             "IsEmissiveObject": false,
             "Name": "LeftWall",
             "ShapeType": "PlaneObject",
-            "Smoothing": false,
             "SurfaceIndex": 1,
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        -10,
-                        0,
-                        2.5
+                        7,
+                        20,
+                        1
                     ]
                 },
                 {
@@ -165,11 +162,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        7,
-                        20,
-                        1
+                        -10,
+                        0,
+                        2.5
                     ]
                 }
             ],
@@ -182,16 +179,15 @@
             "IsEmissiveObject": false,
             "Name": "RightWall",
             "ShapeType": "PlaneObject",
-            "Smoothing": false,
             "SurfaceIndex": 1,
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        10,
-                        0,
-                        2.5
+                        7,
+                        20,
+                        1
                     ]
                 },
                 {
@@ -203,11 +199,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        7,
-                        20,
-                        1
+                        10,
+                        0,
+                        2.5
                     ]
                 }
             ],
@@ -220,16 +216,15 @@
             "IsEmissiveObject": false,
             "Name": "NearWall",
             "ShapeType": "PlaneObject",
-            "Smoothing": false,
             "SurfaceIndex": 1,
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        0,
-                        -10,
-                        2.5
+                        20,
+                        7,
+                        1
                     ]
                 },
                 {
@@ -241,11 +236,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        20,
-                        7,
-                        1
+                        0,
+                        -10,
+                        2.5
                     ]
                 }
             ],
@@ -258,18 +253,8 @@
             "IsEmissiveObject": false,
             "Name": "Ceiling",
             "ShapeType": "PlaneObject",
-            "Smoothing": false,
             "SurfaceIndex": 0,
             "Transformation": [
-                {
-                    "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0,
-                        0,
-                        6
-                    ]
-                },
                 {
                     "Enabled": true,
                     "Type": "Scaling",
@@ -277,6 +262,15 @@
                         20,
                         20,
                         1
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        6
                     ]
                 }
             ],
@@ -295,20 +289,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        -4.5,
-                        6,
-                        -1
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.2,
                         0.2,
                         0.2
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -4.5,
+                        6,
+                        -1
                     ]
                 }
             ],
@@ -327,11 +321,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        -2.3,
-                        -1,
-                        0
+                        0.2,
+                        0.2,
+                        0.2
                     ]
                 },
                 {
@@ -345,11 +339,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        0.2,
-                        0.2,
-                        0.2
+                        -2.3,
+                        -1,
+                        0
                     ]
                 }
             ],
@@ -364,9 +358,9 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        -4.15,
-                        2.1,
-                        -1
+                        0,
+                        0,
+                        0.5
                     ]
                 },
                 {
@@ -382,9 +376,9 @@
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
-                        0,
-                        0,
-                        0.5
+                        -4.15,
+                        2.1,
+                        -1
                     ]
                 }
             ],
@@ -397,7 +391,6 @@
             "IsEmissiveObject": false,
             "Name": "Label",
             "ShapeType": "PlaneObject",
-            "Smoothing": false,
             "SurfaceIndex": 5,
             "Transformation": [
                 {
@@ -417,9 +410,15 @@
             "IsEmissiveObject": false,
             "Name": "LabelPlane",
             "ShapeType": "PlaneObject",
-            "Smoothing": false,
             "SurfaceIndex": 6,
             "Transformation": [
+                {
+                    "Angle": -90,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
                 {
                     "Enabled": true,
                     "Type": "Translation",
@@ -428,13 +427,6 @@
                         10,
                         0
                     ]
-                },
-                {
-                    "Angle": -90,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "SingleObject"
@@ -446,7 +438,6 @@
             "IsEmissiveObject": false,
             "Name": "LabelPlane",
             "ShapeType": "PlaneObject",
-            "Smoothing": false,
             "SurfaceIndex": 6,
             "Transformation": [
                 {
@@ -468,9 +459,15 @@
             "IsEmissiveObject": false,
             "Name": "LabelPlane",
             "ShapeType": "PlaneObject",
-            "Smoothing": false,
             "SurfaceIndex": 6,
             "Transformation": [
+                {
+                    "Angle": 180,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
                 {
                     "Enabled": true,
                     "Type": "Translation",
@@ -479,13 +476,6 @@
                         0,
                         -0.5
                     ]
-                },
-                {
-                    "Angle": 180,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "SingleObject"
@@ -497,9 +487,15 @@
             "IsEmissiveObject": false,
             "Name": "LabelPlane",
             "ShapeType": "PlaneObject",
-            "Smoothing": false,
             "SurfaceIndex": 6,
             "Transformation": [
+                {
+                    "Angle": -90,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
                 {
                     "Enabled": true,
                     "Type": "Translation",
@@ -508,13 +504,6 @@
                         0,
                         0
                     ]
-                },
-                {
-                    "Angle": -90,
-                    "Axis": "Y Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "SingleObject"
@@ -526,9 +515,15 @@
             "IsEmissiveObject": false,
             "Name": "LabelPlane",
             "ShapeType": "PlaneObject",
-            "Smoothing": false,
             "SurfaceIndex": 6,
             "Transformation": [
+                {
+                    "Angle": 90,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
                 {
                     "Enabled": true,
                     "Type": "Translation",
@@ -537,13 +532,6 @@
                         0,
                         0
                     ]
-                },
-                {
-                    "Angle": 90,
-                    "Axis": "Y Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "SingleObject"
@@ -555,11 +543,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        8,
-                        6,
-                        -1
+                        1.5,
+                        1.5,
+                        1.5
                     ]
                 },
                 {
@@ -571,11 +559,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        1.5,
-                        1.5,
-                        1.5
+                        8,
+                        6,
+                        -1
                     ]
                 }
             ],
@@ -593,13 +581,11 @@
             "SurfaceIndex": 7,
             "Transformation": [
                 {
+                    "Angle": 180,
+                    "Axis": "Z Axis",
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0,
-                        1,
-                        0
-                    ]
+                    "Type": "Rotation",
+                    "Unit": "Degree"
                 },
                 {
                     "Enabled": true,
@@ -611,11 +597,13 @@
                     ]
                 },
                 {
-                    "Angle": 180,
-                    "Axis": "Z Axis",
                     "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        1,
+                        0
+                    ]
                 }
             ],
             "Type": "SingleObject"
@@ -633,11 +621,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        0.2,
                         3,
-                        0.5
+                        1.5,
+                        0.1
                     ]
                 },
                 {
@@ -649,11 +637,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
+                        0.2,
                         3,
-                        1.5,
-                        0.1
+                        0.5
                     ]
                 }
             ],
@@ -672,11 +660,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        -2,
-                        -2,
-                        -1
+                        2,
+                        2,
+                        2
                     ]
                 },
                 {
@@ -688,11 +676,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        2,
-                        2,
-                        2
+                        -2,
+                        -2,
+                        -1
                     ]
                 }
             ],
@@ -705,17 +693,21 @@
             "IsEmissiveObject": true,
             "Name": "Light",
             "ShapeType": "PlaneObject",
-            "Smoothing": false,
             "SurfaceIndex": 4,
             "Transformation": [
                 {
+                    "Angle": 135,
+                    "Axis": "X Axis",
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        8,
-                        8,
-                        0
-                    ]
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": -45,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
                 },
                 {
                     "Enabled": true,
@@ -727,18 +719,13 @@
                     ]
                 },
                 {
-                    "Angle": -45,
-                    "Axis": "Z Axis",
                     "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
-                },
-                {
-                    "Angle": 135,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
+                    "Type": "Translation",
+                    "Value": [
+                        8,
+                        8,
+                        0
+                    ]
                 }
             ],
             "Type": "SingleObject"
@@ -746,8 +733,6 @@
     ],
     "RenderingMethod": {
         "EyePathLightSampler": "PowerWeightedLightSampler",
-        "LightSamplerMaxSurfaceSplit": 10,
-        "LightSamplerNumOfPhotons": 32768,
         "PathLength": 3,
         "RayCastEpsilon": 1e-07,
         "RussianRoulette": "Reflectance (Max)",
@@ -897,7 +882,7 @@
             "Color": {
                 "ColorMode": "RGB",
                 "Value": [
-                    0.25,
+                    0.2500038147554742,
                     1,
                     1
                 ]

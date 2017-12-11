@@ -48,6 +48,13 @@
             "Name": "Camera",
             "Transformation": [
                 {
+                    "Angle": -25,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
@@ -55,13 +62,6 @@
                         -8,
                         3.5
                     ]
-                },
-                {
-                    "Angle": -25,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "CameraObject"
@@ -104,20 +104,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        -2.25,
-                        0,
-                        -0.01
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.02,
                         0.02,
                         0.02
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -2.25,
+                        0,
+                        -0.01
                     ]
                 }
             ],
@@ -136,20 +136,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        -0.75,
-                        0,
-                        -0.05
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.1,
                         0.1,
                         0.1
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        -0.75,
+                        0,
+                        -0.05
                     ]
                 }
             ],
@@ -168,20 +168,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0.75,
-                        0,
-                        -0.15
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         0.3,
                         0.3,
                         0.3
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0.75,
+                        0,
+                        -0.15
                     ]
                 }
             ],
@@ -223,20 +223,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0,
-                        0,
-                        -1.5
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         20,
                         20,
                         1
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        0,
+                        -1.5
                     ]
                 }
             ],
@@ -272,11 +272,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        0,
-                        2,
-                        0
+                        6,
+                        1,
+                        0.05
                     ]
                 },
                 {
@@ -288,11 +288,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        6,
-                        1,
-                        0.05
+                        0,
+                        2,
+                        0
                     ]
                 }
             ],
@@ -311,11 +311,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        0,
+                        6,
                         1,
-                        -0.5
+                        0.05
                     ]
                 },
                 {
@@ -327,11 +327,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        6,
+                        0,
                         1,
-                        0.05
+                        -0.5
                     ]
                 }
             ],
@@ -350,11 +350,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        0,
-                        0,
-                        -0.83
+                        6,
+                        1,
+                        0.05
                     ]
                 },
                 {
@@ -366,11 +366,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        6,
-                        1,
-                        0.05
+                        0,
+                        0,
+                        -0.83
                     ]
                 }
             ],
@@ -389,11 +389,11 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
+                    "Type": "Scaling",
                     "Value": [
-                        0,
-                        -1,
-                        -1
+                        6,
+                        1,
+                        0.05
                     ]
                 },
                 {
@@ -405,11 +405,11 @@
                 },
                 {
                     "Enabled": true,
-                    "Type": "Scaling",
+                    "Type": "Translation",
                     "Value": [
-                        6,
-                        1,
-                        0.05
+                        0,
+                        -1,
+                        -1
                     ]
                 }
             ],
@@ -418,8 +418,6 @@
     ],
     "RenderingMethod": {
         "EyePathLightSampler": "PowerWeightedLightSampler",
-        "LightSamplerMaxSurfaceSplit": 10,
-        "LightSamplerNumOfPhotons": 32768,
         "PathLength": 3,
         "RayCastEpsilon": 1e-07,
         "RussianRoulette": "Reflectance (Max)",

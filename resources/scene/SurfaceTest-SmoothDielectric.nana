@@ -30,6 +30,13 @@
             "Name": "Camera",
             "Transformation": [
                 {
+                    "Angle": -35,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
@@ -37,13 +44,6 @@
                         -3.8,
                         1.5
                     ]
-                },
-                {
-                    "Angle": -35,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "CameraObject"
@@ -69,20 +69,20 @@
             "Transformation": [
                 {
                     "Enabled": true,
-                    "Type": "Translation",
-                    "Value": [
-                        0,
-                        -0.4,
-                        -1.5
-                    ]
-                },
-                {
-                    "Enabled": true,
                     "Type": "Scaling",
                     "Value": [
                         7.5,
                         7.5,
                         7.5
+                    ]
+                },
+                {
+                    "Enabled": true,
+                    "Type": "Translation",
+                    "Value": [
+                        0,
+                        -0.4,
+                        -1.5
                     ]
                 }
             ],
@@ -100,6 +100,13 @@
             "SurfaceIndex": 0,
             "Transformation": [
                 {
+                    "Angle": 180,
+                    "Axis": "X Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
@@ -107,13 +114,6 @@
                         0,
                         2
                     ]
-                },
-                {
-                    "Angle": 180,
-                    "Axis": "X Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "SingleObject"
@@ -130,7 +130,23 @@
             "SurfaceIndex": 0,
             "Transformation": [
                 {
-                    "Angle": -50,
+                    "Enabled": true,
+                    "Type": "Scaling",
+                    "Value": [
+                        2,
+                        2,
+                        1
+                    ]
+                },
+                {
+                    "Angle": 240,
+                    "Axis": "Y Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
+                    "Angle": 15,
                     "Axis": "Z Axis",
                     "Enabled": true,
                     "Type": "Rotation",
@@ -146,27 +162,11 @@
                     ]
                 },
                 {
-                    "Angle": 15,
+                    "Angle": -50,
                     "Axis": "Z Axis",
                     "Enabled": true,
                     "Type": "Rotation",
                     "Unit": "Degree"
-                },
-                {
-                    "Angle": 240,
-                    "Axis": "Y Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
-                },
-                {
-                    "Enabled": true,
-                    "Type": "Scaling",
-                    "Value": [
-                        2,
-                        2,
-                        1
-                    ]
                 }
             ],
             "Type": "SingleObject"
@@ -177,6 +177,13 @@
             "Name": "Orb1",
             "Transformation": [
                 {
+                    "Angle": 15,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
@@ -184,13 +191,6 @@
                         0,
                         -1.49
                     ]
-                },
-                {
-                    "Angle": 15,
-                    "Axis": "Z Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "GroupObject"
@@ -257,6 +257,13 @@
             "Name": "Orb2",
             "Transformation": [
                 {
+                    "Angle": 15,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
@@ -264,13 +271,6 @@
                         0,
                         -1.49
                     ]
-                },
-                {
-                    "Angle": 15,
-                    "Axis": "Z Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "GroupObject"
@@ -337,6 +337,13 @@
             "Name": "Orb3",
             "Transformation": [
                 {
+                    "Angle": 15,
+                    "Axis": "Z Axis",
+                    "Enabled": true,
+                    "Type": "Rotation",
+                    "Unit": "Degree"
+                },
+                {
                     "Enabled": true,
                     "Type": "Translation",
                     "Value": [
@@ -344,13 +351,6 @@
                         0,
                         -1.49
                     ]
-                },
-                {
-                    "Angle": 15,
-                    "Axis": "Z Axis",
-                    "Enabled": true,
-                    "Type": "Rotation",
-                    "Unit": "Degree"
                 }
             ],
             "Type": "GroupObject"
@@ -414,8 +414,6 @@
     ],
     "RenderingMethod": {
         "EyePathLightSampler": "PowerWeightedLightSampler",
-        "LightSamplerMaxSurfaceSplit": 10,
-        "LightSamplerNumOfPhotons": 32768,
         "PathLength": 3,
         "RayCastEpsilon": 1e-07,
         "RussianRoulette": "Reflectance (Max)",
