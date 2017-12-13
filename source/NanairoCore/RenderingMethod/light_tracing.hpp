@@ -16,8 +16,8 @@
 // Nanairo
 #include "rendering_method.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Sampling/LightSourceSampler/light_source_sampler.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-#include "NanairoCore/Sampling/LightSourceSampler/power_weighted_light_source_sampler.hpp"
 
 namespace zisc {
 
@@ -57,7 +57,7 @@ class LightTracing : public RenderingMethod
 
 
   //! Initialize light tracing method
-  LightTracing(const System& system,
+  LightTracing(System& system,
                const SettingNodeBase* settings,
                const Scene& scene) noexcept;
 
@@ -92,12 +92,12 @@ class LightTracing : public RenderingMethod
                   zisc::MemoryPool& memory_pool) noexcept;
 
   //! Initialize
-  void initialize(const System& system,
+  void initialize(System& system,
                   const SettingNodeBase* settings,
                   const Scene& scene) noexcept;
 
   //! Return the light sampler for light path
-  const PowerWeightedLightSourceSampler& lightPathLightSampler() const noexcept;
+  const LightSourceSampler& lightPathLightSampler() const noexcept;
 
   //! Parallelize light tracing
   void traceLightPath(System& system,
@@ -112,7 +112,7 @@ class LightTracing : public RenderingMethod
 
 
   std::mutex lock_;
-  std::unique_ptr<PowerWeightedLightSourceSampler> light_path_light_sampler_;
+  std::unique_ptr<LightSourceSampler> light_path_light_sampler_;
 };
 
 //! \} Core

@@ -74,16 +74,26 @@ void Object::setName(const std::string& object_name) noexcept
   */
 void Object::swap(Object& other) noexcept
 {
+  // Shape
   {
     auto tmp = std::move(other.shape_);
     other.shape_ = std::move(shape_);
     shape_ = std::move(tmp);
   }
+  // Material
   {
     auto tmp = other.material_;
     other.material_ = material_;
     material_ = tmp;
   }
+#ifdef Z_DEBUG_MODE
+  // Name
+  {
+    auto tmp = std::move(other.name_);
+    other.name_ = std::move(name_);
+    name_ = std::move(tmp);
+  }
+#endif // Z_DEBUG_MODE
 }
 
 /*!

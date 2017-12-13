@@ -142,10 +142,8 @@ ApplicationWindow {
     if (isPreviewing)
       renderWindow.title = renderWindow.title + " (Preview)";
     var imageResolution = settingView.getImageResolution();
-    renderWindow.imageWidth = imageResolution[0];
-    renderWindow.imageHeight = imageResolution[1];
+    renderWindow.initForRendering(imageResolution, isPreviewing);
     // Start rendering
-    renderWindow.initForRendering(isPreviewing);
     var sceneData = settingView.getSceneData();
     nanairoManager.invokeRendering(sceneData, isPreviewing);
   }

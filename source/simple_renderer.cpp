@@ -121,6 +121,10 @@ bool SimpleRenderer::loadScene(const SettingNodeBase& settings,
         std::chrono::milliseconds{time});
     setTimeIntervalToSave(saving_interval_time);
   }
+  {
+    const auto cycle = system_settings->savingIntervalCycle();
+    setCycleIntervalToSave(cycle);
+  }
 
   return isRunnable();
 }
@@ -250,95 +254,8 @@ void SimpleRenderer::convertSpectraToHdr(const uint64 cycle) noexcept
 
 /*!
   */
-inline
-uint64 SimpleRenderer::cycleToFinish() const noexcept
-{
-  return cycle_to_finish_;
-}
-
-/*!
-  */
-inline
-bool SimpleRenderer::isSavingAtEachCycleEnabled() const noexcept
-{
-  return is_saving_each_cycle_enabled_;
-}
-
-/*!
-  */
-inline
-bool SimpleRenderer::isSavingAtPowerOf2CyclesEnabled() const noexcept
-{
-  return is_saving_at_power_of_2_cycles_enabled_;
-}
-
-/*!
-  */
-inline
-uint64 SimpleRenderer::getNextCycleToSaveImage(const uint64 cycle) const noexcept
-{
-  const uint64 next_cycle = (isSavingAtPowerOf2CyclesEnabled())
-      ? ((cycle == 0) ? 1 : (cycle << 1))
-      : std::numeric_limits<uint64>::max();
-  return next_cycle;
-}
-
-/*!
-  */
-inline
-auto SimpleRenderer::getNextTimeToSaveImage(const Clock::duration& time)
-    const noexcept -> Clock::duration
-{
-  const auto next_time = (timeIntervalToSaveImage() == Clock::duration::max())
-      ? timeIntervalToSaveImage()
-      : time + timeIntervalToSaveImage();
-  return next_time;
-}
-
-/*!
-  */
 void SimpleRenderer::initialize() noexcept
 {
-}
-
-/*!
-  */
-inline
-bool SimpleRenderer::isCycleToFinish(const uint64 cycle) const noexcept
-{
-  const bool is_finish_cycle = (cycleToFinish() <= cycle);
-  return is_finish_cycle;
-}
-
-/*!
-  */
-inline
-bool SimpleRenderer::isCycleToSaveImage(
-    const uint64 cycle,
-    const uint64 cycle_to_save_image) const noexcept
-{
-  const bool is_saving_cycle = (cycle_to_save_image <= cycle);
-  return is_saving_cycle;
-}
-
-/*!
-  */
-inline
-bool SimpleRenderer::isTimeToFinish(const Clock::duration& time) const noexcept
-{
-  const bool is_finish_time = (timeToFinish() <= time);
-  return is_finish_time;
-}
-
-/*!
-  */
-inline
-bool SimpleRenderer::isTimeToSaveImage(
-    const Clock::duration& time,
-    const Clock::duration& time_to_save_image) const noexcept
-{
-  const bool is_saving_time = (time_to_save_image <= time);
-  return is_saving_time;
 }
 
 /*!
@@ -385,6 +302,15 @@ void SimpleRenderer::renderScene() noexcept
 
 /*!
   */
+void SimpleRenderer::setCycleIntervalToSave(const uint64 cycle) noexcept
+{
+  cycle_interval_to_save_image_ = (cycle == 0)
+      ? std::numeric_limits<uint64>::max()
+      : cycle;
+}
+
+/*!
+  */
 void SimpleRenderer::setCycleToFinish(const uint64 cycle) noexcept
 {
   cycle_to_finish_ = (cycle == 0)
@@ -415,23 +341,6 @@ void SimpleRenderer::setTimeToFinish(const Clock::duration& time) noexcept
   time_to_finish_ = (time == Clock::duration::zero())
       ? Clock::duration::max()
       : time;
-}
-
-/*!
-  */
-inline
-auto SimpleRenderer::timeIntervalToSaveImage() const noexcept
-    -> const Clock::duration&
-{
-  return time_interval_to_save_image_;
-}
-
-/*!
-  */
-inline
-auto SimpleRenderer::timeToFinish() const noexcept -> const Clock::duration&
-{
-  return time_to_finish_;
 }
 
 /*!

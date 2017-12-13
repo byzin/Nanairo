@@ -40,7 +40,8 @@ var terminationCycle = "@terminationCycle@";
 var terminationTime = "@terminationTime@";
 var imageResolution = "@imageResolution@";
 var power2CycleSaving = "@power2CycleSaving@";
-var savingInterval = "@savingInterval@";
+var savingIntervalTime = "@savingIntervalTime@";
+var savingIntervalCycle = "@savingIntervalCycle@";
 
 // Color
 var color = "@color@";

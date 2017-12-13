@@ -142,7 +142,7 @@ void PathTracing::evalExplicitConnection(
   // Calculate the geometry term
   const Float cos_sni = zisc::dot(shadow_intersection.normal(), light_dir);
   const Float geometry_term = cos_sni * cos_no / diff2;
-  ZISC_ASSERT(0.0 < geometry_term, "Geometry term is negative.");
+  ZISC_ASSERT(0.0 <= geometry_term, "Geometry term is negative.");
 
   // Calculate the MIS weight
   const Float inverse_selection_pdf = light_source_info.inverseWeight() *

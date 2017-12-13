@@ -17,12 +17,7 @@ import "definitions.js" as Definitions
 Window {
   id: renderWindow
 
-  property int imageWidth
-  property int imageHeight
   property bool isPreviewMode: false
-
-  width: imageWidth
-  height: imageHeight + infoLabel.height
 
   NLabel {
     id: infoLabel
@@ -72,7 +67,9 @@ Window {
 
   onClosing: nanairoManager.stopRendering()
 
-  function initForRendering(isPreviewing) {
+  function initForRendering(imageResolution, isPreviewing) {
+    width = imageResolution[0];
+    height = imageResolution[1] + infoLabel.height;
     renderWindow.isPreviewMode = isPreviewing;
     renderImage.imageNumber = 0;
   }

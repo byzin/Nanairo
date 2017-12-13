@@ -136,6 +136,9 @@ class SimpleRenderer
   //! Convert Spectra image to HDR image
   void convertSpectraToHdr(const uint64 cycle) noexcept;
 
+  //! Return the cycle interval to save image
+  uint64 cycleIntervalToSaveImage() const noexcept;
+
   //! Return the cycle to finish rendering
   uint64 cycleToFinish() const noexcept;
 
@@ -179,6 +182,9 @@ class SimpleRenderer
   //! Render the scene
   void renderScene() noexcept;
 
+  //! Set the cycle interval to save image
+  void setCycleIntervalToSave(const uint64 cycle) noexcept;
+
   //! Set the cycle to finish rendering
   void setCycleToFinish(const uint64 cycle) noexcept;
 
@@ -217,6 +223,7 @@ class SimpleRenderer
   Clock::duration time_to_finish_;
   Clock::duration time_interval_to_save_image_;
   uint64 cycle_to_finish_;
+  uint64 cycle_interval_to_save_image_;
   bool is_saving_each_cycle_enabled_;
   bool is_saving_at_power_of_2_cycles_enabled_;
   bool is_runnable_;

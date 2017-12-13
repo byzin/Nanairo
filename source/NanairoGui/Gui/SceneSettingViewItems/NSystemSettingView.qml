@@ -162,7 +162,7 @@ NPane {
       Layout.fillWidth: true
 
       NSpinBox {
-        id: savingIntervalSpinBox
+        id: savingIntervalTimeSpinBox
 
         Layout.fillWidth: true
         Layout.preferredHeight: Definitions.defaultSettingItemHeight
@@ -173,6 +173,25 @@ NPane {
 
       NLabel {
         text: "ms"
+      }
+    }
+
+    RowLayout {
+
+      Layout.fillWidth: true
+
+      NSpinBox {
+        id: savingIntervalCycleSpinBox
+
+        Layout.fillWidth: true
+        Layout.preferredHeight: Definitions.defaultSettingItemHeight
+        from: 0
+        to: Definitions.intMax
+        value: 0
+      }
+
+      NLabel {
+        text: "cycle"
       }
     }
 
@@ -201,7 +220,8 @@ NPane {
     sceneData[Definitions.imageResolution] = imageResolution;
     sceneData[Definitions.terminationCycle] = terminationCycleSpinBox.value;
     sceneData[Definitions.terminationTime] = terminationTimeSpinBox.value;
-    sceneData[Definitions.savingInterval] = savingIntervalSpinBox.value;
+    sceneData[Definitions.savingIntervalTime] = savingIntervalTimeSpinBox.value;
+    sceneData[Definitions.savingIntervalCycle] = savingIntervalCycleSpinBox.value;
     sceneData[Definitions.power2CycleSaving] = power2CycleSavingCheckBox.checked;
 
     return sceneData;
@@ -220,8 +240,10 @@ NPane {
         Definitions.getProperty(sceneData, Definitions.terminationCycle);
     terminationTimeSpinBox.value =
         Definitions.getProperty(sceneData, Definitions.terminationTime);
-    savingIntervalSpinBox.value =
-        Definitions.getProperty(sceneData, Definitions.savingInterval);
+    savingIntervalTimeSpinBox.value =
+        Definitions.getProperty(sceneData, Definitions.savingIntervalTime);
+    savingIntervalCycleSpinBox.value =
+        Definitions.getProperty(sceneData, Definitions.savingIntervalCycle);
     power2CycleSavingCheckBox.checked =
         Definitions.getProperty(sceneData, Definitions.power2CycleSaving);
   }

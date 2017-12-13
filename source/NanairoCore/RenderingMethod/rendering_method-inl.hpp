@@ -92,8 +92,7 @@ uint RenderingMethod::calcNumOfTiles(const Index2d& resolution) const noexcept
 inline
 Float RenderingMethod::calcShadowRayDistance(const Float diff2) const noexcept
 {
-  constexpr Float distance_epsilon = 0.000001;
-  constexpr Float extension = 1.0 + distance_epsilon;
+  constexpr Float extension = 1.0 + 1.0e-6;
   static_assert(1.0 < extension, "The extension isn't greater than 1.");
   return extension * zisc::sqrt(diff2);
 }
@@ -142,7 +141,7 @@ Ray RenderingMethod::makeShadowRay(const Point3& source,
   const auto ray_epsilon = rayCastEpsilon() * normal;
   ZISC_ASSERT(!isZeroVector(ray_epsilon), "Ray epsilon is zero vector.");
   const auto origin = source + ray_epsilon;
-  const auto dir = (dest - source).normalized();
+  const auto dir = (dest - origin).normalized();
   return Ray::makeRay(origin, dir);
 }
 

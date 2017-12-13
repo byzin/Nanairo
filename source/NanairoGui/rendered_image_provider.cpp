@@ -33,11 +33,10 @@ RenderedImageProvider::RenderedImageProvider() noexcept :
   */
 QPixmap RenderedImageProvider::requestPixmap(const QString& /* id */,
                                              QSize* size,
-                                             const QSize& requested_size) noexcept
+                                             const QSize& /* requested_size */) noexcept
 {
-  const QPixmap image = (image_ != nullptr)
-      ? QPixmap::fromImage(*image_)
-      : QPixmap{(requested_size != QSize{-1, -1}) ? requested_size : QSize{32, 32}};
+  const QPixmap image = (image_ != nullptr) ? QPixmap::fromImage(*image_)
+                                            : QPixmap{QSize{256, 256}};
   *size = image.size();
   return image;
 }

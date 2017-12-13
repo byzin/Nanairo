@@ -39,7 +39,8 @@ function(getNanairoKeywords nanairo_keyword_list)
       imageResolution "ImageResolution"
 #      enableToSaveSpectraImage "EnableToSaveSpectraImage"
       power2CycleSaving "Power2CycleSaving"
-      savingInterval "SavingInterval"
+      savingIntervalTime "SavingIntervalTime"
+      savingIntervalCycle "SavingIntervalCycle"
 
       # Color
       color "Color"

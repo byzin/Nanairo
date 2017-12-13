@@ -55,7 +55,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-LightTracing::LightTracing(const System& system,
+LightTracing::LightTracing(System& system,
                            const SettingNodeBase* settings,
                            const Scene& scene) noexcept :
     RenderingMethod(system, settings)
@@ -138,7 +138,7 @@ void LightTracing::evalExplicitConnection(
   const auto camera_normal = camera.getNormal(pixel_index);
   const Float cos_cni = zisc::dot(camera_normal, camera_dir);
   const Float geometry_term = (cos_cni * cos_no) / diff2;
-  ZISC_ASSERT(0.0 < geometry_term, "Geometry term is negative.");
+  ZISC_ASSERT(0.0 <= geometry_term, "Geometry term is negative.");
 
   // Calculate the contribution
   const auto contribution = (light_contribution * ray_weight * f * importance) *
@@ -214,19 +214,25 @@ void LightTracing::addLightContribution(CameraModel& camera,
   No detailed.
   */
 inline
-void LightTracing::initialize(const System& /* system */,
-                              const SettingNodeBase* /* settings */,
+void LightTracing::initialize(System& system,
+                              const SettingNodeBase* settings,
                               const Scene& scene) noexcept
 {
-  light_path_light_sampler_ =
-      std::make_unique<PowerWeightedLightSourceSampler>(scene.world());
+  const auto method_settings = castNode<RenderingMethodSettingNode>(settings);
+  const auto& parameters = method_settings->lightTracingParameters();
+
+  {
+    const auto sampler_type = parameters.light_path_light_sampler_type_;
+    light_path_light_sampler_ = LightSourceSampler::makeSampler(sampler_type,
+                                                                scene.world(),
+                                                                system);
+  }
 }
 
 /*!
   */
 inline
-const PowerWeightedLightSourceSampler& LightTracing::lightPathLightSampler()
-    const noexcept
+const LightSourceSampler& LightTracing::lightPathLightSampler() const noexcept
 {
   return *light_path_light_sampler_;
 }

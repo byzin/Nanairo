@@ -792,11 +792,12 @@ void SceneValue::toSystemSetting(const QJsonObject& value,
   {
     //! \todo rename keyword
     const auto saving_interval_time = toInt<uint32>(system_value,
-                                                    keyword::savingInterval);
+                                                    keyword::savingIntervalTime);
     system_setting->setSavingIntervalTime(saving_interval_time);
   }
   {
-    const uint32 saving_interval_cycle = 0; //!< \todo Get from json
+    const uint32 saving_interval_cycle = toInt<uint32>(system_value,
+                                                       keyword::savingIntervalCycle);
     system_setting->setSavingIntervalCycle(saving_interval_cycle);
   }
   {

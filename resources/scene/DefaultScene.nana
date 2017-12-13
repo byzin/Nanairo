@@ -131,7 +131,8 @@
         "NumOfThreads": 1,
         "Power2CycleSaving": true,
         "RandomSeed": 123456789,
-        "SavingInterval": 3600000,
+        "SavingIntervalCycle": 0,
+        "SavingIntervalTime": 3600000,
         "TerminationCycle": 2048,
         "TerminationTime": 0
     },
