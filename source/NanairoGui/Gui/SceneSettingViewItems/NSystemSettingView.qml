@@ -183,6 +183,7 @@ NPane {
       NSpinBox {
         id: savingIntervalCycleSpinBox
 
+        enabled: false // \todo Implement image saving cycle
         Layout.fillWidth: true
         Layout.preferredHeight: Definitions.defaultSettingItemHeight
         from: 0

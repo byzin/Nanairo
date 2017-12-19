@@ -747,7 +747,9 @@
             "InnerRefractiveIndex": 12,
             "Name": "FloorSurface",
             "OuterRefractiveIndex": 11,
-            "RoughnessIndex": 5,
+            "Anisotropic": false,
+            "RoughnessXIndex": 5,
+            "RoughnessYIndex": 5,
             "Type": "RoughConductorSurface"
         },
         {
@@ -760,14 +762,18 @@
             "InnerRefractiveIndex": 12,
             "Name": "FarWallSurface",
             "OuterRefractiveIndex": 11,
-            "RoughnessIndex": 1,
+            "Anisotropic": false,
+            "RoughnessXIndex": 1,
+            "RoughnessYIndex": 1,
             "Type": "RoughConductorSurface"
         },
         {
             "InnerRefractiveIndex": 14,
             "Name": "RoughGlassSurface",
             "OuterRefractiveIndex": 11,
-            "RoughnessIndex": 2,
+            "Anisotropic": false,
+            "RoughnessXIndex": 2,
+            "RoughnessYIndex": 2,
             "Type": "RoughDielectricSurface"
         },
         {
@@ -779,14 +785,18 @@
             "InnerRefractiveIndex": 15,
             "Name": "RayTracingCampGlass",
             "OuterRefractiveIndex": 11,
-            "RoughnessIndex": 4,
+            "Anisotropic": false,
+            "RoughnessXIndex": 4,
+            "RoughnessYIndex": 4,
             "Type": "RoughDielectricSurface"
         },
         {
             "InnerRefractiveIndex": 15,
             "Name": "LabelGlass",
             "OuterRefractiveIndex": 11,
-            "RoughnessIndex": 7,
+            "Anisotropic": false,
+            "RoughnessXIndex": 7,
+            "RoughnessYIndex": 7,
             "Type": "RoughDielectricSurface"
         },
         {
@@ -794,7 +804,9 @@
             "InnerRefractiveIndex": 16,
             "Name": "DragonSurface",
             "OuterRefractiveIndex": 11,
-            "RoughnessIndex": 6,
+            "Anisotropic": false,
+            "RoughnessXIndex": 6,
+            "RoughnessYIndex": 6,
             "Type": "RoughConductorSurface"
         }
     ],

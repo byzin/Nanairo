@@ -77,7 +77,9 @@ struct RoughDielectricParameters : public NodeParameterBase
 
   uint32 outer_refractive_index_ = 0;
   uint32 inner_refractive_index_ = 0;
-  uint32 roughness_index_ = 0;
+  uint32 roughness_x_index_ = 0;
+  uint32 roughness_y_index_ = 0;
+  uint8 anisotropic_ = kFalse;
 };
 
 //! RoughConductor parameters
@@ -92,7 +94,9 @@ struct RoughConductorParameters : public NodeParameterBase
   uint32 outer_refractive_index_ = 0;
   uint32 inner_refractive_index_ = 0;
   uint32 inner_extinction_index_ = 0;
-  uint32 roughness_index_ = 0;
+  uint32 roughness_x_index_ = 0;
+  uint32 roughness_y_index_ = 0;
+  uint8 anisotropic_ = kFalse;
 };
 
 //! LayeredDiffuse parameters
@@ -107,7 +111,9 @@ struct LayeredDiffuseParameters : public NodeParameterBase
   uint32 outer_refractive_index_ = 0;
   uint32 inner_refractive_index_ = 0;
   uint32 reflectance_index_ = 0;
-  uint32 roughness_index_ = 0;
+  uint32 roughness_x_index_ = 0;
+  uint32 roughness_y_index_ = 0;
+  uint8 anisotropic_ = kFalse;
 };
 
 //! Cloth parameters

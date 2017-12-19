@@ -668,9 +668,19 @@ void SceneValue::toSurfaceModelSetting(const QJsonObject& value,
         parameters.inner_refractive_index_ = index;
       }
       {
+        const bool anisotropic = toBool(surface_value,
+                                        keyword::anisotropic);
+        parameters.anisotropic_ = (anisotropic) ? kTrue : kFalse;
+      }
+      {
         const auto index = toInt<uint32>(surface_value,
-                                         keyword::roughnessIndex);
-        parameters.roughness_index_ = index;
+                                         keyword::roughnessXIndex);
+        parameters.roughness_x_index_ = index;
+      }
+      {
+        const auto index = toInt<uint32>(surface_value,
+                                         keyword::roughnessYIndex);
+        parameters.roughness_y_index_ = index;
       }
       break;
      }
@@ -692,9 +702,19 @@ void SceneValue::toSurfaceModelSetting(const QJsonObject& value,
         parameters.inner_extinction_index_ = index;
       }
       {
+        const bool anisotropic = toBool(surface_value,
+                                        keyword::anisotropic);
+        parameters.anisotropic_ = (anisotropic) ? kTrue : kFalse;
+      }
+      {
         const auto index = toInt<uint32>(surface_value,
-                                         keyword::roughnessIndex);
-        parameters.roughness_index_ = index;
+                                         keyword::roughnessXIndex);
+        parameters.roughness_x_index_ = index;
+      }
+      {
+        const auto index = toInt<uint32>(surface_value,
+                                         keyword::roughnessYIndex);
+        parameters.roughness_y_index_ = index;
       }
       break;
      }
@@ -716,9 +736,19 @@ void SceneValue::toSurfaceModelSetting(const QJsonObject& value,
         parameters.reflectance_index_ = index;
       }
       {
+        const bool anisotropic = toBool(surface_value,
+                                        keyword::anisotropic);
+        parameters.anisotropic_ = (anisotropic) ? kTrue : kFalse;
+      }
+      {
         const auto index = toInt<uint32>(surface_value,
-                                         keyword::roughnessIndex);
-        parameters.roughness_index_ = index;
+                                         keyword::roughnessXIndex);
+        parameters.roughness_x_index_ = index;
+      }
+      {
+        const auto index = toInt<uint32>(surface_value,
+                                         keyword::roughnessYIndex);
+        parameters.roughness_y_index_ = index;
       }
       break;
      }

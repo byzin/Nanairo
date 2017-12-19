@@ -443,7 +443,9 @@
             "InnerRefractiveIndex": 4,
             "Name": "TestSurface1",
             "OuterRefractiveIndex": 3,
-            "RoughnessIndex": 6,
+            "Anisotropic": false,
+            "RoughnessXIndex": 6,
+            "RoughnessYIndex": 6,
             "Type": "RoughConductorSurface"
         },
         {
@@ -451,7 +453,9 @@
             "InnerRefractiveIndex": 4,
             "Name": "TestSurface2",
             "OuterRefractiveIndex": 3,
-            "RoughnessIndex": 7,
+            "Anisotropic": false,
+            "RoughnessXIndex": 7,
+            "RoughnessYIndex": 7,
             "Type": "RoughConductorSurface"
         },
         {
@@ -459,7 +463,9 @@
             "InnerRefractiveIndex": 4,
             "Name": "TestSurface3",
             "OuterRefractiveIndex": 3,
-            "RoughnessIndex": 8,
+            "Anisotropic": false,
+            "RoughnessXIndex": 8,
+            "RoughnessYIndex": 8,
             "Type": "RoughConductorSurface"
         }
     ],

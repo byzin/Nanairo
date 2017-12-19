@@ -81,7 +81,9 @@ void RoughDielectricParameters::readData(std::istream* data_stream) noexcept
 {
   zisc::read(&outer_refractive_index_, data_stream);
   zisc::read(&inner_refractive_index_, data_stream);
-  zisc::read(&roughness_index_, data_stream);
+  zisc::read(&roughness_x_index_, data_stream);
+  zisc::read(&roughness_y_index_, data_stream);
+  zisc::read(&anisotropic_, data_stream);
 }
 
 /*!
@@ -90,7 +92,9 @@ void RoughDielectricParameters::writeData(std::ostream* data_stream) const noexc
 {
   zisc::write(&outer_refractive_index_, data_stream);
   zisc::write(&inner_refractive_index_, data_stream);
-  zisc::write(&roughness_index_, data_stream);
+  zisc::write(&roughness_x_index_, data_stream);
+  zisc::write(&roughness_y_index_, data_stream);
+  zisc::write(&anisotropic_, data_stream);
 }
 
 /*!
@@ -100,7 +104,9 @@ void RoughConductorParameters::readData(std::istream* data_stream) noexcept
   zisc::read(&outer_refractive_index_, data_stream);
   zisc::read(&inner_refractive_index_, data_stream);
   zisc::read(&inner_extinction_index_, data_stream);
-  zisc::read(&roughness_index_, data_stream);
+  zisc::read(&roughness_x_index_, data_stream);
+  zisc::read(&roughness_y_index_, data_stream);
+  zisc::read(&anisotropic_, data_stream);
 }
 
 /*!
@@ -110,7 +116,9 @@ void RoughConductorParameters::writeData(std::ostream* data_stream) const noexce
   zisc::write(&outer_refractive_index_, data_stream);
   zisc::write(&inner_refractive_index_, data_stream);
   zisc::write(&inner_extinction_index_, data_stream);
-  zisc::write(&roughness_index_, data_stream);
+  zisc::write(&roughness_x_index_, data_stream);
+  zisc::write(&roughness_y_index_, data_stream);
+  zisc::write(&anisotropic_, data_stream);
 }
 
 /*!
@@ -120,7 +128,9 @@ void LayeredDiffuseParameters::readData(std::istream* data_stream) noexcept
   zisc::read(&outer_refractive_index_, data_stream);
   zisc::read(&inner_refractive_index_, data_stream);
   zisc::read(&reflectance_index_, data_stream);
-  zisc::read(&roughness_index_, data_stream);
+  zisc::read(&roughness_x_index_, data_stream);
+  zisc::read(&roughness_y_index_, data_stream);
+  zisc::read(&anisotropic_, data_stream);
 }
 
 /*!
@@ -130,7 +140,9 @@ void LayeredDiffuseParameters::writeData(std::ostream* data_stream) const noexce
   zisc::write(&outer_refractive_index_, data_stream);
   zisc::write(&inner_refractive_index_, data_stream);
   zisc::write(&reflectance_index_, data_stream);
-  zisc::write(&roughness_index_, data_stream);
+  zisc::write(&roughness_x_index_, data_stream);
+  zisc::write(&roughness_y_index_, data_stream);
+  zisc::write(&anisotropic_, data_stream);
 }
 
 /*!

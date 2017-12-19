@@ -79,7 +79,9 @@ NPane {
     NRoughDielectricSurfaceItem {
       id: roughDielectricSurfaceItem 
       textureModelList: infoSettingView.textureModelList
-      onRoughnessIndexChanged: infoSettingView.setProperty(Definitions.roughnessIndex, roughnessIndex);
+      onAnisotropicChanged: infoSettingView.setProperty(Definitions.anisotropic, anisotropic);
+      onRoughnessXIndexChanged: infoSettingView.setProperty(Definitions.roughnessXIndex, roughnessXIndex);
+      onRoughnessYIndexChanged: infoSettingView.setProperty(Definitions.roughnessYIndex, roughnessYIndex);
       onOuterRefractiveIndexChanged: infoSettingView.setProperty(Definitions.outerRefractiveIndex, outerRefractiveIndex)
       onInnerRefractiveIndexChanged: infoSettingView.setProperty(Definitions.innerRefractiveIndex, innerRefractiveIndex)
     }
@@ -87,7 +89,9 @@ NPane {
     NRoughConductorSurfaceItem {
       id: roughConductorSurfaceItem 
       textureModelList: infoSettingView.textureModelList
-      onRoughnessIndexChanged: infoSettingView.setProperty(Definitions.roughnessIndex, roughnessIndex);
+      onAnisotropicChanged: infoSettingView.setProperty(Definitions.anisotropic, anisotropic);
+      onRoughnessXIndexChanged: infoSettingView.setProperty(Definitions.roughnessXIndex, roughnessXIndex);
+      onRoughnessYIndexChanged: infoSettingView.setProperty(Definitions.roughnessYIndex, roughnessYIndex);
       onOuterRefractiveIndexChanged: infoSettingView.setProperty(Definitions.outerRefractiveIndex, outerRefractiveIndex)
       onInnerRefractiveIndexChanged: infoSettingView.setProperty(Definitions.innerRefractiveIndex, innerRefractiveIndex)
       onInnerExtinctionChanged: infoSettingView.setProperty(Definitions.innerExtinction, innerExtinction)
@@ -97,7 +101,9 @@ NPane {
       id: layeredDiffuseSurfaceItem 
       textureModelList: infoSettingView.textureModelList
       onReflectanceIndexChanged: infoSettingView.setProperty(Definitions.reflectanceIndex, reflectanceIndex)
-      onRoughnessIndexChanged: infoSettingView.setProperty(Definitions.roughnessIndex, roughnessIndex);
+      onAnisotropicChanged: infoSettingView.setProperty(Definitions.anisotropic, anisotropic);
+      onRoughnessXIndexChanged: infoSettingView.setProperty(Definitions.roughnessXIndex, roughnessXIndex);
+      onRoughnessYIndexChanged: infoSettingView.setProperty(Definitions.roughnessYIndex, roughnessYIndex);
       onOuterRefractiveIndexChanged: infoSettingView.setProperty(Definitions.outerRefractiveIndex, outerRefractiveIndex)
       onInnerRefractiveIndexChanged: infoSettingView.setProperty(Definitions.innerRefractiveIndex, innerRefractiveIndex)
     }

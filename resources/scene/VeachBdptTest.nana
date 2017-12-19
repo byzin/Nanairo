@@ -480,7 +480,9 @@
             "InnerRefractiveIndex": 5,
             "Name": "RoughCopper",
             "OuterRefractiveIndex": 4,
-            "RoughnessIndex": 1,
+            "Anisotropic": false,
+            "RoughnessXIndex": 1,
+            "RoughnessYIndex": 1,
             "Type": "RoughConductorSurface"
         },
         {

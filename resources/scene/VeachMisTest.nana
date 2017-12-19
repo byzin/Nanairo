@@ -437,7 +437,9 @@
             "InnerRefractiveIndex": 10,
             "Name": "BoardSurface1",
             "OuterRefractiveIndex": 9,
-            "RoughnessIndex": 1,
+            "Anisotropic": false,
+            "RoughnessXIndex": 1,
+            "RoughnessYIndex": 1,
             "Type": "RoughConductorSurface"
         },
         {
@@ -445,7 +447,9 @@
             "InnerRefractiveIndex": 10,
             "Name": "BoardSurface2",
             "OuterRefractiveIndex": 9,
-            "RoughnessIndex": 2,
+            "Anisotropic": false,
+            "RoughnessXIndex": 2,
+            "RoughnessYIndex": 2,
             "Type": "RoughConductorSurface"
         },
         {
@@ -453,7 +457,9 @@
             "InnerRefractiveIndex": 10,
             "Name": "BoardSurface3",
             "OuterRefractiveIndex": 9,
-            "RoughnessIndex": 3,
+            "Anisotropic": false,
+            "RoughnessXIndex": 3,
+            "RoughnessYIndex": 3,
             "Type": "RoughConductorSurface"
         },
         {
@@ -461,7 +467,9 @@
             "InnerRefractiveIndex": 10,
             "Name": "BoardSurface4",
             "OuterRefractiveIndex": 9,
-            "RoughnessIndex": 4,
+            "Anisotropic": false,
+            "RoughnessXIndex": 4,
+            "RoughnessYIndex": 4,
             "Type": "RoughConductorSurface"
         }
     ],

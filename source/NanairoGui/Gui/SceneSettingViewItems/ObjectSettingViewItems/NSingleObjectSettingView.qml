@@ -76,7 +76,8 @@ NPane {
 
       Layout.fillWidth: true
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      enabled: objectSettingView.isMeshObject
+//      enabled: objectSettingView.isMeshObject
+      enabled: false // \todo Implement smoothing
       checked: objectSettingView.smoothing
       text: "smoothing"
 

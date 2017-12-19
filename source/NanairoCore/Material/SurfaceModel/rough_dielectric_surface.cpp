@@ -98,7 +98,7 @@ void RoughDielectricSurface::initialize(
     inner_refractive_index_ = texture_list[index];
   }
   {
-    const auto index = parameters.roughness_index_;
+    const auto index = parameters.roughness_x_index_;
     roughness_ = texture_list[index];
   }
 }

@@ -18,7 +18,9 @@ NPane {
 
   property var textureModelList: null
   // Properties
-  property int roughnessIndex 
+  property bool anisotropic
+  property int roughnessXIndex 
+  property int roughnessYIndex 
   property int outerRefractiveIndex
   property int innerRefractiveIndex
   property int innerExtinction
@@ -33,16 +35,40 @@ NPane {
       text: "roughness"
     }
 
-    NComboBox {
-      id: roughnessComboBox
+    NCheckBox {
+      id: anisotropicCheckBox
 
       Layout.fillWidth: true
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      currentIndex: surfaceItem.roughnessIndex
+      text: "anisotropic"
+      checked: surfaceItem.anisotropic
+
+      onCheckedChanged: surfaceItem.anisotropic = checked
+    }
+
+    NComboBox {
+      id: roughnessXComboBox
+
+      Layout.fillWidth: true
+      Layout.preferredHeight: Definitions.defaultSettingItemHeight
+      currentIndex: surfaceItem.roughnessXIndex
       model: surfaceItem.textureModelList
       textRole: Definitions.modelNameKey
 
-      onCurrentIndexChanged: surfaceItem.roughnessIndex = currentIndex
+      onCurrentIndexChanged: surfaceItem.roughnessXIndex = currentIndex
+    }
+
+    NComboBox {
+      id: roughnessYComboBox
+
+      enabled: anisotropicCheckBox.checked
+      Layout.fillWidth: true
+      Layout.preferredHeight: Definitions.defaultSettingItemHeight
+      currentIndex: surfaceItem.roughnessYIndex
+      model: surfaceItem.textureModelList
+      textRole: Definitions.modelNameKey
+
+      onCurrentIndexChanged: surfaceItem.roughnessYIndex = currentIndex
     }
 
     NLabel {
@@ -98,7 +124,9 @@ NPane {
 
   function initItem(item) {
     console.assert(item != null, "The item is null.");
-    item[Definitions.roughnessIndex] = 0;
+    item[Definitions.anisotropic] = false;
+    item[Definitions.roughnessXIndex] = 0;
+    item[Definitions.roughnessYIndex] = 0;
     item[Definitions.outerRefractiveIndex] = 0;
     item[Definitions.innerRefractiveIndex] = 0;
     item[Definitions.innerExtinction] = 0;
@@ -106,7 +134,9 @@ NPane {
 
   function setValue(item) {
     console.assert(item != null, "The item is null.");
-    roughnessIndex = Definitions.getProperty(item, Definitions.roughnessIndex);
+    anisotropic = Definitions.getProperty(item, Definitions.anisotropic);
+    roughnessXIndex = Definitions.getProperty(item, Definitions.roughnessXIndex);
+    roughnessYIndex = Definitions.getProperty(item, Definitions.roughnessYIndex);
     outerRefractiveIndex = Definitions.getProperty(item, Definitions.outerRefractiveIndex);
     innerRefractiveIndex = Definitions.getProperty(item, Definitions.innerRefractiveIndex);
     innerExtinction = Definitions.getProperty(item, Definitions.innerExtinction);
@@ -115,8 +145,12 @@ NPane {
   function getSceneData(item) {
     var sceneData = {};
 
-    sceneData[Definitions.roughnessIndex] =
-        Definitions.getProperty(item, Definitions.roughnessIndex);
+    sceneData[Definitions.anisotropic] =
+        Definitions.getProperty(item, Definitions.anisotropic);
+    sceneData[Definitions.roughnessXIndex] =
+        Definitions.getProperty(item, Definitions.roughnessXIndex);
+    sceneData[Definitions.roughnessYIndex] =
+        Definitions.getProperty(item, Definitions.roughnessYIndex);
     sceneData[Definitions.outerRefractiveIndex] =
         Definitions.getProperty(item, Definitions.outerRefractiveIndex);
     sceneData[Definitions.innerRefractiveIndex] =
@@ -128,8 +162,12 @@ NPane {
   }
 
   function setSceneData(sceneData, item) {
-    item[Definitions.roughnessIndex] =
-        Definitions.getProperty(sceneData, Definitions.roughnessIndex);
+    item[Definitions.anisotropic] =
+        Definitions.getProperty(sceneData, Definitions.anisotropic);
+    item[Definitions.roughnessXIndex] =
+        Definitions.getProperty(sceneData, Definitions.roughnessXIndex);
+    item[Definitions.roughnessYIndex] =
+        Definitions.getProperty(sceneData, Definitions.roughnessYIndex);
     item[Definitions.outerRefractiveIndex] =
         Definitions.getProperty(sceneData, Definitions.outerRefractiveIndex);
     item[Definitions.innerRefractiveIndex] =

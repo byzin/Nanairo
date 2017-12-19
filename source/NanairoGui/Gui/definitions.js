@@ -109,7 +109,9 @@ var surfaceModel = "@surfaceModel@";
     var smoothConductorSurface = "@smoothConductorSurface@";
         var innerExtinction = "@innerExtinction@";
     var roughDielectricSurface = "@roughDielectricSurface@";
-        var roughnessIndex = "@roughnessIndex@";
+        var anisotropic = "@anisotropic@";
+        var roughnessXIndex = "@roughnessXIndex@";
+        var roughnessYIndex = "@roughnessYIndex@";
     var roughConductorSurface = "@roughConductorSurface@";
     var layeredDiffuseSurface = "@layeredDiffuseSurface@";
 
