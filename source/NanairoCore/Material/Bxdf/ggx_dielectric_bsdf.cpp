@@ -28,10 +28,13 @@ namespace nanairo {
   \details
   No detailed.
   */
-GgxDielectricBsdf::GgxDielectricBsdf(const Float roughness,
-                                     const Float n) noexcept :
-    roughness_{roughness},
-    n_{n}
+GgxDielectricBsdf::GgxDielectricBsdf(
+    const Float roughness_x,
+    const Float roughness_y,
+    const Float n) noexcept :
+        roughness_x_{roughness_x},
+        roughness_y_{roughness_y},
+        n_{n}
 {
 }
 
@@ -45,24 +48,43 @@ Float GgxDielectricBsdf::evalPdf(
     const WavelengthSamples& /* wavelengths */,
     const IntersectionInfo* info) const noexcept
 {
-  ZISC_ASSERT(info != nullptr, "The info is null.");
-  const Float cos_no = zisc::dot(info->normal(), *vout);
+  const auto& point = info->shapePoint();
+  // Transform vectors
+  const auto vin_d = Transformation::toLocal(point.tangent(),
+                                             point.bitangent(),
+                                             point.normal(),
+                                             -(*vin));
+  ZISC_ASSERT(zisc::isInClosedBounds(vin_d[2], 0.0, 1.0),
+              "The vin isn't in the upper hemisphere.");
+  ZISC_ASSERT(isUnitVector(vin_d), "The vin isn't unit vector.");
+  const auto vout_d = Transformation::toLocal(point.tangent(),
+                                              point.bitangent(),
+                                              point.normal(),
+                                              *vout);
+  ZISC_ASSERT(isUnitVector(vout_d), "The vout isn't unit vector.");
+
+  // Check if the ray is reflected or refracted
+  const Float cos_no = vout_d[2];
   const bool is_reflection = (0.0 < cos_no);
-  Float pdf = 0.0;
-  if (is_reflection) { // Reflection direction pdf
-    const auto m_normal = Microfacet::calcReflectionHalfVector(*vin, *vout);
-    const Float cos_mi = -zisc::dot(m_normal, *vin);
-    const Float fresnel = Fresnel::evalFresnel(n_, cos_mi);
-    pdf = fresnel *
-          MicrofacetGgx::evalReflectionPdf(roughness_, *vin, *vout, info->normal());
-  }
-  else { // Refraction direction pdf
-    const auto m_normal = Microfacet::calcRefractionHalfVector(*vin, *vout, n_);
-    const Float cos_mi = -zisc::dot(m_normal, *vin);
-    const Float fresnel = Fresnel::evalFresnel(n_, cos_mi);
-    pdf = (1.0 - fresnel) *
-          MicrofacetGgx::evalRefractionPdf(roughness_, *vin, *vout, info->normal(), n_);
-  }
+
+  // Calculate the microfacet normal
+  const auto m_normal = (is_reflection)
+      ? Microfacet::calcReflectionHalfVector(vin_d, vout_d)
+      : Microfacet::calcRefractionHalfVector(vin_d, vout_d, n_);
+  ZISC_ASSERT(zisc::isInClosedBounds(m_normal[2], 0.0, 1.0),
+              "The microfacet normal isn't in the upper hemisphere.");
+
+  // Calculate the fresnel term
+  const Float cos_mi = zisc::dot(m_normal, vin_d);
+  const Float fresnel = Fresnel::evalFresnel(n_, cos_mi);
+
+  // Evaluate the pdf
+  const Float pdf = (is_reflection)
+      ? (fresnel *
+         MicrofacetGgx::evalReflectionPdf(roughness_x_, roughness_y_, vin_d, m_normal))
+      : ((1.0 - fresnel) *
+         MicrofacetGgx::evalRefractionPdf(roughness_x_, roughness_y_, vin_d, vout_d, m_normal, n_));
+
   return pdf;
 }
 
@@ -76,15 +98,39 @@ SampledSpectra GgxDielectricBsdf::evalRadiance(
     const WavelengthSamples& wavelengths,
     const IntersectionInfo* info) const noexcept
 {
-  ZISC_ASSERT(info != nullptr, "The info is null.");
-  const Float cos_no = zisc::dot(info->normal(), *vout);
-  const bool is_reflection = (0.0 < cos_no);
-  const Float f = (is_reflection)
-      ? MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, info->normal(), n_)
-      : MicrofacetGgx::evalTransmittance(roughness_, *vin, *vout, info->normal(), n_);
+  const auto& point = info->shapePoint();
+  // Transform vectors
+  const auto vin_d = Transformation::toLocal(point.tangent(),
+                                             point.bitangent(),
+                                             point.normal(),
+                                             -(*vin));
+  ZISC_ASSERT(zisc::isInClosedBounds(vin_d[2], 0.0, 1.0),
+              "The vin isn't in the upper hemisphere.");
+  ZISC_ASSERT(isUnitVector(vin_d), "The vin isn't unit vector.");
+  const auto vout_d = Transformation::toLocal(point.tangent(),
+                                              point.bitangent(),
+                                              point.normal(),
+                                              *vout);
+  ZISC_ASSERT(isUnitVector(vout_d), "The vout isn't unit vector.");
 
+  // Check if the ray is reflected or refracted
+  const Float cos_no = vout_d[2];
+  const bool is_reflection = (0.0 < cos_no);
+
+  // Calculate the microfacet normal
+  const auto m_normal = (is_reflection)
+      ? Microfacet::calcReflectionHalfVector(vin_d, vout_d)
+      : Microfacet::calcRefractionHalfVector(vin_d, vout_d, n_);
+  ZISC_ASSERT(zisc::isInClosedBounds(m_normal[2], 0.0, 1.0),
+              "The microfacet normal isn't in the upper hemisphere.");
+
+  // Evaluate the radiance
+  const Float f = (is_reflection)
+      ? MicrofacetGgx::evalReflectance(roughness_x_, roughness_y_, vin_d, vout_d, m_normal, n_)
+      : MicrofacetGgx::evalTransmittance(roughness_x_, roughness_y_, vin_d, vout_d, m_normal, n_);
   SampledSpectra radiance{wavelengths};
   radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
+
   return radiance;
 }
 
@@ -98,30 +144,46 @@ std::tuple<SampledSpectra, Float> GgxDielectricBsdf::evalRadianceAndPdf(
     const WavelengthSamples& wavelengths,
     const IntersectionInfo* info) const noexcept
 {
-  ZISC_ASSERT(info != nullptr, "The info is null.");
-  const Float cos_no = zisc::dot(info->normal(), *vout);
+  const auto& point = info->shapePoint();
+  // Transform vectors
+  const auto vin_d = Transformation::toLocal(point.tangent(),
+                                             point.bitangent(),
+                                             point.normal(),
+                                             -(*vin));
+  ZISC_ASSERT(zisc::isInClosedBounds(vin_d[2], 0.0, 1.0),
+              "The vin isn't in the upper hemisphere.");
+  ZISC_ASSERT(isUnitVector(vin_d), "The vin isn't unit vector.");
+  const auto vout_d = Transformation::toLocal(point.tangent(),
+                                              point.bitangent(),
+                                              point.normal(),
+                                              *vout);
+  ZISC_ASSERT(isUnitVector(vout_d), "The vout isn't unit vector.");
+
+  // Check if the ray is reflected or refracted
+  const Float cos_no = vout_d[2];
   const bool is_reflection = (0.0 < cos_no);
+
+  // Calculate the microfacet normal
+  const auto m_normal = (is_reflection)
+      ? Microfacet::calcReflectionHalfVector(vin_d, vout_d)
+      : Microfacet::calcRefractionHalfVector(vin_d, vout_d, n_);
+  ZISC_ASSERT(zisc::isInClosedBounds(m_normal[2], 0.0, 1.0),
+              "The microfacet normal isn't in the upper hemisphere.");
+
+  // Evaluate the radiance
   Float pdf = 0.0;
   const Float f = (is_reflection)
-      ? MicrofacetGgx::evalReflectance(roughness_, *vin, *vout, info->normal(), n_, &pdf)
-      : MicrofacetGgx::evalTransmittance(roughness_, *vin, *vout, info->normal(), n_, &pdf);
-
+      ? MicrofacetGgx::evalReflectance(roughness_x_, roughness_y_, vin_d, vout_d, m_normal, n_, &pdf)
+      : MicrofacetGgx::evalTransmittance(roughness_x_, roughness_y_, vin_d, vout_d, m_normal, n_, &pdf);
   SampledSpectra radiance{wavelengths};
   radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
 
-  // Calculate the pdf
-  if (is_reflection) { // Reflection direction pdf
-    const auto m_normal = Microfacet::calcReflectionHalfVector(*vin, *vout);
-    const Float cos_mi = -zisc::dot(m_normal, *vin);
-    const Float fresnel = Fresnel::evalFresnel(n_, cos_mi);
-    pdf = fresnel * pdf;
-  }
-  else { // Refraction direction pdf
-    const auto m_normal = Microfacet::calcRefractionHalfVector(*vin, *vout, n_);
-    const Float cos_mi = -zisc::dot(m_normal, *vin);
-    const Float fresnel = Fresnel::evalFresnel(n_, cos_mi);
-    pdf = (1.0 - fresnel) * pdf;
-  }
+  // Calculate the fresnel term
+  const Float cos_mi = zisc::dot(m_normal, vin_d);
+  const Float fresnel = Fresnel::evalFresnel(n_, cos_mi);
+
+  // Evaluate the pdf
+  pdf = (is_reflection) ? fresnel * pdf : (1.0 - fresnel) * pdf;
 
   return std::make_tuple(radiance, pdf);
 }
@@ -134,20 +196,24 @@ std::tuple<SampledDirection, SampledSpectra> GgxDielectricBsdf::sample(
     Sampler& sampler,
     const IntersectionInfo* info) const noexcept
 {
-  ZISC_ASSERT(info != nullptr, "The info is null.");
+  const auto& point = info->shapePoint();
+  // Transform the incident vector
+  const auto vin_d = Transformation::toLocal(point.tangent(),
+                                             point.bitangent(),
+                                             point.normal(),
+                                             -(*vin));
+  ZISC_ASSERT(zisc::isInClosedBounds(vin_d[2], 0.0, 1.0),
+              "The vin isn't in the upper hemisphere.");
+  ZISC_ASSERT(isUnitVector(vin_d), "The vin isn't unit vector.");
+
   // Sample a microfacet normal
-  const auto m_normal = MicrofacetGgx::sampleNormal(roughness_,
-                                                    *vin,
-                                                    info->shapePoint(),
+  const auto m_normal = MicrofacetGgx::sampleNormal(roughness_x_,
+                                                    roughness_y_,
+                                                    vin_d,
                                                     sampler);
-  const Float cos_ni = -zisc::dot(info->normal(), *vin),
-              cos_mi = -zisc::dot(m_normal.direction(), *vin);
-  ZISC_ASSERT(zisc::isInClosedBounds(cos_ni, 0.0, 1.0),
-              "The cos(ni) isn't [0.0, 1.0].");
-  ZISC_ASSERT(zisc::isInClosedBounds(cos_mi, 0.0, 1.0),
-              "The cos(mi) isn't [0.0, 1.0].");
 
   // Evaluate the fresnel term
+  const Float cos_mi = zisc::dot(m_normal.direction(), vin_d);
   const auto g_result = Fresnel::evalG(n_, cos_mi);
   const bool is_perfect_reflection = !std::get<0>(g_result);
   const Float g = std::get<1>(g_result);
@@ -158,30 +224,38 @@ std::tuple<SampledDirection, SampledSpectra> GgxDielectricBsdf::sample(
   // Determine a reflection or a refraction
   const bool is_reflection = (sampler.sample() < fresnel);
   auto vout = (is_reflection)
-      ? Microfacet::calcReflectionDirection(*vin, m_normal)
-      : Microfacet::calcRefractionDirection(*vin, m_normal, n_, g);
+      ? Microfacet::calcReflectionDirection(vin_d, m_normal)
+      : Microfacet::calcRefractionDirection(vin_d, m_normal, n_, g);
 
   SampledSpectra weight{wavelengths};
-  const Float cos_no = zisc::dot(info->normal(), vout.direction());
-  if ((is_reflection && (0.0 < cos_no)) ||
-      (!is_reflection && (cos_no < 0.0))) {
+  const Float cos_no = vout.direction()[2];
+  if ((is_reflection && (0.0 < cos_no)) || (!is_reflection && (cos_no < 0.0))) {
+    // Evaluate the weight
+    const Float w = MicrofacetGgx::evalWeight(roughness_x_,
+                                              roughness_y_,
+                                              vin_d,
+                                              vout.direction(),
+                                              m_normal.direction());
+    ZISC_ASSERT(0.0 <= w, "The weight is negative.");
+    weight.setIntensity(wavelengths.primaryWavelengthIndex(), w);
+
+    // Update the pdf of the outgoing direction
     vout.setInversePdf((is_reflection)
         ? vout.inversePdf() / fresnel
         : vout.inversePdf() / (1.0 - fresnel));
 
-    // Evaluate the weight
-    const Float cos_mo = zisc::dot(m_normal.direction(), vout.direction());
-    const Float cos_nm = zisc::dot(m_normal.direction(), info->normal());
-    const Float w = MicrofacetGgx::evalWeight(roughness_,
-                                              cos_ni, cos_no,
-                                              cos_mi, cos_mo,
-                                              cos_nm);
-    ZISC_ASSERT(0.0 <= w, "The weight is negative.");
-    weight.setIntensity(wavelengths.primaryWavelengthIndex(), w);
+    // Transformation the reflection direction
+    const auto vout_dir = Transformation::fromLocal(point.tangent(),
+                                                    point.bitangent(),
+                                                    point.normal(),
+                                                    vout.direction());
+    ZISC_ASSERT(isUnitVector(vout_dir), "The vout isn't unit vector.");
+    vout.setDirection(vout_dir);
   }
   else {
     vout.setPdf(0.0);
   }
+
   return std::make_tuple(vout, weight);
 }
 

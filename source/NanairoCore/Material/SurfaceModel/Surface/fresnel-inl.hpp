@@ -34,8 +34,8 @@ inline
 Vector3 Fresnel::calcReflectionDirection(const Vector3& vin,
                                          const Vector3& normal) noexcept
 {
-  const Float cos_ni = -zisc::dot(normal, vin);
-  const auto vout = vin + (2.0 * cos_ni) * normal;
+  const Float cos_ni = zisc::dot(normal, vin);
+  const auto vout = (2.0 * cos_ni) * normal - vin;
   ZISC_ASSERT(isUnitVector(vout), "The vout isn't unit vector.");
   return vout;
 }
@@ -50,8 +50,8 @@ Vector3 Fresnel::calcRefractionDirection(const Vector3& vin,
                                          const Float n,
                                          const Float g) noexcept
 {
-  const Float cos_ni = -zisc::dot(normal, vin);
-  const auto vout = (vin + (cos_ni - g) * normal) * zisc::invert(n);
+  const Float cos_ni = zisc::dot(normal, vin);
+  const auto vout = ((cos_ni - g) * normal - vin) * zisc::invert(n);
   ZISC_ASSERT(isUnitVector(vout), "The vout isn't unit vector.");
   return vout;
 }

@@ -26,6 +26,43 @@
 namespace nanairo {
 
 /*!
+  */
+template <> inline
+Float Microfacet::SmithMicrosurface::evalG1(
+    const Float roughness_x,
+    const Float roughness_y,
+    const Vector3& v,
+    const Vector3& m_normal) noexcept
+{
+  Float g1 = 0.0;
+  const Float cos_mv = zisc::dot(m_normal, v);
+  if (!((0.0 < v[2]) ^ (0.0 < cos_mv))) {
+    const Float r2t2 = Microfacet::calcRoughness2Tan2(roughness_x,
+                                                      roughness_y,
+                                                      v);
+    g1 = 2.0 / (1.0 + zisc::sqrt(1.0 + r2t2));
+  }
+  ZISC_ASSERT(zisc::isInClosedBounds(g1, 0.0, 1.0), "GGX G1 isn't [0, 1].");
+  return g1;
+}
+
+/*!
+  */
+template <> inline
+Float Microfacet::SmithMicrosurface::evalG2(
+    const Float roughness_x,
+    const Float roughness_y,
+    const Vector3& vin,
+    const Vector3& vout,
+    const Vector3& m_normal) noexcept
+{
+  const Float g2 = evalG1(roughness_x, roughness_y, vin, m_normal) *
+                   evalG1(roughness_x, roughness_y, vout, m_normal);
+  ZISC_ASSERT(zisc::isInClosedBounds(g2, 0.0, 1.0), "GGX G2 isn't [0, 1].");
+  return g2;
+}
+
+/*!
   \details
   No detailed.
   */
@@ -38,7 +75,7 @@ SampledDirection Microfacet::calcReflectionDirection(
   const auto& m_normal = sampled_m_normal.direction();
   const auto vout = Fresnel::calcReflectionDirection(vin, m_normal);
   // Calculate the pdf of the direction
-  const Float cos_mi = -zisc::dot(m_normal, vin);
+  const Float cos_mi = zisc::dot(m_normal, vin);
   const Float inverse_jacobian = calcReflectionInverseJacobian(cos_mi);
   const Float inverse_pdf = inverse_jacobian * sampled_m_normal.inversePdf();
   ZISC_ASSERT(0.0 < inverse_pdf, "PDF isn't positive.");
@@ -53,7 +90,7 @@ inline
 Vector3 Microfacet::calcReflectionHalfVector(const Vector3& vin,
                                              const Vector3& vout) noexcept
 {
-  const auto half_vector = vout - vin;
+  const auto half_vector = vin + vout;
   return half_vector.normalized();
 }
 
@@ -84,7 +121,7 @@ SampledDirection Microfacet::calcRefractionDirection(
   const auto& m_normal = sampled_m_normal.direction();
   const auto vout = Fresnel::calcRefractionDirection(vin, m_normal, n, g);
   // Calculate the pdf of the direction
-  const Float cos_mi = -zisc::dot(m_normal, vin);
+  const Float cos_mi = zisc::dot(m_normal, vin);
   const Float cos_mo = zisc::dot(m_normal, vout);
   ZISC_ASSERT(zisc::isInBounds(-cos_mo, 0.0, 1.0), "cos_mo isn't [0, 1].");
   const Float inverse_jacobian = calcRefractionInverseJacobian(cos_mi, cos_mo, n);
@@ -102,7 +139,7 @@ Vector3 Microfacet::calcRefractionHalfVector(const Vector3& vin,
                                              const Vector3& vout,
                                              const Float n) noexcept
 {
-  return (vin - n * vout).normalized();
+  return -(vin + n * vout).normalized();
 }
 
 /*!
@@ -119,6 +156,20 @@ Float Microfacet::calcRefractionInverseJacobian(const Float cos_mi,
                                  (zisc::power<2>(n) * zisc::abs(cos_mo));
   ZISC_ASSERT(0.0 < inverse_jacobian, "Jacobian isn't positive.");
   return inverse_jacobian;
+}
+
+/*!
+  */
+inline
+Float Microfacet::calcRoughness2Tan2(const Float roughness_x,
+                                     const Float roughness_y,
+                                     const Vector3& v) noexcept
+{
+  ZISC_ASSERT(v[2] != 0.0, "The v[2] is zero.");
+  const Float r2 = (zisc::power<2>(v[0]) * zisc::power<2>(roughness_x) +
+                    zisc::power<2>(v[1]) * zisc::power<2>(roughness_y)) /
+                   zisc::power<2>(v[2]);
+  return r2;
 }
 
 } // namespace nanairo

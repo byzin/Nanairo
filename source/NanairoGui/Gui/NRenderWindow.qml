@@ -29,8 +29,9 @@ Window {
 
   NPane {
     id: renderFrame
-    anchors.fill: parent
-    anchors.topMargin: infoLabel.height
+    y: infoLabel.y + infoLabel.height
+    width: renderWindow.width
+    height: renderWindow.height - infoLabel.height
 
     Image {
       id: renderImage

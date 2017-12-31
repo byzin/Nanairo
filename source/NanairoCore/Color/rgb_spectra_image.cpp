@@ -60,6 +60,9 @@ void RgbSpectraImage::addContribution(
     const uint pixel_index,
     const SampledSpectra& contribution) noexcept
 {
+  ZISC_ASSERT(!contribution.hasNan(), "The contribution has nan.");
+  ZISC_ASSERT(!contribution.hasInf(), "The contribution has nan.");
+
   volatile Float c = 0.0;
   volatile Float tmp1 = 0.0;
   volatile Float tmp2 = 0.0;

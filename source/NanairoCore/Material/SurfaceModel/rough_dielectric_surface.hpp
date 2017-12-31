@@ -71,7 +71,8 @@ class RoughDielectricSurface : public SurfaceModel
 
   const TextureModel* outer_refractive_index_;
   const TextureModel* inner_refractive_index_;
-  const TextureModel* roughness_;
+  const TextureModel* roughness_x_;
+  const TextureModel* roughness_y_;
 };
 
 //! \} Core

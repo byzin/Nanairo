@@ -220,7 +220,7 @@ void FlatTriangle::initCanonicalMatrix() noexcept
   const Vector3 v1 = *zisc::treatAs<const Vector3*>(&vertex0());
   const Vector3 v2 = v1 + e1;
   const Vector3 v3 = v1 + e2;
-  const Vector3& n = zisc::cross(e1, e2);
+  const Vector3 n = zisc::cross(e1, e2);
 
   using zisc::abs;
   if ((abs(n[1]) < abs(n[0])) && (abs(n[2]) < abs(n[0]))) {

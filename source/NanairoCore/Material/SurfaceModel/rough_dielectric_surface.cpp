@@ -53,7 +53,9 @@ auto RoughDielectricSurface::makeBxdf(
   const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];
 
   // Evaluate the roughness
-  const Float roughness = evalRoughness(roughness_, info.uv());
+  const Float roughness_x = evalRoughness(roughness_x_, info.uv());
+  const Float roughness_y = evalRoughness(roughness_y_, info.uv());
+
   // Evaluate the refractive index
   const Float n = evalRefractiveIndex(outer_refractive_index_,
                                       inner_refractive_index_,
@@ -65,7 +67,7 @@ auto RoughDielectricSurface::makeBxdf(
   // Make GGX BSDF
   using Bsdf = GgxDielectricBsdf;
   auto chunk = memory_pool.allocate<Bsdf>();
-  ShaderPointer ptr = makeUnique<Bsdf>(chunk, roughness, n);
+  ShaderPointer ptr = makeUnique<Bsdf>(chunk, roughness_x, roughness_y, n);
   return ptr;
 }
 
@@ -99,7 +101,13 @@ void RoughDielectricSurface::initialize(
   }
   {
     const auto index = parameters.roughness_x_index_;
-    roughness_ = texture_list[index];
+    roughness_x_ = texture_list[index];
+  }
+  {
+    const auto index = (parameters.anisotropic_ == kTrue)
+        ? parameters.roughness_y_index_
+        : parameters.roughness_x_index_;
+    roughness_y_ = texture_list[index];
   }
 }
 

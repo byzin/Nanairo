@@ -37,7 +37,9 @@ class GgxDielectricBsdf : public GlossyShaderModel
 {
  public:
   //! Create a GGX dielectric BSDF
-  GgxDielectricBsdf(const Float roughness, const Float n) noexcept;
+  GgxDielectricBsdf(const Float roughness_x,
+                    const Float roughness_y,
+                    const Float n) noexcept;
 
 
   //! Evaluate the pdf
@@ -71,7 +73,8 @@ class GgxDielectricBsdf : public GlossyShaderModel
   bool wavelengthIsSelected() const noexcept override;
 
  private:
-  const Float roughness_;
+  const Float roughness_x_,
+              roughness_y_;
   const Float n_;
 };
 

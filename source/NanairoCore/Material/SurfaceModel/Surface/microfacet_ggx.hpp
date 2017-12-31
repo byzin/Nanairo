@@ -21,9 +21,6 @@
 
 namespace nanairo {
 
-// Forward declaration
-class ShapePoint;
-
 //! \addtogroup Core
 //! \{
 
@@ -32,165 +29,127 @@ class ShapePoint;
 class MicrofacetGgx : public Microfacet
 {
  public:
-  //! The types of GGX method
-  enum class GgxMethodType : int
-  {
-    kSmith,
-    kVCavity
-  };
-
-
   //! Evaluate the D
-  static Float evalD(const Float roughness, const Float cos_nm) noexcept;
+  static Float evalD(const Float roughness_x,
+                     const Float roughness_y, 
+                     const Vector3& m_normal) noexcept;
 
   //! Evaluate the G1 term
-  static Float evalG1(const Float roughness,
-                      const Float cos_n,
-                      const Float cos_m,
-                      const Float cos_nm) noexcept;
+  static Float evalG1(const Float roughness_x,
+                      const Float roughness_y,
+                      const Vector3& v,
+                      const Vector3& m_normal) noexcept;
 
-  //! Evaluate the G1 term
-  static Float evalG2(const Float roughness,
-                      const Float cos_ni,
-                      const Float cos_no,
-                      const Float cos_mi,
-                      const Float cos_mo,
-                      const Float cos_nm) noexcept;
+  //! Evaluate the G2 term
+  static Float evalG2(const Float roughness_x,
+                      const Float roughness_y,
+                      const Vector3& vin,
+                      const Vector3& vout,
+                      const Vector3& m_normal) noexcept;
+
+  //! Evaluate the refraction pdf fo the dielectric
+  static Float evalRefractionPdf(const Float roughness_x,
+                                 const Float roughness_y,
+                                 const Vector3& vin,
+                                 const Vector3& vout,
+                                 const Vector3& m_normal,
+                                 const Float n) noexcept;
 
   //! Evaluate the GGX reflectance of a dielectric material
-  static Float evalReflectance(const Float roughness,
+  static Float evalReflectance(const Float roughness_x,
+                               const Float roughness_y,
                                const Vector3& vin,
                                const Vector3& vout,
-                               const Vector3& normal,
+                               const Vector3& m_normal,
                                const Float n,
                                Float* pdf = nullptr) noexcept;
 
   //! Evaluate the GGX reflectance
-  static SampledSpectra evalReflectance(
-      const Float roughness,
-      const Vector3& vin,
-      const Vector3& vout,
-      const Vector3& normal,
-      const SampledSpectra& n,
-      const SampledSpectra& eta,
-      Float* pdf = nullptr) noexcept;
-
-  //! Evaluate the reflection pdf for the conductor
-  static Float evalReflectionPdf(const Float roughness,
-                                 const Vector3& vin,
-                                 const Vector3& vout,
-                                 const Vector3& normal) noexcept;
+  static SampledSpectra evalReflectance(const Float roughness_x,
+                                        const Float roughness_y,
+                                        const Vector3& vin,
+                                        const Vector3& vout,
+                                        const Vector3& m_normal,
+                                        const SampledSpectra& n,
+                                        const SampledSpectra& eta,
+                                        Float* pdf = nullptr) noexcept;
 
   //! Evaluate the refraction pdf fo the dielectric
-  static Float evalRefractionPdf(const Float roughness,
+  static Float evalReflectionPdf(const Float roughness_x,
+                                 const Float roughness_y,
                                  const Vector3& vin,
-                                 const Vector3& vout,
-                                 const Vector3& normal,
-                                 const Float n) noexcept;
+                                 const Vector3& m_normal) noexcept;
 
   //! Evaluate the GGX transmittance of a dielectric material
-  static Float evalTransmittance(const Float roughness,
+  static Float evalTransmittance(const Float roughness_x,
+                                 const Float roughness_y,
                                  const Vector3& vin,
                                  const Vector3& vout,
-                                 const Vector3& normal,
+                                 const Vector3& m_normal,
                                  const Float n,
                                  Float* pdf = nullptr) noexcept;
 
   //! Evaluate the weight
-  static Float evalWeight(const Float roughness,
-                          const Float cos_ni,
-                          const Float cos_no,
-                          const Float cos_mi,
-                          const Float cos_mo,
-                          const Float cos_nm) noexcept;
+  static Float evalWeight(const Float roughness_x,
+                          const Float roughness_y,
+                          const Vector3& vin,
+                          const Vector3& vout,
+                          const Vector3& m_normal) noexcept;
 
   //! Sample a GGX microfacet normal on the default basis
-  static SampledDirection sampleNormal(const Float roughness,
+  static SampledDirection sampleNormal(const Float roughness_x,
+                                       const Float roughness_y,
                                        const Vector3& vin,
                                        Sampler& sampler,
                                        const bool calc_pdf = true) noexcept;
-
-  //! Sample a GGX microfacet normal on the point
-  static SampledDirection sampleNormal(const Float roughness,
-                                       const Vector3& vin,
-                                       const ShapePoint& point,
-                                       Sampler& sampler,
-                                       const bool calc_pdf = true) noexcept;
-
-//  static constexpr GgxMethodType kUsedType = GgxMethodType::kSmith;
-  static constexpr GgxMethodType kUsedType = GgxMethodType::kVCavity;
 
  private:
-  template <GgxMethodType kMethod>
-  class GgxMethod
+  template <MicrosurfaceProfile kProfile>
+  class GgxMicrosurface
   {
    public:
-    //! Evaluate the G1 term
-    static Float evalG1(const Float roughness,
-                        const Float cos_n,
-                        const Float cos_m,
-                        const Float cos_nm) noexcept;
-
-    //! Evaluate the G1 term
-    static Float evalG2(const Float roughness,
-                        const Float cos_ni,
-                        const Float cos_no,
-                        const Float cos_mi,
-                        const Float cos_mo,
-                        const Float cos_nm) noexcept;
-
     //! Evaluate the weight
-    static Float evalWeight(const Float roughness,
-                            const Float cos_ni,
-                            const Float cos_no,
-                            const Float cos_mi,
-                            const Float cos_mo,
-                            const Float cos_nm) noexcept;
-
-    //! Sample the microfacet normal
-    static Vector3 sampleMicrofacetNormal(const Float roughness,
-                                          const Vector3& vin,
-                                          Sampler& sampler) noexcept;
-
-   private:
-    //! Sample the slope XY values
-    static std::tuple<Float, Float> smithSampleSlopeXY(const Float cos_theta,
-                                                       Sampler& sampler) noexcept;
-
-    //! Stretch the microfacet normal
-    static Vector3 smithStretch(const Float roughness,
-                                const Vector3& vin) noexcept;
+    static Float evalWeight(const Float roughness_x,
+                            const Float roughness_y,
+                            const Vector3& vin,
+                            const Vector3& vout,
+                            const Vector3& m_normal) noexcept;
 
     //! Sample a microfacet normal
-    static Vector3 vcavitySampleMicrofacetNormal(const Float roughness,
-                                                 Sampler& sampler) noexcept;
+    static Vector3 sampleMicrofacetNormal(const Float roughness_x,
+                                          const Float roughness_y,
+                                          const Vector3& vin,
+                                          Sampler& sampler) noexcept;
   };
 
   //! Calculate the pdf of the GGX reflection
-  static Float calcReflectionPdf(const Float roughness,
-                                 const Float d,
-                                 const Float cos_ni,
-                                 const Float cos_mi,
-                                 const Float cos_nm) noexcept;
+  static Float calcReflectionPdf(const Float roughness_x,
+                                 const Float roughness_y,
+                                 const Vector3& vin,
+                                 const Vector3& m_normal,
+                                 const Float d) noexcept;
 
   //! Calculate the pdf of the GGX refraction
-  static Float calcRefractionPdf(const Float roughness,
-                                 const Float d,
-                                 const Float cos_ni,
-                                 const Float cos_mi,
-                                 const Float cos_mo,
-                                 const Float cos_nm,
-                                 const Float n) noexcept;
+  static Float calcRefractionPdf(const Float roughness_x,
+                                 const Float roughness_y,
+                                 const Vector3& vin,
+                                 const Vector3& vout,
+                                 const Vector3& m_normal,
+                                 const Float n,
+                                 const Float d) noexcept;
 
   //! Sample the microfacet normal
-  static Vector3 sampleMicrofacetNormal(const Float roughness,
+  static Vector3 sampleMicrofacetNormal(const Float roughness_x,
+                                        const Float roughness_y,
                                         const Vector3& vin,
                                         Sampler& sampler) noexcept;
 
 
-  // Methods
-  using Smith = GgxMethod<GgxMethodType::kSmith>;
-  using VCavity = GgxMethod<GgxMethodType::kVCavity>;
+  // Microsurface profile of GGX
+  static constexpr MicrosurfaceProfile kMicrosurface = MicrosurfaceProfile::kSmith;
+//  static constexpr MicrosurfaceProfile kMicrosurface = MicrosurfaceProfile::kVCavity;
+  using SmithGgxMicrosurface = GgxMicrosurface<MicrosurfaceProfile::kSmith>;
+  using VCavityGgxMicrosurface = GgxMicrosurface<MicrosurfaceProfile::kVCavity>;
 };
 
 //! \} Core

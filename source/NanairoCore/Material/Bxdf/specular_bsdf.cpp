@@ -46,7 +46,8 @@ std::tuple<SampledDirection, SampledSpectra> SpecularBsdf::sample(
 {
   ZISC_ASSERT(info != nullptr, "The info is null.");
   // Evaluate the fresnel term
-  const Float cos_ni = -zisc::dot(info->normal(), *vin);
+  const auto vin_d = -(*vin);
+  const Float cos_ni = zisc::dot(info->normal(), vin_d);
   ZISC_ASSERT(zisc::isInClosedBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
   const auto result = Fresnel::evalG(n_, cos_ni);
   const bool is_perfect_reflection = !std::get<0>(result);
@@ -60,8 +61,8 @@ std::tuple<SampledDirection, SampledSpectra> SpecularBsdf::sample(
   // Determine a reflection or a refraction
   const bool is_reflection = (sampler.sample() < fresnel);
   const auto vout = (is_reflection)
-      ? Fresnel::calcReflectionDirection(*vin, info->normal())
-      : Fresnel::calcRefractionDirection(*vin, info->normal(), n_, g);
+      ? Fresnel::calcReflectionDirection(vin_d, info->normal())
+      : Fresnel::calcRefractionDirection(vin_d, info->normal(), n_, g);
 
   SampledSpectra weight{wavelengths};
   weight.setIntensity(wavelengths.primaryWavelengthIndex(), 1.0);

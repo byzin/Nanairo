@@ -51,7 +51,7 @@ constexpr uint16 CoreConfig::redWavelength() noexcept
 inline
 constexpr uint CoreConfig::imageHeightMin() noexcept
 {
-  constexpr uint image_height_min = 240;
+  constexpr uint image_height_min = 256;
   return image_height_min;
 }
 
@@ -60,7 +60,7 @@ constexpr uint CoreConfig::imageHeightMin() noexcept
 inline
 constexpr uint CoreConfig::imageWidthMin() noexcept
 {
-  constexpr uint image_width_min = 320;
+  constexpr uint image_width_min = 256;
   return image_width_min;
 }
 

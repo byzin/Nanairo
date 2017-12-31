@@ -46,9 +46,10 @@ std::tuple<SampledDirection, SampledSpectra> SpecularBrdf::sample(
     const IntersectionInfo* info) const noexcept
 {
   ZISC_ASSERT(info != nullptr, "The info is null.");
-  const Float cos_ni = -zisc::dot(info->normal(), *vin);
+  const auto vin_d = -(*vin);
+  const Float cos_ni = zisc::dot(info->normal(), vin_d);
   ZISC_ASSERT(zisc::isInClosedBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
-  const auto vout = Fresnel::calcReflectionDirection(*vin, info->normal());
+  const auto vout = Fresnel::calcReflectionDirection(vin_d, info->normal());
   const auto fresnel = Fresnel::evalFresnel(n_, eta_, cos_ni);
   return std::make_tuple(SampledDirection{vout, 1.0}, fresnel);
 }

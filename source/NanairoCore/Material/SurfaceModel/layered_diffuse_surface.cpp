@@ -89,17 +89,17 @@ SurfaceType LayeredDiffuseSurface::type() const noexcept
   */
 void LayeredDiffuseSurface::calcInternalReflectance() noexcept
 {
-  for (uint i = 0; i < CoreConfig::spectraSize(); ++i) {
-    const Point2 uv{0.0, 0.0};
-    const auto wavelength = getWavelength(i);
-    Float n = 0.0;
-    {
-      const auto n1 = outer_refractive_index_->spectraValue(uv, wavelength);
-      const auto n2 = inner_refractive_index_->spectraValue(uv, wavelength);
-      n = n2 / n1;
-    }
-    ri_[i] = LayeredDiffuse::calcRi(n);
-  }
+//  for (uint i = 0; i < CoreConfig::spectraSize(); ++i) {
+//    const Point2 uv{0.0, 0.0};
+//    const auto wavelength = getWavelength(i);
+//    Float n = 0.0;
+//    {
+//      const auto n1 = outer_refractive_index_->spectraValue(uv, wavelength);
+//      const auto n2 = inner_refractive_index_->spectraValue(uv, wavelength);
+//      n = n2 / n1;
+//    }
+//    ri_[i] = LayeredDiffuse::calcRi(n);
+//  }
 }
 
 /*!

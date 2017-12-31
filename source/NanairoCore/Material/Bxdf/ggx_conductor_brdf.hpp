@@ -36,7 +36,8 @@ class GgxConductorBrdf : public GlossyShaderModel
 {
  public:
   //! Create a GGX conductor BRDF
-  GgxConductorBrdf(const Float roughness,
+  GgxConductorBrdf(const Float roughness_x,
+                   const Float roughness_y,
                    const SampledSpectra& n,
                    const SampledSpectra& eta) noexcept;
 
@@ -74,7 +75,8 @@ class GgxConductorBrdf : public GlossyShaderModel
  private:
   const SampledSpectra n_,
                        eta_;
-  const Float roughness_;
+  const Float roughness_x_,
+              roughness_y_;
 };
 
 //! \} Core

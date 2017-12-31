@@ -52,7 +52,9 @@ auto RoughConductorSurface::makeBxdf(
     zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
 {
   // Evaluate the roughness
-  const Float roughness = evalRoughness(roughness_, info.uv());
+  const Float roughness_x = evalRoughness(roughness_x_, info.uv());
+  const Float roughness_y = evalRoughness(roughness_y_, info.uv());
+
   // Evaluate the refractive index
   const auto n = evalRefractiveIndex(outer_refractive_index_,
                                      inner_refractive_index_,
@@ -66,7 +68,7 @@ auto RoughConductorSurface::makeBxdf(
   // Make GGX BRDF
   using Brdf = GgxConductorBrdf;
   auto chunk = memory_pool.allocate<Brdf>();
-  ShaderPointer ptr = makeUnique<Brdf>(chunk, roughness, n, eta);
+  ShaderPointer ptr = makeUnique<Brdf>(chunk, roughness_x, roughness_y, n, eta);
   return ptr;
 }
 
@@ -104,7 +106,13 @@ void RoughConductorSurface::initialize(
   }
   {
     const auto index = parameters.roughness_x_index_;
-    roughness_ = texture_list[index];
+    roughness_x_ = texture_list[index];
+  }
+  {
+    const auto index = (parameters.anisotropic_ == kTrue)
+        ? parameters.roughness_y_index_
+        : parameters.roughness_x_index_;
+    roughness_y_ = texture_list[index];
   }
 }
 
