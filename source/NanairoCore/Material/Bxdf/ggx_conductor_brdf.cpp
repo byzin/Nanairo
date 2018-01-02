@@ -171,6 +171,13 @@ std::tuple<SampledSpectra, Float> GgxConductorBrdf::evalRadianceAndPdf(
 }
 
 /*!
+  */
+bool GgxConductorBrdf::isReflective() const noexcept
+{
+  return true;
+}
+
+/*!
   \details
   No detailed.
   */

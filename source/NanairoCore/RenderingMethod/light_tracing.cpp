@@ -91,13 +91,21 @@ void LightTracing::evalExplicitConnection(
   if (bxdf->type() == ShaderType::Specular)
     return;
 
+  // Check if the camera is in front or back of the surface
+  const bool is_in_front = 0.0 < zisc::dot(intersection.normal(),
+                                           camera.sampledLensPoint() - intersection.point());
+  if (!(is_in_front ? bxdf->isReflective() : bxdf->isTransmissive()))
+    return;
+
   // Make a shadow ray
-  const auto& normal = intersection.normal();
   const auto shadow_ray = Method::makeShadowRay(intersection.point(),
                                                 camera.sampledLensPoint(),
-                                                normal);
-  const Float cos_no = zisc::dot(normal, shadow_ray.direction());
-  if (cos_no < 0.0)
+                                                intersection.normal(),
+                                                is_in_front);
+  const Float cos_no = (is_in_front)
+      ? zisc::dot(intersection.normal(), shadow_ray.direction())
+      : -zisc::dot(intersection.normal(), shadow_ray.direction());
+  if (cos_no <= 0.0)
     return;
 
   // Check the visibility of the camera

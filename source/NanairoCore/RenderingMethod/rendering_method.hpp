@@ -113,7 +113,8 @@ class RenderingMethod
   //! Make a shadow ray
   Ray makeShadowRay(const Point3& source,
                     const Point3& dest,
-                    const Vector3& normal) const noexcept;
+                    const Vector3& normal,
+                    const bool is_in_front) const noexcept;
 
   //! Play russian roulette
   RouletteResult playRussianRoulette(const uint path,

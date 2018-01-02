@@ -62,6 +62,12 @@ class GgxDielectricBsdf : public GlossyShaderModel
       const WavelengthSamples& wavelengths,
       const IntersectionInfo* info) const noexcept override;
 
+  //! Check if the BSDF is reflective
+  bool isReflective() const noexcept override;
+
+  //! Check if the BSDF is transmissive
+  bool isTransmissive() const noexcept override;
+
   //! Sample a reflection direction and evaluate a reflection weight
   std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin,

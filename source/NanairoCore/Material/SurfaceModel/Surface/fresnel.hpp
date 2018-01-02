@@ -40,8 +40,7 @@ class Fresnel
                                          const Float g) noexcept;
 
   //! Calculate the fresnel dielectric g term
-  static std::tuple<bool, Float> evalG(const Float n,
-                                       const Float cos_theta) noexcept;
+  static Float evalG2(const Float n, const Float cos_theta) noexcept;
 
   //! Solve the fresnel dielectric equation
   static Float evalFresnel(const Float n, const Float cos_theta) noexcept;

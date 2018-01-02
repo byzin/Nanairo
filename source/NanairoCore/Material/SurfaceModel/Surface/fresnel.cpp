@@ -19,6 +19,8 @@
 namespace nanairo {
 
 /*!
+  \details
+  n = (n_transmnittance_side / n_incident_side)
   */
 SampledSpectra Fresnel::evalFresnel(const SampledSpectra& n,
                                     const SampledSpectra& eta,
@@ -35,11 +37,11 @@ SampledSpectra Fresnel::evalFresnel(const SampledSpectra& n,
     const Float ab2 = zisc::sqrt(zisc::power<2>(t1) + zisc::power<2>(2.0 * e * ek));
     const Float a = zisc::sqrt(0.5 * (ab2 + t1));
 
-    const Float r_s = (ab2 - 2.0 * a * cos_theta + cos_theta2) /
-                      (ab2 + 2.0 * a * cos_theta + cos_theta2);
-    const Float t2 = 2.0 * a * cos_theta * sin_theta2;
+    const Float r_s = (ab2 + cos_theta2 - (2.0 * a * cos_theta)) /
+                      (ab2 + cos_theta2 + (2.0 * a * cos_theta));
+    const Float t2 = (2.0 * a * cos_theta) * sin_theta2;
     const Float t3 = (cos_theta2 * ab2 + zisc::power<2>(sin_theta2)) /
-                     (cos_theta2 * ab2 + t2 + zisc::power<2>(sin_theta2));
+                     (cos_theta2 * ab2 + zisc::power<2>(sin_theta2) + t2);
 
     const Float r = r_s * t3;
     ZISC_ASSERT(zisc::isInClosedBounds(r, 0.0, 1.0),

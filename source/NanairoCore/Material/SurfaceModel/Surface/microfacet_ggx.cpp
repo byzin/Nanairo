@@ -24,13 +24,15 @@
 namespace nanairo {
 
 /*!
+  \details
+  n = n_transmission_side / n_incident_side
   */
 Float MicrofacetGgx::evalReflectance(const Float roughness_x,
                                      const Float roughness_y,
                                      const Vector3& vin,
                                      const Vector3& vout,
                                      const Vector3& m_normal,
-                                     const Float n,
+                                     const Float fresnel,
                                      Float* pdf) noexcept
 {
   // Evaluate D
@@ -42,10 +44,6 @@ Float MicrofacetGgx::evalReflectance(const Float roughness_x,
   const Float g2 = evalG2(roughness_x, roughness_y, vin, vout, m_normal);
   if (g2 == 0.0)
     return 0.0;
-
-  // Evaluate the fresnel
-  const Float cos_mi = zisc::dot(m_normal, vin);
-  const Float fresnel = Fresnel::evalFresnel(n, cos_mi);
 
   // Calculate the reflectance
   const Float cos_ni = vin[2];
@@ -109,8 +107,12 @@ Float MicrofacetGgx::evalTransmittance(const Float roughness_x,
                                        const Vector3& vout,
                                        const Vector3& m_normal,
                                        const Float n,
+                                       const Float fresnel,
                                        Float* pdf) noexcept
 {
+  if (fresnel == 1.0)
+    return 0.0;
+
   // Evaluate D
   const Float d = evalD(roughness_x, roughness_y, m_normal);
   if (d == 0.0)
@@ -121,15 +123,10 @@ Float MicrofacetGgx::evalTransmittance(const Float roughness_x,
   if (g2 == 0.0)
     return 0.0;
 
-  // Evaluate the fresnel reflectance
-  const Float cos_mi = zisc::dot(m_normal, vin);
-  const Float fresnel = Fresnel::evalFresnel(n, cos_mi);
-  if (fresnel == 1.0)
-    return 0.0;
-
   // Calculate the transmittance
   const Float cos_ni = vin[2];
   const Float cos_no = vout[2];
+  const Float cos_mi = zisc::dot(m_normal, vin);
   const Float cos_mo = zisc::dot(m_normal, vout);
   const Float k1 = (cos_mi * cos_mo) / (cos_ni * cos_no);
   ZISC_ASSERT(0.0 < k1, "The k1 isn't positive.");

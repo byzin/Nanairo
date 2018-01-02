@@ -136,9 +136,11 @@ RenderingTile RenderingMethod::getRenderingTile(const Index2d& resolution,
 inline
 Ray RenderingMethod::makeShadowRay(const Point3& source,
                                    const Point3& dest,
-                                   const Vector3& normal) const noexcept
+                                   const Vector3& normal,
+                                   const bool is_in_front) const noexcept
 {
-  const auto ray_epsilon = rayCastEpsilon() * normal;
+  const Float e = (is_in_front) ? rayCastEpsilon() : -rayCastEpsilon();
+  const auto ray_epsilon = e * normal;
   ZISC_ASSERT(!isZeroVector(ray_epsilon), "Ray epsilon is zero vector.");
   const auto origin = source + ray_epsilon;
   const auto dir = (dest - origin).normalized();

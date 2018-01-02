@@ -79,6 +79,13 @@ std::tuple<SampledSpectra, Float> LambertBrdf::evalRadianceAndPdf(
 }
 
 /*!
+  */
+bool LambertBrdf::isReflective() const noexcept
+{
+  return true;
+}
+
+/*!
   \details
   No detailed.
   */

@@ -64,6 +64,9 @@ class InterfacedLambertianBrdf : public GlossyShaderModel
       const WavelengthSamples& wavelengths,
       const IntersectionInfo* info) const noexcept override;
 
+  //! Check if the BRDF is reflective
+  bool isReflective() const noexcept override;
+
   //! Sample a reflection direction and evaluate a reflection weight
   std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin,

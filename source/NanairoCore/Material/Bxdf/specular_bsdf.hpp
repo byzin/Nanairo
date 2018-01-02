@@ -38,6 +38,12 @@ class SpecularBsdf : public SpecularShaderModel
   SpecularBsdf(const Float n) noexcept;
 
 
+  //! Check if the BSDF is reflective
+  bool isReflective() const noexcept override;
+
+  //! Check if the BSDF is transmissive
+  bool isTransmissive() const noexcept override;
+
   //! Evalute the weight of solid angle sampling
   std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin,

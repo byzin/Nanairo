@@ -109,6 +109,13 @@ std::tuple<SampledSpectra, Float> MicrocylinderClothBrdf::evalRadianceAndPdf(
   return std::make_tuple(radiance, pdf);
 }
 
+/*!
+  */
+bool MicrocylinderClothBrdf::isReflective() const noexcept
+{
+  return true;
+}
+
 std::tuple<SampledDirection, SampledSpectra> MicrocylinderClothBrdf::sample(
     const Vector3* vin,
     const WavelengthSamples& wavelengths,

@@ -61,7 +61,10 @@ class Sensor : public GlossyShaderModel
       const WavelengthSamples& wavelengths,
       const IntersectionInfo* info) const noexcept override;
 
-  //! Sample a camera ray direction and evaluate a ray weight
+  //! Check if the sensor is emissive
+  bool isEmissive() const noexcept override;
+
+  //! Sample a view ray direction and evaluate a ray weight
   std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin,
       const WavelengthSamples& wavelengths,

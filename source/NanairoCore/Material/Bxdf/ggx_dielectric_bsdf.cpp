@@ -71,19 +71,19 @@ Float GgxDielectricBsdf::evalPdf(
   const auto m_normal = (is_reflection)
       ? Microfacet::calcReflectionHalfVector(vin_d, vout_d)
       : Microfacet::calcRefractionHalfVector(vin_d, vout_d, n_);
-  ZISC_ASSERT(zisc::isInClosedBounds(m_normal[2], 0.0, 1.0),
-              "The microfacet normal isn't in the upper hemisphere.");
-
-  // Calculate the fresnel term
+  Float pdf = 0.0;
   const Float cos_mi = zisc::dot(m_normal, vin_d);
-  const Float fresnel = Fresnel::evalFresnel(n_, cos_mi);
+  if ((0.0 < m_normal[2]) && (0.0 < cos_mi)) {
+    // Calculate the fresnel term
+    const Float fresnel = Fresnel::evalFresnel(n_, cos_mi);
 
-  // Evaluate the pdf
-  const Float pdf = (is_reflection)
-      ? (fresnel *
-         MicrofacetGgx::evalReflectionPdf(roughness_x_, roughness_y_, vin_d, m_normal))
-      : ((1.0 - fresnel) *
-         MicrofacetGgx::evalRefractionPdf(roughness_x_, roughness_y_, vin_d, vout_d, m_normal, n_));
+    // Evaluate the pdf
+    pdf = (is_reflection)
+        ? (fresnel *
+           MicrofacetGgx::evalReflectionPdf(roughness_x_, roughness_y_, vin_d, m_normal))
+        : ((1.0 - fresnel) *
+           MicrofacetGgx::evalRefractionPdf(roughness_x_, roughness_y_, vin_d, vout_d, m_normal, n_));
+  }
 
   return pdf;
 }
@@ -121,15 +121,19 @@ SampledSpectra GgxDielectricBsdf::evalRadiance(
   const auto m_normal = (is_reflection)
       ? Microfacet::calcReflectionHalfVector(vin_d, vout_d)
       : Microfacet::calcRefractionHalfVector(vin_d, vout_d, n_);
-  ZISC_ASSERT(zisc::isInClosedBounds(m_normal[2], 0.0, 1.0),
-              "The microfacet normal isn't in the upper hemisphere.");
 
-  // Evaluate the radiance
-  const Float f = (is_reflection)
-      ? MicrofacetGgx::evalReflectance(roughness_x_, roughness_y_, vin_d, vout_d, m_normal, n_)
-      : MicrofacetGgx::evalTransmittance(roughness_x_, roughness_y_, vin_d, vout_d, m_normal, n_);
   SampledSpectra radiance{wavelengths};
-  radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
+  const Float cos_mi = zisc::dot(m_normal, vin_d);
+  if ((0.0 < m_normal[2]) && (0.0 < cos_mi)) {
+    // Calculate the fresnel term
+    const Float fresnel = Fresnel::evalFresnel(n_, cos_mi);
+
+    // Evaluate the radiance
+    const Float f = (is_reflection)
+        ? MicrofacetGgx::evalReflectance(roughness_x_, roughness_y_, vin_d, vout_d, m_normal, fresnel)
+        : MicrofacetGgx::evalTransmittance(roughness_x_, roughness_y_, vin_d, vout_d, m_normal, n_, fresnel);
+    radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
+  }
 
   return radiance;
 }
@@ -167,25 +171,38 @@ std::tuple<SampledSpectra, Float> GgxDielectricBsdf::evalRadianceAndPdf(
   const auto m_normal = (is_reflection)
       ? Microfacet::calcReflectionHalfVector(vin_d, vout_d)
       : Microfacet::calcRefractionHalfVector(vin_d, vout_d, n_);
-  ZISC_ASSERT(zisc::isInClosedBounds(m_normal[2], 0.0, 1.0),
-              "The microfacet normal isn't in the upper hemisphere.");
-
-  // Evaluate the radiance
-  Float pdf = 0.0;
-  const Float f = (is_reflection)
-      ? MicrofacetGgx::evalReflectance(roughness_x_, roughness_y_, vin_d, vout_d, m_normal, n_, &pdf)
-      : MicrofacetGgx::evalTransmittance(roughness_x_, roughness_y_, vin_d, vout_d, m_normal, n_, &pdf);
   SampledSpectra radiance{wavelengths};
-  radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
-
-  // Calculate the fresnel term
+  Float pdf = 0.0;
   const Float cos_mi = zisc::dot(m_normal, vin_d);
-  const Float fresnel = Fresnel::evalFresnel(n_, cos_mi);
+  if ((0.0 < m_normal[2]) && (0.0 < cos_mi)) {
+    // Calculate the fresnel term
+    const Float fresnel = Fresnel::evalFresnel(n_, cos_mi);
 
-  // Evaluate the pdf
-  pdf = (is_reflection) ? fresnel * pdf : (1.0 - fresnel) * pdf;
+    // Evaluate the radiance
+    const Float f = (is_reflection)
+        ? MicrofacetGgx::evalReflectance(roughness_x_, roughness_y_, vin_d, vout_d, m_normal, fresnel, &pdf)
+        : MicrofacetGgx::evalTransmittance(roughness_x_, roughness_y_, vin_d, vout_d, m_normal, n_, fresnel, &pdf);
+    radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
+
+    // Evaluate the pdf
+    pdf = (is_reflection) ? fresnel * pdf : (1.0 - fresnel) * pdf;
+  }
 
   return std::make_tuple(radiance, pdf);
+}
+
+/*!
+  */
+bool GgxDielectricBsdf::isReflective() const noexcept
+{
+  return true;
+}
+
+/*!
+  */
+bool GgxDielectricBsdf::isTransmissive() const noexcept
+{
+  return true;
 }
 
 /*!
@@ -214,15 +231,15 @@ std::tuple<SampledDirection, SampledSpectra> GgxDielectricBsdf::sample(
 
   // Evaluate the fresnel term
   const Float cos_mi = zisc::dot(m_normal.direction(), vin_d);
-  const auto g_result = Fresnel::evalG(n_, cos_mi);
-  const bool is_perfect_reflection = !std::get<0>(g_result);
-  const Float g = std::get<1>(g_result);
+  const Float g2 = Fresnel::evalG2(n_, cos_mi);
+  const bool is_perfect_reflection = g2 <= 0.0;
+  const Float g = (!is_perfect_reflection) ? zisc::sqrt(g2) : 0.0;
   const Float fresnel = (!is_perfect_reflection)
       ? Fresnel::evalFresnelFromG(cos_mi, g)
       : 1.0; // Perfect reflection
 
   // Determine a reflection or a refraction
-  const bool is_reflection = (sampler.sample() < fresnel);
+  const bool is_reflection = is_perfect_reflection || (sampler.sample() < fresnel);
   auto vout = (is_reflection)
       ? Microfacet::calcReflectionDirection(vin_d, m_normal)
       : Microfacet::calcRefractionDirection(vin_d, m_normal, n_, g);

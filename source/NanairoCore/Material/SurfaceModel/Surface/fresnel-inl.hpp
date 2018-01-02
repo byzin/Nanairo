@@ -35,6 +35,7 @@ Vector3 Fresnel::calcReflectionDirection(const Vector3& vin,
                                          const Vector3& normal) noexcept
 {
   const Float cos_ni = zisc::dot(normal, vin);
+  ZISC_ASSERT(0.0 <= cos_ni, "The cos is negative.");
   const auto vout = (2.0 * cos_ni) * normal - vin;
   ZISC_ASSERT(isUnitVector(vout), "The vout isn't unit vector.");
   return vout;
@@ -42,7 +43,7 @@ Vector3 Fresnel::calcReflectionDirection(const Vector3& vin,
 
 /*!
   \details
-  No detailed.
+  n = (n_transmittance_side / n_incident_side)
   */
 inline
 Vector3 Fresnel::calcRefractionDirection(const Vector3& vin,
@@ -51,6 +52,7 @@ Vector3 Fresnel::calcRefractionDirection(const Vector3& vin,
                                          const Float g) noexcept
 {
   const Float cos_ni = zisc::dot(normal, vin);
+  ZISC_ASSERT(0.0 <= cos_ni, "The cos is negative.");
   const auto vout = ((cos_ni - g) * normal - vin) * zisc::invert(n);
   ZISC_ASSERT(isUnitVector(vout), "The vout isn't unit vector.");
   return vout;
@@ -58,28 +60,26 @@ Vector3 Fresnel::calcRefractionDirection(const Vector3& vin,
 
 /*!
   \details
-  No detailed.
+  n = (n_transmittance_side / n_incident_side)
   */
 inline
-std::tuple<bool, Float> Fresnel::evalG(const Float n,
-                                       const Float cos_theta) noexcept
+Float Fresnel::evalG2(const Float n, const Float cos_theta) noexcept
 {
   const Float g2 = zisc::power<2>(n) + zisc::power<2>(cos_theta) - 1.0;
-  return (0.0 < g2)
-      ? std::make_tuple(true, zisc::sqrt(g2))
-      : std::make_tuple(false, 0.0);
+  return g2;
 }
 
 /*!
+  \details
+  n = (n_transmittance_side / n_incident_side)
   */
 inline
 Float Fresnel::evalFresnel(const Float n, const Float cos_theta) noexcept
 {
-  const auto g_result = evalG(n, cos_theta);
-  const bool is_perfect_reflection = !std::get<0>(g_result);
-  const Float g = std::get<1>(g_result);
+  const Float g2 = evalG2(n, cos_theta);
+  const bool is_perfect_reflection = g2 <= 0.0;
   const Float fresnel = (!is_perfect_reflection)
-      ? evalFresnelFromG(cos_theta, g)
+      ? evalFresnelFromG(cos_theta, zisc::sqrt(g2))
       : 1.0; // Perfect reflection
   ZISC_ASSERT(zisc::isInClosedBounds(fresnel, 0.0, 1.0),
               "The fresnel isn't [0, 1].");
@@ -95,10 +95,9 @@ Float Fresnel::evalFresnelFromG(const Float cos_theta, const Float g) noexcept
 {
   const Float a = g + cos_theta,
               b = g - cos_theta;
-  const Float tmp1 = b / a,
-              tmp2 = (cos_theta * a - 1.0) / (cos_theta * b + 1.0);
-  const Float fresnel = (0.5 * zisc::power<2>(tmp1)) *
-                        (1.0 + zisc::power<2>(tmp2));
+  const Float t1 = b / a,
+              t2 = (cos_theta * a - 1.0) / (cos_theta * b + 1.0);
+  const Float fresnel = 0.5 * zisc::power<2>(t1) * (1.0 + zisc::power<2>(t2));
   ZISC_ASSERT(zisc::isInClosedBounds(fresnel, 0.0, 1.0),
               "The fresnel isn't [0, 1].");
   return fresnel;

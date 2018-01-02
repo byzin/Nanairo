@@ -100,6 +100,27 @@ std::tuple<SampledSpectra, Float> ShaderModel::evalRadianceAndPdf(
 }
 
 /*!
+  */
+bool ShaderModel::isEmissive() const noexcept
+{
+  return false;
+}
+
+/*!
+  */
+bool ShaderModel::isReflective() const noexcept
+{
+  return false;
+}
+
+/*!
+  */
+bool ShaderModel::isTransmissive() const noexcept
+{
+  return false;
+}
+
+/*!
   \details
   No detailed.
   */

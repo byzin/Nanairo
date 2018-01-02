@@ -36,6 +36,13 @@ SpecularBrdf::SpecularBrdf(const SampledSpectra& n,
 }
 
 /*!
+  */
+bool SpecularBrdf::isReflective() const noexcept
+{
+  return true;
+}
+
+/*!
   \details
   No detailed.
   */

@@ -39,6 +39,9 @@ class SpecularBrdf : public SpecularShaderModel
   SpecularBrdf(const SampledSpectra& n, const SampledSpectra& eta) noexcept;
 
 
+  //! Check if the BRDF is reflective
+  bool isReflective() const noexcept override;
+
   //! Evalute the weight of solid angle sampling
   std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin,

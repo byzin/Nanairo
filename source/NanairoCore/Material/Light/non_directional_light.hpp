@@ -46,6 +46,9 @@ class NonDirectionalLight : public DiffuseShaderModel
       const WavelengthSamples& wavelengths,
       const IntersectionInfo* info) const noexcept override;
 
+  //! Check if the light is emissive
+  bool isEmissive() const noexcept override;
+
   //! Sample a light ray direction and evaluate a ray weight
   std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin,

@@ -61,6 +61,19 @@ PathTracing::PathTracing(System& system,
 }
 
 /*!
+  */
+constexpr bool PathTracing::explicitConnectionIsEnabled() noexcept
+{
+  return CoreConfig::pathTracingExplicitConnectionIsEnabled();
+}
+/*!
+  */
+constexpr bool PathTracing::implicitConnectionIsEnabled() noexcept
+{
+  return CoreConfig::pathTracingImplicitConnectionIsEnabled();
+}
+
+/*!
   \details
   No detailed.
   */
@@ -86,9 +99,8 @@ void PathTracing::evalExplicitConnection(
     zisc::MemoryPool& memory_pool,
     Spectra* contribution) const noexcept
 {
-  if (!explicitConnectionIsEnabled())
-    return;
-  if (bxdf->type() == ShaderType::Specular)
+  constexpr bool connection_is_enabled = explicitConnectionIsEnabled();
+  if (!connection_is_enabled || (bxdf->type() == ShaderType::Specular))
     return;
 
   // Select a light source and sample a point on the light source
@@ -97,13 +109,21 @@ void PathTracing::evalExplicitConnection(
   const auto light_source = light_source_info.object();
   const auto light_point_info = light_source->shape().samplePoint(sampler);
 
+  // Check if the light is in front or back of the surface
+  const bool is_in_front = 0.0 < zisc::dot(intersection.normal(),
+                                           light_point_info.point() - intersection.point());
+  if (!(is_in_front ? bxdf->isReflective() : bxdf->isTransmissive()))
+    return;
+
   // Make a shadow ray
   const auto shadow_ray = Method::makeShadowRay(intersection.point(),
                                                 light_point_info.point(),
-                                                intersection.normal());
-  const Float cos_no = zisc::dot(intersection.normal(), shadow_ray.direction());
-  // If the shadow ray hits the back face of the light source, quit connectino
-  if (cos_no < 0.0)
+                                                intersection.normal(),
+                                                is_in_front);
+  const Float cos_no = (is_in_front)
+      ? zisc::dot(intersection.normal(), shadow_ray.direction())
+      : -zisc::dot(intersection.normal(), shadow_ray.direction());
+  if (cos_no <= 0.0)
     return;
 
   // Check the visibility of the light source
@@ -172,7 +192,8 @@ void PathTracing::evalImplicitConnection(
     zisc::MemoryPool& memory_pool,
     Spectra* contribution) const noexcept
 {
-  if (!implicitConnectionIsEnabled())
+  constexpr bool connection_is_enabled = implicitConnectionIsEnabled();
+  if (!connection_is_enabled)
     return;
 
   const auto object = intersection.object();
@@ -210,25 +231,9 @@ void PathTracing::evalImplicitConnection(
 /*!
   */
 inline
-constexpr bool PathTracing::explicitConnectionIsEnabled() noexcept
-{
-  return CoreConfig::pathTracingExplicitConnectionIsEnabled();
-}
-
-/*!
-  */
-inline
 const LightSourceSampler& PathTracing::eyePathLightSampler() const noexcept
 {
   return *eye_path_light_sampler_;
-}
-
-/*!
-  */
-inline
-constexpr bool PathTracing::implicitConnectionIsEnabled() noexcept
-{
-  return CoreConfig::pathTracingImplicitConnectionIsEnabled();
 }
 
 /*!

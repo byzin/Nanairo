@@ -108,7 +108,7 @@ Float Microfacet::calcReflectionInverseJacobian(const Float cos_mi) noexcept
 
 /*!
   \details
-  No detailed.
+  n = n_transmission_side / n_incident_side
   */
 inline
 SampledDirection Microfacet::calcRefractionDirection(
@@ -132,7 +132,7 @@ SampledDirection Microfacet::calcRefractionDirection(
 
 /*!
   \details
-  No detailed.
+  n = n_transmission_side / n_incident_side
   */
 inline
 Vector3 Microfacet::calcRefractionHalfVector(const Vector3& vin,
@@ -144,7 +144,7 @@ Vector3 Microfacet::calcRefractionHalfVector(const Vector3& vin,
 
 /*!
   \details
-  No detailed.
+  n = n_transmission_side / n_incident_side
   */
 inline
 Float Microfacet::calcRefractionInverseJacobian(const Float cos_mi,

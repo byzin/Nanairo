@@ -92,6 +92,15 @@ class ShaderModel
       const WavelengthSamples& wavelengths,
       const IntersectionInfo* info = nullptr) const noexcept;
 
+  //! Check if the shader is emissive
+  virtual bool isEmissive() const noexcept;
+
+  //! Check if the shader is reflective
+  virtual bool isReflective() const noexcept;
+
+  //! Check if the shader is transmissive
+  virtual bool isTransmissive() const noexcept;
+
   //! Sample a reflection direction and evaluate a reflection weight
   virtual std::tuple<SampledDirection, SampledSpectra> sample(
       const Vector3* vin, 
@@ -101,9 +110,6 @@ class ShaderModel
 
   //! Return the shader type
   virtual ShaderType type() const noexcept = 0;
-
-  //! Sample a next direction
-//  virtual SampledDirection sampleDirection(Sampler& sampler) const = 0;
 
   //! Check if wavelength selection occured
   virtual bool wavelengthIsSelected() const noexcept = 0;

@@ -49,6 +49,13 @@ SampledSpectra NonDirectionalLight::evalRadiance(
 }
 
 /*!
+  */
+bool NonDirectionalLight::isEmissive() const noexcept
+{
+  return true;
+}
+
+/*!
   \details
   No detailed.
   */

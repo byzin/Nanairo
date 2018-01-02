@@ -82,6 +82,8 @@ Float MicrofacetGgx::evalReflectionPdf(const Float roughness_x,
 }
 
 /*!
+  \details
+  n = n_transmission_side / n_incident_side
   */
 inline
 Float MicrofacetGgx::evalRefractionPdf(const Float roughness_x,
@@ -147,6 +149,8 @@ Float MicrofacetGgx::calcReflectionPdf(const Float roughness_x,
 }
 
 /*!
+  \details
+  n = n_transmission_side / n_incident_side
   */
 inline
 Float MicrofacetGgx::calcRefractionPdf(const Float roughness_x,

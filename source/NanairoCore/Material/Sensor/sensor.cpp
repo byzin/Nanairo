@@ -84,6 +84,13 @@ std::tuple<SampledSpectra, Float> Sensor::evalRadianceAndPdf(
 }
 
 /*!
+  */
+bool Sensor::isEmissive() const noexcept
+{
+  return true;
+}
+
+/*!
   \details
   No detailed.
   */

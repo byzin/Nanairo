@@ -34,7 +34,8 @@ Float SurfaceModel::evalRefractiveIndex(
 {
   const Float n1 = outer_refractive_index_texture->spectraValue(uv, wavelength);
   const Float n2 = inner_refractive_index_texture->spectraValue(uv, wavelength);
-  const Float n = (is_back_face) ? (n1 / n2) : (n2 / n1);
+  Float n = (is_back_face) ? (n1 / n2) : (n2 / n1);
+  n = (n != 1.0) ? n : (1.0 + 1.0e-6);
   return n;
 }
 

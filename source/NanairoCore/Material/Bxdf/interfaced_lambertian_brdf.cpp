@@ -111,6 +111,13 @@ std::tuple<SampledSpectra, Float> InterfacedLambertianBrdf::evalRadianceAndPdf(
 
 /*!
   */
+bool InterfacedLambertianBrdf::isReflective() const noexcept
+{
+  return true;
+}
+
+/*!
+  */
 std::tuple<SampledDirection, SampledSpectra> InterfacedLambertianBrdf::sample(
     const Vector3* vin,
     const WavelengthSamples& wavelengths,

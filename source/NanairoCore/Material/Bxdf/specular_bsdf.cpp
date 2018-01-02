@@ -13,6 +13,7 @@
 #include <utility>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/math.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -35,6 +36,20 @@ SpecularBsdf::SpecularBsdf(const Float n) noexcept :
 }
 
 /*!
+  */
+bool SpecularBsdf::isReflective() const noexcept
+{
+  return true;
+}
+
+/*!
+  */
+bool SpecularBsdf::isTransmissive() const noexcept
+{
+  return true;
+}
+
+/*!
   \details
   No detailed.
   */
@@ -49,9 +64,9 @@ std::tuple<SampledDirection, SampledSpectra> SpecularBsdf::sample(
   const auto vin_d = -(*vin);
   const Float cos_ni = zisc::dot(info->normal(), vin_d);
   ZISC_ASSERT(zisc::isInClosedBounds(cos_ni, 0.0, 1.0), "cos_ni isn't [0, 1].");
-  const auto result = Fresnel::evalG(n_, cos_ni);
-  const bool is_perfect_reflection = !std::get<0>(result);
-  const Float g = std::get<1>(result);
+  const auto g2 = Fresnel::evalG2(n_, cos_ni);
+  const bool is_perfect_reflection = g2 <= 0.0;
+  const Float g = (!is_perfect_reflection) ? zisc::sqrt(g2) : 0.0;
   const Float fresnel = (!is_perfect_reflection)
       ? Fresnel::evalFresnelFromG(cos_ni, g)
       : 1.0; // Perfect reflection
@@ -59,7 +74,7 @@ std::tuple<SampledDirection, SampledSpectra> SpecularBsdf::sample(
               "Fresnel reflectance isn't [0, 1].");
 
   // Determine a reflection or a refraction
-  const bool is_reflection = (sampler.sample() < fresnel);
+  const bool is_reflection = is_perfect_reflection || (sampler.sample() < fresnel);
   const auto vout = (is_reflection)
       ? Fresnel::calcReflectionDirection(vin_d, info->normal())
       : Fresnel::calcRefractionDirection(vin_d, info->normal(), n_, g);

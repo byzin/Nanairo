@@ -33,7 +33,7 @@ Float Diffuse::evalPdf(const Vector3& vout, const Vector3& normal) noexcept
 {
   constexpr Float k = zisc::invert(zisc::kPi<Float>);
   const Float cos_no = zisc::dot(normal, vout);
-  ZISC_ASSERT(zisc::isInBounds(cos_no, 0.0, 1.0), "The cos is out of range [0, 1).");
+  ZISC_ASSERT(zisc::isInBounds(cos_no, 0.0, 1.0), "The cos is out of range [0, 1): ", cos_no);
   const Float pdf = k * cos_no;
   return pdf;
 }
