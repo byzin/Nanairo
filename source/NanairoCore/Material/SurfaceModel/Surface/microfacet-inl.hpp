@@ -35,8 +35,9 @@ Float Microfacet::SmithMicrosurface::evalG1(
     const Vector3& m_normal) noexcept
 {
   Float g1 = 0.0;
+  const Float cos_nv = v[2];
   const Float cos_mv = zisc::dot(m_normal, v);
-  if (!((0.0 < v[2]) ^ (0.0 < cos_mv))) {
+  if (((0.0 <= cos_nv) && (0.0 <= cos_mv)) || ((cos_nv < 0.0) && (cos_mv < 0.0))) {
     const Float r2t2 = Microfacet::calcRoughness2Tan2(roughness_x,
                                                       roughness_y,
                                                       v);

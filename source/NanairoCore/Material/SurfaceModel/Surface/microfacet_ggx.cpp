@@ -35,6 +35,9 @@ Float MicrofacetGgx::evalReflectance(const Float roughness_x,
                                      const Float fresnel,
                                      Float* pdf) noexcept
 {
+  if (fresnel == 0.0)
+    return 0.0;
+
   // Evaluate D
   const Float d = evalD(roughness_x, roughness_y, m_normal);
   if (d == 0.0)
@@ -128,10 +131,9 @@ Float MicrofacetGgx::evalTransmittance(const Float roughness_x,
   const Float cos_no = vout[2];
   const Float cos_mi = zisc::dot(m_normal, vin);
   const Float cos_mo = zisc::dot(m_normal, vout);
-  const Float k1 = (cos_mi * cos_mo) / (cos_ni * cos_no);
-  ZISC_ASSERT(0.0 < k1, "The k1 isn't positive.");
-  const Float k2 = zisc::power<2>(n) / zisc::power<2>(cos_mi + n * cos_mo);
-  const Float f = (1.0 - fresnel) * (k1 * k2) * g2 * d;
+  const Float t = (zisc::abs(cos_mi * cos_mo) * zisc::power<2>(n)) /
+                  (zisc::abs(cos_ni * cos_no) * zisc::power<2>(cos_mi + n * cos_mo));
+  const Float f = t * (1.0 - fresnel) * g2 * d;
   ZISC_ASSERT(0.0 < f, "The transmittance isn't positive.");
 
   // Calculate the refraction pdf
