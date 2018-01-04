@@ -63,6 +63,23 @@ Vector3 Fresnel::calcRefractionDirection(const Vector3& vin,
   n = (n_transmittance_side / n_incident_side)
   */
 inline
+bool Fresnel::checkSnellsLaw(const Float n,
+                             const Float cos_i,
+                             const Float cos_o) noexcept
+{
+  constexpr Float epsilon = 1.0e-7;
+  ZISC_ASSERT(epsilon != 0.0, "The epsilon is zero.");
+  const Float sin_i2 = 1.0 - zisc::power<2>(cos_i);
+  const Float sin_o2 = 1.0 - zisc::power<2>(cos_o);
+  const bool is_valid = zisc::abs(sin_i2 - zisc::power<2>(n) * sin_o2) < epsilon;
+  return is_valid;
+}
+
+/*!
+  \details
+  n = (n_transmittance_side / n_incident_side)
+  */
+inline
 Float Fresnel::evalG2(const Float n, const Float cos_theta) noexcept
 {
   const Float g2 = zisc::power<2>(n) + zisc::power<2>(cos_theta) - 1.0;

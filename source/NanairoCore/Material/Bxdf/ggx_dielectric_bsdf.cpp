@@ -174,7 +174,10 @@ std::tuple<SampledSpectra, Float> GgxDielectricBsdf::evalRadianceAndPdf(
   SampledSpectra radiance{wavelengths};
   Float pdf = 0.0;
   const Float cos_mi = zisc::dot(m_normal, vin_d);
-  if ((0.0 < m_normal[2]) && (0.0 < cos_mi)) {
+  const bool is_valid =
+      (0.0 < m_normal[2]) &&
+      (is_reflection || Fresnel::checkSnellsLaw(n_, cos_mi, zisc::dot(m_normal, vout_d)));
+  if (is_valid) {
     // Calculate the fresnel term
     const Float fresnel = Fresnel::evalFresnel(n_, cos_mi);
 

@@ -39,6 +39,11 @@ class Fresnel
                                          const Float n,
                                          const Float g) noexcept;
 
+  //! Check if the angles obey Snell's law
+  static bool checkSnellsLaw(const Float n,
+                             const Float cos_i,
+                             const Float cos_o) noexcept;
+
   //! Calculate the fresnel dielectric g term
   static Float evalG2(const Float n, const Float cos_theta) noexcept;
 

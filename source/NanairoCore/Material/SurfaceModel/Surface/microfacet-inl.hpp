@@ -140,7 +140,9 @@ Vector3 Microfacet::calcRefractionHalfVector(const Vector3& vin,
                                              const Vector3& vout,
                                              const Float n) noexcept
 {
-  return -(vin + n * vout).normalized();
+  ZISC_ASSERT(n != 1.0, "The relative index of refraction is 1.");
+  const auto half = (1.0 < n) ? -(vin + n * vout) : (vin + n * vout);
+  return half.normalized();
 }
 
 /*!
