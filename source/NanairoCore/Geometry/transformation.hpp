@@ -22,7 +22,6 @@
 
 namespace nanairo {
 
-
 //! \addtogroup Core
 //! \{
 

@@ -137,9 +137,17 @@ void SimpleRenderer::render(const std::string& output_path) noexcept
   uint64 cycle_to_save_image = getNextCycleToSaveImage(cycle);
   auto previous_time = Clock::duration::zero();
   auto time_to_save_image = getNextTimeToSaveImage(previous_time);
+  bool saving_image = false;
 
   initForRendering();
   updateRenderingInfo(cycle, previous_time);
+
+  auto convert_to_ldr = [this](const uint64 iteration, const std::string& ldr_path)
+  {
+    convertSpectraToHdr(iteration);
+    toneMap();
+    outputLdrImage(ldr_path, iteration);
+  };
 
   // Main render loop
   logMessage("Start rendering.");
@@ -154,7 +162,7 @@ void SimpleRenderer::render(const std::string& output_path) noexcept
     renderScene();
 
     // Save image
-    bool saving_image = isSavingAtEachCycleEnabled();
+    saving_image = isSavingAtEachCycleEnabled();
     if (isCycleToSaveImage(cycle, cycle_to_save_image)) {
       cycle_to_save_image = getNextCycleToSaveImage(cycle_to_save_image);
       saving_image = true;
@@ -163,16 +171,16 @@ void SimpleRenderer::render(const std::string& output_path) noexcept
       time_to_save_image = getNextTimeToSaveImage(time_to_save_image);
       saving_image = true;
     }
-    if (saving_image) {
-      convertSpectraToHdr(cycle);
-      toneMap();
-      outputLdrImage(output_path, cycle);
-    }
+    if (saving_image)
+      convert_to_ldr(cycle, output_path);
 
     // Update time
     previous_time = processElapsedTime(stopwatch, previous_time);
     updateRenderingInfo(cycle, previous_time);
   }
+  // Save the image at the end of the rendering
+  if ((0 < cycle) && !saving_image)
+    convert_to_ldr(cycle, output_path);
 }
 
 /*!
