@@ -72,14 +72,16 @@ SampledDirection Microfacet::calcReflectionDirection(
     const Vector3& vin,
     const SampledDirection& sampled_m_normal) noexcept
 {
+  ZISC_ASSERT(0.0 <= sampled_m_normal.inversePdf(),
+              "The microfacet normal is negative.");
   // Calculate the reflection direction
   const auto& m_normal = sampled_m_normal.direction();
   const auto vout = Fresnel::calcReflectionDirection(vin, m_normal);
   // Calculate the pdf of the direction
   const Float cos_mi = zisc::dot(m_normal, vin);
   const Float inverse_jacobian = calcReflectionInverseJacobian(cos_mi);
+  ZISC_ASSERT(0.0 < inverse_jacobian, "The jacobian isn't negative.");
   const Float inverse_pdf = inverse_jacobian * sampled_m_normal.inversePdf();
-  ZISC_ASSERT(0.0 < inverse_pdf, "PDF isn't positive.");
   return SampledDirection{vout, inverse_pdf};
 }
 

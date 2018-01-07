@@ -65,19 +65,16 @@ class LayeredDiffuseSurface : public SurfaceModel
   SurfaceType type() const noexcept override;
 
  private:
-  //! Calculate the internal reflectance
-  void calcInternalReflectance() noexcept;
-
   //! Initialize
   void initialize(const SettingNodeBase* settings,
                   const std::vector<TextureModel*>& texture_list) noexcept;
 
 
-  SpectralDistribution ri_;
+  const TextureModel* reflectance_;
   const TextureModel* outer_refractive_index_;
   const TextureModel* inner_refractive_index_;
-  const TextureModel* reflectance_;
-  const TextureModel* roughness_;
+  const TextureModel* roughness_x_;
+  const TextureModel* roughness_y_;
 };
 
 //! \} Core

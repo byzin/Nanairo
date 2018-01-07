@@ -38,9 +38,9 @@ class InterfacedLambertianBrdf : public GlossyShaderModel
  public:
   //! Create a interfaced lambertian BRDF
   InterfacedLambertianBrdf(const Float k_d,
-                           const Float roughness,
+                           const Float roughness_x,
+                           const Float roughness_y,
                            const Float n,
-                           const Float ri,
                            Sampler& sampler) noexcept;
 
 
@@ -80,9 +80,10 @@ class InterfacedLambertianBrdf : public GlossyShaderModel
  private:
   Sampler* sampler_;
   const Float k_d_;
-  const Float roughness_;
+  const Float roughness_x_;
+  const Float roughness_y_;
   const Float n_;
-  const Float ri_;
+  const Float re_;
 };
 
 //! \} Core

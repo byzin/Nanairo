@@ -28,7 +28,6 @@
 #include "NanairoCore/Setting/surface_setting_node.hpp"
 #include "NanairoCore/Utility/unique_pointer.hpp"
 #include "NanairoCore/Utility/value.hpp"
-#include "Surface/layered_diffuse.hpp"
 
 namespace nanairo {
 
@@ -57,24 +56,25 @@ auto LayeredDiffuseSurface::makeBxdf(
 
   // Evaluate the reflectance
   const Float k_d = reflectance_->reflectiveValue(info.uv(), wavelength);
+
   // Evaluate the roughness
-  const Float roughness = evalRoughness(roughness_, info.uv());
+  const Float roughness_x = evalRoughness(roughness_x_, info.uv());
+  const Float roughness_y = evalRoughness(roughness_y_, info.uv());
+
   // Evaluate the refractive index
   const Float n = evalRefractiveIndex(outer_refractive_index_,
                                       inner_refractive_index_,
                                       info.uv(),
                                       wavelength,
                                       info.isBackFace());
-  const Float ri = ri_.getByWavelength(wavelength);
 
 
   // Make a interfaced lambertian BRDF
   using Brdf = InterfacedLambertianBrdf;
   auto chunk = memory_pool.allocate<Brdf>();
-  ShaderPointer ptr = makeUnique<Brdf>(chunk, k_d, roughness, n, ri, sampler);
+  ShaderPointer ptr = makeUnique<Brdf>(chunk, k_d, roughness_x, roughness_y, n, sampler);
   return ptr;
 }
-
 
 /*!
   \details
@@ -83,23 +83,6 @@ auto LayeredDiffuseSurface::makeBxdf(
 SurfaceType LayeredDiffuseSurface::type() const noexcept
 {
   return SurfaceType::kLayeredDiffuse;
-}
-
-/*!
-  */
-void LayeredDiffuseSurface::calcInternalReflectance() noexcept
-{
-//  for (uint i = 0; i < CoreConfig::spectraSize(); ++i) {
-//    const Point2 uv{0.0, 0.0};
-//    const auto wavelength = getWavelength(i);
-//    Float n = 0.0;
-//    {
-//      const auto n1 = outer_refractive_index_->spectraValue(uv, wavelength);
-//      const auto n2 = inner_refractive_index_->spectraValue(uv, wavelength);
-//      n = n2 / n1;
-//    }
-//    ri_[i] = LayeredDiffuse::calcRi(n);
-//  }
 }
 
 /*!
@@ -114,6 +97,10 @@ void LayeredDiffuseSurface::initialize(
 
   const auto& parameters = surface_settings->layeredDiffuseParameters();
   {
+    const auto index = parameters.reflectance_index_;
+    reflectance_ = texture_list[index];
+  }
+  {
     const auto index = parameters.outer_refractive_index_;
     outer_refractive_index_ = texture_list[index];
   }
@@ -122,14 +109,15 @@ void LayeredDiffuseSurface::initialize(
     inner_refractive_index_ = texture_list[index];
   }
   {
-    const auto index = parameters.reflectance_index_;
-    reflectance_ = texture_list[index];
+    const auto index = parameters.roughness_x_index_;
+    roughness_x_ = texture_list[index];
   }
   {
-    const auto index = parameters.roughness_x_index_;
-    roughness_ = texture_list[index];
+    const auto index = (parameters.anisotropic_ == kTrue)
+        ? parameters.roughness_y_index_
+        : parameters.roughness_x_index_;
+    roughness_y_ = texture_list[index];
   }
-  calcInternalReflectance();
 }
 
 } // namespace nanairo

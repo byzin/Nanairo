@@ -16,6 +16,8 @@
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
+#include "NanairoCore/Data/shape_point.hpp"
+#include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Material/SurfaceModel/Surface/microfacet_ggx.hpp"
@@ -48,6 +50,7 @@ Float GgxDielectricBsdf::evalPdf(
     const WavelengthSamples& /* wavelengths */,
     const IntersectionInfo* info) const noexcept
 {
+  ZISC_ASSERT(info != nullptr, "The info is null.");
   const auto& point = info->shapePoint();
   // Transform vectors
   const auto vin_d = Transformation::toLocal(point.tangent(),
@@ -101,6 +104,7 @@ SampledSpectra GgxDielectricBsdf::evalRadiance(
     const WavelengthSamples& wavelengths,
     const IntersectionInfo* info) const noexcept
 {
+  ZISC_ASSERT(info != nullptr, "The info is null.");
   const auto& point = info->shapePoint();
   // Transform vectors
   const auto vin_d = Transformation::toLocal(point.tangent(),
@@ -153,6 +157,7 @@ std::tuple<SampledSpectra, Float> GgxDielectricBsdf::evalRadianceAndPdf(
     const WavelengthSamples& wavelengths,
     const IntersectionInfo* info) const noexcept
 {
+  ZISC_ASSERT(info != nullptr, "The info is null.");
   const auto& point = info->shapePoint();
   // Transform vectors
   const auto vin_d = Transformation::toLocal(point.tangent(),
@@ -221,6 +226,7 @@ std::tuple<SampledDirection, SampledSpectra> GgxDielectricBsdf::sample(
     Sampler& sampler,
     const IntersectionInfo* info) const noexcept
 {
+  ZISC_ASSERT(info != nullptr, "The info is null.");
   const auto& point = info->shapePoint();
   // Transform the incident vector
   const auto vin_d = Transformation::toLocal(point.tangent(),

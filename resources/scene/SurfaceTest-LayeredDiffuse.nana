@@ -439,33 +439,33 @@
             "Type": "SmoothDiffuseSurface"
         },
         {
+            "Anisotropic": false,
             "InnerRefractiveIndex": 4,
             "Name": "TestSurface1",
             "OuterRefractiveIndex": 3,
-            "ReflectanceIndex": 0,
-            "Anisotropic": false,
-            "RoughnessXIndex": 5,
-            "RoughnessYIndex": 5,
-            "Type": "LayeredDiffuseSurface"
-        },
-        {
-            "InnerRefractiveIndex": 4,
-            "Name": "TestSurface2",
-            "OuterRefractiveIndex": 3,
-            "ReflectanceIndex": 0,
-            "Anisotropic": false,
+            "ReflectanceIndex": 5,
             "RoughnessXIndex": 6,
             "RoughnessYIndex": 6,
             "Type": "LayeredDiffuseSurface"
         },
         {
+            "Anisotropic": false,
+            "InnerRefractiveIndex": 4,
+            "Name": "TestSurface2",
+            "OuterRefractiveIndex": 3,
+            "ReflectanceIndex": 5,
+            "RoughnessXIndex": 7,
+            "RoughnessYIndex": 7,
+            "Type": "LayeredDiffuseSurface"
+        },
+        {
+            "Anisotropic": false,
             "InnerRefractiveIndex": 4,
             "Name": "TestSurface3",
             "OuterRefractiveIndex": 3,
-            "ReflectanceIndex": 0,
-            "Anisotropic": false,
-            "RoughnessXIndex": 7,
-            "RoughnessYIndex": 7,
+            "ReflectanceIndex": 5,
+            "RoughnessXIndex": 8,
+            "RoughnessYIndex": 8,
             "Type": "LayeredDiffuseSurface"
         }
     ],
@@ -518,6 +518,14 @@
                 "Value": "resources/spectrum/dielectric/SiO2.csv"
             },
             "Name": "SiO2RefractiveIndex",
+            "Type": "UnicolorTexture"
+        },
+        {
+            "Color": {
+                "ColorMode": "Spectra",
+                "Value": "resources/spectrum/reflectance/macbeth_07_orange.csv"
+            },
+            "Name": "SubstrateTexture",
             "Type": "UnicolorTexture"
         },
         {
