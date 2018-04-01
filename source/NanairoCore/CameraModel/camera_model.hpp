@@ -2,7 +2,7 @@
   \file camera_model.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015-2017 Sho Ikeda
+  Copyright (c) 2015-2018 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -14,8 +14,7 @@
 #include <memory>
 #include <array>
 // Zisc
-#include "zisc/algorithm.hpp"
-#include "zisc/memory_pool.hpp"
+#include "zisc/sip_hash_engine.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Geometry/point.hpp"
@@ -41,8 +40,8 @@ class WavelengthSamples;
   */
 enum class CameraType : uint32
 {
-  kPinhole                     = zisc::toHash32("Pinhole"),
-  kThinLens                    = zisc::toHash32("ThinLens")
+  kPinhole                     = zisc::SipHash32::hash("Pinhole"),
+  kThinLens                    = zisc::SipHash32::hash("ThinLens")
 };
 
 /*!

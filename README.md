@@ -4,7 +4,7 @@
 
 **Nanairo** is a physically plausible spectral renderer.
 
-Version: 0.0.2
+Version: 0.0.3
 
 ## Description ##
 
@@ -13,6 +13,10 @@ Version: 0.0.2
 ![Demo](https://github.com/byzin/Nanairo/wiki/image/NanairoDemo.gif)
 
 ### Features ###
+
+Basic
+
+* Correlated Multi-Jittered: [[paper](https://graphics.pixar.com/library/MultiJitteredSampling/paper.pdf), [Cycles](https://www.cycles-renderer.org/)]
 
 **Monte calro ray tracing method**
 
@@ -23,7 +27,6 @@ Version: 0.0.2
 **BVH**
 
 * Binary radix tree [[paper](https://research.nvidia.com/publication/maximizing-parallelism-construction-bvhs-octrees-and-k-d-trees)]
-* Approximate agglomerative clustering [[paper](http://graphics.cs.cmu.edu/projects/aac/)]
 * Agglomerative treelet restructuring [[paper](http://dl.acm.org/citation.cfm?doid=2790060.2790065)]
 
 **Surface**
@@ -34,7 +37,7 @@ Version: 0.0.2
 * Rough conductor surface (GGX BRDF) [[paper](https://hal.inria.fr/hal-00996995v2)]
 * Rough dielectric surface (GGX BSDF) [[paper](https://hal.inria.fr/hal-00996995v2)]
 * Layered diffuse surface (Interfaced Lambertian BRDF) [[paper](https://hal-unilim.archives-ouvertes.fr/hal-01246612/)]
-* Cloth surface (Microcylinder cloth BRDF) [[paper](http://dl.acm.org/citation.cfm?id=2451240)]
+* ~~Cloth surface (Microcylinder cloth BRDF)~~ [[paper](http://dl.acm.org/citation.cfm?id=2451240)]
 
 **Camera**
 
@@ -48,7 +51,7 @@ Version: 0.0.2
 **Geometry**
 
 * Triangle meshes (support Wavefront .obj file)
-* Nagata patch (normal interpolation) [[paper](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.129.9689)], ray intersection [[paper](https://www.osapublishing.org/ao/abstract.cfm?uri=ao-49-18-3442)]
+* ~~Nagata patch (normal interpolation)~~ [[paper](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.129.9689)], ray intersection [[paper](https://www.osapublishing.org/ao/abstract.cfm?uri=ao-49-18-3442)]
 * Orthonormal basis [[paper](http://jcgt.org/published/0006/01/01/)]
 
 **Tone mappling**
@@ -61,15 +64,15 @@ Version: 0.0.2
 
 ### Compiler ###
 
-* C++14 support compiler
+* C++17 support compiler
 
 ### Build tools ###
 
-* CMake (version 3.4 or later) [[page](http://www.cmake.org/)]
+* CMake (version 3.10 or later) [[page](http://www.cmake.org/)]
 
 ### Dependency Library ###
 
-* Qt (version 5.6.0 or later) [[page](http://qt-project.org/)]
+* Qt (version 5.9.0 or later) [[page](http://qt-project.org/)]
 
 ## Usage ##
 Please see [wiki](https://github.com/byzin/Nanairo/wiki/Home "NanairoWiki").
@@ -79,12 +82,12 @@ Please see [wiki](https://github.com/byzin/Nanairo/wiki/Home "NanairoWiki").
 ### Test environments ###
 Building step is tested in the following environments  
 
-* Mac Mavericks + Apple Clang 8.0 + Qt 5.9.1 + CMake 3.8.2
-* Mac Mavericks + GCC 7.1 + Qt 5.9.1 + CMake 3.8.2
-* Ubuntu 16.04 + GCC 5.4 + Qt 5.9.1 + CMake 3.8.2
-* Ubuntu 16.04 + Clang 4.0 + Qt 5.9.1 + CMake 3.8.2
-* Windows 8 (64bit) + MinGW GCC 7.1 + Qt 5.9.1 + CMake 3.8.2
-* Windows 8 (64bit) + Clang 4.0.1 with MSVC (Visual Studio 2015) + Qt 5.9.1 + CMake 3.8.2
+* macOS High Sierra + Apple Clang 9.1 + Qt 5.9.4 + CMake 3.11.0
+* macOS High Sierra + GCC 7.3 + Qt 5.9.4 + CMake 3.11.0
+* Ubuntu 16.04 + GCC 7.3 + Qt 5.9.4 + CMake 3.11.0
+* Ubuntu 16.04 + Clang 5.0 + Qt 5.9.4 + CMake 3.11.0
+* Windows 10 (64bit) + MinGW GCC 7.3 + Qt 5.9.4 + CMake 3.11.0
+* Windows 10 (64bit) + MSVC (Visual Studio 2017) + Qt 5.9.4 + CMake 3.11.0
 
 ### Download source code ###
 
@@ -130,7 +133,7 @@ Clang
 
 Visual Studio 2015 64bit
 ```
-% cmake -G"Visual Studio 14 2015 Win64" -TLLVM-vs2014 -DCMAKE_BUILD_TYPE=Release ..
+% cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release ..
 % cmake --build . --config Release
 ```
 

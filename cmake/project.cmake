@@ -1,7 +1,7 @@
 # file: project.cmake
 # author: Sho Ikeda
 #
-# Copyright (c) 2015-2017 Sho Ikeda
+# Copyright (c) 2015-2018 Sho Ikeda
 # This software is released under the MIT License.
 # http://opensource.org/licenses/mit-license.php
 #
@@ -73,12 +73,12 @@ function(getNanairoWarningOption nanairo_warning_flags)
    list(APPEND warning_flags -Wno-covered-switch-default
 #                              -Wno-documentation-unknown-command
 #                              -Wno-exit-time-destructors
-                              -Wno-float-equal
-                              -Wno-global-constructors
-                              -Wno-padded
+#                              -Wno-float-equal
+#                              -Wno-global-constructors
+#                              -Wno-padded
                               -Wno-sign-conversion
-                              -Wno-undefined-reinterpret-cast
-                              -Wno-weak-vtables
+#                              -Wno-undefined-reinterpret-cast
+#                              -Wno-weak-vtables
                               )
   elseif(Z_GCC)
     list(APPEND warning_flags -Wno-sign-conversion
@@ -92,7 +92,7 @@ function(getNanairoWarningOption nanairo_warning_flags)
 endfunction(getNanairoWarningOption)
 
 
-set(__zisc_system_include__ ON)
+set(__zisc_system_include__ OFF)
 macro(includeZisc target)
   if(__zisc_system_include__)
     target_include_directories(${target} SYSTEM PRIVATE ${zisc_include_dirs})
@@ -112,9 +112,8 @@ function(loadLodepng lodepng_include_dir lodepng_library)
   source_group(${lodepng_name} FILES ${source_files})
   add_library(${lodepng_name} STATIC ${source_files})
   ## Set lodepng properties
-  set_target_properties(${lodepng_name} PROPERTIES CXX_STANDARD 14
+  set_target_properties(${lodepng_name} PROPERTIES CXX_STANDARD 17
                                                    CXX_STANDARD_REQUIRED ON)
-  checkCompilerHasCxx14Features(${lodepng_name})
   target_compile_options(${lodepng_name} PRIVATE ${cxx_compiler_flags})
   target_include_directories(${lodepng_name} PRIVATE ${lodepng_dir})
   target_link_libraries(${lodepng_name} ${CMAKE_THREAD_LIBS_INIT}
@@ -136,11 +135,10 @@ function(buildNanairoCore core_library core_definitions)
   set(core_name NanairoCore)
   add_library(${core_name} STATIC ${core_source_files})
   # Set properties
-  set_target_properties(${core_name} PROPERTIES CXX_STANDARD 14
+  set_target_properties(${core_name} PROPERTIES CXX_STANDARD 17
                                                 CXX_STANDARD_REQUIRED ON)
   getCxxWarningOption(cxx_warning_flags)
   getNanairoWarningOption(nanairo_warning_flags)
-  checkCompilerHasCxx14Features(${core_name})
   target_compile_options(${core_name} PRIVATE ${cxx_compiler_flags}
                                               ${zisc_compile_flags}
                                               ${cxx_warning_flags}
@@ -155,6 +153,7 @@ function(buildNanairoCore core_library core_definitions)
                                                   ${core_definitions}
                                                   ${zisc_definitions}
                                                   ${environment_definitions})
+  setStaticAnalyzer(${core_name})
 
 
   # Output variables
@@ -175,13 +174,12 @@ function(buildSimpleNanairoApp)
   set(app_name "SimpleNanairo")
   add_executable(${app_name} ${nanairo_source_files}
                              ${core_source_files}
-                             ${zisc_source_files})
+                             ${zisc_header_files})
   ## Set SimpleNanairo properties
-  set_target_properties(${app_name} PROPERTIES CXX_STANDARD 14
+  set_target_properties(${app_name} PROPERTIES CXX_STANDARD 17
                                                CXX_STANDARD_REQUIRED ON)
   getCxxWarningOption(cxx_warning_flags)
   getNanairoWarningOption(nanairo_warning_flags)
-  checkCompilerHasCxx14Features(${app_name})
   target_compile_options(${app_name} PRIVATE ${cxx_compiler_flags}
                                              ${zisc_compile_flags}
                                              ${cxx_warning_flags}
@@ -202,6 +200,7 @@ function(buildSimpleNanairoApp)
                                                  ${zisc_definitions}
                                                  ${environment_definitions}
                                                  NANAIRO_HAS_LODEPNG)
+  setStaticAnalyzer(${app_name})
 endfunction(buildSimpleNanairoApp)
 
 
@@ -228,15 +227,14 @@ function(buildNanairoApp)
   add_executable(${app_name} ${executable_options} ${nanairo_source_files}
                                                    ${core_source_files}
                                                    ${gui_source_files}
-                                                   ${zisc_source_files})
+                                                   ${zisc_header_files})
   # Set Nanairo properties
-  set_target_properties(${app_name} PROPERTIES CXX_STANDARD 14
+  set_target_properties(${app_name} PROPERTIES CXX_STANDARD 17
                                                CXX_STANDARD_REQUIRED ON
                                                AUTOMOC ON
                                                AUTORCC ON)
   getCxxWarningOption(cxx_warning_flags)
   getNanairoWarningOption(nanairo_warning_flags)
-  checkCompilerHasCxx14Features(${app_name})
   target_compile_options(${app_name} PRIVATE ${cxx_compiler_flags}
                                              ${qt5_compile_flags}
                                              ${zisc_compile_flags}
@@ -257,6 +255,7 @@ function(buildNanairoApp)
                                                  ${qt5_definitions}
                                                  ${zisc_definitions}
                                                  ${environment_definitions})
+  setStaticAnalyzer(${app_name})
   # Create symlink for the executable for Mac
   if(Z_MAC)
     set(exec_path ${app_name}.app/Contents/MacOS/${app_name})

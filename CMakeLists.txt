@@ -1,12 +1,12 @@
 # file: CMakeLists.txt
 # author: Sho Ikeda 
 #
-# Copyright (c) 2015-2017 Sho Ikeda
+# Copyright (c) 2015-2018 Sho Ikeda
 # This software is released under the MIT License.
 # http://opensource.org/licenses/mit-license.php
 #
 
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.10)
 
 function(showSubmoduleWarning submodule_name)
   message(FATAL_ERROR "Submodule '${submodule_name}' not found, please init submodules.")
@@ -23,26 +23,22 @@ set(CMAKE_CONFIGURATION_TYPES "Debug" "RelWithDebInfo" "Release")
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif()
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(zisc_path ${CMAKE_SOURCE_DIR}/source/dependencies/zisc)
-set(general_setting_file ${zisc_path}/cmake/general.cmake)
-if(NOT EXISTS ${general_setting_file})
+if(NOT EXISTS ${zisc_path})
   showSubmoduleWarning(zisc)
 endif()
 
 # Build configuration
-include(${general_setting_file})
+include(${zisc_path}/cmake/general.cmake)
 restrictBuildDirectory(${PROJECT_SOURCE_DIR}/build)
 detectEnvironment(environment_definitions)
 # Command option
 include(${PROJECT_SOURCE_DIR}/cmake/option.cmake)
 setCommandOptions()
 #
-set(compiler_setting_file ${zisc_path}/cmake/compiler.cmake)
-if(NOT EXISTS ${compiler_setting_file})
-  showSubmoduleWarning(zisc)
-endif()
-include(${compiler_setting_file})
+include(${zisc_path}/cmake/compiler.cmake)
 initCompilerOption()
 getCompilerOption(cxx_compiler_flags cxx_linker_flags cxx_definitions)
 
@@ -52,12 +48,8 @@ find_package(Threads REQUIRED)
 # LodePNG
 loadLodepng(lodepng_include_dir lodepng_library)
 # Zisc
-set(zisc_config_file ${zisc_path}/source/zisc/config.cmake)
-if(NOT EXISTS ${zisc_config_file})
-  showSubmoduleWarning(zisc)
-endif()
-include(${zisc_config_file})
-loadZisc(zisc_source_files
+include(${zisc_path}/source/zisc/config.cmake)
+loadZisc(zisc_header_files
          zisc_include_dirs
          zisc_compile_flags
          zisc_linker_flags
@@ -82,7 +74,7 @@ buildSimpleNanairoApp()
 if(${NANAIRO_BUILD_APP})
   # Library
   include(${PROJECT_SOURCE_DIR}/cmake/qt5.cmake)
-  findQt5(5.7 Core Gui Qml Quick)
+  findQt5(5.9 Core Gui Qml Quick)
   # Nanairo app
   buildNanairoApp()
   # Packaging

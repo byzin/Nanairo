@@ -43,7 +43,7 @@ except:
 # Global variables
 kLicenseString = '\
 /*!\n\
-  Copyright (c) 2015-2017 Sho Ikeda\n\
+  Copyright (c) 2015-2018 Sho Ikeda\n\
   This software is released under the MIT License.\n\
   http://opensource.org/licenses/mit-license.php\n\
   */\n'
