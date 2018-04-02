@@ -12,18 +12,14 @@
 
 // Standard C++ library
 #include <memory>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "rendering_method.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Sampling/LightSourceSampler/light_source_sampler.hpp"
-
-namespace zisc {
-
-// Forward declaration
-class MemoryPool;
-
-} // namespace zisc
 
 namespace nanairo {
 
@@ -51,7 +47,7 @@ class PathTracing : public RenderingMethod
   using Method = RenderingMethod;
   using Spectra = typename Method::Spectra;
   using Shader = ShaderModel;
-  using ShaderPointer = UniquePointer<Shader>;
+  using ShaderPointer = RenderingMethod::ShaderPointer;
   using Wavelengths = typename Method::Wavelengths;
 
 
@@ -75,7 +71,7 @@ class PathTracing : public RenderingMethod
                               const Spectra& camera_contribution,
                               const Spectra& ray_weight,
                               Sampler& sampler,
-                              zisc::MemoryPool& memory_pool,
+                              zisc::pmr::memory_resource* mem_resource,
                               Spectra* contribution) const noexcept;
 
   //! Evaluate the implicit connection
@@ -86,7 +82,7 @@ class PathTracing : public RenderingMethod
                               const Spectra& camera_contribution,
                               const Spectra& ray_weight,
                               const bool mis,
-                              zisc::MemoryPool& memory_pool,
+                              zisc::pmr::memory_resource* mem_resource,
                               Spectra* contribution) const noexcept;
 
   //! Check if the explicit connection is enabled
@@ -102,7 +98,7 @@ class PathTracing : public RenderingMethod
   Ray generateRay(const CameraModel& camera,
                   const Index2d& pixel_index,
                   Sampler& sampler,
-                  zisc::MemoryPool& memory_pool,
+                  zisc::pmr::memory_resource* mem_resource,
                   Spectra* ray_weight,
                   Float* inverse_direction_pdf) const noexcept;
 

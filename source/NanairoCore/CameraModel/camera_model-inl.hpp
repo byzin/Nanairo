@@ -15,7 +15,8 @@
 #include <utility>
 // Zisc
 #include "zisc/error.hpp"
-#include "zisc/memory_pool.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "film.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -78,10 +79,10 @@ inline
 auto CameraModel::makeSensor(
     const Index2d& index,
     const WavelengthSamples& /* wavelengths */,
-    zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
+    zisc::pmr::memory_resource* mem_resource) const noexcept -> ShaderPointer
 {
-  auto chunk = memory_pool.allocate<Sensor>();
-  ShaderPointer ptr = makeUnique<Sensor>(chunk, this, index);
+  using SensorPointer = zisc::UniqueMemoryPointer<Sensor>;
+  auto ptr = SensorPointer::make(mem_resource, this, index);
   return ptr;
 }
 

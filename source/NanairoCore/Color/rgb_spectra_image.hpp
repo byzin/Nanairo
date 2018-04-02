@@ -13,8 +13,6 @@
 // Standard C++ library
 #include <cstddef>
 #include <vector>
-// Zisc
-#include "zisc/point.hpp"
 // Nanairo
 #include "rgb_color.hpp"
 #include "spectra_image_interface.hpp"

@@ -13,6 +13,9 @@
 // Standard C++ library
 #include <memory>
 #include <vector>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "rendering_method.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -20,13 +23,6 @@
 #include "NanairoCore/DataStructure/photon_map.hpp"
 #include "NanairoCore/Sampling/LightSourceSampler/power_weighted_light_source_sampler.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-
-namespace zisc {
-
-// Forward declaration
-class MemoryPool;
-
-} // namespace zisc
 
 namespace nanairo {
 
@@ -57,7 +53,7 @@ class ProbabilisticPpm : public RenderingMethod
   using Photon = Ray;
   using Spectra = typename Method::Spectra;
   using Shader = ShaderModel;
-  using ShaderPointer = UniquePointer<Shader>;
+  using ShaderPointer = RenderingMethod::ShaderPointer;
   using Wavelengths = typename Method::Wavelengths;
 
 
@@ -89,7 +85,7 @@ class ProbabilisticPpm : public RenderingMethod
                               const IntersectionInfo& intersection,
                               const Spectra& camera_contribution,
                               const Spectra& ray_weight,
-                              zisc::MemoryPool& memory_pool,
+                              zisc::pmr::memory_resource* mem_resource,
                               Spectra* contribution) const noexcept;
 
   //! Return the expected max reflection count
@@ -98,14 +94,14 @@ class ProbabilisticPpm : public RenderingMethod
   //! Generate a photon
   Photon generatePhoton(Spectra* light_contribution,
                         Sampler& sampler,
-                        zisc::MemoryPool& memory_pool) const noexcept;
+                        zisc::pmr::memory_resource* mem_resource) const noexcept;
 
   //! Generate a camera ray
   Ray generateRay(const CameraModel& camera,
                   const uint x,
                   const uint y,
                   Sampler& sampler,
-                  zisc::MemoryPool& memory_pool,
+                  zisc::pmr::memory_resource* mem_resource,
                   Spectra* weight) const noexcept;
 
   //! Initialize

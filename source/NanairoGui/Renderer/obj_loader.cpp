@@ -17,7 +17,7 @@
 #include <QTextStream>
 #include <QtGlobal>
 // Zisc
-#include "zisc/algorithm.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 #include "zisc/error.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -65,9 +65,6 @@ void ObjLoader::parse(
   */
 std::array<uint, 4> ObjLoader::countNumOfMeshes(QTextStream& obj_stream) noexcept
 {
-  using keyword::toHash32;
-  using zisc::toHash32;
-
   uint num_of_faces = 0;
   uint num_of_vertices = 0;
   uint num_of_vnormals = 0; // Vertex normals
@@ -82,20 +79,20 @@ std::array<uint, 4> ObjLoader::countNumOfMeshes(QTextStream& obj_stream) noexcep
     QTextStream buffer{&line, QIODevice::ReadOnly | QIODevice::Text};
     buffer >> value;
     // Count
-    switch (toHash32(value)) {
-     case toHash32("v"): {
+    switch (keyword::Fnv1aHash32::hash(value)) {
+     case zisc::Fnv1aHash32::hash("v"): {
       ++num_of_vertices;
       break;
      }
-     case toHash32("vn"): {
+     case zisc::Fnv1aHash32::hash("vn"): {
       ++num_of_vnormals;
       break;
      }
-     case toHash32("vt"): {
+     case zisc::Fnv1aHash32::hash("vt"): {
       ++num_of_vuv;
       break;
      }
-     case toHash32("f"): {
+     case zisc::Fnv1aHash32::hash("f"): {
       ++num_of_faces;
       break;
      }
@@ -164,9 +161,6 @@ void ObjLoader::loadMesh(QTextStream& obj_stream,
                          std::vector<std::array<double, 3>>* vnormal_list,
                          std::vector<std::array<double, 2>>* vuv_list) noexcept
 {
-  using keyword::toHash32;
-  using zisc::toHash32;
-
   bool smoothing = false;
   QString value;
   for (QString line; obj_stream.readLineInto(&line);) {
@@ -178,13 +172,13 @@ void ObjLoader::loadMesh(QTextStream& obj_stream,
     QTextStream buffer{&line, QIODevice::ReadOnly | QIODevice::Text};
     buffer >> value;
     // Count
-    switch (toHash32(value)) {
-     case toHash32("s"): {
+    switch (keyword::Fnv1aHash32::hash(value)) {
+     case zisc::Fnv1aHash32::hash("s"): {
       buffer >> value;
       smoothing = (value == "1");
       break;
      }
-     case toHash32("v"): {
+     case zisc::Fnv1aHash32::hash("v"): {
       double v0 = 0.0,
              v1 = 0.0,
              v2 = 0.0;
@@ -192,7 +186,7 @@ void ObjLoader::loadMesh(QTextStream& obj_stream,
       vertex_list->emplace_back(std::array<double, 3>{{v0, v1, v2}});
       break;
      }
-     case toHash32("vn"): {
+     case zisc::Fnv1aHash32::hash("vn"): {
       double n0 = 0.0,
              n1 = 0.0,
              n2 = 0.0;
@@ -200,14 +194,14 @@ void ObjLoader::loadMesh(QTextStream& obj_stream,
       vnormal_list->emplace_back(std::array<double, 3>{{n0, n1, n2}});
       break;
      }
-     case toHash32("vt"): {
+     case zisc::Fnv1aHash32::hash("vt"): {
       double u = 0.0,
              v = 0.0;
       buffer >> u >> v;
       vuv_list->emplace_back(std::array<double, 2>{{u, v}});
       break;
      }
-     case toHash32("f"): {
+     case zisc::Fnv1aHash32::hash("f"): {
       const bool has_vnormal = (0 < vnormal_list->size());
       const bool has_vuv = (0 < vuv_list->size());
       face_list->emplace_back();

@@ -9,7 +9,7 @@
 
 #include "vector.hpp"
 // Zisc
-#include "zisc/arithmetic_array.hpp"
+#include "zisc/arith_array.hpp"
 #include "zisc/utility.hpp"
 #include "zisc/vector.hpp"
 // Nanairo

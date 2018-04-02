@@ -12,7 +12,7 @@
 
 #include "spectral_distribution.hpp"
 // Zisc
-#include "zisc/arithmetic_array.hpp"
+#include "zisc/arith_array.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
 // Nanairo
@@ -36,7 +36,7 @@ SpectralDistribution::SpectralDistribution() noexcept
   */
 inline
 SpectralDistribution::SpectralDistribution(
-    const zisc::ArithmeticArray<Float, CoreConfig::spectraSize()>& distribution) noexcept
+    const zisc::ArithArray<Float, CoreConfig::spectraSize()>& distribution) noexcept
         : distribution_{distribution}
 {
 }
@@ -230,7 +230,7 @@ Float SpectralDistribution::getByWavelength(const uint16 wavelength) const noexc
 inline
 bool SpectralDistribution::hasInf() const noexcept
 {
-  return ::nanairo::hasInf(distribution_);
+  return distribution_.hasInf();
 }
 
 /*!
@@ -238,7 +238,7 @@ bool SpectralDistribution::hasInf() const noexcept
 inline
 bool SpectralDistribution::hasNan() const noexcept
 {
-  return ::nanairo::hasNan(distribution_);
+  return distribution_.hasNan();
 }
 
 /*!
@@ -322,7 +322,7 @@ SpectralDistribution SpectralDistribution::normalized() const noexcept
   */
 inline
 auto SpectralDistribution::distribution() const noexcept
-    -> const zisc::ArithmeticArray<Float, CoreConfig::spectraSize()>&
+    -> const zisc::ArithArray<Float, CoreConfig::spectraSize()>&
 {
   return distribution_;
 }

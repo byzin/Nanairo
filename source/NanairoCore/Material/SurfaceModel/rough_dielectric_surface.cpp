@@ -15,7 +15,8 @@
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
-#include "zisc/memory_pool.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "surface_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -25,7 +26,6 @@
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/surface_setting_node.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -48,7 +48,7 @@ auto RoughDielectricSurface::makeBxdf(
     const IntersectionInfo& info,
     const WavelengthSamples& wavelengths,
     Sampler& /* sampler */,
-    zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
+    zisc::pmr::memory_resource* mem_resource) const noexcept -> ShaderPointer
 {
   const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];
 
@@ -65,9 +65,8 @@ auto RoughDielectricSurface::makeBxdf(
 
 
   // Make GGX BSDF
-  using Bsdf = GgxDielectricBsdf;
-  auto chunk = memory_pool.allocate<Bsdf>();
-  ShaderPointer ptr = makeUnique<Bsdf>(chunk, roughness_x, roughness_y, n);
+  using BxdfPointer = zisc::UniqueMemoryPointer<GgxDielectricBsdf>;
+  auto ptr = BxdfPointer::make(mem_resource, roughness_x, roughness_y, n);
   return ptr;
 }
 

@@ -11,11 +11,10 @@
 #define NANAIRO_SPECTRAL_TRANSPORT_HPP
 
 // Standard C++ library
-#include <vector>
+#include <array>
 #include <utility>
 // Zisc
-#include "zisc/array.hpp"
-#include "zisc/matrix.hpp"
+#include "zisc/arith_array.hpp"
 // Nanairo
 #include "color.hpp"
 #include "spectral_distribution.hpp"
@@ -39,15 +38,15 @@ class SpectralTransport
 
 
   //! Convert 3-elements to 2-elements
-  static zisc::ArithmeticArray<Float, 2> dehom(
-      const zisc::ArithmeticArray<Float, 3>& x) noexcept;
+  static zisc::ArithArray<Float, 2> dehom(
+      const zisc::ArithArray<Float, 3>& x) noexcept;
 
   //! Convert 3-elements to 2-elements
-  static zisc::ArithmeticArray<Float, 3> hom(
-      const zisc::ArithmeticArray<Float, 2>& x) noexcept;
+  static zisc::ArithArray<Float, 3> hom(
+      const zisc::ArithArray<Float, 2>& x) noexcept;
 
   //! Return the grid resolution
-  static constexpr zisc::Array<int, 2> gridResolution() noexcept;
+  static constexpr std::array<int, 2> gridResolution() noexcept;
 
   //! Return the grid size
   static constexpr int gridSize() noexcept;

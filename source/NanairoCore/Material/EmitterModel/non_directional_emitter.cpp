@@ -12,8 +12,9 @@
 #include <vector>
 // Zisc
 #include "zisc/error.hpp"
-#include "zisc/memory_pool.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/utility.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "emitter_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -23,7 +24,6 @@
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/emitter_setting_node.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -46,14 +46,13 @@ NonDirectionalEmitter::NonDirectionalEmitter(
 auto NonDirectionalEmitter::makeLight(
     const Point2& uv,
     const WavelengthSamples& wavelengths,
-    zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
+    zisc::pmr::memory_resource* mem_resource) const noexcept -> ShaderPointer
 {
   const auto color = color_->emissiveValue(uv, wavelengths);
   const auto radiant_exitance = color * radiantExitance();
 
-  using Light = NonDirectionalLight;
-  auto chunk = memory_pool.allocate<Light>();
-  ShaderPointer ptr = makeUnique<Light>(chunk, radiant_exitance);
+  using LightPointer = zisc::UniqueMemoryPointer<NonDirectionalLight>;
+  auto ptr = LightPointer::make(mem_resource, radiant_exitance);
   return ptr;
 }
 

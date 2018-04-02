@@ -13,19 +13,14 @@
 // Standard C++ library
 #include <cstddef>
 #include <vector>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "surface_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
-
-namespace zisc {
-
-// Forward declaration
-class MemoryPool;
-
-} // namespace zisc
 
 namespace nanairo {
 
@@ -59,7 +54,7 @@ class LayeredDiffuseSurface : public SurfaceModel
       const IntersectionInfo& info,
       const WavelengthSamples& wavelengths,
       Sampler& sampler,
-      zisc::MemoryPool& memory_pool) const noexcept override;
+      zisc::pmr::memory_resource* mem_resource) const noexcept override;
 
   //! Return the rough dielectric surface type
   SurfaceType type() const noexcept override;

@@ -27,7 +27,7 @@
 #include <QtGlobal>
 // Zisc
 #include "zisc/error.hpp"
-#include "zisc/thread_pool.hpp"
+#include "zisc/thread_manager.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "gui_renderer.hpp"

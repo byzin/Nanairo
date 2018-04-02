@@ -10,7 +10,6 @@
 #include "russian_roulette.hpp"
 // Zisc
 #include "zisc/error.hpp"
-#include "zisc/algorithm.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "sampled_spectra.hpp"

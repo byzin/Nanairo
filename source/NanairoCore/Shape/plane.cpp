@@ -12,7 +12,7 @@
 #include <array>
 #include <utility>
 // Zisc
-#include "zisc/arithmetic_array.hpp"
+#include "zisc/arith_array.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
 #include "zisc/utility.hpp"

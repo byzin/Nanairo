@@ -13,7 +13,8 @@
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
-#include "zisc/memory_pool.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "surface_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -23,7 +24,6 @@
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/surface_setting_node.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -46,7 +46,7 @@ auto SmoothDielectricSurface::makeBxdf(
     const IntersectionInfo& info,
     const WavelengthSamples& wavelengths,
     Sampler& /* sampler */,
-    zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
+    zisc::pmr::memory_resource* mem_resource) const noexcept -> ShaderPointer
 {
   const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];
 
@@ -58,9 +58,8 @@ auto SmoothDielectricSurface::makeBxdf(
                                       info.isBackFace());
 
 
-  using Bsdf = SpecularBsdf;
-  auto chunk = memory_pool.allocate<Bsdf>();
-  ShaderPointer ptr = makeUnique<Bsdf>(chunk, n);
+  using BxdfPointer = zisc::UniqueMemoryPointer<SpecularBsdf>;
+  auto ptr = BxdfPointer::make(mem_resource, n);
   return ptr;
 }
 

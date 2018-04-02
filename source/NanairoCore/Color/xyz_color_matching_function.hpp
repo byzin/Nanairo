@@ -13,8 +13,6 @@
 // Standard C++ library
 #include <array>
 #include <memory>
-// Zisc
-#include "zisc/arithmetic_array.hpp"
 // Nanairo
 #include "spectral_distribution.hpp"
 #include "xyz_color.hpp"

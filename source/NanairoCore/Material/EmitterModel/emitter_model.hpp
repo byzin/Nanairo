@@ -16,11 +16,11 @@
 #include <string>
 #include <vector>
 // Zisc
-#include "zisc/algorithm.hpp"
+#include "zisc/sip_hash_engine.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace zisc {
 
@@ -47,7 +47,7 @@ class WavelengthSamples;
   */
 enum class EmitterType : uint32
 {
-  kNonDirectional              = zisc::toHash32("NonDirectional")
+  kNonDirectional              = zisc::SipHash32::hash("NonDirectional")
 };
 
 /*!
@@ -57,7 +57,7 @@ enum class EmitterType : uint32
 class EmitterModel
 {
  public:
-  using ShaderPointer = UniquePointer<ShaderModel>;
+  using ShaderPointer = zisc::UniqueMemoryPointer<ShaderModel>;
 
 
   //! Create a emitter model
@@ -75,7 +75,7 @@ class EmitterModel
   //! Make a light shader model
   virtual ShaderPointer makeLight(const Point2& uv,
                                   const WavelengthSamples& wavelengths,
-                                  zisc::MemoryPool& memory_pool) const noexcept = 0;
+                                  zisc::pmr::memory_resource* mem_resource) const noexcept = 0;
 
   //! Return the emitter name 
   const std::string* name() const noexcept;

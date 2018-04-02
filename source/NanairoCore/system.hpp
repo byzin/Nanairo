@@ -13,13 +13,13 @@
 // Standard C++ library
 #include <array>
 #include <memory>
-#include <tuple>
 #include <vector>
 // Zisc
-#include "zisc/algorithm.hpp"
-#include "zisc/memory_pool.hpp"
+#include "zisc/memory_manager.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/point.hpp"
-#include "zisc/thread_pool.hpp"
+#include "zisc/sip_hash_engine.hpp"
+#include "zisc/thread_manager.hpp"
 // Nanairo
 #include "Color/color_space.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -36,8 +36,8 @@ class XyzColorMatchingFunction;
 
 enum class RenderingColorMode : uint32
 {
-  kRgb                        = zisc::toHash32("RGB"),
-  kSpectra                    = zisc::toHash32("Spectra")
+  kRgb                        = zisc::SipHash32::hash("RGB"),
+  kSpectra                    = zisc::SipHash32::hash("Spectra")
 };
 
 /*!
@@ -47,6 +47,9 @@ enum class RenderingColorMode : uint32
 class System
 {
  public:
+  using MemoryManager = zisc::DynamicMemoryManager<CoreConfig::memoryPoolSize()>;
+
+
   //! Initialize the renderer system
   System(const SettingNodeBase* system_settings) noexcept;
 
@@ -66,8 +69,8 @@ class System
   std::array<Integer, 2> calcThreadRange(const Integer range,
                                          const int thread_id) const noexcept;
 
-  //! Return the global memory pool
-  zisc::MemoryPool& globalMemoryPool() noexcept;
+  //! Return the global memory manager
+  MemoryManager& globalMemoryManager() noexcept;
 
   //! Return the global sampler
   Sampler& globalSampler() noexcept;
@@ -81,14 +84,14 @@ class System
   //! Return the image width resolution
   uint imageWidthResolution() const noexcept;
 
-  //! Return the thread pool
-  zisc::ThreadPool& threadPool() noexcept;
+  //! Return the thread manager
+  zisc::ThreadManager& threadManager() noexcept;
 
-  //! Return the thread pool
-  const zisc::ThreadPool& threadPool() const noexcept;
+  //! Return the thread manager
+  const zisc::ThreadManager& threadManager() const noexcept;
 
-  //! Return the thread's memory pool
-  zisc::MemoryPool& threadMemoryPool(const uint thread_number) noexcept;
+  //! Return the thread's memory manager
+  MemoryManager& threadMemoryManager(const uint thread_number) noexcept;
 
   //! Return the thread's sampler
   Sampler& threadSampler(const uint thread_number) noexcept;
@@ -118,8 +121,8 @@ class System
 
 
   std::vector<Sampler> sampler_list_;
-  std::vector<zisc::MemoryPool> memory_pool_list_;
-  std::unique_ptr<zisc::ThreadPool> thread_pool_;
+  std::vector<MemoryManager> memory_manager_list_;
+  std::unique_ptr<zisc::ThreadManager> thread_manager_;
   std::unique_ptr<XyzColorMatchingFunction> xyz_color_matching_function_;
   Float gamma_;
   Index2d image_resolution_;

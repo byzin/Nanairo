@@ -16,7 +16,7 @@
 #include <string>
 #include <type_traits>
 // Zisc
-#include "zisc/algorithm.hpp"
+#include "zisc/sip_hash_engine.hpp"
 #include "@nanairo_core_sampler_header_path@"
 
 // Forward declaration
@@ -24,7 +24,7 @@ namespace zisc {
 template <typename, uint> class Point;
 template <typename, uint> class Vector;
 template <typename, uint, uint> class Matrix;
-template <typename, uint> class ArithmeticArray;
+template <typename, uint> class ArithArray;
 } // namespace zisc
 
 namespace nanairo {
@@ -65,9 +65,9 @@ using SamplerType = @nanairo_core_sampler_type@;
   */
 enum class ObjectType : uint32
 {
-  kCamera                     = zisc::toHash32("Camera"),
-  kGroup                      = zisc::toHash32("Group"),
-  kSingle                     = zisc::toHash32("Single")
+  kCamera                     = zisc::SipHash32::hash("Camera"),
+  kGroup                      = zisc::SipHash32::hash("Group"),
+  kSingle                     = zisc::SipHash32::hash("Single")
 };
 
 /*!
@@ -149,7 +149,7 @@ class CoreConfig
 namespace nanairo {
 
 // Sampling
-using IntensitySamples = zisc::ArithmeticArray<Float, CoreConfig::wavelengthSampleSize()>;
+using IntensitySamples = zisc::ArithArray<Float, CoreConfig::wavelengthSampleSize()>;
 
 } // namespace nanairo
 

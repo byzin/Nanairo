@@ -14,13 +14,13 @@
 // Standard C++ library
 #include <array>
 #include <memory>
-#include <tuple>
 #include <type_traits>
 #include <vector>
 // Zisc
 #include "zisc/error.hpp"
-#include "zisc/memory_pool.hpp"
-#include "zisc/thread_pool.hpp"
+#include "zisc/memory_manager.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/thread_manager.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "Color/color_space.hpp"
@@ -54,7 +54,7 @@ template <typename Integer> inline
 std::array<Integer, 2> System::calcThreadRange(const Integer range,
                                                const int thread_id) const noexcept
 {
-  return calcThreadRange(range, threadPool().numOfThreads(), thread_id);
+  return calcThreadRange(range, threadManager().numOfThreads(), thread_id);
 }
 
 /*!
@@ -62,9 +62,9 @@ std::array<Integer, 2> System::calcThreadRange(const Integer range,
   No detailed.
   */
 inline
-zisc::MemoryPool& System::globalMemoryPool() noexcept
+auto System::globalMemoryManager() noexcept -> MemoryManager&
 {
-  return memory_pool_list_[0];
+  return memory_manager_list_[0];
 }
 
 /*!
@@ -112,9 +112,9 @@ uint System::imageWidthResolution() const noexcept
   No detailed.
   */
 inline
-zisc::ThreadPool& System::threadPool() noexcept
+zisc::ThreadManager& System::threadManager() noexcept
 {
-  return *thread_pool_;
+  return *thread_manager_;
 }
 
 /*!
@@ -122,9 +122,9 @@ zisc::ThreadPool& System::threadPool() noexcept
   No detailed.
   */
 inline
-const zisc::ThreadPool& System::threadPool() const noexcept
+const zisc::ThreadManager& System::threadManager() const noexcept
 {
-  return *thread_pool_;
+  return *thread_manager_;
 }
 
 /*!
@@ -132,9 +132,9 @@ const zisc::ThreadPool& System::threadPool() const noexcept
   No detailed.
   */
 inline
-zisc::MemoryPool& System::threadMemoryPool(const uint thread_number) noexcept
+auto System::threadMemoryManager(const uint thread_number) noexcept -> MemoryManager&
 {
-  return memory_pool_list_[thread_number + 1];
+  return memory_manager_list_[thread_number + 1];
 }
 
 /*!

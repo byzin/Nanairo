@@ -62,19 +62,22 @@ function(setCommandOptions)
   set(option_description "Set max FPS")
   setStringOption(NANAIRO_MAX_FPS 50 ${option_description})
 
-  set(option_description "Select 64bit random number generator from \"Xorshift128+\", \"SplitMix64\", \"PCG\", \"Xoroshiro128+\"")
+  set(option_description "Select 64bit random number generator from \"Xorshift128+\", \"SplitMix64\", \"PCG\", \"Xoroshiro128+\".")
   setStringOption(NANAIRO_SAMPLER "Xoroshiro128+" ${option_description})
 
-  set(option_description "The hash key which is used as the default random seed")
+  set(option_description "The hash key which is used as the default random seed.")
   setStringOption(NANAIRO_RANDOM_SEED_KEY "NanairoRenderer" ${option_description})
 
   set(option_description "Build Nanairo application. It requires Qt.")
   setBooleanOption(NANAIRO_BUILD_APP ON ${option_description})
 
-  set(option_description "Build unit tests")
+  set(option_description "Build unit tests.")
   setBooleanOption(NANAIRO_BUILD_TESTS OFF ${option_description})
 
-  Set(option_description "The size of a memory pool per thread")
+  set(option_description "Suppress excessive warnings.")
+  setBooleanOption(NANAIRO_SUPPRESS_EXCESSIVE_WARNING ON ${option_description})
+
+  Set(option_description "The size of a memory pool per thread.")
   math(EXPR __memory_size__ "1 << 15")
   setStringOption(NANAIRO_MEMORY_POOL_SIZE ${__memory_size__} ${option_description})
 

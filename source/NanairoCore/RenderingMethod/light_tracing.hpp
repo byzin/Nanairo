@@ -13,18 +13,13 @@
 // Standard C++ library
 #include <memory>
 #include <thread>
+// Zisc
+#include "zisc/memory_resource.hpp"
 // Nanairo
 #include "rendering_method.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Sampling/LightSourceSampler/light_source_sampler.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-
-namespace zisc {
-
-// Forward declaration
-class MemoryPool;
-
-} // namespace zisc
 
 namespace nanairo {
 
@@ -52,7 +47,7 @@ class LightTracing : public RenderingMethod
   using Method = RenderingMethod;
   using Spectra = typename Method::Spectra;
   using Shader = ShaderModel;
-  using ShaderPointer = UniquePointer<Shader>;
+  using ShaderPointer = RenderingMethod::ShaderPointer;
   using Wavelengths = typename Method::Wavelengths;
 
 
@@ -81,7 +76,7 @@ class LightTracing : public RenderingMethod
                               const Spectra& light_contribution,
                               const Spectra& ray_weight,
                               CameraModel& camera,
-                              zisc::MemoryPool& memory_pool) noexcept;
+                              zisc::pmr::memory_resource* mem_resource) noexcept;
 
   //! Generate a light ray
   Ray generateRay(const World& world,
@@ -89,7 +84,7 @@ class LightTracing : public RenderingMethod
                   const Spectra& ray_weight,
                   CameraModel& camera,
                   Sampler& sampler,
-                  zisc::MemoryPool& memory_pool) noexcept;
+                  zisc::pmr::memory_resource* mem_resource) noexcept;
 
   //! Initialize
   void initialize(System& system,

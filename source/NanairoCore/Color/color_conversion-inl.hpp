@@ -14,7 +14,6 @@
 // Standard C++ library
 #include <tuple>
 // Zisc
-#include "zisc/arithmetic_array.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
 #include "zisc/matrix.hpp"

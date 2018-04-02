@@ -14,6 +14,8 @@
 // Standard C++ library
 #include <utility>
 #include <vector>
+// Zisc
+#include "zisc/thread_manager.hpp"
 // Nanairo
 #include "bvh_building_node.hpp"
 #include "bvh_tree_node.hpp"
@@ -74,9 +76,9 @@ void Bvh::setupBoundingBoxes(System& system,
       {
         Bvh::setupBoundingBoxes<>(system, tree, right_child_index);
       };
-      auto& thread_pool = system.threadPool();
-      auto left_result = thread_pool.enqueue<void>(set_left_bounding_box);
-      auto right_result = thread_pool.enqueue<void>(set_right_bounding_box);
+      auto& threads = system.threadManager();
+      auto left_result = threads.enqueue<void>(set_left_bounding_box);
+      auto right_result = threads.enqueue<void>(set_right_bounding_box);
       left_result.get();
       right_result.get();
     }

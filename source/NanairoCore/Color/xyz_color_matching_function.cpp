@@ -12,7 +12,6 @@
 #include <array>
 #include <memory>
 // Zisc
-#include "zisc/arithmetic_array.hpp"
 #include "zisc/math.hpp"
 #include "zisc/error.hpp"
 #include "zisc/utility.hpp"

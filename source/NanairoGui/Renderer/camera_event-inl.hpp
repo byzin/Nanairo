@@ -192,7 +192,8 @@ Vector2 CameraEvent::flushTransformationEvent() noexcept
 {
   auto& transformation = event_list_[kTransformationType];
   const auto event = transformation;
-  transformation.setElements(0.0, 0.0);
+  transformation[0] = 0.0;
+  transformation[1] = 0.0;
   return event;
 }
 

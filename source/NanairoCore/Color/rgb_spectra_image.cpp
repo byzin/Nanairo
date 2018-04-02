@@ -16,8 +16,7 @@
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
-#include "zisc/point.hpp"
-#include "zisc/thread_pool.hpp"
+#include "zisc/thread_manager.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "color_conversion.hpp"
@@ -63,18 +62,15 @@ void RgbSpectraImage::addContribution(
   ZISC_ASSERT(!contribution.hasNan(), "The contribution has nan.");
   ZISC_ASSERT(!contribution.hasInf(), "The contribution has nan.");
 
-  volatile Float c = 0.0;
-  volatile Float tmp1 = 0.0;
-  volatile Float tmp2 = 0.0;
-
   auto& pixel = buffer_[pixel_index];
   auto& compensation = compensation_[pixel_index];
   for (uint index = 0; index < SampledSpectra::size(); ++index) {
-    c = compensation[index];
-    tmp1 = contribution.intensity(2 - index) - c;
-    tmp2 = pixel[index] + tmp1;
-    compensation[index] = (tmp2 - pixel[index]) - tmp1;
-    pixel[index] = tmp2;
+    const Float value = contribution.intensity(2 - index);
+    const Float t = pixel[index] + value;
+    compensation[index] += (zisc::abs(value) < zisc::abs(pixel[index]))
+        ? (pixel[index] - t) + value
+        : (value - t) + pixel[index];
+    pixel[index] = t;
   }
 }
 
@@ -116,10 +112,10 @@ void RgbSpectraImage::toHdrImage(System& system,
   };
 
   {
-    auto& thread_pool = system.threadPool();
+    auto& threads = system.threadManager();
     constexpr uint start = 0;
-    const uint end = thread_pool.numOfThreads();
-    auto result = thread_pool.enqueueLoop(to_hdr_image, start, end);
+    const uint end = threads.numOfThreads();
+    auto result = threads.enqueueLoop(to_hdr_image, start, end);
     result.get();
   }
 }

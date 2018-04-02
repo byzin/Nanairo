@@ -15,7 +15,8 @@
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
-#include "zisc/memory_pool.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Reflect
 #include "surface_model.hpp"
@@ -26,7 +27,6 @@
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/surface_setting_node.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -49,7 +49,7 @@ auto RoughConductorSurface::makeBxdf(
     const IntersectionInfo& info,
     const WavelengthSamples& wavelengths,
     Sampler& /* sampler */,
-    zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
+    zisc::pmr::memory_resource* mem_resource) const noexcept -> ShaderPointer
 {
   // Evaluate the roughness
   const Float roughness_x = evalRoughness(roughness_x_, info.uv());
@@ -65,10 +65,10 @@ auto RoughConductorSurface::makeBxdf(
                                        info.uv(),
                                        wavelengths);
 
+
   // Make GGX BRDF
-  using Brdf = GgxConductorBrdf;
-  auto chunk = memory_pool.allocate<Brdf>();
-  ShaderPointer ptr = makeUnique<Brdf>(chunk, roughness_x, roughness_y, n, eta);
+  using BxdfPointer = zisc::UniqueMemoryPointer<GgxConductorBrdf>;
+  auto ptr = BxdfPointer::make(mem_resource, roughness_x, roughness_y, n, eta);
   return ptr;
 }
 

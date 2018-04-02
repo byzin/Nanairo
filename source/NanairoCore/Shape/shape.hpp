@@ -14,7 +14,7 @@
 #include <memory>
 #include <vector>
 // Zisc
-#include "zisc/algorithm.hpp"
+#include "zisc/sip_hash_engine.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_test_result.hpp"
@@ -39,8 +39,8 @@ class Sampler;
   */
 enum class ShapeType : uint32
 {
-  kPlane                      = zisc::toHash32("Plane"),
-  kMesh                       = zisc::toHash32("Mesh")
+  kPlane                      = zisc::SipHash32::hash("Plane"),
+  kMesh                       = zisc::SipHash32::hash("Mesh")
 };
 
 /*!

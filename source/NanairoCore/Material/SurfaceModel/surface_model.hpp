@@ -16,18 +16,13 @@
 #include <string>
 #include <vector>
 // Zisc
-#include "zisc/algorithm.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/sip_hash_engine.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
-
-namespace zisc {
-
-class MemoryPool;
-
-} // namespace zisc
 
 namespace nanairo {
 
@@ -47,13 +42,13 @@ class WavelengthSamples;
   */
 enum class SurfaceType : uint32
 {
-  kSmoothDiffuse               = zisc::toHash32("SmoothDiffuse"),
-  kSmoothDielectric            = zisc::toHash32("SmoothDielectric"),
-  kSmoothConductor             = zisc::toHash32("SmoothConductor"),
-  kRoughDielectric             = zisc::toHash32("RoughDielectric"),
-  kRoughConductor              = zisc::toHash32("RoughConductor"),
-  kLayeredDiffuse              = zisc::toHash32("LayeredDiffuse"),
-  kCloth                       = zisc::toHash32("Cloth")
+  kSmoothDiffuse               = zisc::SipHash32::hash("SmoothDiffuse"),
+  kSmoothDielectric            = zisc::SipHash32::hash("SmoothDielectric"),
+  kSmoothConductor             = zisc::SipHash32::hash("SmoothConductor"),
+  kRoughDielectric             = zisc::SipHash32::hash("RoughDielectric"),
+  kRoughConductor              = zisc::SipHash32::hash("RoughConductor"),
+  kLayeredDiffuse              = zisc::SipHash32::hash("LayeredDiffuse"),
+  kCloth                       = zisc::SipHash32::hash("Cloth")
 };
 
 /*!
@@ -63,7 +58,7 @@ enum class SurfaceType : uint32
 class SurfaceModel
 {
  public:
-  using ShaderPointer = UniquePointer<ShaderModel>;
+  using ShaderPointer = zisc::UniqueMemoryPointer<ShaderModel>;
 
 
   //! Finalize the surface model
@@ -75,7 +70,7 @@ class SurfaceModel
       const IntersectionInfo& info,
       const WavelengthSamples& wavelengths,
       Sampler& sampler,
-      zisc::MemoryPool& memory_pool) const noexcept = 0;
+      zisc::pmr::memory_resource* mem_resource) const noexcept = 0;
 
   //! Make a surface scattering model
   static std::unique_ptr<SurfaceModel> makeSurface(

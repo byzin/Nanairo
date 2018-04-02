@@ -13,7 +13,7 @@
 // Standard C++ library
 #include <memory>
 // Zisc
-#include "zisc/algorithm.hpp"
+#include "zisc/sip_hash_engine.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
@@ -30,9 +30,9 @@ class System;
 
 enum class ToneMappingType : uint32
 {
-  kReinhard                   = zisc::toHash32("Reinhard"),
-  kFilmic                     = zisc::toHash32("Filmic"),
-  kUncharted2Filmic           = zisc::toHash32("Uncharted2Filmic")
+  kReinhard                   = zisc::SipHash32::hash("Reinhard"),
+  kFilmic                     = zisc::SipHash32::hash("Filmic"),
+  kUncharted2Filmic           = zisc::SipHash32::hash("Uncharted2Filmic")
 };
 
 /*!

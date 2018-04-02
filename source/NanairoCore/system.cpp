@@ -12,8 +12,8 @@
 #include <memory>
 #include <vector>
 // Zisc
-#include "zisc/memory_pool.hpp"
-#include "zisc/thread_pool.hpp"
+#include "zisc/memory_manager.hpp"
+#include "zisc/thread_manager.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "Color/xyz_color_matching_function.hpp"
@@ -52,7 +52,7 @@ void System::initialize(const SettingNodeBase* settings) noexcept
   // Thread pool
   {
     const auto num_of_threads = system_settings->numOfThreads();
-    thread_pool_ = std::make_unique<zisc::ThreadPool>(num_of_threads);
+    thread_manager_ = std::make_unique<zisc::ThreadManager>(num_of_threads);
   }
   // Sampler
   {
@@ -65,10 +65,10 @@ void System::initialize(const SettingNodeBase* settings) noexcept
   }
   // Memory pool
   {
-    const auto num_of_memory_pool = system_settings->numOfThreads() + 1;
-    memory_pool_list_.reserve(num_of_memory_pool);
-    for (uint i = 0; i < num_of_memory_pool; ++i)
-      memory_pool_list_.emplace_back(CoreConfig::memoryPoolSize());
+    const auto num_of_memory_manager = system_settings->numOfThreads() + 1;
+    memory_manager_list_.reserve(num_of_memory_manager);
+    for (uint i = 0; i < num_of_memory_manager; ++i)
+      memory_manager_list_.emplace_back();
   }
   // Image resolution
   {

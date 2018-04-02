@@ -15,7 +15,7 @@
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
 #include "zisc/matrix.hpp"
-#include "zisc/thread_pool.hpp"
+#include "zisc/thread_manager.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "filmic.hpp"
@@ -95,10 +95,10 @@ void ToneMappingOperator::map(System& system,
   };
 
   {
-    auto& thread_pool = system.threadPool();
+    auto& threads = system.threadManager();
     constexpr uint begin = 0;
-    const uint end = thread_pool.numOfThreads();
-    auto result = thread_pool.enqueueLoop(map_luminance, begin, end);
+    const uint end = threads.numOfThreads();
+    auto result = threads.enqueueLoop(map_luminance, begin, end);
     result.get();
   }
 }

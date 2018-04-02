@@ -13,13 +13,12 @@
 // Standard C++ library
 #include <memory>
 // Zisc
-#include "zisc/arithmetic_array.hpp"
+#include "zisc/arith_array.hpp"
 // Nanairo
 #include "xyz_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -50,7 +49,7 @@ class SpectralDistribution
   SpectralDistribution() noexcept;
 
   //! Create a distribution
-  SpectralDistribution(const zisc::ArithmeticArray<Float, CoreConfig::spectraSize()>& property) noexcept;
+  SpectralDistribution(const zisc::ArithArray<Float, CoreConfig::spectraSize()>& property) noexcept;
 
 
   //! Apply addition operation to each element
@@ -153,7 +152,7 @@ class SpectralDistribution
   SpectralDistribution normalized() const noexcept;
 
   //! Return the spectral distribution
-  const zisc::ArithmeticArray<Float, CoreConfig::spectraSize()>& distribution() const noexcept;
+  const zisc::ArithArray<Float, CoreConfig::spectraSize()>& distribution() const noexcept;
 
   //! Set value by the index
   void set(const uint index, const Float intensity) noexcept;
@@ -203,7 +202,7 @@ class SpectralDistribution
   XyzColor toXyz(const System& system) const noexcept;
 
 
-  zisc::ArithmeticArray<Float, CoreConfig::spectraSize()> distribution_;
+  zisc::ArithArray<Float, CoreConfig::spectraSize()> distribution_;
 };
 
 //! \} Core

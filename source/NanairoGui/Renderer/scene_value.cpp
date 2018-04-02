@@ -23,7 +23,7 @@
 #include <QString>
 #include <QTextStream>
 // Zisc
-#include "zisc/algorithm.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 #include "zisc/csv.hpp"
 #include "zisc/unit.hpp"
 // Nanairo
@@ -483,8 +483,8 @@ void SceneValue::toSingleObjectSetting(const QJsonObject& object_value,
         qFatal("File '%s' open failed.", qUtf8Printable(object_file_path));
 
       const auto suffix = file_info.suffix();
-      switch (keyword::toHash32(suffix)) {
-       case zisc::toHash32("obj"): {
+      switch (keyword::Fnv1aHash32::hash(suffix)) {
+       case zisc::Fnv1aHash32::hash("obj"): {
         QTextStream obj_stream{&object_file};
         ObjLoader::parse(obj_stream,
                          &parameters.face_list_,

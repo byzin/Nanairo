@@ -15,14 +15,12 @@
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
-#include "zisc/memory_pool.hpp"
 // Nanairo
 #include "non_directional_emitter.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Setting/emitter_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 

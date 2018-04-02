@@ -13,9 +13,6 @@
 // Standard C++ library
 #include <cstddef>
 #include <vector>
-// Zisc
-#include "zisc/arithmetic_array.hpp"
-#include "zisc/point.hpp"
 // Nanairo
 #include "spectral_distribution.hpp"
 #include "spectra_image_interface.hpp"

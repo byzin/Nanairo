@@ -14,7 +14,7 @@
 #include <memory>
 #include <utility>
 // Zisc
-#include "zisc/arithmetic_array.hpp"
+#include "zisc/arith_array.hpp"
 #include "zisc/linear_interp.hpp"
 #include "zisc/math.hpp"
 #include "zisc/matrix.hpp"

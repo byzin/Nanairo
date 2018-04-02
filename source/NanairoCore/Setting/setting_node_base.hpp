@@ -17,7 +17,7 @@
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 // Zisc
-#include "zisc/algorithm.hpp"
+#include "zisc/sip_hash_engine.hpp"
 
 namespace nanairo {
 
@@ -28,30 +28,30 @@ namespace nanairo {
 enum class SettingNodeType : uint32
 {
   // Root node
-  kScene                      = zisc::toHash32("Scene"),
+  kScene                      = zisc::SipHash32::hash("Scene"),
   // System
-  kSystem                     = zisc::toHash32("System"),
-  kColor                      = zisc::toHash32("Color"),
-  kSpectra                    = zisc::toHash32("Spectra"),
+  kSystem                     = zisc::SipHash32::hash("System"),
+  kColor                      = zisc::SipHash32::hash("Color"),
+  kSpectra                    = zisc::SipHash32::hash("Spectra"),
   // Rendering method
-  kRenderingMethod            = zisc::toHash32("RenderingMethod"),
+  kRenderingMethod            = zisc::SipHash32::hash("RenderingMethod"),
   // Texture model
-  kTextureModel               = zisc::toHash32("TextureModel"),
-  kTexture                    = zisc::toHash32("Texture"),
+  kTextureModel               = zisc::SipHash32::hash("TextureModel"),
+  kTexture                    = zisc::SipHash32::hash("Texture"),
   // Surface model
-  kSurfaceModel               = zisc::toHash32("SurfaceModel"),
-  kSurface                    = zisc::toHash32("Surface"),
+  kSurfaceModel               = zisc::SipHash32::hash("SurfaceModel"),
+  kSurface                    = zisc::SipHash32::hash("Surface"),
   // Emitter model
-  kEmitterModel               = zisc::toHash32("EmitterModel"),
-  kEmitter                    = zisc::toHash32("Emitter"),
+  kEmitterModel               = zisc::SipHash32::hash("EmitterModel"),
+  kEmitter                    = zisc::SipHash32::hash("Emitter"),
   // Object
-  kObjectModel                = zisc::toHash32("ObjectModel"),
-  kCameraObject               = zisc::toHash32("CameraObject"),
-  kGroupObject                = zisc::toHash32("GroupObject"),
-  kSingleObject               = zisc::toHash32("SingleObject"),
-  kTransformation             = zisc::toHash32("Transformation"),
+  kObjectModel                = zisc::SipHash32::hash("ObjectModel"),
+  kCameraObject               = zisc::SipHash32::hash("CameraObject"),
+  kGroupObject                = zisc::SipHash32::hash("GroupObject"),
+  kSingleObject               = zisc::SipHash32::hash("SingleObject"),
+  kTransformation             = zisc::SipHash32::hash("Transformation"),
   // BVH
-  kBvh                        = zisc::toHash32("Bvh"),
+  kBvh                        = zisc::SipHash32::hash("Bvh"),
 };
 
 /*!

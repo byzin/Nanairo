@@ -12,7 +12,8 @@
 #include <vector>
 // Zisc
 #include "zisc/error.hpp"
-#include "zisc/memory_pool.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "surface_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -22,7 +23,6 @@
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/surface_setting_node.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 #include "NanairoCore/Utility/value.hpp"
 
 namespace nanairo {
@@ -46,7 +46,7 @@ auto SmoothConductorSurface::makeBxdf(
     const IntersectionInfo& info,
     const WavelengthSamples& wavelengths,
     Sampler& /* sampler */,
-    zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
+    zisc::pmr::memory_resource* mem_resource) const noexcept -> ShaderPointer
 {
   // Evaluate the refractive index
   const auto n = evalRefractiveIndex(outer_refractive_index_,
@@ -59,9 +59,8 @@ auto SmoothConductorSurface::makeBxdf(
                                        wavelengths);
 
 
-  using Brdf = SpecularBrdf;
-  auto chunk = memory_pool.allocate<Brdf>();
-  ShaderPointer ptr = makeUnique<Brdf>(chunk, n, eta);
+  using BxdfPointer = zisc::UniqueMemoryPointer<SpecularBrdf>;
+  auto ptr = BxdfPointer::make(mem_resource, n, eta);
   return ptr;
 }
 

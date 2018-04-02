@@ -8,7 +8,7 @@
 
 #include "color.hpp"
 // Zisc
-#include "zisc/arithmetic_array.hpp"
+#include "zisc/arith_array.hpp"
 #include "zisc/math.hpp"
 #include "zisc/type_traits.hpp"
 #include "zisc/utility.hpp"
@@ -34,7 +34,7 @@ constexpr Color<kN>::Color() noexcept :
 template <uint kN> inline
 constexpr Color<kN>::Color(const Float c1,
                            const Float c2) noexcept :
-    color_{c1, c2}
+    color_{{c1, c2}}
 {
 }
 
@@ -46,7 +46,7 @@ template <uint kN> inline
 constexpr Color<kN>::Color(const Float c1,
                            const Float c2,
                            const Float c3) noexcept :
-    color_{c1, c2, c3}
+    color_{{c1, c2, c3}}
 {
 }
 
@@ -59,7 +59,7 @@ constexpr Color<kN>::Color(const Float c1,
                            const Float c2,
                            const Float c3,
                            const Float c4) noexcept :
-    color_{c1, c2, c3, c4}
+    color_{{c1, c2, c3, c4}}
 {
 }
 
@@ -98,7 +98,7 @@ constexpr void Color<kN>::clampAll(const Float minimum, const Float maximum) noe
   No detailed.
   */
 template <uint kN> inline
-constexpr const zisc::ArithmeticArray<Float, kN>& Color<kN>::data() const noexcept
+constexpr const zisc::ArithArray<Float, kN>& Color<kN>::data() const noexcept
 {
   return color_;
 }

@@ -16,6 +16,7 @@
 #include <utility>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/thread_manager.hpp"
 // Nanairo
 #include "aabb.hpp"
 #include "bvh.hpp"
@@ -133,9 +134,9 @@ void BinaryRadixTreeBvh::split(System& system,
         split<>(system, key, right_child_index, tree, first, split_position, end);
       };
 
-      auto& thread_pool = system.threadPool();
-      auto left_result = thread_pool.enqueue<void>(split_left_range);
-      auto right_result = thread_pool.enqueue<void>(split_right_range);
+      auto& threads = system.threadManager();
+      auto left_result = threads.enqueue<void>(split_left_range);
+      auto right_result = threads.enqueue<void>(split_right_range);
       left_result.get();
       right_result.get();
     }

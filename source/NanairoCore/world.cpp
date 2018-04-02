@@ -21,7 +21,7 @@
 #include "zisc/algorithm.hpp"
 #include "zisc/compensated_summation.hpp"
 #include "zisc/error.hpp"
-#include "zisc/thread_pool.hpp"
+#include "zisc/thread_manager.hpp"
 #include "zisc/utility.hpp"
 #include "zisc/unit.hpp"
 // Nanairo
@@ -118,10 +118,12 @@ void World::initializeEmitter(System& system,
                                                      texture_list);
   };
 
-  auto& thread_pool = system.threadPool();
-  constexpr uint start = 0;
-  auto result = thread_pool.enqueueLoop(make_emitter, start, num_of_emitters);
-  result.get();
+  {
+    auto& threads = system.threadManager();
+    constexpr uint start = 0;
+    auto result = threads.enqueueLoop(make_emitter, start, num_of_emitters);
+    result.get();
+  }
   ZISC_ASSERT(0 < emitter_list_.size(), "The scene has no emitter.");
 }
 
@@ -185,10 +187,12 @@ void World::initializeSurface(System& system,
                                                      texture_list);
   };
 
-  auto& thread_pool = system.threadPool();
-  constexpr uint start = 0;
-  auto result = thread_pool.enqueueLoop(make_surface, start, num_of_surfaces);
-  result.get();
+  {
+    auto& threads = system.threadManager();
+    constexpr uint start = 0;
+    auto result = threads.enqueueLoop(make_surface, start, num_of_surfaces);
+    result.get();
+  }
   ZISC_ASSERT(0 < surface_list_.size(), "The scene has no surface.");
 }
 
@@ -211,10 +215,12 @@ void World::initializeTexture(System& system,
     texture_list_[index] = TextureModel::makeTexture(system, texture_settings);
   };
 
-  auto& thread_pool = system.threadPool();
-  constexpr uint start = 0;
-  auto result = thread_pool.enqueueLoop(make_texture, start, num_of_textures);
-  result.get();
+  {
+    auto& threads = system.threadManager();
+    constexpr uint start = 0;
+    auto result = threads.enqueueLoop(make_texture, start, num_of_textures);
+    result.get();
+  }
   ZISC_ASSERT(0 < texture_list_.size(), "The scene has no texture");
 }
 
@@ -326,9 +332,11 @@ void World::makeSingleObject(
     return std::make_tuple(std::move(object_list), std::move(material));
   };
 
-  auto& thread_pool = system.threadPool();
-  auto result = thread_pool.enqueue<ObjectSet>(make_object);
-  results.emplace_back(std::move(result));
+  {
+    auto& threads = system.threadManager();
+    auto result = threads.enqueue<ObjectSet>(make_object);
+    results.emplace_back(std::move(result));
+  }
 }
 
 /*!

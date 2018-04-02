@@ -15,7 +15,7 @@
 #include <memory>
 #include <vector>
 // Zisc
-#include "zisc/algorithm.hpp"
+#include "zisc/sip_hash_engine.hpp"
 // Nanairo
 #include "bvh_building_node.hpp"
 #include "bvh_tree_node.hpp"
@@ -36,9 +36,8 @@ class System;
 
 enum class BvhType : uint32
 {
-  kBinaryRadixTree            = zisc::toHash32("BinaryRadixTree"),
-  kAgglomerativeTreeletRestructuring
-                              = zisc::toHash32("AgglomerativeTreeletRestructuring")
+  kBinaryRadixTree            = zisc::SipHash32::hash("BinaryRadixTree"),
+  kAgglomerativeTreeletRestructuring = zisc::SipHash32::hash("AgglomerativeTreeletRestructuring")
 };
 
 /*!

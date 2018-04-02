@@ -13,7 +13,6 @@
 #include <cstddef>
 #include <iterator>
 #include <memory>
-//#include <iostream>
 #include <limits>
 #include <string>
 #include <tuple>
@@ -23,7 +22,6 @@
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
-#include "zisc/thread_pool.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "agglomerative_treelet_restructuring_bvh.hpp"

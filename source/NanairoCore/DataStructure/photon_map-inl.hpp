@@ -12,24 +12,14 @@
 
 #include "photon_map.hpp"
 // Standard C++ library
-#include <algorithm>
-#include <iterator>
-#include <thread>
 #include <vector>
 #include <utility>
 // Zisc
 #include "zisc/error.hpp"
-#include "zisc/math.hpp"
-#include "zisc/thread_pool.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
-#include "knn_photon_list.hpp"
 #include "photon_map_node.hpp"
-#include "NanairoCore/system.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Data/photon_cache.hpp"
-#include "NanairoCore/Geometry/point.hpp"
-#include "NanairoCore/Geometry/vector.hpp"
 
 namespace nanairo {
 

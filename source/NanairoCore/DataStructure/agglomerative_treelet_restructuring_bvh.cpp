@@ -18,6 +18,7 @@
 #include <vector>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/thread_manager.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "aabb.hpp"
@@ -309,9 +310,9 @@ uint AgglomerativeTreeletRestructuringBvh::restructureTreelet(
         RestructuringData d{treeletSize()};
         return restructureTreelet<>(system, root.rightChildIndex(), d, tree);
       };
-      auto& thread_pool = system.threadPool();
-      auto left_result = thread_pool.enqueue<uint>(restructure_left_treelet);
-      auto right_result = thread_pool.enqueue<uint>(restructure_right_treelet);
+      auto& threads = system.threadManager();
+      auto left_result = threads.enqueue<uint>(restructure_left_treelet);
+      auto right_result = threads.enqueue<uint>(restructure_right_treelet);
       num_of_subtree_nodes += left_result.get();
       num_of_subtree_nodes += right_result.get();
     }

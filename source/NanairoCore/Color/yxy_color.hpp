@@ -10,8 +10,6 @@
 #ifndef NANAIRO_YXY_COLOR_HPP
 #define NANAIRO_YXY_COLOR_HPP
 
-// Zisc
-#include "zisc/arithmetic_array.hpp"
 // Nanairo
 #include "color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"

@@ -11,6 +11,8 @@
 #define NANAIRO_SURFACE_MODEL_INL_HPP
 
 #include "surface_model.hpp"
+// Standard C++ library
+#include <limits>
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
@@ -35,7 +37,7 @@ Float SurfaceModel::evalRefractiveIndex(
   const Float n1 = outer_refractive_index_texture->spectraValue(uv, wavelength);
   const Float n2 = inner_refractive_index_texture->spectraValue(uv, wavelength);
   Float n = (is_back_face) ? (n1 / n2) : (n2 / n1);
-  n = (n != 1.0) ? n : (1.0 + 1.0e-6);
+  n = (n != 1.0) ? n : (1.0 + std::numeric_limits<Float>::epsilon());
   return n;
 }
 

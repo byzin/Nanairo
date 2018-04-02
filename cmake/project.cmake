@@ -67,23 +67,27 @@ endfunction(findNanairoSourceFiles)
 # Get the warning options of the compiler
 function(getNanairoWarningOption nanairo_warning_flags)
   set(warning_flags "")
- if(Z_CLANG AND Z_VISUAL_STUDIO)
-   # Nothing
- elseif(Z_CLANG)
-   list(APPEND warning_flags -Wno-covered-switch-default
-#                              -Wno-documentation-unknown-command
-#                              -Wno-exit-time-destructors
-#                              -Wno-float-equal
-#                              -Wno-global-constructors
-#                              -Wno-padded
-                              -Wno-sign-conversion
-#                              -Wno-undefined-reinterpret-cast
-#                              -Wno-weak-vtables
-                              )
-  elseif(Z_GCC)
-    list(APPEND warning_flags -Wno-sign-conversion
-                              -Wno-strict-overflow
-                              )
+
+  # Suppress warning
+  if(NANAIRO_SUPPRESS_EXCESSIVE_WARNING)
+    if(Z_CLANG AND Z_VISUAL_STUDIO)
+      # Nothing
+    elseif(Z_CLANG)
+      list(APPEND warning_flags -Wno-covered-switch-default
+                                -Wno-documentation-unknown-command
+                                -Wno-exit-time-destructors
+                                -Wno-float-equal
+                                -Wno-global-constructors
+                                -Wno-padded
+                                -Wno-sign-conversion
+                                -Wno-undefined-reinterpret-cast
+                                -Wno-weak-vtables
+                                )
+    elseif(Z_GCC)
+      list(APPEND warning_flags -Wno-sign-conversion
+                                -Wno-strict-overflow
+                                )
+    endif()
   endif()
 
 
@@ -92,9 +96,8 @@ function(getNanairoWarningOption nanairo_warning_flags)
 endfunction(getNanairoWarningOption)
 
 
-set(__zisc_system_include__ OFF)
 macro(includeZisc target)
-  if(__zisc_system_include__)
+  if(NANAIRO_SUPPRESS_EXCESSIVE_WARNING)
     target_include_directories(${target} SYSTEM PRIVATE ${zisc_include_dirs})
   else()
     target_include_directories(${target} PRIVATE ${zisc_include_dirs})

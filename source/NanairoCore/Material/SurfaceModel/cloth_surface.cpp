@@ -14,8 +14,9 @@
 #include <vector>
 // Zisc
 #include "zisc/error.hpp"
-#include "zisc/memory_pool.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/utility.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "surface_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -24,7 +25,6 @@
 #include "NanairoCore/Material/Bxdf/microcylinder_cloth_brdf.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/surface_setting_node.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 #include "Surface/fresnel.hpp"
 
 namespace nanairo {
@@ -48,15 +48,14 @@ auto ClothSurface::makeBxdf(
     const IntersectionInfo& info,
     const WavelengthSamples& wavelengths,
     Sampler& /* sampler */,
-    zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
+    zisc::pmr::memory_resource* mem_resourcce) const noexcept -> ShaderPointer
 {
   // Get the roughness
   const auto k_d = reflectance_->reflectiveValue(info.uv(), wavelengths);
 
   // Make a microcylinder cloth BRDF
-  using Brdf = MicrocylinderClothBrdf;
-  auto chunk = memory_pool.allocate<Brdf>();
-  ShaderPointer ptr = makeUnique<Brdf>(chunk, this, k_d);
+  using BxdfPointer = zisc::UniqueMemoryPointer<MicrocylinderClothBrdf>;
+  auto ptr = BxdfPointer::make(mem_resourcce, this, k_d);
   return ptr;
 }
 

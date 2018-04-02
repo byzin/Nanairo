@@ -12,8 +12,7 @@
 #include <cmath>
 #include <vector>
 // Zisc
-#include "zisc/array.hpp"
-#include "zisc/arithmetic_array.hpp"
+#include "zisc/arith_array.hpp"
 #include "zisc/error.hpp"
 #include "zisc/matrix.hpp"
 #include "zisc/utility.hpp"
@@ -31,11 +30,11 @@ namespace nanairo {
 
 /*!
   */
-constexpr zisc::Array<int, 2> SpectralTransport::gridResolution() noexcept
+constexpr std::array<int, 2> SpectralTransport::gridResolution() noexcept
 {
   using zisc::cast;
-  return zisc::Array<int, 2>{cast<int>(spectral_transport::kGridResolution[0]),
-                             cast<int>(spectral_transport::kGridResolution[1])};
+  return std::array<int, 2>{{cast<int>(spectral_transport::kGridResolution[0]),
+                             cast<int>(spectral_transport::kGridResolution[1])}};
 }
 
 /*!
@@ -59,7 +58,7 @@ SpectralDistribution SpectralTransport::toSpectra(const XyzColor& xyz) noexcept
   constexpr auto grid_res = gridResolution();
   if (zisc::isInBounds(uv[0], 0.0, cast<Float>(grid_res[0])) &&
       zisc::isInBounds(uv[1], 0.0, cast<Float>(grid_res[1]))) {
-    zisc::Array<int, 2> uvi{cast<int>(uv[0]), cast<int>(uv[1])};
+    std::array<int, 2> uvi{{cast<int>(uv[0]), cast<int>(uv[1])}};
     const int cell_index = uvi[0] + grid_res[0] * uvi[1];
     ZISC_ASSERT(zisc::isInBounds(cell_index, 0, gridSize()),
                 "The cell index is out of range.");
@@ -84,19 +83,19 @@ SpectralDistribution SpectralTransport::toSpectra(const XyzColor& xyz) noexcept
 /*!
   */
 inline
-zisc::ArithmeticArray<Float, 3> SpectralTransport::hom(
-    const zisc::ArithmeticArray<Float, 2>& x) noexcept
+zisc::ArithArray<Float, 3> SpectralTransport::hom(
+    const zisc::ArithArray<Float, 2>& x) noexcept
 {
-  return zisc::ArithmeticArray<Float, 3>{x[0], x[1], 1.0};
+  return zisc::ArithArray<Float, 3>{x[0], x[1], 1.0};
 }
 
 /*!
   */
 inline
-zisc::ArithmeticArray<Float, 2> SpectralTransport::dehom(
-    const zisc::ArithmeticArray<Float, 3>& x) noexcept
+zisc::ArithArray<Float, 2> SpectralTransport::dehom(
+    const zisc::ArithArray<Float, 3>& x) noexcept
 {
-  return zisc::ArithmeticArray<Float, 2>{x[0] / x[2], x[1] / x[2]};
+  return zisc::ArithArray<Float, 2>{x[0] / x[2], x[1] / x[2]};
 }
 
 /*!
@@ -152,7 +151,7 @@ Float SpectralTransport::toSpectrum(const uint16 lambda,
     auto e0 = point1.uv_.data() - point0.uv_.data();
     Float uu = e0[0] * e[1] - e[0] * e0[1];
     for (int i = 0; i < cast<int>(cell.num_points_ - 1); ++i) {
-      zisc::ArithmeticArray<Float, 2> e1{0.0, 0.0};
+      zisc::ArithArray<Float, 2> e1{0.0, 0.0};
       if (i == cast<int>(cell.num_points_ - 2)) // Close the circle
         e1 = point1.uv_.data() - point0.uv_.data();
       else

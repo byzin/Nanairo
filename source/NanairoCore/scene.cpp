@@ -13,7 +13,7 @@
 #include <memory>
 #include <utility>
 // Zisc
-#include "zisc/thread_pool.hpp"
+#include "zisc/thread_manager.hpp"
 #include "zisc/utility.hpp"
 #include "zisc/unit.hpp"
 // Nanairo
@@ -51,8 +51,8 @@ void Scene::initialize(System& system, const SettingNodeBase* settings) noexcept
   {
     initializeCamera(system, camera_settings);
   };
-  auto& thread_pool = system.threadPool();
-  auto camera_result = thread_pool.enqueue<void>(make_camera);
+  auto& threads = system.threadManager();
+  auto camera_result = threads.enqueue<void>(make_camera);
 
   // Create a world
   world_ = std::make_unique<World>(system, settings);

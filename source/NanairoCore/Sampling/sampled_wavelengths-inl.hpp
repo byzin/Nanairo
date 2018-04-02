@@ -12,11 +12,9 @@
 
 #include "sampled_wavelengths.hpp"
 // Standard C++ library
-#include <array>
 #include <cstdint>
 // Zisc
 #include "zisc/error.hpp"
-#include "zisc/arithmetic_array.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "sampler.hpp"

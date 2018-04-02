@@ -13,10 +13,11 @@
 // Standard C++ library
 #include <cstdint>
 #include <string>
+#include <string_view>
 // Qt
 #include <QString>
 // ZIsc
-#include "zisc/algorithm.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 
 namespace nanairo {
 
@@ -26,9 +27,11 @@ namespace nanairo {
 namespace keyword {
 
 //! Calculate the 32bit hash of string using FNW-1a
-inline
-std::uint32_t toHash32(const QString& string)
+class Fnv1aHash32
 {
-  return zisc::toHash32(string.toStdString().c_str());
-}
-
+ public:
+  static std::uint32_t hash(const QString& inputs) noexcept
+  {
+    return zisc::Fnv1aHash32::hash(std::string_view{inputs.toStdString()});
+  }
+};

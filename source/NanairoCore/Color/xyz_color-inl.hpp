@@ -11,8 +11,6 @@
 #define REFLECT_XYZ_COLOR_INL_HPP
 
 #include "xyz_color.hpp"
-// Zisc
-#include "zisc/arithmetic_array.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 

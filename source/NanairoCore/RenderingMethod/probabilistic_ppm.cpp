@@ -19,8 +19,10 @@
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
-#include "zisc/memory_pool.hpp"
-#include "zisc/thread_pool.hpp"
+#include "zisc/memory_manager.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/thread_manager.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "rendering_method.hpp"
@@ -46,7 +48,6 @@
 #include "NanairoCore/Sampling/LightSourceSampler/power_weighted_light_source_sampler.hpp"
 #include "NanairoCore/Setting/rendering_method_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -144,7 +145,7 @@ void ProbabilisticPpm::evalImplicitConnection(
     const IntersectionInfo& intersection,
     const Spectra& camera_contribution,
     const Spectra& ray_weight,
-    zisc::MemoryPool& memory_pool,
+    zisc::pmr::memory_resource* mem_resource,
     Spectra* contribution) const noexcept
 {
   const auto object = intersection.object();
@@ -157,7 +158,7 @@ void ProbabilisticPpm::evalImplicitConnection(
 
   // Get the light
   const auto& emitter = material.emitter();
-  const auto light = emitter.makeLight(intersection.uv(), wavelengths, memory_pool);
+  const auto light = emitter.makeLight(intersection.uv(), wavelengths, mem_resource);
 
   // Evaluate the radiance
   const auto radiance = light->evalRadiance(&vin, nullptr, wavelengths, &intersection);
@@ -184,7 +185,7 @@ inline
 auto ProbabilisticPpm::generatePhoton(
     Spectra* light_contribution,
     Sampler& sampler,
-    zisc::MemoryPool& memory_pool) const noexcept -> Photon
+    zisc::pmr::memory_resource* mem_resource) const noexcept -> Photon
 {
   const auto& wavelengths = light_contribution->wavelengths();
   // Sample a light point
@@ -197,7 +198,7 @@ auto ProbabilisticPpm::generatePhoton(
   // Sample a direction
   const auto& emitter = light_source->material().emitter();
   const IntersectionInfo intersection{light_source, light_point_info};
-  const auto light = emitter.makeLight(intersection.uv(), wavelengths, memory_pool);
+  const auto light = emitter.makeLight(intersection.uv(), wavelengths, mem_resource);
   const auto result = light->sample(nullptr, wavelengths, sampler, &intersection);
   const auto& sampled_vout = std::get<0>(result);
   ZISC_ASSERT(0.0 < sampled_vout.pdf(), "The vout pdf is negative.");
@@ -225,14 +226,14 @@ Ray ProbabilisticPpm::generateRay(
     const uint x,
     const uint y,
     Sampler& sampler,
-    zisc::MemoryPool& memory_pool,
+    zisc::pmr::memory_resource* mem_resource,
     Spectra* weight) const noexcept
 {
   const auto& wavelengths = weight->wavelengths();
   // Sample a ray origin
   const auto& lens_point = camera.sampledLensPoint();
   // Sample a ray direction
-  auto sensor = camera.makeSensor(Index2d{x, y}, wavelengths, memory_pool);
+  auto sensor = camera.makeSensor(Index2d{x, y}, wavelengths, mem_resource);
   const auto result = sensor->sample(nullptr, wavelengths, sampler);
   const auto& sampled_vout = std::get<0>(result);
   const auto& w = std::get<1>(result);
@@ -251,14 +252,14 @@ void ProbabilisticPpm::initialize(const System& system,
   const auto method_settings = castNode<RenderingMethodSettingNode>(settings);
 
   using zisc::cast;
-  auto& thread_pool = system.threadPool();
+  auto& threads = system.threadManager();
 
   const auto& parameters = method_settings->probabilisticPpmParameters();
   {
     const auto num_of_photons = parameters.num_of_photons_;;
-    num_of_thread_photons_ = num_of_photons / thread_pool.numOfThreads();
+    num_of_thread_photons_ = num_of_photons / threads.numOfThreads();
     photon_power_scale_ = zisc::invert(cast<Float>(num_of_thread_photons_ *
-                                                   thread_pool.numOfThreads()));
+                                                   threads.numOfThreads()));
   }
   {
     alpha_ = parameters.radius_reduction_rate_;
@@ -280,7 +281,7 @@ void ProbabilisticPpm::initialize(const System& system,
   }
 
   photon_map_.reserve(num_of_thread_photons_ * expectedMaxReflectionCount());
-  thread_photon_list_.resize(thread_pool.numOfThreads());
+  thread_photon_list_.resize(threads.numOfThreads());
 
   {
     const uint k = parameters.k_nearest_neighbor_;
@@ -340,11 +341,13 @@ void ProbabilisticPpm::traceCameraPath(
       traceCameraPath(system, scene, sampled_wavelengths, thread_id, x, y);
   };
 
-  auto& thread_pool = system.threadPool();
-  constexpr uint start = 0;
-  const uint end = camera.heightResolution();
-  auto result = thread_pool.enqueueLoop(trace_camera_path, start, end);
-  result.get();
+  {
+    auto& threads = system.threadManager();
+    constexpr uint start = 0;
+    const uint end = camera.heightResolution();
+    auto result = threads.enqueueLoop(trace_camera_path, start, end);
+    result.get();
+  }
 }
 
 /*!
@@ -361,7 +364,7 @@ void ProbabilisticPpm::traceCameraPath(
 {
   // System
   auto& sampler = system.threadSampler(thread_id);
-  auto& memory_pool = system.threadMemoryPool(thread_id);
+  auto& memory_manager = system.threadMemoryManager(thread_id);
   // Scene
   const auto& world = scene.world();
   auto& camera = scene.camera();
@@ -374,7 +377,7 @@ void ProbabilisticPpm::traceCameraPath(
 
   // Generate a camera ray
   Spectra ray_weight{wavelengths, 1.0};
-  auto ray = generateRay(camera, x, y, sampler, memory_pool, &camera_contribution);
+  auto ray = generateRay(camera, x, y, sampler, &memory_manager, &camera_contribution);
 
   while (ray.isAlive()) {
     // Cast the ray
@@ -383,7 +386,7 @@ void ProbabilisticPpm::traceCameraPath(
       break;
 
     evalImplicitConnection(ray, intersection, camera_contribution, ray_weight,
-                           memory_pool, &contribution);
+                           &memory_manager, &contribution);
 
     // Evaluate material
     const auto& material = intersection.object()->material();
@@ -391,7 +394,7 @@ void ProbabilisticPpm::traceCameraPath(
     const auto bxdf = surface.makeBxdf(intersection,
                                        wavelengths,
                                        sampler,
-                                       memory_pool);
+                                       &memory_manager);
     wavelength_is_selected = wavelength_is_selected || bxdf->wavelengthIsSelected();
 
     if (!surfaceHasPhotonMap(bxdf)) {
@@ -406,10 +409,10 @@ void ProbabilisticPpm::traceCameraPath(
       contribution += camera_contribution * ray_weight * radiance;
       break;
     }
-    memory_pool.reset();
+    memory_manager.reset();
   }
   camera.addContribution(Index2d{x, y}, contribution);
-  memory_pool.reset();
+  memory_manager.reset();
 }
 
 /*!
@@ -429,11 +432,13 @@ void ProbabilisticPpm::tracePhoton(
       tracePhoton(system, scene, sampled_wavelengths, thread_id);
   };
   // Trace photons
-  auto& thread_pool = system.threadPool();
-  constexpr uint start = 0;
-  const uint end = thread_pool.numOfThreads();
-  auto result = thread_pool.enqueueLoop(trace_photon, start, end);
-  result.get();
+  {
+    auto& threads = system.threadManager();
+    constexpr uint start = 0;
+    const uint end = threads.numOfThreads();
+    auto result = threads.enqueueLoop(trace_photon, start, end);
+    result.get();
+  }
   // Construct a photon map
   photon_map_.construct(system);
 }
@@ -450,7 +455,7 @@ void ProbabilisticPpm::tracePhoton(
 {
   // System
   auto& sampler = system.threadSampler(thread_id);
-  auto& memory_pool = system.threadMemoryPool(thread_id);
+  auto& memory_manager = system.threadMemoryManager(thread_id);
   // Scene
   const auto& world = scene.world();
   // Trace info
@@ -461,7 +466,7 @@ void ProbabilisticPpm::tracePhoton(
 
   // Generate a photon
   auto photon_weight = light_contribution;
-  auto photon = generatePhoton(&light_contribution, sampler, memory_pool);
+  auto photon = generatePhoton(&light_contribution, sampler, &memory_manager);
 
   while(true) {
     // Phton object intersection test
@@ -474,7 +479,7 @@ void ProbabilisticPpm::tracePhoton(
     const auto bxdf = surface.makeBxdf(intersection,
                                        wavelengths,
                                        sampler,
-                                       memory_pool);
+                                       &memory_manager);
     wavelength_is_selected = wavelength_is_selected || bxdf->wavelengthIsSelected();
 
     auto next_photon_weight = photon_weight;
@@ -495,9 +500,9 @@ void ProbabilisticPpm::tracePhoton(
     photon = next_photon;
     photon_weight = next_photon_weight;
     // Clear memory
-    memory_pool.reset();
+    memory_manager.reset();
   }
-  memory_pool.reset();
+  memory_manager.reset();
 }
 
 /*!

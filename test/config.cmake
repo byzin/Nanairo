@@ -11,13 +11,25 @@ set(__test_root__ ${CMAKE_CURRENT_LIST_DIR})
 
 function(getTestWarningOption test_warning_flags)
   set(warning_flags "")
-  if(Z_CLANG AND Z_VISUAL_STUDIO)
-  elseif(Z_CLANG)
-    list(APPEND warning_flags -Wno-float-equal
-                              -Wno-global-constructors
-                              -Wno-zero-as-null-pointer-constant
-                              )
-  elseif(Z_GCC)
+
+  # Suppress warnings
+  if(NANAIRO_SUPPRESS_EXCESSIVE_WARNING)
+    if(Z_CLANG AND Z_VISUAL_STUDIO)
+    elseif(Z_CLANG)
+      list(APPEND warning_flags -Wno-covered-switch-default
+                                -Wno-exit-time-destructors
+                                -Wno-float-equal
+                                -Wno-global-constructors
+                                -Wno-sign-conversion
+                                -Wno-used-but-marked-unused
+                                -Wno-weak-vtables
+                                -Wno-zero-as-null-pointer-constant
+                                )
+    elseif(Z_GCC)
+      list(APPEND warning_flags -Wno-sign-conversion
+                                -Wno-strict-overflow
+                                -Wno-unused-but-set-variable)
+    endif()
   endif()
 
 

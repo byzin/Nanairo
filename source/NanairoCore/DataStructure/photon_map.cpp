@@ -17,7 +17,7 @@
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
-#include "zisc/thread_pool.hpp"
+#include "zisc/thread_manager.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "knn_photon_list.hpp"
@@ -207,7 +207,7 @@ uint PhotonMap::nextSearchIndex(const Point3& point,
   */
 void PhotonMap::initialize(const System& system) noexcept
 {
-  const auto num_of_threads = system.threadPool().numOfThreads();
+  const auto num_of_threads = system.threadManager().numOfThreads();
   thread_node_list_.resize(num_of_threads);
 }
 
@@ -262,9 +262,9 @@ void PhotonMap::splitAtMedian(System& system,
     };
     // Threading
     if (threading) {
-      auto& thread_pool = system.threadPool();
-      auto left_result = thread_pool.enqueue<void>(split_left_group);
-      auto right_result = thread_pool.enqueue<void>(split_right_group);
+      auto& threads = system.threadManager();
+      auto left_result = threads.enqueue<void>(split_left_group);
+      auto right_result = threads.enqueue<void>(split_right_group);
       left_result.get();
       right_result.get();
     }

@@ -14,7 +14,7 @@
 // Standard C++ library
 #include <cmath>
 // Zisc
-#include "zisc/arithmetic_array.hpp"
+#include "zisc/arith_array.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -48,33 +48,11 @@ constexpr uint16 getWavelength(const uint index) noexcept
 /*!
   */
 template <uint kN> inline
-bool hasInf(const zisc::ArithmeticArray<Float, kN>& array) noexcept
+constexpr bool hasNegative(const zisc::ArithArray<Float, kN>& array) noexcept
 {
   bool result = false;
   for (uint index = 0; (index < kN) && !result; ++index)
-    result = std::isinf(array[index]);
-  return result;
-}
-
-/*!
-  */
-template <uint kN> inline
-bool hasNan(const zisc::ArithmeticArray<Float, kN>& array) noexcept
-{
-  bool result = false;
-  for (uint index = 0; (index < kN) && !result; ++index)
-    result = std::isnan(array[index]);
-  return result;
-}
-
-/*!
-  */
-template <uint kN> inline
-bool hasNegative(const zisc::ArithmeticArray<Float, kN>& array) noexcept
-{
-  bool result = false;
-  for (uint index = 0; (index < kN) && !result; ++index)
-    result = (array[index] < 0.0);
+    result = zisc::isNegative(array[index]);
   return result;
 }
 

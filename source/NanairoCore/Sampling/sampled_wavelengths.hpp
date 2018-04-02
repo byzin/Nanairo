@@ -13,7 +13,7 @@
 // Standard C++ library
 #include <cstdint>
 // Zisc
-#include "zisc/arithmetic_array.hpp"
+#include "zisc/arith_array.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"

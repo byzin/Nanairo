@@ -13,7 +13,6 @@
 #include <tuple>
 // Zisc
 #include "zisc/error.hpp"
-#include "zisc/memory_chunk.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -35,26 +34,6 @@ class SurfaceModel;
   */
 ShaderModel::ShaderModel() noexcept
 {
-}
-
-/*!
-  \details
-  No detailed.
-  */
-void ShaderModel::operator delete(void* shader, zisc::MemoryChunk* chunk) noexcept
-{
-  zisc::cast<ShaderModel*>(shader)->~ShaderModel();
-  chunk->setFree(true);
-}
-
-/*!
-  \details
-  No detailed.
-  */
-void* ShaderModel::operator new(std::size_t, zisc::MemoryChunk* chunk) noexcept
-{
-  chunk->setFree(false);
-  return chunk->data<void>();
 }
 
 /*!

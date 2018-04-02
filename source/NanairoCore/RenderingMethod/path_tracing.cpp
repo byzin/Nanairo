@@ -14,11 +14,13 @@
 #include <tuple>
 #include <utility>
 // Zisc
-#include "zisc/arithmetic_array.hpp"
+#include "zisc/arith_array.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
-#include "zisc/memory_pool.hpp"
-#include "zisc/thread_pool.hpp"
+#include "zisc/memory_manager.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/thread_manager.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/scene.hpp"
@@ -96,7 +98,7 @@ void PathTracing::evalExplicitConnection(
     const Spectra& camera_contribution,
     const Spectra& ray_weight,
     Sampler& sampler,
-    zisc::MemoryPool& memory_pool,
+    zisc::pmr::memory_resource* mem_resource,
     Spectra* contribution) const noexcept
 {
   constexpr bool connection_is_enabled = explicitConnectionIsEnabled();
@@ -152,7 +154,7 @@ void PathTracing::evalExplicitConnection(
   const auto& emitter = light_source->material().emitter();
   const auto light = emitter.makeLight(shadow_intersection.uv(),
                                        wavelengths,
-                                       memory_pool);
+                                       mem_resource);
   const auto light_dir = -shadow_ray.direction();
   const auto radiance = light->evalRadiance(nullptr,
                                             &light_dir,
@@ -189,7 +191,7 @@ void PathTracing::evalImplicitConnection(
     const Spectra& camera_contribution,
     const Spectra& ray_weight,
     const bool mis,
-    zisc::MemoryPool& memory_pool,
+    zisc::pmr::memory_resource* mem_resource,
     Spectra* contribution) const noexcept
 {
   constexpr bool connection_is_enabled = implicitConnectionIsEnabled();
@@ -206,7 +208,7 @@ void PathTracing::evalImplicitConnection(
 
   // Get the light
   const auto& emitter = material.emitter();
-  const auto light = emitter.makeLight(intersection.uv(), wavelengths, memory_pool);
+  const auto light = emitter.makeLight(intersection.uv(), wavelengths, mem_resource);
 
   // Evaluate the radiance
   const auto radiance = light->evalRadiance(&vin,
@@ -244,7 +246,7 @@ inline
 Ray PathTracing::generateRay(const CameraModel& camera,
                              const Index2d& pixel_index,
                              Sampler& sampler,
-                             zisc::MemoryPool& memory_pool,
+                             zisc::pmr::memory_resource* mem_resource,
                              Spectra* weight,
                              Float* inverse_direction_pdf) const noexcept
 {
@@ -252,7 +254,7 @@ Ray PathTracing::generateRay(const CameraModel& camera,
   // Sample a ray origin
   const auto& lens_point = camera.sampledLensPoint();
   // Sample a ray direction
-  const auto sensor = camera.makeSensor(pixel_index, wavelengths, memory_pool);
+  const auto sensor = camera.makeSensor(pixel_index, wavelengths, mem_resource);
   const auto result = sensor->sample(nullptr, wavelengths, sampler);
   const auto& sampled_vout = std::get<0>(result);
   const auto& w = std::get<1>(result);
@@ -328,10 +330,10 @@ void PathTracing::traceCameraPath(System& system,
 
   {
     const auto& camera = scene.camera();
-    auto& thread_pool = system.threadPool();
+    auto& threads = system.threadManager();
     constexpr uint start = 0;
     const uint end = RenderingMethod::calcNumOfTiles(camera.imageResolution());
-    auto result = thread_pool.enqueueLoop(trace_camera_path, start, end);
+    auto result = threads.enqueueLoop(trace_camera_path, start, end);
     result.get();
   }
 }
@@ -348,7 +350,7 @@ void PathTracing::traceCameraPath(System& system,
 {
   // System
   auto& sampler = system.threadSampler(thread_id);
-  auto& memory_pool = system.threadMemoryPool(thread_id);
+  auto& memory_manager = system.threadMemoryManager(thread_id);
   // Scene
   const auto& world = scene.world();
   auto& camera = scene.camera();
@@ -363,7 +365,7 @@ void PathTracing::traceCameraPath(System& system,
   // Generate a camera ray
   Float inverse_direction_pdf;
   Spectra ray_weight{wavelengths, 1.0};
-  auto ray = generateRay(camera, pixel_index, sampler, memory_pool,
+  auto ray = generateRay(camera, pixel_index, sampler, &memory_manager,
                          &camera_contribution, &inverse_direction_pdf);
 
   while (true) {
@@ -375,7 +377,7 @@ void PathTracing::traceCameraPath(System& system,
     const bool mis = path_length != 1;
     evalImplicitConnection(world, ray, inverse_direction_pdf, intersection,
                            camera_contribution, ray_weight, mis,
-                           memory_pool, &contribution);
+                           &memory_manager, &contribution);
 
     // Get a BxDF of the surface
     const auto& material = intersection.object()->material();
@@ -383,7 +385,7 @@ void PathTracing::traceCameraPath(System& system,
     const auto bxdf = surface.makeBxdf(intersection,
                                        wavelengths,
                                        sampler,
-                                       memory_pool);
+                                       &memory_manager);
     Method::updateSelectedWavelengthInfo(bxdf,
                                          &camera_contribution,
                                          &wavelength_is_selected);
@@ -399,17 +401,17 @@ void PathTracing::traceCameraPath(System& system,
 
     evalExplicitConnection(world, ray, bxdf, intersection,
                            camera_contribution, ray_weight,
-                           sampler, memory_pool, &contribution);
+                           sampler, &memory_manager, &contribution);
 
     // Update ray
     ray = next_ray;
     ray_weight = next_ray_weight;
     // Clear memory
-    memory_pool.reset();
+    memory_manager.reset();
   }
   camera.addContribution(pixel_index, contribution);
   // Clear memory
-  memory_pool.reset();
+  memory_manager.reset();
 }
 
 } // namespace nanairo

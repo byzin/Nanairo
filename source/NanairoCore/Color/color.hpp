@@ -11,7 +11,7 @@
 #define NANAIRO_COLOR_HPP
 
 // Zisc
-#include "zisc/arithmetic_array.hpp"
+#include "zisc/arith_array.hpp"
 #include "zisc/type_traits.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -53,7 +53,7 @@ class Color
   constexpr void clampAll(const Float min, const Float max) noexcept;
 
   //! Return the raw array
-  constexpr const zisc::ArithmeticArray<Float, kN>& data() const noexcept;
+  constexpr const zisc::ArithArray<Float, kN>& data() const noexcept;
 
   //! Check whether all elements are between \p lower and \p upper
   constexpr bool isAllInBounds(const Float lower, const Float upper) const noexcept;
@@ -71,7 +71,7 @@ class Color
   constexpr void scale() noexcept;
 
  protected:
-  zisc::ArithmeticArray<Float, kN> color_;
+  zisc::ArithArray<Float, kN> color_;
 };
 
 //! Multiplay color and scalar

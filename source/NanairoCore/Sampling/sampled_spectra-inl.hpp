@@ -14,7 +14,6 @@
 // Standard C++ library
 #include <cmath>
 // Zisc
-#include "zisc/arithmetic_array.hpp"
 #include "zisc/math.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -205,7 +204,7 @@ Float SampledSpectra::average() const noexcept
 inline
 bool SampledSpectra::hasInf() const noexcept
 {
-  return ::nanairo::hasInf(intensities_);
+  return intensities_.hasInf();
 }
 
 /*!
@@ -213,7 +212,7 @@ bool SampledSpectra::hasInf() const noexcept
 inline
 bool SampledSpectra::hasNan() const noexcept
 {
-  return ::nanairo::hasNan(intensities_);
+  return intensities_.hasNan();
 }
 
 /*!

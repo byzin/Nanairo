@@ -26,10 +26,9 @@ namespace nanairo {
 inline
 Vector3 invert(const Vector3& vector) noexcept
 {
-  constexpr Float m = std::numeric_limits<Float>::max();
-  Vector3 inverse_vector{(vector[0] != 0.0) ? zisc::invert(vector[0]) : m,
-                         (vector[1] != 0.0) ? zisc::invert(vector[1]) : m,
-                         (vector[2] != 0.0) ? zisc::invert(vector[2]) : m};
+  Vector3 inverse_vector{zisc::invert(vector[0]),
+                         zisc::invert(vector[1]),
+                         zisc::invert(vector[2])};
   return inverse_vector;
 }
 

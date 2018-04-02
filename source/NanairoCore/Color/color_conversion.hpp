@@ -12,8 +12,6 @@
 
 // Standard C++ library
 #include <tuple>
-// Zisc
-#include "zisc/array.hpp"
 // Nanairo
 #include "rgba_32.hpp"
 #include "rgb_color.hpp"

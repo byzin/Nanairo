@@ -15,7 +15,8 @@
 #include <limits>
 #include <memory>
 // Zisc
-#include "zisc/algorithm.hpp"
+#include "zisc/sip_hash_engine.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/ray.hpp"
@@ -23,7 +24,6 @@
 #include "NanairoCore/Sampling/russian_roulette.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -41,9 +41,9 @@ class World;
 
 enum class RenderingMethodType : uint32
 {
-  kPathTracing                = zisc::toHash32("PathTracing"),
-  kLightTracing               = zisc::toHash32("LightTracing"),
-  kProbabilisticPpm           = zisc::toHash32("ProbabilisticPPM")
+  kPathTracing                = zisc::SipHash32::hash("PathTracing"),
+  kLightTracing               = zisc::SipHash32::hash("LightTracing"),
+  kProbabilisticPpm           = zisc::SipHash32::hash("ProbabilisticPPM")
 };
 
 /*!
@@ -56,7 +56,7 @@ class RenderingMethod
   using Spectra = SampledSpectra;
   using Wavelengths = SampledWavelengths;
   using Shader = ShaderModel;
-  using ShaderPointer = UniquePointer<Shader>;
+  using ShaderPointer = zisc::UniqueMemoryPointer<Shader>;
 
 
   //! Initialize the rendering method

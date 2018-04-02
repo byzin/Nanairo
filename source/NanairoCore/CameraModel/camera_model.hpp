@@ -15,12 +15,13 @@
 #include <array>
 // Zisc
 #include "zisc/sip_hash_engine.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 
 namespace nanairo {
 
@@ -51,7 +52,7 @@ enum class CameraType : uint32
 class CameraModel
 {
  public:
-  using ShaderPointer = UniquePointer<ShaderModel>;
+  using ShaderPointer = zisc::UniqueMemoryPointer<ShaderModel>;
 
 
   //! Initialize the camera
@@ -91,7 +92,7 @@ class CameraModel
   //! Make a sensor
   ShaderPointer makeSensor(const Index2d& index,
                            const WavelengthSamples& wavelengths,
-                           zisc::MemoryPool& memory_pool) const noexcept;
+                           zisc::pmr::memory_resource* mem_resource) const noexcept;
 
   //! Return the height resolution of the film
   uint heightResolution() const noexcept;

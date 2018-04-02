@@ -146,7 +146,7 @@ const LightSourceInfo& PowerWeightedLightSourceSampler::sampleInfo(
 {
   const auto& light_source_cdf = lightSourceCdf();
   const Float y = sampler.sample();
-  const auto sampled_lihgt_source = light_source_cdf.inverseFunction(y);
+  const auto sampled_lihgt_source = light_source_cdf.invert(y);
   return *sampled_lihgt_source;
 }
 

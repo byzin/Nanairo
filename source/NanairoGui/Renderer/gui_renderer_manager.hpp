@@ -19,7 +19,7 @@
 #include <QVariant>
 #include <QtGlobal>
 // Zisc
-#include "zisc/thread_pool.hpp"
+#include "zisc/thread_manager.hpp"
 // Nanairo
 #include "cui_renderer_manager.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -112,7 +112,7 @@ class GuiRendererManager : public QObject, public CuiRendererManager
   RenderedImageProvider* renderedImageProvider() noexcept;
 
 
-  zisc::ThreadPool rendering_thread_;
+  zisc::ThreadManager rendering_thread_;
   RenderedImageProvider* image_provider_;
 };
 

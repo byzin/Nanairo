@@ -13,7 +13,6 @@
 #include "rgb_color.hpp"
 // Zisc
 #include "zisc/math.hpp"
-#include "zisc/arithmetic_array.hpp"
 // Nanairo
 #include "color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"

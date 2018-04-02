@@ -16,7 +16,8 @@
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
-#include "zisc/memory_pool.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "surface_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -26,7 +27,6 @@
 #include "NanairoCore/Material/Bxdf/interfaced_lambertian_brdf.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/surface_setting_node.hpp"
-#include "NanairoCore/Utility/unique_pointer.hpp"
 #include "NanairoCore/Utility/value.hpp"
 
 namespace nanairo {
@@ -50,7 +50,7 @@ auto LayeredDiffuseSurface::makeBxdf(
     const IntersectionInfo& info,
     const WavelengthSamples& wavelengths,
     Sampler& sampler,
-    zisc::MemoryPool& memory_pool) const noexcept -> ShaderPointer
+    zisc::pmr::memory_resource* mem_resource) const noexcept -> ShaderPointer
 {
   const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];
 
@@ -70,9 +70,8 @@ auto LayeredDiffuseSurface::makeBxdf(
 
 
   // Make a interfaced lambertian BRDF
-  using Brdf = InterfacedLambertianBrdf;
-  auto chunk = memory_pool.allocate<Brdf>();
-  ShaderPointer ptr = makeUnique<Brdf>(chunk, k_d, roughness_x, roughness_y, n, sampler);
+  using BxdfPointer = zisc::UniqueMemoryPointer<InterfacedLambertianBrdf>;
+  auto ptr = BxdfPointer::make(mem_resource, k_d, roughness_x, roughness_y, n, sampler);
   return ptr;
 }
 

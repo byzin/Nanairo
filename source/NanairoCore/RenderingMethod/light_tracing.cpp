@@ -15,11 +15,13 @@
 #include <tuple>
 #include <utility>
 // Zisc
-#include "zisc/arithmetic_array.hpp"
+#include "zisc/arith_array.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
-#include "zisc/memory_pool.hpp"
-#include "zisc/thread_pool.hpp"
+#include "zisc/memory_manager.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/thread_manager.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -86,7 +88,7 @@ void LightTracing::evalExplicitConnection(
     const Spectra& light_contribution,
     const Spectra& ray_weight,
     CameraModel& camera,
-    zisc::MemoryPool& memory_pool) noexcept
+    zisc::pmr::memory_resource* mem_resource) noexcept
 {
   if (bxdf->type() == ShaderType::Specular)
     return;
@@ -137,7 +139,7 @@ void LightTracing::evalExplicitConnection(
   ZISC_ASSERT(!f.hasNegative(), "The f of BxDF has negative values.");
 
   // Evaluate the camera importance
-  const auto sensor = camera.makeSensor(pixel_index, wavelengths, memory_pool);
+  const auto sensor = camera.makeSensor(pixel_index, wavelengths, mem_resource);
   const auto camera_dir = -shadow_ray.direction();
   const auto importance = sensor->evalRadiance(nullptr, &camera_dir, wavelengths);
   ZISC_ASSERT(!importance.hasNegative(), "The importance has negative values.");
@@ -164,7 +166,7 @@ Ray LightTracing::generateRay(const World& world,
                               const Spectra& ray_weight,
                               CameraModel& camera,
                               Sampler& sampler,
-                              zisc::MemoryPool& memory_pool) noexcept
+                              zisc::pmr::memory_resource* mem_resource) noexcept
 {
   const auto& wavelengths = light_contribution->wavelengths();
   // Sample a light point
@@ -177,7 +179,7 @@ Ray LightTracing::generateRay(const World& world,
   // Sample a direction
   const auto& emitter = light_source->material().emitter();
   const IntersectionInfo intersection{light_source, light_point_info};
-  const auto light = emitter.makeLight(intersection.uv(), wavelengths, memory_pool);
+  const auto light = emitter.makeLight(intersection.uv(), wavelengths, mem_resource);
 
   // Evaluate the explicit connection
   const auto light_pdf = light_source_info.inverseWeight() *
@@ -185,7 +187,7 @@ Ray LightTracing::generateRay(const World& world,
   ZISC_ASSERT(0.0 < light_pdf, "The light ray coefficient is negative.");
   *light_contribution = light_pdf * (*light_contribution);
   evalExplicitConnection(world, nullptr, light, intersection,
-                         *light_contribution, ray_weight, camera, memory_pool);
+                         *light_contribution, ray_weight, camera, mem_resource);
   // Sample a ray direction
   const auto result = light->sample(nullptr, wavelengths, sampler, &intersection);
   const auto& sampled_vout = std::get<0>(result);
@@ -276,10 +278,10 @@ void LightTracing::traceLightPath(
   };
 
   {
-    auto& thread_pool = system.threadPool();
+    auto& threads = system.threadManager();
     constexpr uint start = 0;
-    const uint end = thread_pool.numOfThreads();
-    auto result = thread_pool.enqueueLoop(trace_light_path, start, end);
+    const uint end = threads.numOfThreads();
+    auto result = threads.enqueueLoop(trace_light_path, start, end);
     result.get();
   }
 }
@@ -295,7 +297,7 @@ void LightTracing::traceLightPath(System& system,
 {
   // System
   auto& sampler = system.threadSampler(thread_id);
-  auto& memory_pool = system.threadMemoryPool(thread_id);
+  auto& memory_manager = system.threadMemoryManager(thread_id);
   // Scene
   const auto& world = scene.world();
   auto& camera = scene.camera();
@@ -310,7 +312,7 @@ void LightTracing::traceLightPath(System& system,
   // Generate a light ray
   Spectra ray_weight{wavelengths, 1.0};
   auto ray = generateRay(world, &light_contribution, ray_weight, camera,
-                         sampler, memory_pool);
+                         sampler, &memory_manager);
 
   while (true) {
     // Cast the ray
@@ -324,7 +326,7 @@ void LightTracing::traceLightPath(System& system,
     const auto bxdf = surface.makeBxdf(intersection,
                                        wavelengths,
                                        sampler,
-                                       memory_pool);
+                                       &memory_manager);
     Method::updateSelectedWavelengthInfo(bxdf,
                                          &light_contribution,
                                          &wavelength_is_selected);
@@ -339,15 +341,15 @@ void LightTracing::traceLightPath(System& system,
     ++path_length;
 
     evalExplicitConnection(world, &ray.direction(), bxdf, intersection,
-                           light_contribution, ray_weight, camera, memory_pool);
+                           light_contribution, ray_weight, camera, &memory_manager);
 
     // Update the ray
     ray = next_ray;
     ray_weight = next_ray_weight;
     // Clear memory
-    memory_pool.reset();
+    memory_manager.reset();
   }
-  memory_pool.reset();
+  memory_manager.reset();
 }
 
 } // namespace nanairo
