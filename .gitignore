@@ -130,6 +130,7 @@
 !/source/NanairoGui/Gui/SceneSettingViewItems/ObjectSettingViewItems/CameraObjectItems/*.qml
 !/source/NanairoGui/Gui/dummydata/
 !/source/NanairoGui/Gui/dummydata/*.qml
+!/source/NanairoGui/Gui/dummydata/*.js
 !/source/NanairoGui/Gui/image/
 !/source/NanairoGui/Gui/image/*.png
 !/source/NanairoGui/Renderer/

@@ -11,8 +11,8 @@
 #define NANAIRO_CAMERA_MODEL_HPP
 
 // Standard C++ library
-#include <memory>
 #include <array>
+#include <memory>
 // Zisc
 #include "zisc/sip_hash_engine.hpp"
 #include "zisc/memory_resource.hpp"
