@@ -183,7 +183,7 @@ var defaultSettingItemColumnInterval = 64;
 // Window
 var mainWindowWidth = 960;
 var mainWindowHeight = 540;
-var defaultMenuHeight = 24;
+var defaultMenuHeight = 32;
 var defaultTabHeight = 32;
 var settingViewWidth = mainWindowWidth;
 var settingViewHeight = mainWindowHeight - (defaultMenuHeight + defaultTabHeight);

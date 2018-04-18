@@ -7,9 +7,9 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-import QtQuick 2.9
-import QtQuick.Controls 2.2
-import QtQuick.Controls.Material 2.2
+import QtQuick 2.10
+import QtQuick.Controls 2.3
+import QtQuick.Controls.Material 2.3
 import QtQuick.Layouts 1.3
 import "Items"
 import "definitions.js" as Definitions
@@ -19,7 +19,6 @@ NToolBar {
 
   Material.elevation: 0
 
-  readonly property int menuHeight: Definitions.defaultMenuHeight
   readonly property int buttonPositionY: 0
   property bool isRenderMode: false
   // File menu values
@@ -29,8 +28,6 @@ NToolBar {
   readonly property int render: 0
   readonly property int preview: render + 1
   readonly property int stop: preview + 1
-
-  height: menuHeight
 
   RowLayout {
     id: layout

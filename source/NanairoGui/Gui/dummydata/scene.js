@@ -16,12 +16,12 @@ function getCornellBoxScene() {
         "@type@": "@binaryRadixTreeBvh@"
     },
     "@color@": {
-        "@colorMode@": "@rgb@",
-        "@colorSpace@": "@sRGBD65@",
-        "@exposure@": 1,
-        "@gamma@": 2.2,
-        "@toneMapping@": "@reinhard@",
-        "@wavelengthSampling@": "@regularSampling@"
+        "@colorMode@": "@spectra@",
+        "@colorSpace@": "@sRgbD50@",
+        "@exposure@": 2,
+        "@gamma@": 2.4,
+        "@toneMapping@": "@filmic@",
+        "@wavelengthSampling@": "@randomSampling@"
     },
     "@emitterModel@": [
         {
@@ -401,16 +401,16 @@ function getCornellBoxScene() {
     ],
     "@system@": {
         "@imageResolution@": [
-            640,
-            480
+            1280,
+            720 
         ],
         "@numOfThreads@": 4,
         "@power2CycleSaving@": true,
         "@randomSeed@": 123456789,
-        "@savingIntervalCycle@": 0,
-        "@savingIntervalTime@": 3600000,
-        "@terminationCycle@": 2048,
-        "@terminationTime@": 0
+        "@savingIntervalCycle@": 1,
+        "@savingIntervalTime@": 10000,
+        "@terminationCycle@": 1024,
+        "@terminationTime@": 1 
     },
     "@textureModel@": [
         {

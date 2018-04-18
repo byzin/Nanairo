@@ -7,9 +7,9 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-import QtQuick 2.9
-import QtQuick.Controls 2.2
-import QtQuick.Controls.Material 2.2
+import QtQuick 2.10
+import QtQuick.Controls 2.3
+import QtQuick.Controls.Material 2.3
 import Qt.labs.platform 1.0
 import "Items"
 import "definitions.js" as Definitions
@@ -30,6 +30,8 @@ ApplicationWindow {
 
   header: NMainMenu {
     id: mainMenu
+
+    height: Definitions.defaultMenuHeight
 
     isRenderMode: mainWindow.isRenderMode
 

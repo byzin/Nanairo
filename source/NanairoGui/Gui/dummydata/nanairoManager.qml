@@ -7,7 +7,7 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-import QtQuick 2.9
+import QtQuick 2.10
 import "scene.js" as Scene
 
 QtObject {

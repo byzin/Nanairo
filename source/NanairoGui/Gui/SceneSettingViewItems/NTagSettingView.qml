@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-import QtQuick 2.9
-import QtQuick.Controls 2.2
+import QtQuick 2.10
+import QtQuick.Controls 2.3
 import QtQuick.Layouts 1.3
 import "../Items"
 import "../definitions.js" as Definitions
@@ -35,6 +35,7 @@ NPane {
       Layout.fillWidth: true
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       horizontalAlignment: TextInput.AlignRight
+      verticalAlignment: TextInput.AlignBottom
       text: settingView.defaultSceneName
       placeholderText: qsTr("Scene Name")
     }

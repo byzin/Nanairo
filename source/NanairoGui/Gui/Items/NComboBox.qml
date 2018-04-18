@@ -7,9 +7,9 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-import QtQuick 2.9
-import QtQuick.Controls 2.2
-import QtQuick.Controls.Material 2.2
+import QtQuick 2.10
+import QtQuick.Controls 2.3
+import QtQuick.Controls.Material 2.3
 import "../definitions.js" as Definitions
 
 ComboBox {
@@ -22,10 +22,13 @@ ComboBox {
   rightPadding: 0
   topPadding: 0
   bottomPadding: 0
-  background.anchors.fill: comboBox
   font.weight: Font.Light
   font.pixelSize: Definitions.defaultTextFontSize
-  popup.width: 2 * width
-  popup.font.weight: Font.Light
-  popup.font.pixelSize: Definitions.defaultTextFontSize
+
+  Component.onCompleted: {
+    background.anchors.fill = comboBox;
+    popup.width = 2 * width;
+    popup.font.weight = Font.Light;
+    popup.font.pixelSize = Definitions.defaultTextFontSize;
+  }
 }

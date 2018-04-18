@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-import QtQuick 2.9
-import QtQuick.Controls 2.2
+import QtQuick 2.10
+import QtQuick.Controls 2.3
 import "../definitions.js" as Definitions
 
 NSpinBox {
@@ -22,8 +22,6 @@ NSpinBox {
   property int decimals: 2
   property real floatValue: 0.0
 
-  down.indicator: null
-  up.indicator: null
   from: toIntScale * floatFrom
   to: toIntScale * floatTo
   stepSize: 1
@@ -47,6 +45,9 @@ NSpinBox {
   onValueChanged: floatValue = value / toIntScale
 
   Component.onCompleted: {
+    down.indicator = null;
+    up.indicator = null;
+
     console.assert((0 <= decimals) && (decimals <= maxDecimals),
                    "The decimals is out of range.");
     contentItem.horizontalAlignment = TextInput.AlignRight;
