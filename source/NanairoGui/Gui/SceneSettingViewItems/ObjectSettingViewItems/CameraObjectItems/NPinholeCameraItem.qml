@@ -34,7 +34,6 @@ NPane {
 
       Layout.fillWidth: true
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      decimals: 4
       floatFrom: 0.0001
       floatTo: 89.9999
       floatValue: pinholeCameraItem.angleOfView

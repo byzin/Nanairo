@@ -112,7 +112,6 @@ NPane {
         id: xSpinBox
 
         font.pixelSize: transformationItem.fontSize
-        decimals: 4
         floatFrom: -realMax 
         floatTo: realMax
         floatValue: transformationItem.itemX
@@ -175,7 +174,6 @@ NPane {
 
       Layout.preferredWidth: (transformationItem.width - 3 * Definitions.defaultBlockSize) / 3
       Layout.fillHeight: true
-      decimals: 4
       font.pixelSize: transformationItem.fontSize
       floatFrom: -realMax 
       floatTo: realMax
@@ -201,7 +199,6 @@ NPane {
         id: zSpinBox
 
         font.pixelSize: transformationItem.fontSize
-        decimals: 4
         floatFrom: -realMax 
         floatTo: realMax
         floatValue: transformationItem.itemZ

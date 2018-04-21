@@ -57,7 +57,7 @@ NPane {
 
       Layout.fillWidth: true
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      decimals: 6
+      decimals: 7
       floatFrom: 0.000001
       floatTo: realMax
     }

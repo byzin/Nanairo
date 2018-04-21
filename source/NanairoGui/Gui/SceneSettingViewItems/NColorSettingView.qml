@@ -84,8 +84,7 @@ NPane {
 
       Layout.fillWidth: true
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      decimals: 7
-      floatFrom: 0.0000001
+      floatFrom: 0.0001
       floatTo: realMax
       floatValue: 1.0
     }
@@ -100,8 +99,7 @@ NPane {
 
       Layout.fillWidth: true
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      decimals: 7
-      floatFrom: 0.0000001
+      floatFrom: 0.0001
       floatTo: realMax
       floatValue: 1.0
     }

@@ -53,7 +53,6 @@ NPane {
 
       Layout.fillWidth: true
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      decimals: 4
       floatFrom: 0.0
       floatTo: realMax
       floatValue: emitterItem.radiantExitance

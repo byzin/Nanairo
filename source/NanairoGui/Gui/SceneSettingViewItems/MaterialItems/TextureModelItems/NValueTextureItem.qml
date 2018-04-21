@@ -34,7 +34,6 @@ NPane {
 
       Layout.fillWidth: true
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      decimals: 5
       floatFrom: 0.0
       floatTo: realMax
       floatValue: textureItem.textureValue

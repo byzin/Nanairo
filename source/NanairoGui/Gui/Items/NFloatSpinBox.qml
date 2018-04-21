@@ -19,7 +19,7 @@ NSpinBox {
   readonly property real realMax: Definitions.intMax / toIntScale
   property real floatFrom: 0.0
   property real floatTo: 1.0
-  property int decimals: 2
+  property int decimals: 4
   property real floatValue: 0.0
 
   from: toIntScale * floatFrom

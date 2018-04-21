@@ -154,6 +154,7 @@
 
 # Tools
 !tool/
+!tool/blender_scene_exporter.py
 !tool/spectral_transport/
 !tool/spectral_transport/spectral_transport.py
 !tool/spectral_transport/xyz_cmf/
