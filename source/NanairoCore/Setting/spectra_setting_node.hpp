@@ -17,6 +17,9 @@
 #include <ostream>
 #include <tuple>
 #include <vector>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -43,7 +46,7 @@ struct RgbParameters : public NodeParameterBase
 struct SpectraParameters : public NodeParameterBase
 {
   //! Initialize the spectra
-  SpectraParameters() noexcept;
+  SpectraParameters(zisc::pmr::memory_resource* data_resource) noexcept;
 
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept override;
@@ -51,7 +54,7 @@ struct SpectraParameters : public NodeParameterBase
   //! Write the parameters to the stream
   void writeData(std::ostream* data_stream) const noexcept override;
 
-  std::vector<std::tuple<double, double>> spectra_;
+  zisc::pmr::vector<std::tuple<double, double>> spectra_;
 };
 
 /*!
@@ -59,8 +62,15 @@ struct SpectraParameters : public NodeParameterBase
 class SpectraSettingNode : public SettingNodeBase
 {
  public:
+  //! Create a spectra settings
+  SpectraSettingNode(const SettingNodeBase* parent) noexcept;
+
+
   //! Initialize the setting
   void initialize() noexcept override;
+
+  //! Return the node type
+  static SettingNodeType nodeType() noexcept;
 
   //! Read the setting from the stream
   void readData(std::istream* data_stream) noexcept override;
@@ -90,7 +100,7 @@ class SpectraSettingNode : public SettingNodeBase
   void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
-  std::unique_ptr<NodeParameterBase> parameters_;
+  zisc::UniqueMemoryPointer<NodeParameterBase> parameters_;
   ColorRepresentationType color_type_;
 };
 

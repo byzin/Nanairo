@@ -15,7 +15,9 @@
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
 #include "zisc/matrix.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/thread_manager.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "filmic.hpp"
@@ -96,9 +98,10 @@ void ToneMappingOperator::map(System& system,
 
   {
     auto& threads = system.threadManager();
+    auto& work_resource = system.globalMemoryManager();
     constexpr uint begin = 0;
     const uint end = threads.numOfThreads();
-    auto result = threads.enqueueLoop(map_luminance, begin, end);
+    auto result = threads.enqueueLoop(map_luminance, begin, end, &work_resource);
     result.get();
   }
 }
@@ -126,24 +129,31 @@ void ToneMappingOperator::initialize(const System& system,
   \details
   No detailed.
   */
-std::unique_ptr<ToneMappingOperator> ToneMappingOperator::makeOperator(
-    const System& system,
+zisc::UniqueMemoryPointer<ToneMappingOperator> ToneMappingOperator::makeOperator(
+    System& system,
     const SettingNodeBase* settings) noexcept
 {
   const auto system_settings = castNode<SystemSettingNode>(settings);
 
-  std::unique_ptr<ToneMappingOperator> method;
+  zisc::UniqueMemoryPointer<ToneMappingOperator> method;
+  auto data_resource = &system.dataMemoryManager();
   switch (system_settings->toneMappingType()) {
    case ToneMappingType::kReinhard: {
-    method = std::make_unique<Reinhard>(system, settings);
+    method = zisc::UniqueMemoryPointer<Reinhard>::make(data_resource,
+                                                       system,
+                                                       settings);
     break;
    }
    case ToneMappingType::kFilmic: {
-    method = std::make_unique<Filmic>(system, settings);
+    method = zisc::UniqueMemoryPointer<Filmic>::make(data_resource,
+                                                     system,
+                                                     settings);
     break;
    }
    case ToneMappingType::kUncharted2Filmic: {
-    method = std::make_unique<Uncharted2Filmic>(system, settings);
+    method = zisc::UniqueMemoryPointer<Uncharted2Filmic>::make(data_resource,
+                                                               system,
+                                                               settings);
     break;
    }
    default: {

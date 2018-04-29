@@ -13,6 +13,8 @@
 // Standard C++ library
 #include <array>
 #include <vector>
+// Zisc
+#include "zisc/memory_resource.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/face.hpp"
@@ -32,10 +34,10 @@ class ObjLoader
  public:
   //! Parse a obj text and make a obj model
   static void parse(QTextStream& obj_stream,
-                    std::vector<Face>* face_list,
-                    std::vector<std::array<double, 3>>* vertex_list,
-                    std::vector<std::array<double, 3>>* vnormal_list,
-                    std::vector<std::array<double, 2>>* vuv_list) noexcept;
+                    zisc::pmr::vector<Face>* face_list,
+                    zisc::pmr::vector<std::array<double, 3>>* vertex_list,
+                    zisc::pmr::vector<std::array<double, 3>>* vnormal_list,
+                    zisc::pmr::vector<std::array<double, 2>>* vuv_list) noexcept;
 
  private:
   //! Prevent from making a obj loader instance
@@ -56,10 +58,10 @@ class ObjLoader
 
   //! Load the mesh data
   static void loadMesh(QTextStream& obj_stream,
-                       std::vector<Face>* face_list,
-                       std::vector<std::array<double, 3>>* vertex_list,
-                       std::vector<std::array<double, 3>>* vnormal_list,
-                       std::vector<std::array<double, 2>>* vuv_list) noexcept;
+                       zisc::pmr::vector<Face>* face_list,
+                       zisc::pmr::vector<std::array<double, 3>>* vertex_list,
+                       zisc::pmr::vector<std::array<double, 3>>* vnormal_list,
+                       zisc::pmr::vector<std::array<double, 2>>* vuv_list) noexcept;
 };
 
 //! \} Gui

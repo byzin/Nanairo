@@ -13,6 +13,8 @@
 // Standard C++ library
 #include <cstddef>
 #include <vector>
+// Zisc
+#include "zisc/memory_resource.hpp"
 // Nanairo
 #include "spectral_distribution.hpp"
 #include "spectra_image_interface.hpp"
@@ -37,10 +39,13 @@ class SpectraImage : public SpectraImageInterface
 {
  public:
   //! Create a spectra image
-  SpectraImage(const uint width, const uint height) noexcept;
+  SpectraImage(const uint width,
+               const uint height,
+               zisc::pmr::memory_resource* data_resource) noexcept;
 
   //! Create a spectra image
-  SpectraImage(const Index2d& resolution) noexcept;
+  SpectraImage(const Index2d& resolution,
+               zisc::pmr::memory_resource* data_resource) noexcept;
 
 
   //! Add radiance from a sample
@@ -63,8 +68,8 @@ class SpectraImage : public SpectraImageInterface
   void initialize() noexcept;
 
 
-  std::vector<SpectralDistribution> buffer_;
-  std::vector<SpectralDistribution> compensation_;
+  zisc::pmr::vector<SpectralDistribution> buffer_;
+  zisc::pmr::vector<SpectralDistribution> compensation_;
 };
 
 //! \} Core

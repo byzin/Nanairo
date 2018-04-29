@@ -17,6 +17,7 @@
 #include <vector>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/point.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -28,7 +29,7 @@ namespace nanairo {
 /*!
   */
 inline
-std::vector<Rgba32>& LdrImage::data() noexcept
+zisc::pmr::vector<Rgba32>& LdrImage::data() noexcept
 {
   return buffer_;
 }
@@ -36,7 +37,7 @@ std::vector<Rgba32>& LdrImage::data() noexcept
 /*!
   */
 inline
-const std::vector<Rgba32>& LdrImage::data() const noexcept
+const zisc::pmr::vector<Rgba32>& LdrImage::data() const noexcept
 {
   return buffer_;
 }

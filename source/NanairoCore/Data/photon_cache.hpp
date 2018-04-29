@@ -29,28 +29,43 @@ class PhotonCache
 {
  public:
   //! Create a photon cache
+  PhotonCache() noexcept;
+
+  //! Create a photon cache
   PhotonCache(const SampledSpectra& energy,
               const Point3& point,
               const Vector3& vin,
-              const bool wavelength_is_selected);
+              const bool wavelength_is_selected) noexcept;
 
 
-  //! Return the incident direction to the cached point
-  const Vector3& incidentDirection() const;
+  //! Return a cached radiance
+  const SampledSpectra& energy() const noexcept;
 
-  //! Return the cached point
-  const Point3& point() const;
+  //! Return an incident direction to the cached point
+  const Vector3& incidentDirection() const noexcept;
 
-  //! Return the cached radiance
-  const SampledSpectra& energy() const;
+  //! Return a cached point
+  const Point3& point() const noexcept;
+
+  //! Set a radiance
+  void setEnergy(const SampledSpectra& e) noexcept;
+
+  //! Set an incident direction to the cached point
+  void setIncidentDirection(const Vector3& v) noexcept;
+
+  //! Set a radiance
+  void setPoint(const Point3& p) noexcept;
+
+  //! Set a wavelength selection state
+  void setWavelengthIsSelected(const bool is_selected) noexcept;
 
   //! Check if wavelength selection occured
-  bool wavelengthIsSelected() const;
+  bool wavelengthIsSelected() const noexcept;
 
  private:
-  const SampledSpectra energy_;
-  const Point3 point_;
-  const Vector3 vin_;
+  SampledSpectra energy_;
+  Point3 point_;
+  Vector3 vin_;
   bool wavelength_is_selected_;
 };
 

@@ -11,9 +11,13 @@
 // Standard C++ library
 #include <chrono>
 #include <cstdio>
+#include <fstream>
 #include <limits>
 #include <memory>
+#include <mutex>
+#include <ostream>
 #include <string>
+#include <string_view>
 // LodePNG
 #ifdef NANAIRO_HAS_LODEPNG
 #include "lodepng.h"
@@ -52,6 +56,13 @@ SimpleRenderer::SimpleRenderer() noexcept :
   */
 SimpleRenderer::~SimpleRenderer() noexcept
 {
+  // Destroy before the memory resources are destroyed
+  scene_.reset();
+  wavelength_sampler_.reset();
+  rendering_method_.reset();
+  tone_mapping_operator_.reset();
+  hdr_image_.reset();
+  ldr_image_.reset();
 }
 
 /*!
@@ -70,14 +81,22 @@ bool SimpleRenderer::loadScene(const SettingNodeBase& settings,
       castNode<SystemSettingNode>(scene_settings->systemSettingNode());
   system_ = std::make_unique<System>(system_settings);
 
+  std::mutex data_mutex;
+  auto& data_resource = system_->dataMemoryManager();
+  data_resource.setMutex(&data_mutex);
+
   // Scene
-  scene_ = std::make_unique<Scene>(system(), scene_settings);
+  scene_ = zisc::UniqueMemoryPointer<Scene>::make(&data_resource,
+                                                  system(),
+                                                  scene_settings);
 
   // Wavelength sampler
   {
     const auto& world = scene().world();
-    wavelength_sampler_ = std::make_unique<WavelengthSampler>(world,
-                                                              system_settings);
+    wavelength_sampler_ = zisc::UniqueMemoryPointer<WavelengthSampler>::make(
+        &data_resource,
+        world,
+        system_settings);
   }
 
   // Rendering method
@@ -95,10 +114,14 @@ bool SimpleRenderer::loadScene(const SettingNodeBase& settings,
   // images
   {
     const auto& image_resolution = system_settings->imageResolution();
-    hdr_image_ = std::make_unique<HdrImage>(image_resolution[0],
-                                            image_resolution[1]);
-    ldr_image_ = std::make_unique<LdrImage>(image_resolution[0],
-                                            image_resolution[1]);
+    hdr_image_ = zisc::UniqueMemoryPointer<HdrImage>::make(&data_resource,
+                                                           image_resolution[0],
+                                                           image_resolution[1],
+                                                           &data_resource);
+    ldr_image_ = zisc::UniqueMemoryPointer<LdrImage>::make(&data_resource,
+                                                           image_resolution[0],
+                                                           image_resolution[1],
+                                                           &data_resource);
   }
 
   //
@@ -126,6 +149,8 @@ bool SimpleRenderer::loadScene(const SettingNodeBase& settings,
     setCycleIntervalToSave(cycle);
   }
 
+  data_resource.setMutex(nullptr);
+
   return isRunnable();
 }
 
@@ -137,50 +162,46 @@ void SimpleRenderer::render(const std::string& output_path) noexcept
   uint64 cycle_to_save_image = getNextCycleToSaveImage(cycle);
   auto previous_time = Clock::duration::zero();
   auto time_to_save_image = getNextTimeToSaveImage(previous_time);
-  bool saving_image = false;
+  bool rendering_flag = true;
+
+  std::ofstream text_log_stream;
+  initLogger(output_path, &std::cout, &text_log_stream);
 
   initForRendering();
   updateRenderingInfo(cycle, previous_time);
-
-  auto convert_to_ldr = [this](const uint64 iteration, const std::string& ldr_path)
-  {
-    convertSpectraToHdr(iteration);
-    toneMap();
-    outputLdrImage(ldr_path, iteration);
-  };
 
   // Main render loop
   logMessage("Start rendering.");
   zisc::Stopwatch stopwatch;
   stopwatch.start();
-  while (isRunnable() && !isCycleToFinish(cycle) && !isTimeToFinish(previous_time)) {
+  while (rendering_flag) {
     ++cycle;
 
+    rendering_flag = isRunnable() &&
+                     !isCycleToFinish(cycle) && !isTimeToFinish(previous_time);
+
+    clearWorkMemory();
     handleCameraEvent(&stopwatch, &cycle, &previous_time);
 
     // Render
     renderScene();
 
     // Save image
-    saving_image = isSavingAtEachCycleEnabled();
-    if (isCycleToSaveImage(cycle, cycle_to_save_image)) {
-      cycle_to_save_image = getNextCycleToSaveImage(cycle_to_save_image);
-      saving_image = true;
+    bool saving_image = checkImageSavingFlag(cycle,
+                                             previous_time,
+                                             &cycle_to_save_image,
+                                             &time_to_save_image);
+    saving_image = saving_image || !rendering_flag;
+    if (saving_image) {
+      convertSpectraToHdr(cycle);
+      toneMap();
+      outputLdrImage(output_path, cycle);
     }
-    if (isTimeToSaveImage(previous_time, time_to_save_image)) {
-      time_to_save_image = getNextTimeToSaveImage(time_to_save_image);
-      saving_image = true;
-    }
-    if (saving_image)
-      convert_to_ldr(cycle, output_path);
 
     // Update time
     previous_time = processElapsedTime(stopwatch, previous_time);
     updateRenderingInfo(cycle, previous_time);
   }
-  // Save the image at the end of the rendering
-  if ((0 < cycle) && !saving_image)
-    convert_to_ldr(cycle, output_path);
 }
 
 /*!
@@ -210,24 +231,44 @@ void SimpleRenderer::initForRendering() noexcept
 
 /*!
   */
-void SimpleRenderer::logMessage(const std::string& message) noexcept
+void SimpleRenderer::initLogger(const std::string& output_path,
+                                std::ostream* console_log_stream,
+                                std::ofstream* text_log_stream) noexcept
 {
-  std::cout << message << std::endl;
+  // Console log stream
+  log_stream_list_[0] = console_log_stream;
+
+  // Text log stream
+  std::string text_log_path{"log.txt"};
+  if (!output_path.empty())
+    text_log_path = output_path + "/" + text_log_path;
+  text_log_stream->open(text_log_path);
+  log_stream_list_[1] = text_log_stream;
 }
 
-#ifdef NANAIRO_HAS_LODEPNG
+/*!
+  */
+void SimpleRenderer::logMessage(const std::string_view& message) noexcept
+{
+  for (auto log_stream : log_stream_list_) {
+    if (log_stream != nullptr)
+      (*log_stream) << message << std::endl;
+  }
+}
+
 /*!
   */
 void SimpleRenderer::outputLdrImage(const std::string& output_path,
                                     const uint64 cycle) noexcept
 {
+#ifdef NANAIRO_HAS_LODEPNG
   processLdrForLodepng();
 
-  const auto ldr_path = makeImagePath(output_path, cycle);
+  const auto ldr_image_path = makeImagePath(output_path, cycle);
   const auto& ldr_image = ldrImage();
-  const auto buffer = zisc::treatAs<const std::vector<uint8>*>(&ldr_image.data());
-  auto error = lodepng::encode(ldr_path.c_str(),
-                               *buffer,
+  const auto& buffer = ldr_image.data();
+  auto error = lodepng::encode(ldr_image_path,
+                               zisc::treatAs<const uint8*>(buffer.data()),
                                ldr_image.widthResolution(),
                                ldr_image.heightResolution());
   if (error) {
@@ -235,19 +276,54 @@ void SimpleRenderer::outputLdrImage(const std::string& output_path,
                          lodepng_error_text(error);
     logMessage(message);
   }
-}
 #else // NANAIRO_HAS_LODEPNG
-/*!
-  */
-void SimpleRenderer::outputLdrImage(const std::string&, const uint64) noexcept
-{
-}
+  static_cast<void>(output_path);
+  static_cast<void>(cycle);
 #endif // NANAIRO_HAS_LODEPNG
+}
 
 /*!
   */
-void SimpleRenderer::notifyOfRenderingInfo(const std::string&) const noexcept
+void SimpleRenderer::notifyOfRenderingInfo(const std::string_view&) const noexcept
 {
+}
+
+/*!
+  */
+inline
+bool SimpleRenderer::checkImageSavingFlag(
+    const uint64 cycle,
+    const Clock::duration previous_time,
+    uint64* cycle_to_save_image,
+    Clock::duration* time_to_save_image) const noexcept
+{
+  // Save image
+  bool saving_image = isSavingAtEachCycleEnabled();
+  if (isCycleToSaveImage(cycle, *cycle_to_save_image)) {
+    *cycle_to_save_image = getNextCycleToSaveImage(*cycle_to_save_image);
+    saving_image = true;
+  }
+  if (isTimeToSaveImage(previous_time, *time_to_save_image)) {
+    *time_to_save_image = getNextTimeToSaveImage(*time_to_save_image);
+    saving_image = true;
+  }
+  return saving_image;
+}
+
+/*!
+  */
+inline
+void SimpleRenderer::clearWorkMemory() noexcept
+{
+  const auto& threads = system().threadManager();
+
+  // Clear memory resources
+  auto& global_memory = system().globalMemoryManager();
+  global_memory.reset();
+  for (uint i = 0; i < threads.numOfThreads(); ++i) {
+    auto& memory_manager = system().threadMemoryManager(i);
+    memory_manager.reset();
+  }
 }
 
 /*!
@@ -264,6 +340,7 @@ void SimpleRenderer::convertSpectraToHdr(const uint64 cycle) noexcept
   */
 void SimpleRenderer::initialize() noexcept
 {
+  log_stream_list_.fill(nullptr);
 }
 
 /*!
@@ -368,8 +445,6 @@ void SimpleRenderer::updateRenderingInfo(const uint64 cycle,
   using namespace std::string_literals;
   using zisc::cast;
 
-  auto info_string = "000.00 fps,  00000000 cycles,  00 h 00 m 00.000 s"s;
-
   // FPS
   double fps = 0.0;
   {
@@ -398,8 +473,9 @@ void SimpleRenderer::updateRenderingInfo(const uint64 cycle,
     millis = cast<int>(mi.count());
   }
 
-  std::sprintf(&info_string[0],
-               "%06.2lf fps,  %08d cycles,  %02d h %02d m %02d.%03d s",
+  char info_string[] = "000.00 fps,  0000000000 cycles,  00 h 00 m 00.000 s";
+  std::sprintf(info_string,
+               "%06.2lf fps,  %010d cycles,  %02d h %02d m %02d.%03d s",
                fps,
                cast<int>(cycle),
                hours,

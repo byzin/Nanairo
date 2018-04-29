@@ -12,7 +12,9 @@
 
 // Standard C++ library
 #include <cstddef>
-#include <memory>
+// Zisc
+#include "zisc/non_copyable.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "Setting/setting_node_base.hpp"
 
@@ -32,7 +34,7 @@ class World;
   \details
   No detailed.
   */
-class Scene
+class Scene : public zisc::NonCopyable<Scene>
 {
  public:
   //! Initialize the scene
@@ -62,9 +64,9 @@ class Scene
   void initializeCamera(System& system, const SettingNodeBase* settings) noexcept;
 
 
-  std::unique_ptr<CameraModel> camera_;
-  std::unique_ptr<Film> film_;
-  std::unique_ptr<World> world_;
+  zisc::UniqueMemoryPointer<CameraModel> camera_;
+  zisc::UniqueMemoryPointer<Film> film_;
+  zisc::UniqueMemoryPointer<World> world_;
 };
 
 //! \} Core

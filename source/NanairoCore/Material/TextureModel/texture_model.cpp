@@ -11,9 +11,12 @@
 // Standard C++ library
 #include <memory>
 #include <string>
+#include <string_view>
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "checkerboard_texture.hpp"
@@ -37,28 +40,37 @@ TextureModel::~TextureModel() noexcept
   \details
   No detailed.
   */
-std::unique_ptr<TextureModel> TextureModel::makeTexture(
-    const System& system,
+zisc::UniqueMemoryPointer<TextureModel> TextureModel::makeTexture(
+    System& system,
     const SettingNodeBase* settings) noexcept
 {
   const auto texture_settings = castNode<TextureSettingNode>(settings);
 
-  std::unique_ptr<TextureModel> texture;
+  zisc::UniqueMemoryPointer<TextureModel> texture;
+  auto& data_resource = system.dataMemoryManager();
   switch (texture_settings->textureType()) {
     case TextureType::kValue: {
-      texture = std::make_unique<ValueTexture>(system, settings);
+      texture = zisc::UniqueMemoryPointer<ValueTexture>::make(&data_resource,
+                                                              system,
+                                                              settings);
       break;
     }
     case TextureType::kUnicolor: {
-      texture = std::make_unique<UnicolorTexture>(system, settings);
+      texture = zisc::UniqueMemoryPointer<UnicolorTexture>::make(&data_resource,
+                                                                 system,
+                                                                 settings);
       break;
     }
     case TextureType::kCheckerboard: {
-      texture = std::make_unique<CheckerboardTexture>(system, settings);
+      texture = zisc::UniqueMemoryPointer<CheckerboardTexture>::make(&data_resource,
+                                                                     system,
+                                                                     settings);
       break;
     }
     case TextureType::kImage: {
-      texture = std::make_unique<ImageTexture>(system, settings);
+      texture = zisc::UniqueMemoryPointer<ImageTexture>::make(&data_resource,
+                                                              system,
+                                                              settings);
       break;
     }
     default: {
@@ -72,18 +84,18 @@ std::unique_ptr<TextureModel> TextureModel::makeTexture(
 
 /*!
   */
-const std::string* TextureModel::name() const noexcept
+std::string_view TextureModel::name() const noexcept
 {
-  const std::string* object_name = nullptr;
 #ifdef Z_DEBUG_MODE
-  object_name = &name_;
+  return std::string_view{name_};
+#else // Z_DEBUG_MODE
+  return std::string_view{"TextureModel"};
 #endif // Z_DEBUG_MODE
-  return object_name;
 }
 
 /*!
   */
-void TextureModel::setName(const std::string& name) noexcept
+void TextureModel::setName(const std::string_view& name) noexcept
 {
 #ifdef Z_DEBUG_MODE
   name_ = name;

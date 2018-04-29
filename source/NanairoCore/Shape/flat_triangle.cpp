@@ -71,6 +71,20 @@ Aabb FlatTriangle::boundingBox() const noexcept
 
 /*!
   */
+Float FlatTriangle::calcSurfaceArea(const Point3& vertex1,
+                                    const Point3& vertex2,
+                                    const Point3& vertex3) noexcept
+{
+  const auto edge1 = vertex2 - vertex1;
+  const auto edge2 = vertex3 - vertex1;
+  Float area = zisc::cross(edge1, edge2).squareNorm();
+  if (0.0 < area)
+    area = 0.5 * zisc::sqrt(area);
+  return area;
+}
+
+/*!
+  */
 ShapePoint FlatTriangle::getPoint(const Point2& st) const noexcept
 {
   const auto& v = vertex0();
@@ -207,8 +221,9 @@ Vector3 FlatTriangle::calcNormal() const noexcept
   */
 Float FlatTriangle::calcSurfaceArea() const noexcept
 {
-  const Float area = 0.5 * zisc::cross(edge_[0], edge_[1]).norm();
-  return area;
+  const auto vertex2 = vertex0() + edge()[0];
+  const auto vertex3 = vertex0() + edge()[1];
+  return calcSurfaceArea(vertex0(), vertex2, vertex3);
 }
 
 /*!

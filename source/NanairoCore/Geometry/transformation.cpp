@@ -16,6 +16,7 @@
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
 #include "zisc/matrix.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/unit.hpp"
 // Nanairo
 #include "point.hpp"
@@ -28,7 +29,7 @@ namespace nanairo {
 /*!
   */
 Matrix4x4 Transformation::makeTransformation(
-    const std::vector<SettingNodeBase*>& settings_list) noexcept
+    const zisc::pmr::vector<SettingNodeBase*>& settings_list) noexcept
 {
   auto matrix = makeIdentity();
   for (const auto settings : settings_list) {

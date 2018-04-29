@@ -18,6 +18,7 @@
 #include <vector>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/photon_cache.hpp"
@@ -29,7 +30,17 @@ namespace nanairo {
   No detailed.
   */
 inline
-KnnPhotonList::KnnPhotonList() noexcept
+KnnPhotonList::KnnPhotonList(zisc::pmr::memory_resource* data_resource) noexcept :
+    photon_list_{data_resource}
+{
+}
+
+/*!
+  */
+inline
+KnnPhotonList::KnnPhotonList(KnnPhotonList&& other) noexcept :
+    photon_list_{std::move(other.photon_list_)},
+    k_{other.k_}
 {
 }
 

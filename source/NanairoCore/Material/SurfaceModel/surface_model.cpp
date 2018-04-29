@@ -12,10 +12,13 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "cloth_surface.hpp"
@@ -26,6 +29,7 @@
 #include "smooth_dielectric_surface.hpp"
 #include "smooth_diffuse_surface.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/system.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/surface_setting_node.hpp"
@@ -45,40 +49,63 @@ SurfaceModel::~SurfaceModel() noexcept
   \details
   No detailed.
   */
-std::unique_ptr<SurfaceModel> SurfaceModel::makeSurface(
+zisc::UniqueMemoryPointer<SurfaceModel> SurfaceModel::makeSurface(
+    System& system,
     const SettingNodeBase* settings,
-    const std::vector<TextureModel*>& texture_list) noexcept
+    const zisc::pmr::vector<const TextureModel*>& texture_list) noexcept
 {
   const auto surface_settings = castNode<SurfaceSettingNode>(settings);
 
-  std::unique_ptr<SurfaceModel> surface;
+  zisc::UniqueMemoryPointer<SurfaceModel> surface;
+  auto& data_resource = system.dataMemoryManager();
   switch (surface_settings->surfaceType()) {
    case SurfaceType::kSmoothDiffuse: {
-    surface = std::make_unique<SmoothDiffuseSurface>(settings, texture_list);
+    surface =
+        zisc::UniqueMemoryPointer<SmoothDiffuseSurface>::make(&data_resource,
+                                                              settings,
+                                                              texture_list);
     break;
    }
    case SurfaceType::kSmoothDielectric: {
-    surface = std::make_unique<SmoothDielectricSurface>(settings, texture_list);
+    surface =
+        zisc::UniqueMemoryPointer<SmoothDielectricSurface>::make(&data_resource,
+                                                                 settings,
+                                                                 texture_list);
     break;
    }
    case SurfaceType::kSmoothConductor: {
-    surface = std::make_unique<SmoothConductorSurface>(settings, texture_list);
+    surface =
+        zisc::UniqueMemoryPointer<SmoothConductorSurface>::make(&data_resource,
+                                                                settings,
+                                                                texture_list);
     break;
    }
    case SurfaceType::kRoughDielectric: {
-    surface = std::make_unique<RoughDielectricSurface>(settings, texture_list);
+    surface =
+        zisc::UniqueMemoryPointer<RoughDielectricSurface>::make(&data_resource,
+                                                                settings,
+                                                                texture_list);
     break;
    }
    case SurfaceType::kRoughConductor: {
-    surface = std::make_unique<RoughConductorSurface>(settings, texture_list);
+    surface =
+        zisc::UniqueMemoryPointer<RoughConductorSurface>::make(&data_resource,
+                                                               settings,
+                                                               texture_list);
     break;
    }
    case SurfaceType::kLayeredDiffuse: {
-    surface = std::make_unique<LayeredDiffuseSurface>(settings, texture_list);
+    surface =
+        zisc::UniqueMemoryPointer<LayeredDiffuseSurface>::make(&data_resource,
+                                                               settings,
+                                                               texture_list);
     break;
    }
    case SurfaceType::kCloth: {
-    surface = std::make_unique<ClothSurface>(settings, texture_list);
+    surface =
+        zisc::UniqueMemoryPointer<ClothSurface>::make(&data_resource,
+                                                      settings,
+                                                      texture_list);
     break;
    }
    default: {
@@ -92,18 +119,18 @@ std::unique_ptr<SurfaceModel> SurfaceModel::makeSurface(
 
 /*!
   */
-const std::string* SurfaceModel::name() const noexcept
+std::string_view SurfaceModel::name() const noexcept
 {
-  const std::string* object_name = nullptr;
 #ifdef Z_DEBUG_MODE
-  object_name = &name_;
+  return std::string_view{name_};
+#else // Z_DEBUG_MODE
+  return std::string_view{"SurfaceModel"};
 #endif // Z_DEBUG_MODE
-  return object_name;
 }
 
 /*!
   */
-void SurfaceModel::setName(const std::string& name) noexcept
+void SurfaceModel::setName(const std::string_view& name) noexcept
 {
 #ifdef Z_DEBUG_MODE
   name_ = name;

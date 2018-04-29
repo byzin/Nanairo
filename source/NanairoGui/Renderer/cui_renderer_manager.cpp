@@ -146,10 +146,10 @@ QString CuiRendererManager::makeOutputDir(const SettingNodeBase* settings)
     const noexcept
 {
   const auto scene_settings = castNode<SceneSettingNode>(settings);
-  const auto scene_name = QString{scene_settings->sceneName().c_str()};
+  const auto scene_name = QString{scene_settings->sceneName().data()};
 
-  QString dir_name = scene_name + "_" + getCurrentTime();
-  const bool result = QDir::current().mkdir(dir_name);
+  QString dir_name = "results/" + scene_name + "_" + getCurrentTime();
+  const bool result = QDir::current().mkpath(dir_name);
   if (!result)
     dir_name.clear();
   return dir_name;

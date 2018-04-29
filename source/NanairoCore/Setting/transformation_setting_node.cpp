@@ -24,6 +24,14 @@ namespace nanairo {
 
 /*!
   */
+TransformationSettingNode::TransformationSettingNode(
+    const SettingNodeBase* parent) noexcept :
+        SettingNodeBase(parent)
+{
+}
+
+/*!
+  */
 void TransformationSettingNode::initialize() noexcept
 {
   setTransformationType(TransformationType::kTranslation);
@@ -34,6 +42,13 @@ void TransformationSettingNode::initialize() noexcept
 bool TransformationSettingNode::isEnabled() const noexcept
 {
   return is_enabled_ == kTrue;
+}
+
+/*!
+  */
+SettingNodeType TransformationSettingNode::nodeType() noexcept
+{
+  return SettingNodeType::kTransformation;
 }
 
 /*!

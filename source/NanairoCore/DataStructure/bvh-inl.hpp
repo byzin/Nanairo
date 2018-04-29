@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 // Zisc
+#include "zisc/memory_resource.hpp"
 #include "zisc/thread_manager.hpp"
 // Nanairo
 #include "bvh_building_node.hpp"
@@ -31,7 +32,7 @@ namespace nanairo {
   No detailed.
   */
 inline
-const std::vector<BvhTreeNode>& Bvh::bvhTree() const noexcept
+const zisc::pmr::vector<BvhTreeNode>& Bvh::bvhTree() const noexcept
 {
   return tree_;
 }
@@ -41,7 +42,7 @@ const std::vector<BvhTreeNode>& Bvh::bvhTree() const noexcept
   No detailed.
   */
 inline
-const std::vector<Object>& Bvh::objectList() const noexcept
+const zisc::pmr::vector<Object>& Bvh::objectList() const noexcept
 {
   return object_list_;
 }
@@ -58,7 +59,7 @@ constexpr bool Bvh::threadingIsEnabled() noexcept
   */
 template <bool threading> inline
 void Bvh::setupBoundingBoxes(System& system,
-                             std::vector<BvhBuildingNode>& tree,
+                             zisc::pmr::vector<BvhBuildingNode>& tree,
                              const uint32 index) noexcept
 {
   auto& node = tree[index];
@@ -77,8 +78,11 @@ void Bvh::setupBoundingBoxes(System& system,
         Bvh::setupBoundingBoxes<>(system, tree, right_child_index);
       };
       auto& threads = system.threadManager();
-      auto left_result = threads.enqueue<void>(set_left_bounding_box);
-      auto right_result = threads.enqueue<void>(set_right_bounding_box);
+      auto work_resource = tree.get_allocator().resource();
+      auto left_result =
+          threads.enqueue<void>(set_left_bounding_box, work_resource);
+      auto right_result =
+          threads.enqueue<void>(set_right_bounding_box, work_resource);
       left_result.get();
       right_result.get();
     }

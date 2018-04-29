@@ -11,9 +11,12 @@
 // Standard C++ library
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/Shape/shape.hpp"
 #include "NanairoCore/Material/material.hpp"
@@ -24,7 +27,8 @@ namespace nanairo {
   \details
   No detailed.
   */
-Object::Object(std::unique_ptr<Shape>&& shape, const Material* material) noexcept :
+Object::Object(zisc::UniqueMemoryPointer<Shape>&& shape,
+               const Material* material) noexcept :
     shape_{std::move(shape)},
     material_{material}
 {
@@ -51,18 +55,18 @@ Object& Object::operator=(Object&& other) noexcept
 
 /*!
   */
-const std::string* Object::name() const noexcept
+std::string_view Object::name() const noexcept
 {
-  const std::string* object_name = nullptr;
 #ifdef Z_DEBUG_MODE
-  object_name = &name_;
+  return std::string_view{name_};
+#else // Z_DEBUG_MODE
+  return std::string_view{"Object"};
 #endif // Z_DEBUG_MODE
-  return object_name;
 }
 
 /*!
   */
-void Object::setName(const std::string& object_name) noexcept
+void Object::setName(const std::string_view& object_name) noexcept
 {
 #ifdef Z_DEBUG_MODE
   name_ = object_name;

@@ -14,6 +14,8 @@
 // Standard C++ library
 #include <vector>
 // Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "Data/object.hpp"
@@ -40,11 +42,9 @@ const Bvh& World::bvh() const noexcept
 /*!
   */
 inline
-const std::vector<EmitterModel*>& World::emitterList() const noexcept
+const zisc::pmr::vector<const EmitterModel*>& World::emitterList() const noexcept
 {
-  const auto emitter_list =
-      zisc::treatAs<const std::vector<EmitterModel*>*>(&emitter_list_);
-  return *emitter_list;
+  return emitter_list_;
 }
 
 /*!
@@ -52,7 +52,7 @@ const std::vector<EmitterModel*>& World::emitterList() const noexcept
   No detailed.
   */
 inline
-const std::vector<const Object*>& World::lightSourceList() const noexcept
+const zisc::pmr::vector<const Object*>& World::lightSourceList() const noexcept
 {
   return light_source_list_;
 }
@@ -60,17 +60,15 @@ const std::vector<const Object*>& World::lightSourceList() const noexcept
 /*!
   */
 inline
-const std::vector<Material*>& World::materialList() const noexcept
+const zisc::pmr::vector<const Material*>& World::materialList() const noexcept
 {
-  const auto material_list =
-      zisc::treatAs<const std::vector<Material*>*>(&material_list_);
-  return *material_list;
+  return material_list_;
 }
 
 /*!
   */
 inline
-const std::vector<Object>& World::objectList() const noexcept
+const zisc::pmr::vector<Object>& World::objectList() const noexcept
 {
   return bvh().objectList();
 }
@@ -78,21 +76,17 @@ const std::vector<Object>& World::objectList() const noexcept
 /*!
   */
 inline
-const std::vector<SurfaceModel*>& World::surfaceList() const noexcept
+const zisc::pmr::vector<const SurfaceModel*>& World::surfaceList() const noexcept
 {
-  const auto surface_list =
-      zisc::treatAs<const std::vector<SurfaceModel*>*>(&surface_list_);
-  return *surface_list;
+  return surface_list_;
 }
 
 /*!
   */
 inline
-const std::vector<TextureModel*>& World::textureList() const noexcept
+const zisc::pmr::vector<const TextureModel*>& World::textureList() const noexcept
 {
-  const auto texture_list =
-      zisc::treatAs<const std::vector<TextureModel*>*>(&texture_list_);
-  return *texture_list;
+  return texture_list_;
 }
 
 } // namespace nanairo

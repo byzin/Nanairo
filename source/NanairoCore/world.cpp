@@ -15,6 +15,7 @@
 #include <future>
 #include <list>
 #include <memory>
+#include <mutex>
 #include <utility>
 #include <vector>
 // Zisc
@@ -48,7 +49,16 @@ namespace nanairo {
   \details
   No detailed.
   */
-World::World(System& system, const SettingNodeBase* settings) noexcept
+World::World(System& system, const SettingNodeBase* settings) noexcept :
+    emitter_list_{&system.dataMemoryManager()},
+    surface_list_{&system.dataMemoryManager()},
+    texture_list_{&system.dataMemoryManager()},
+    material_list_{&system.dataMemoryManager()},
+    light_source_list_{&system.dataMemoryManager()},
+    emitter_body_list_{&system.dataMemoryManager()},
+    surface_body_list_{&system.dataMemoryManager()},
+    texture_body_list_{&system.dataMemoryManager()},
+    material_body_list_{&system.dataMemoryManager()}
 {
   initialize(system, settings);
 }
@@ -69,32 +79,46 @@ void World::initialize(System& system, const SettingNodeBase* settings) noexcept
 {
   const auto scene_settings = castNode<SceneSettingNode>(settings);
 
+  auto work_resource = static_cast<System::MemoryManager*>(settings->workResource());
+  std::mutex work_mutex;
+  work_resource->setMutex(&work_mutex);
+  work_resource->reset();
+
   // Initialize texture
   {
     initializeTexture(system, scene_settings->textureModelSettingNode());
+    work_resource->reset();
   }
 
   // Initialize surface scattering
   {
     initializeSurface(system, scene_settings->surfaceModelSettingNode());
+    work_resource->reset();
   }
 
   // Initialize emitter
   {
     initializeEmitter(system, scene_settings->emitterModelSettingNode());
+    work_resource->reset();
   }
 
   {
     // Initialize objects
     auto object_list = initializeObject(system, scene_settings->objectSettingNode());
+    work_resource->reset();
+
     // Initialize a BVH
-    bvh_ = Bvh::makeBvh(scene_settings->bvhSettingNode());
-    bvh_->construct(system, std::move(object_list));
+    auto bvh_settings = scene_settings->bvhSettingNode();
+    bvh_ = Bvh::makeBvh(system, bvh_settings);
+    bvh_->construct(system, bvh_settings, std::move(object_list));
+    work_resource->reset();
   }
 
   {
     initializeWorldLightSource();
   }
+
+  work_resource->setMutex(nullptr);
 }
 
 /*!
@@ -104,24 +128,31 @@ void World::initialize(System& system, const SettingNodeBase* settings) noexcept
 void World::initializeEmitter(System& system,
                               const SettingNodeBase* settings) noexcept
 {
+  auto work_resource = static_cast<System::MemoryManager*>(settings->workResource());
   const auto emitter_model_settings = castNode<EmitterModelSettingNode>(settings);
 
   const auto num_of_emitters = emitter_model_settings->numOfMaterials();
   emitter_list_.resize(num_of_emitters);
+  emitter_body_list_.resize(num_of_emitters);
 
   const auto& emitter_setting_list = emitter_model_settings->materialList();
-  auto make_emitter = [this, &emitter_setting_list](const uint index)
+  auto make_emitter = [this, &system, &emitter_setting_list](const uint index)
   {
     const auto emitter_settings = emitter_setting_list[index];
     const auto& texture_list = textureList();
-    emitter_list_[index] = EmitterModel::makeEmitter(emitter_settings,  
-                                                     texture_list);
+    emitter_body_list_[index] = EmitterModel::makeEmitter(system,
+                                                          emitter_settings,  
+                                                          texture_list);
+    emitter_list_[index] = emitter_body_list_[index].get();
   };
 
   {
     auto& threads = system.threadManager();
     constexpr uint start = 0;
-    auto result = threads.enqueueLoop(make_emitter, start, num_of_emitters);
+    auto result = threads.enqueueLoop(make_emitter,
+                                      start,
+                                      num_of_emitters,
+                                      work_resource);
     result.get();
   }
   ZISC_ASSERT(0 < emitter_list_.size(), "The scene has no emitter.");
@@ -131,8 +162,9 @@ void World::initializeEmitter(System& system,
   \details
   No detailed.
   */
-std::vector<Object> World::initializeObject(System& system,
-                                            const SettingNodeBase* settings) noexcept
+zisc::pmr::vector<Object> World::initializeObject(
+    System& system,
+    const SettingNodeBase* settings) noexcept
 {
   auto results = makeObjects(system, settings);
 
@@ -140,9 +172,11 @@ std::vector<Object> World::initializeObject(System& system,
   {
     const std::size_t num_of_materials = results.size();
     material_list_.reserve(num_of_materials);
+    material_body_list_.reserve(num_of_materials);
     for (auto& result : results) {
       auto& material = std::get<1>(result);
-      material_list_.emplace_back(std::move(material));
+      material_body_list_.emplace_back(std::move(material));
+      material_list_.emplace_back(material_body_list_.back().get());
     }
   }
 
@@ -155,13 +189,13 @@ std::vector<Object> World::initializeObject(System& system,
   ZISC_ASSERT(0 < num_of_objects, "The scene has no object.");
 
   // Merge all lists into a list
-  std::vector<Object> object_list;
+  auto data_resource = settings->dataResource();
+  zisc::pmr::vector<Object> object_list{data_resource};
   object_list.reserve(num_of_objects);
   for (auto& result : results) {
     auto& objects = std::get<0>(result);
-    for (auto& object : objects) {
+    for (auto& object : objects)
       object_list.emplace_back(std::move(object));
-    }
   }
   return object_list;
 }
@@ -173,24 +207,31 @@ std::vector<Object> World::initializeObject(System& system,
 void World::initializeSurface(System& system,
                               const SettingNodeBase* settings) noexcept
 {
+  auto work_resource = static_cast<System::MemoryManager*>(settings->workResource());
   const auto surface_model_settings = castNode<SurfaceModelSettingNode>(settings);
 
   const auto num_of_surfaces = surface_model_settings->numOfMaterials();
   surface_list_.resize(num_of_surfaces);
+  surface_body_list_.resize(num_of_surfaces);
 
   const auto& surface_setting_list = surface_model_settings->materialList();
-  auto make_surface = [this, &surface_setting_list](const uint index)
+  auto make_surface = [this, &system, &surface_setting_list](const uint index)
   {
     const auto surface_settings = surface_setting_list[index];
     const auto& texture_list = textureList();
-    surface_list_[index] = SurfaceModel::makeSurface(surface_settings,
-                                                     texture_list);
+    surface_body_list_[index] = SurfaceModel::makeSurface(system,
+                                                          surface_settings,
+                                                          texture_list);
+    surface_list_[index] = surface_body_list_[index].get();
   };
 
   {
     auto& threads = system.threadManager();
     constexpr uint start = 0;
-    auto result = threads.enqueueLoop(make_surface, start, num_of_surfaces);
+    auto result = threads.enqueueLoop(make_surface,
+                                      start,
+                                      num_of_surfaces,
+                                      work_resource);
     result.get();
   }
   ZISC_ASSERT(0 < surface_list_.size(), "The scene has no surface.");
@@ -203,22 +244,29 @@ void World::initializeSurface(System& system,
 void World::initializeTexture(System& system,
                               const SettingNodeBase* settings) noexcept
 {
+  auto work_resource = static_cast<System::MemoryManager*>(settings->workResource());
   const auto texture_model_settings = castNode<TextureModelSettingNode>(settings);
 
   const auto num_of_textures = texture_model_settings->numOfMaterials();
   texture_list_.resize(num_of_textures);
+  texture_body_list_.resize(num_of_textures);
 
   const auto& texture_setting_list = texture_model_settings->materialList();
-  auto make_texture = [this, &system, &texture_setting_list](const uint index)
+  auto make_texture =
+  [this, &system, &texture_setting_list](const uint index)
   {
     const auto texture_settings = texture_setting_list[index];
-    texture_list_[index] = TextureModel::makeTexture(system, texture_settings);
+    texture_body_list_[index] = TextureModel::makeTexture(system, texture_settings);
+    texture_list_[index] = texture_body_list_[index].get();
   };
 
   {
     auto& threads = system.threadManager();
     constexpr uint start = 0;
-    auto result = threads.enqueueLoop(make_texture, start, num_of_textures);
+    auto result = threads.enqueueLoop(make_texture,
+                                      start,
+                                      num_of_textures,
+                                      work_resource);
     result.get();
   }
   ZISC_ASSERT(0 < texture_list_.size(), "The scene has no texture");
@@ -231,11 +279,16 @@ void World::initializeTexture(System& system,
 void World::initializeWorldLightSource() noexcept
 {
   light_source_list_.clear();
+  std::size_t num_of_lights = 0;
+  for (const auto& object : objectList()) {
+    if (object.material().isLightSource())
+      ++num_of_lights;
+  }
+  light_source_list_.reserve(num_of_lights);
   for (const auto& object : objectList()) {
     if (object.material().isLightSource())
       light_source_list_.emplace_back(&object);
   }
-  light_source_list_.shrink_to_fit();
   std::sort(light_source_list_.begin(), light_source_list_.end());
 }
 
@@ -245,15 +298,15 @@ void World::initializeWorldLightSource() noexcept
   */
 auto World::makeObjects(System& system,
                         const SettingNodeBase* settings) const noexcept
-    -> std::vector<ObjectSet>
+    -> zisc::pmr::vector<ObjectSet>
 {
-  std::list<std::future<ObjectSet>> results;
+  auto work_resource = settings->workResource();
+  zisc::pmr::list<std::future<ObjectSet>> results{work_resource};
   {
     const auto transformation = Transformation::makeIdentity();
-    std::string object_name = "";
-    makeObjects(system, settings, object_name, transformation, results);
+    makeObjects(system, settings, transformation, results);
   }
-  std::vector<ObjectSet> object_list;
+  zisc::pmr::vector<ObjectSet> object_list{work_resource};
   {
     object_list.reserve(results.size());
     for (auto& result : results)
@@ -267,27 +320,23 @@ auto World::makeObjects(System& system,
 void World::makeObjects(
     System& system,
     const SettingNodeBase* settings,
-    const std::string& name,
     Matrix4x4 transformation,
-    std::list<std::future<ObjectSet>>& results) const noexcept
+    zisc::pmr::list<std::future<ObjectSet>>& results) const noexcept
 {
   const auto object_model_settings = castNode<ObjectModelSettingNode>(settings);
   if (object_model_settings->visibility()) {
     // Transformation
-    const auto transformation_list = object_model_settings->transformationList();
+    const auto& transformation_list = object_model_settings->transformationList();
     if (0 < transformation_list.size()) {
       transformation = transformation *
                        Transformation::makeTransformation(transformation_list);
     }
-    auto object_name = (name.empty())
-        ? object_model_settings->name()
-        : name + "/" + object_model_settings->name();
     // Object
     const auto object_settings = object_model_settings->objectSettingNode();
     if (object_settings->type() == SettingNodeType::kGroupObject)
-      makeGroupObject(system, object_settings, object_name, transformation, results);
+      makeGroupObject(system, settings, transformation, results);
     else
-      makeSingleObject(system, object_settings, std::move(object_name), transformation, results);
+      makeSingleObject(system, settings, transformation, results);
   }
 }
 
@@ -298,43 +347,49 @@ void World::makeObjects(
 void World::makeSingleObject(
     System& system,
     const SettingNodeBase* settings,
-    std::string&& name,
     const Matrix4x4& transformation,
-    std::list<std::future<ObjectSet>>& results) const noexcept
+    zisc::pmr::list<std::future<ObjectSet>>& results) const noexcept
 {
-  auto make_object = [this, settings, name = std::move(name), transformation]()
+  auto work_resource = settings->workResource();
+  auto make_object =
+  [this, &system, settings, transformation, work_resource]()
   {
-    const auto object_settings = castNode<SingleObjectSettingNode>(settings);
+    const auto model_settings = castNode<ObjectModelSettingNode>(settings);
+    const auto object_settings =
+        castNode<SingleObjectSettingNode>(model_settings->objectSettingNode());
     // Make geometries
-    auto shape_list = Shape::makeShape(object_settings);
+    auto shape_list = Shape::makeShape(system, object_settings);
     // Transform geometries
     for (auto& shape : shape_list)
       shape->transform(transformation);
     // Set materials of geometries
     // Set Surface
     const auto surface_index = object_settings->surfaceIndex();
-    const SurfaceModel* surface_model = surface_list_[surface_index].get();
+    const SurfaceModel* surface_model = surface_list_[surface_index];
     // Set Emitter
     const EmitterModel* emitter_model = nullptr;
     if (object_settings->isEmissiveObject()) {
       const auto emitter_index = object_settings->emitterIndex();
-      emitter_model = emitter_list_[emitter_index].get();
+      emitter_model = emitter_list_[emitter_index];
     }
     // Make material
-    auto material = std::make_unique<Material>(surface_model, emitter_model);
+    auto material = zisc::UniqueMemoryPointer<Material>::make(
+        &system.dataMemoryManager(),
+        surface_model,
+        emitter_model);
     // Make objects
-    std::vector<Object> object_list;
+    zisc::pmr::vector<Object> object_list{work_resource};
     object_list.reserve(shape_list.size());
     for (auto& shape : shape_list) {
       object_list.emplace_back(std::move(shape), material.get());
-      object_list.back().setName(name);
+      object_list.back().setName(model_settings->name());
     }
     return std::make_tuple(std::move(object_list), std::move(material));
   };
 
   {
     auto& threads = system.threadManager();
-    auto result = threads.enqueue<ObjectSet>(make_object);
+    auto result = threads.enqueue<ObjectSet>(make_object, work_resource);
     results.emplace_back(std::move(result));
   }
 }
@@ -346,15 +401,16 @@ void World::makeSingleObject(
 void World::makeGroupObject(
     System& system,
     const SettingNodeBase* settings,
-    const std::string& name,
     const Matrix4x4& transformation,
-    std::list<std::future<ObjectSet>>& results) const noexcept
+    zisc::pmr::list<std::future<ObjectSet>>& results) const noexcept
 {
-  const auto group_settings = castNode<GroupObjectSettingNode>(settings);
+  const auto model_settings = castNode<ObjectModelSettingNode>(settings);
+  const auto group_settings =
+      castNode<GroupObjectSettingNode>(model_settings->objectSettingNode());
 
   const auto& object_list = group_settings->objectList();
   for (const auto object_settings : object_list)
-    makeObjects(system, object_settings, name, transformation, results);
+    makeObjects(system, object_settings, transformation, results);
 }
 
 } // namespace nanairo

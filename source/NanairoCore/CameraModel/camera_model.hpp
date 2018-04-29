@@ -12,7 +12,6 @@
 
 // Standard C++ library
 #include <array>
-#include <memory>
 // Zisc
 #include "zisc/sip_hash_engine.hpp"
 #include "zisc/memory_resource.hpp"
@@ -30,6 +29,7 @@ class Film;
 class SampledSpectra;
 class Sampler;
 class ShaderModel;
+class System;
 class WavelengthSamples;
 
 //! \addtogroup Core 
@@ -107,8 +107,9 @@ class CameraModel
   const Vector2& jittering() const noexcept;
 
   //! Make a camera
-  static std::unique_ptr<CameraModel> makeCamera(const SettingNodeBase* settings)
-      noexcept;
+  static zisc::UniqueMemoryPointer<CameraModel> makeCamera(
+      System& system,
+      const SettingNodeBase* settings) noexcept;
 
   //! Return the camera position
   virtual const Point3& position() const noexcept = 0;

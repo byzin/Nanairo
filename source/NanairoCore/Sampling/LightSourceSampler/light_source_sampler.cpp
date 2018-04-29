@@ -12,6 +12,8 @@
 #include <memory>
 #include <vector>
 // Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "contribution_weighted_light_source_sampler.hpp"
@@ -44,19 +46,27 @@ LightSourceSampler::~LightSourceSampler() noexcept
 
 /*!
   */
-std::unique_ptr<LightSourceSampler> LightSourceSampler::makeSampler(
+zisc::UniqueMemoryPointer<LightSourceSampler> LightSourceSampler::makeSampler(
+    System& system,
     const LightSourceSamplerType sampler_type,
     const World& world,
-    System& /* system */) noexcept
+    zisc::pmr::memory_resource* work_resource) noexcept
 {
-  std::unique_ptr<LightSourceSampler> sampler;
+  zisc::UniqueMemoryPointer<LightSourceSampler> sampler;
+  auto data_resource = &system.dataMemoryManager();
   switch (sampler_type) {
    case LightSourceSamplerType::kUniform: {
-    sampler = std::make_unique<UniformLightSourceSampler>(world);
+    sampler = zisc::UniqueMemoryPointer<UniformLightSourceSampler>::make(
+        data_resource,
+        world);
     break;
    }
    case LightSourceSamplerType::kPowerWeighted: {
-    sampler = std::make_unique<PowerWeightedLightSourceSampler>(world);
+    sampler = zisc::UniqueMemoryPointer<PowerWeightedLightSourceSampler>::make(
+        data_resource,
+        system,
+        world,
+        work_resource);
     break;
    }
    case LightSourceSamplerType::kContributionWeighted: {

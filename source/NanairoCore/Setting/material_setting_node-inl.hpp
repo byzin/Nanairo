@@ -19,6 +19,8 @@
 // Zisc
 #include "zisc/binary_data.hpp"
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "emitter_setting_node.hpp"
@@ -31,9 +33,21 @@ namespace nanairo {
 /*!
   */
 template <SettingNodeType kMaterialType>
+MaterialSettingNode<kMaterialType>::MaterialSettingNode(
+    const SettingNodeBase* parent) noexcept :
+        SettingNodeBase(parent),
+        material_list_{dataResource()},
+        material_body_list_{dataResource()}
+{
+}
+
+/*!
+  */
+template <SettingNodeType kMaterialType>
 void MaterialSettingNode<kMaterialType>::initialize() noexcept
 {
   material_list_.clear();
+  material_body_list_.clear();
 }
 
 /*!
@@ -41,33 +55,60 @@ void MaterialSettingNode<kMaterialType>::initialize() noexcept
 template <SettingNodeType kMaterialType> inline
 SettingNodeBase* MaterialSettingNode<kMaterialType>::addMaterial() noexcept
 {
-  SettingNodeBase* material_node =
-      (kMaterialType == SettingNodeType::kTextureModel)
-          ? zisc::treatAs<SettingNodeBase*>(new TextureSettingNode{}) :
-      (kMaterialType == SettingNodeType::kSurfaceModel)
-          ? zisc::treatAs<SettingNodeBase*>(new SurfaceSettingNode{})
-          : zisc::treatAs<SettingNodeBase*>(new EmitterSettingNode{});
-  material_node->initialize();
-  material_list_.emplace_back(material_node);
-  return material_node;
+  zisc::UniqueMemoryPointer<SettingNodeBase> material_node;
+  switch (kMaterialType)
+  {
+   case SettingNodeType::kTextureModel: {
+    material_node =
+        zisc::UniqueMemoryPointer<TextureSettingNode>::make(dataResource(), this);
+    break;
+   }
+   case SettingNodeType::kSurfaceModel: {
+    material_node =
+        zisc::UniqueMemoryPointer<SurfaceSettingNode>::make(dataResource(), this);
+    break;
+   }
+   case SettingNodeType::kEmitterModel: {
+    material_node =
+        zisc::UniqueMemoryPointer<EmitterSettingNode>::make(dataResource(), this);
+    break;
+   }
+   default: {
+    ZISC_ASSERT(false, "Unsupported material type is specified.");
+    break;
+   }
+  }
+  material_body_list_.emplace_back(std::move(material_node));
+  auto material = material_body_list_.back().get();
+  material->initialize();
+  material_list_.emplace_back(material);
+  return material;
 }
 
 /*!
   */
 template <SettingNodeType kMaterialType> inline
-std::vector<SettingNodeBase*>& MaterialSettingNode<kMaterialType>::materialList()
+zisc::pmr::vector<SettingNodeBase*>& MaterialSettingNode<kMaterialType>::materialList()
     noexcept
 {
-  return *zisc::treatAs<std::vector<SettingNodeBase*>*>(&material_list_);
+  return material_list_;
 }
 
 /*!
   */
 template <SettingNodeType kMaterialType> inline
-const std::vector<SettingNodeBase*>& MaterialSettingNode<kMaterialType>::materialList()
+const zisc::pmr::vector<SettingNodeBase*>& MaterialSettingNode<kMaterialType>::materialList()
     const noexcept
 {
-  return *zisc::treatAs<const std::vector<SettingNodeBase*>*>(&material_list_);
+  return material_list_;
+}
+
+/*!
+  */
+template <SettingNodeType kMaterialType> inline
+SettingNodeType MaterialSettingNode<kMaterialType>::nodeType() noexcept
+{
+  return kMaterialType;
 }
 
 /*!
@@ -88,6 +129,7 @@ void MaterialSettingNode<kMaterialType>::readData(std::istream* data_stream)
   zisc::read(&num_of_materials, data_stream);
   ZISC_ASSERT(0 < num_of_materials, "The num of materials is zero.");
   material_list_.reserve(num_of_materials);
+  material_body_list_.reserve(num_of_materials);
   for (uint i = 0; i < num_of_materials; ++i) {
     auto material = addMaterial();
     SettingNodeType material_type;
@@ -117,7 +159,7 @@ void MaterialSettingNode<kMaterialType>::writeData(std::ostream* data_stream)
 {
   writeType(data_stream);
 
-  const auto material_list = materialList();
+  const auto& material_list = materialList();
   const uint32 num_of_materials = zisc::cast<uint32>(material_list.size());
   zisc::write(&num_of_materials, data_stream);
   for (uint i = 0; i < num_of_materials; ++i) {

@@ -14,6 +14,7 @@
 // Standard C++ library
 #include <vector>
 // Zisc
+#include "zisc/memory_resource.hpp"
 #include "zisc/point.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -45,7 +46,7 @@ const XyzColor& HdrImage::operator[](const uint index) const noexcept
 /*!
   */
 inline
-std::vector<XyzColor>& HdrImage::data() noexcept
+zisc::pmr::vector<XyzColor>& HdrImage::data() noexcept
 {
   return buffer_;
 }
@@ -53,7 +54,7 @@ std::vector<XyzColor>& HdrImage::data() noexcept
 /*!
   */
 inline
-const std::vector<XyzColor>& HdrImage::data() const noexcept
+const zisc::pmr::vector<XyzColor>& HdrImage::data() const noexcept
 {
   return buffer_;
 }

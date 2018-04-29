@@ -9,11 +9,11 @@
 
 #include "film.hpp"
 // Standard C++ library
-#include <memory>
 #include <utility>
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -29,7 +29,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-Film::Film(const System& system, const SettingNodeBase* settings) noexcept
+Film::Film(System& system, const SettingNodeBase* settings) noexcept
 {
   initialize(system, settings);
 }
@@ -38,7 +38,7 @@ Film::Film(const System& system, const SettingNodeBase* settings) noexcept
   \details
   No detailed.
   */
-void Film::initialize(const System& system, const SettingNodeBase* /* settings */) noexcept
+void Film::initialize(System& system, const SettingNodeBase* /* settings */) noexcept
 {
   using zisc::cast;
 
@@ -49,13 +49,22 @@ void Film::initialize(const System& system, const SettingNodeBase* /* settings *
   inverse_resolution_[1] = zisc::invert(cast<Float>(height));
 
   // Initialize buffer
+  auto data_resource = &system.dataMemoryManager();
   switch (system.colorMode()) {
    case RenderingColorMode::kRgb: {
-    spectra_buffer_ = std::make_unique<RgbSpectraImage>(width, height);
+    spectra_buffer_ = zisc::UniqueMemoryPointer<RgbSpectraImage>::make(
+        data_resource,
+        width,
+        height,
+        data_resource);
     break;
    }
    case RenderingColorMode::kSpectra: {
-    spectra_buffer_ = std::make_unique<SpectraImage>(width, height);
+    spectra_buffer_ = zisc::UniqueMemoryPointer<SpectraImage>::make(
+        data_resource,
+        width,
+        height,
+        data_resource);
     break;
    }
    default: {

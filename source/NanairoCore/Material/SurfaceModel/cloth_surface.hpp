@@ -45,7 +45,7 @@ class ClothSurface : public SurfaceModel
   //! Create a rough dielectric surface
   ClothSurface(
       const SettingNodeBase* settings,
-      const std::vector<TextureModel*>& texture_list) noexcept;
+      const zisc::pmr::vector<const TextureModel*>& texture_list) noexcept;
 
 
 
@@ -76,8 +76,9 @@ class ClothSurface : public SurfaceModel
 
  private:
   //! Initialize
-  void initialize(const SettingNodeBase* settings,
-                  const std::vector<TextureModel*>& texture_list) noexcept;
+  void initialize(
+      const SettingNodeBase* settings,
+      const zisc::pmr::vector<const TextureModel*>& texture_list) noexcept;
 
 
   const TextureModel* reflectance_;

@@ -15,6 +15,8 @@
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/binary_data.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
@@ -77,6 +79,14 @@ void ProbabilisticPpmParameters::writeData(std::ostream* data_stream) const noex
 
 /*!
   */
+RenderingMethodSettingNode::RenderingMethodSettingNode(
+    const SettingNodeBase* parent) noexcept :
+        SettingNodeBase(parent)
+{
+}
+
+/*!
+  */
 void RenderingMethodSettingNode::initialize() noexcept
 {
   setMethodType(RenderingMethodType::kPathTracing);
@@ -105,6 +115,13 @@ RenderingMethodSettingNode::lightTracingParameters() const noexcept
               "Invalid method type is specified.");
   auto parameters = zisc::cast<const LightTracingParameters*>(parameters_.get());
   return *parameters;
+}
+
+/*!
+  */
+SettingNodeType RenderingMethodSettingNode::nodeType() noexcept
+{
+  return SettingNodeType::kRenderingMethod;
 }
 
 /*!
@@ -201,18 +218,21 @@ void RenderingMethodSettingNode::setMethodType(const RenderingMethodType method_
 {
   method_type_ = method_type;
   // Initialize parameters
-  parameters_.reset(nullptr);
+  parameters_.reset();
   switch (method_type_) {
    case RenderingMethodType::kPathTracing: {
-    parameters_ = std::make_unique<PathTracingParameters>();
+    parameters_ =
+        zisc::UniqueMemoryPointer<PathTracingParameters>::make(dataResource());
     break;
    }
    case RenderingMethodType::kLightTracing: {
-    parameters_ = std::make_unique<LightTracingParameters>();
+    parameters_ =
+        zisc::UniqueMemoryPointer<LightTracingParameters>::make(dataResource());
     break;
    }
    case RenderingMethodType::kProbabilisticPpm: {
-    parameters_ = std::make_unique<ProbabilisticPpmParameters>();
+    parameters_ = 
+        zisc::UniqueMemoryPointer<ProbabilisticPpmParameters>::make(dataResource());
     break;
    }
    default:

@@ -14,6 +14,8 @@
 #include <array>
 #include <cstddef>
 #include <vector>
+// Zisc
+#include "zisc/memory_resource.hpp"
 // Nanairo
 #include "texture_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -39,7 +41,7 @@ class ImageTexture : public TextureModel
 {
  public:
   //! Create a image texture
-  ImageTexture(const System& system, const SettingNodeBase* settings) noexcept;
+  ImageTexture(System& system, const SettingNodeBase* settings) noexcept;
 
 
   //! Evaluate the reflective spectra at the uv coordinate
@@ -81,16 +83,18 @@ class ImageTexture : public TextureModel
   uint getPixelIndex(const Point2& uv) const noexcept;
 
   //! Initialize
-  void initialize(const System& system, const SettingNodeBase* settings) noexcept;
+  void initialize(System& system, const SettingNodeBase* settings) noexcept;
 
   //! Set color
-  void initializeTables(const System& system, const LdrImage& image) noexcept;
+  void initializeTables(System& system,
+                        const LdrImage& image,
+                        zisc::pmr::memory_resource* work_resource) noexcept;
 
 
-  std::vector<SpectralDistribution> emissive_value_table_;
-  std::vector<SpectralDistribution> reflective_value_table_;
-  std::vector<Float> gray_scale_table_;
-  std::vector<uint> color_index_table_;
+  zisc::pmr::vector<SpectralDistribution> emissive_value_table_;
+  zisc::pmr::vector<SpectralDistribution> reflective_value_table_;
+  zisc::pmr::vector<Float> gray_scale_table_;
+  zisc::pmr::vector<uint> color_index_table_;
   Index2d resolution_;
 };
 

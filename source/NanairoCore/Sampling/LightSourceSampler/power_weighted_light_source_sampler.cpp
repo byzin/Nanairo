@@ -17,8 +17,11 @@
 #include "zisc/compensated_summation.hpp"
 #include "zisc/cumulative_distribution_function.hpp"
 #include "zisc/math.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "light_source_sampler.hpp"
+#include "NanairoCore/system.hpp"
 #include "NanairoCore/world.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/light_source_info.hpp"
@@ -34,9 +37,12 @@ namespace nanairo {
   No detailed.
   */
 PowerWeightedLightSourceSampler::PowerWeightedLightSourceSampler(
-    const World& world) noexcept
+    System& system,
+    const World& world,
+    zisc::pmr::memory_resource* work_resource) noexcept :
+        info_list_{&system.dataMemoryManager()}
 {
-  initialize(world);
+  initialize(system, world, work_resource);
 }
 
 /*!
@@ -97,7 +103,9 @@ LightSourceInfo PowerWeightedLightSourceSampler::getInfo(
   No detailed.
   */
 void PowerWeightedLightSourceSampler::initialize(
-    const World& world) noexcept
+    System& system,
+    const World& world,
+    zisc::pmr::memory_resource* work_resource) noexcept
 {
   {
     const auto& light_source_list = world.lightSourceList();
@@ -123,9 +131,9 @@ void PowerWeightedLightSourceSampler::initialize(
     std::sort(info_list_.begin(), info_list_.end(), comp);
   }
   {
-    std::vector<const LightSourceInfo*> info_list;
-    std::vector<Float> pdf_list;
-
+    auto data_resource = &system.dataMemoryManager();
+    zisc::pmr::vector<const LightSourceInfo*> info_list{data_resource};
+    zisc::pmr::vector<Float> pdf_list{data_resource};
     info_list.reserve(info_list_.size());
     pdf_list.reserve(info_list_.size());
     for (const auto& info : info_list_) {
@@ -133,8 +141,11 @@ void PowerWeightedLightSourceSampler::initialize(
       pdf_list.emplace_back(info.weight());
     }
 
-    light_source_cdf_ = std::make_unique<LightSourceCdf>(std::move(info_list),
-                                                         std::move(pdf_list));
+    light_source_cdf_ = zisc::UniqueMemoryPointer<LightSourceCdf>::make(
+        data_resource,
+        std::move(info_list),
+        std::move(pdf_list),
+        work_resource);
   }
 }
 

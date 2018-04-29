@@ -46,7 +46,7 @@ class LayeredDiffuseSurface : public SurfaceModel
   //! Create a rough dielectric surface
   LayeredDiffuseSurface(
       const SettingNodeBase* settings,
-      const std::vector<TextureModel*>& texture_list) noexcept;
+      const zisc::pmr::vector<const TextureModel*>& texture_list) noexcept;
 
 
   //! Make a interfaced lambertian BRDF
@@ -61,8 +61,9 @@ class LayeredDiffuseSurface : public SurfaceModel
 
  private:
   //! Initialize
-  void initialize(const SettingNodeBase* settings,
-                  const std::vector<TextureModel*>& texture_list) noexcept;
+  void initialize(
+      const SettingNodeBase* settings,
+      const zisc::pmr::vector<const TextureModel*>& texture_list) noexcept;
 
 
   const TextureModel* reflectance_;

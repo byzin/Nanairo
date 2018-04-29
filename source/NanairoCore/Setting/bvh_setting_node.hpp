@@ -14,6 +14,9 @@
 #include <istream>
 #include <memory>
 #include <ostream>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
 #include "NanairoCore/DataStructure/bvh.hpp"
@@ -43,6 +46,10 @@ struct AgglomerativeTreeletRestructuringParameters : public NodeParameterBase
 class BvhSettingNode : public SettingNodeBase
 {
  public:
+  //! Create a BVH settings
+  BvhSettingNode(const SettingNodeBase* parent) noexcept;
+
+
   //! Return the AgglomerativeTreeletRestructuring parameters
   AgglomerativeTreeletRestructuringParameters&
   agglomerativeTreeletRestructuringParameters() noexcept;
@@ -57,6 +64,9 @@ class BvhSettingNode : public SettingNodeBase
   //! Initialize a bvh setting
   void initialize() noexcept override;
 
+  //! Return the node type
+  static SettingNodeType nodeType() noexcept;
+
   //! Read the bvh setting data from the stream
   void readData(std::istream* data_stream) noexcept override;
 
@@ -70,7 +80,7 @@ class BvhSettingNode : public SettingNodeBase
   void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
-  std::unique_ptr<NodeParameterBase> parameters_;
+  zisc::UniqueMemoryPointer<NodeParameterBase> parameters_;
   BvhType bvh_type_;
 };
 

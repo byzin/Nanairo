@@ -17,6 +17,10 @@
 #include <memory>
 #include <tuple>
 #include <vector>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/non_copyable.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "Data/object.hpp"
 #include "Geometry/transformation.hpp"
@@ -41,7 +45,7 @@ class System;
  \details
  No detailed.
  */
-class World
+class World : public zisc::NonCopyable<World>
 {
  public:
   //! Initialize the world
@@ -55,25 +59,26 @@ class World
   const Bvh& bvh() const noexcept;
 
   //! Return the texture list
-  const std::vector<EmitterModel*>& emitterList() const noexcept;
+  const zisc::pmr::vector<const EmitterModel*>& emitterList() const noexcept;
 
   //! Return the light source list
-  const std::vector<const Object*>& lightSourceList() const noexcept;
+  const zisc::pmr::vector<const Object*>& lightSourceList() const noexcept;
 
   //! Return the material list
-  const std::vector<Material*>& materialList() const noexcept;
+  const zisc::pmr::vector<const Material*>& materialList() const noexcept;
 
   //! Return the object list
-  const std::vector<Object>& objectList() const noexcept;
+  const zisc::pmr::vector<Object>& objectList() const noexcept;
 
   //! Return the texture list
-  const std::vector<SurfaceModel*>& surfaceList() const noexcept;
+  const zisc::pmr::vector<const SurfaceModel*>& surfaceList() const noexcept;
 
   //! Return the texture list
-  const std::vector<TextureModel*>& textureList() const noexcept;
+  const zisc::pmr::vector<const TextureModel*>& textureList() const noexcept;
 
  private:
-  using ObjectSet = std::tuple<std::vector<Object>, std::unique_ptr<Material>>;
+  using ObjectSet = std::tuple<zisc::pmr::vector<Object>,
+                               zisc::UniqueMemoryPointer<Material>>;
 
 
   //! Initialize world
@@ -83,8 +88,9 @@ class World
   void initializeEmitter(System& system, const SettingNodeBase* settings) noexcept;
 
   //! Initialize Objects
-  std::vector<Object> initializeObject(System& system,
-                                       const SettingNodeBase* settings) noexcept;
+  zisc::pmr::vector<Object> initializeObject(
+      System& system,
+      const SettingNodeBase* settings) noexcept;
 
   //! Initialize the world information of light sources
   void initializeWorldLightSource() noexcept;
@@ -96,7 +102,7 @@ class World
   void initializeTexture(System& system, const SettingNodeBase* settings) noexcept;
 
   //! Make objects
-  std::vector<ObjectSet> makeObjects(
+  zisc::pmr::vector<ObjectSet> makeObjects(
       System& system,
       const SettingNodeBase* settings) const noexcept;
 
@@ -104,32 +110,33 @@ class World
   void makeObjects(
       System& system,
       const SettingNodeBase* settings,
-      const std::string& name,
       Matrix4x4 transformation,
-      std::list<std::future<ObjectSet>>& results) const noexcept;
+      zisc::pmr::list<std::future<ObjectSet>>& results) const noexcept;
 
   //! Make a single object
   void makeSingleObject(
       System& system,
       const SettingNodeBase* settings,
-      std::string&& name,
       const Matrix4x4& transformation,
-      std::list<std::future<ObjectSet>>& results) const noexcept;
+      zisc::pmr::list<std::future<ObjectSet>>& results) const noexcept;
 
   void makeGroupObject(
       System& system,
       const SettingNodeBase* settings,
-      const std::string& name,
       const Matrix4x4& transformation,
-      std::list<std::future<ObjectSet>>& results) const noexcept;
+      zisc::pmr::list<std::future<ObjectSet>>& results) const noexcept;
 
 
-  std::vector<std::unique_ptr<EmitterModel>> emitter_list_;
-  std::vector<std::unique_ptr<SurfaceModel>> surface_list_;
-  std::vector<std::unique_ptr<TextureModel>> texture_list_;
-  std::vector<std::unique_ptr<Material>> material_list_;
-  std::vector<const Object*> light_source_list_;
-  std::unique_ptr<Bvh> bvh_;
+  zisc::pmr::vector<const EmitterModel*> emitter_list_;
+  zisc::pmr::vector<const SurfaceModel*> surface_list_;
+  zisc::pmr::vector<const TextureModel*> texture_list_;
+  zisc::pmr::vector<const Material*> material_list_;
+  zisc::pmr::vector<const Object*> light_source_list_;
+  zisc::pmr::vector<zisc::UniqueMemoryPointer<EmitterModel>> emitter_body_list_;
+  zisc::pmr::vector<zisc::UniqueMemoryPointer<SurfaceModel>> surface_body_list_;
+  zisc::pmr::vector<zisc::UniqueMemoryPointer<TextureModel>> texture_body_list_;
+  zisc::pmr::vector<zisc::UniqueMemoryPointer<Material>> material_body_list_;
+  zisc::UniqueMemoryPointer<Bvh> bvh_;
 };
 
 //! \} Core

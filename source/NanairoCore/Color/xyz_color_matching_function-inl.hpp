@@ -26,7 +26,7 @@ namespace nanairo {
 inline
 SpectralDistribution& XyzColorMatchingFunction::xBar() noexcept
 {
-  return *bar_[0];
+  return bar_[0];
 }
 
 /*!
@@ -36,7 +36,7 @@ SpectralDistribution& XyzColorMatchingFunction::xBar() noexcept
 inline
 const SpectralDistribution& XyzColorMatchingFunction::xBar() const noexcept
 {
-  return *bar_[0];
+  return bar_[0];
 }
 
 /*!
@@ -46,7 +46,7 @@ const SpectralDistribution& XyzColorMatchingFunction::xBar() const noexcept
 inline
 SpectralDistribution& XyzColorMatchingFunction::yBar() noexcept
 {
-  return *bar_[1];
+  return bar_[1];
 }
 
 /*!
@@ -56,7 +56,7 @@ SpectralDistribution& XyzColorMatchingFunction::yBar() noexcept
 inline
 const SpectralDistribution& XyzColorMatchingFunction::yBar() const noexcept
 {
-  return *bar_[1];
+  return bar_[1];
 }
 
 /*!
@@ -66,7 +66,7 @@ const SpectralDistribution& XyzColorMatchingFunction::yBar() const noexcept
 inline
 SpectralDistribution& XyzColorMatchingFunction::zBar() noexcept
 {
-  return *bar_[2];
+  return bar_[2];
 }
 
 /*!
@@ -76,7 +76,7 @@ SpectralDistribution& XyzColorMatchingFunction::zBar() noexcept
 inline
 const SpectralDistribution& XyzColorMatchingFunction::zBar() const noexcept
 {
-  return *bar_[2];
+  return bar_[2];
 }
 
 } // namespace nanairo

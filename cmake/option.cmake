@@ -78,7 +78,7 @@ function(setCommandOptions)
   setBooleanOption(NANAIRO_SUPPRESS_EXCESSIVE_WARNING ON ${option_description})
 
   Set(option_description "The size of a memory pool per thread.")
-  math(EXPR __memory_size__ "1 << 15")
+  math(EXPR __memory_size__ "1 * 1024 * 1024")
   setStringOption(NANAIRO_MEMORY_POOL_SIZE ${__memory_size__} ${option_description})
 
   set(option_description "The shortest wavelength of the spectra range. Select from [360, 380].")

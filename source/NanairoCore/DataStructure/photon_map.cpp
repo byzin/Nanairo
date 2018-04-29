@@ -10,14 +10,19 @@
 #include "photon_map.hpp"
 // Standard C++ library
 #include <algorithm>
+#include <atomic>
+#include <cstddef>
 #include <iterator>
+#include <mutex>
 #include <thread>
 #include <vector>
 #include <utility>
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/thread_manager.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "knn_photon_list.hpp"
@@ -34,20 +39,9 @@ namespace nanairo {
   \details
   No detailed.
   */
-PhotonMap::PhotonMap(const System& system) noexcept
+PhotonMap::PhotonMap() noexcept :
+    num_of_nodes_{0}
 {
-  initialize(system);
-}
-
-/*!
-  \details
-  No detailed.
-  */
-void PhotonMap::clear() noexcept
-{
-  node_counter_ = 0;
-  for (auto& node_list : thread_node_list_)
-    node_list.clear();
 }
 
 /*!
@@ -56,37 +50,57 @@ void PhotonMap::clear() noexcept
   */
 void PhotonMap::construct(System& system) noexcept
 {
-  ZISC_ASSERT(0 < node_list_.size(), "The size of the tree is zero.");
-  // Allocate memory
-  const uint node_size = zisc::cast<uint>(node_counter_.load());
-  uint memory = 1;
-  while (memory < node_size)
-    memory = memory << 1;
-  tree_.resize(memory, nullptr);
+  ZISC_ASSERT(0 < node_list_->size(), "The size of the tree is zero.");
 
+  auto work_resource = &system.globalMemoryManager();
 
-//  if (tree_.size() < node_list_.size())
-//    tree_.resize(node_list_.size(), nullptr);
+  // Allocate the tree memory
+  const std::size_t node_size = num_of_nodes_.load(std::memory_order_relaxed);
+  {
+    std::size_t memory = 1;
+    while (memory < node_size)
+      memory = memory << 1;
+    tree_ = decltype(tree_)::make(
+        work_resource,
+        decltype(tree_)::value_type{work_resource});
+    tree_->resize(memory, nullptr);
+  }
+
   // Construct KD-tree
   constexpr bool threading = threadingIsEnabled();
-  auto begin = node_list_.begin();
+  auto begin = node_list_->begin();
   auto end = begin + node_size;
   splitAtMedian<threading>(system, 1, begin, end);
 }
 
 /*!
-  \details
-  No detailed.
   */
-void PhotonMap::reserve(const uint num_of_thread_caches) noexcept
+void PhotonMap::initialize(System& system,
+                           const std::size_t estimated_num_of_nodes) noexcept
 {
-  // Thread cache list
-  for (auto& node_list : thread_node_list_)
-    node_list.reserve(num_of_thread_caches);
-  // Node list
-  const uint num_of_caches = num_of_thread_caches * numOfThreads();
-  node_list_.resize(num_of_caches, nullptr);
-  tree_.resize(num_of_caches, nullptr);
+  auto work_resource = &system.globalMemoryManager();
+
+  std::size_t n = num_of_nodes_.exchange(0, std::memory_order_relaxed);
+  n = (n != 0) ? (n << 1) : estimated_num_of_nodes;
+
+  node_body_list_ = decltype(node_body_list_)::make(
+      work_resource,
+      decltype(node_body_list_)::value_type{work_resource});
+  node_body_list_->resize(n);
+
+  node_list_ = decltype(node_list_)::make(
+      work_resource,
+      decltype(node_list_)::value_type{work_resource});
+  node_list_->resize(n, nullptr);
+}
+
+/*!
+  */
+void PhotonMap::reset() noexcept
+{
+  node_body_list_.reset();
+  node_list_.reset();
+  tree_.reset();
 }
 
 /*!
@@ -100,7 +114,7 @@ void PhotonMap::search(const Point3& point,
 {
   uint index = 1;
   while (index != 0) {
-    const auto node = tree_[index - 1];
+    const auto node = (*tree_)[index - 1];
     testInsideCircle(point, normal, radius2, node, photon_list);
     // Internal node
     if (node->nodeType() != PhotonMapNode::NodeType::kLeaf) {
@@ -109,7 +123,7 @@ void PhotonMap::search(const Point3& point,
       const Float axis_diff2 = zisc::power<2>(axis_diff);
       // Left child node
       const uint left_child_index = index << 1;
-      const auto left_child_node = tree_[left_child_index - 1];
+      const auto left_child_node = (*tree_)[left_child_index - 1];
       if (left_child_node != nullptr &&
           (axis_diff < 0.0 || axis_diff2 < radius2)) {
         index = left_child_index;
@@ -117,7 +131,7 @@ void PhotonMap::search(const Point3& point,
       }
       // Right child node
       const uint right_child_index = left_child_index + 1;
-      const auto right_child_node = tree_[right_child_index - 1];
+      const auto right_child_node = (*tree_)[right_child_index - 1];
       if (right_child_node != nullptr &&
           (0.0 <= axis_diff || axis_diff2 < radius2)) {
         index = right_child_index;
@@ -132,25 +146,30 @@ void PhotonMap::search(const Point3& point,
   \details
   No detailed.
   */
-void PhotonMap::store(const int thread_id,
-                      const Point3& point,
+void PhotonMap::store(const Point3& point,
                       const Vector3& vin,
                       const SampledSpectra& photon_energy,
                       const bool wavelength_is_selected) noexcept
 {
-  // Store a photon cache
-  auto& node_list = thread_node_list_[thread_id];
-  node_list.emplace_back(photon_energy, point, vin, wavelength_is_selected);
-  // Add a cache to the node list
-  auto& node = node_list.back();
-  const auto index = node_counter_++;
-  // Allocate the memory of the node list
-  if (node_list_.size() <= index) {
+  const std::size_t index = num_of_nodes_++;
+
+  if (node_list_->size() <= index) {
     std::unique_lock<std::mutex> locker{lock_};
-    if (node_list_.size() <= index)
-      node_list_.resize(2 * node_list_.size(), nullptr);
+    if (node_list_->size() <= index) {
+      node_body_list_->resize(2 * node_body_list_->size());
+      node_list_->resize(2 * node_list_->size(), nullptr);
+    }
   }
-  node_list_[index] = &node;
+
+  auto& node = (*node_body_list_)[index];
+  {
+    auto& cache = node.cache();
+    cache.setEnergy(photon_energy);
+    cache.setPoint(point);
+    cache.setIncidentDirection(vin);
+    cache.setWavelengthIsSelected(wavelength_is_selected);
+  }
+  (*node_list_)[index] = &node;
 }
 
 /*!
@@ -189,26 +208,16 @@ uint PhotonMap::nextSearchIndex(const Point3& point,
     if (index != 0) {
       ++index;
       const uint parent_index = index >> 1;
-      const auto parent_node = tree_[parent_index - 1];
+      const auto parent_node = (*tree_)[parent_index - 1];
       const auto axis = zisc::cast<uint>(parent_node->nodeType());
       const Float axis_diff = point[axis] - parent_node->point()[axis];
       const Float axis_diff2 = zisc::power<2>(axis_diff);
-      const auto node = tree_[index - 1];
+      const auto node = (*tree_)[index - 1];
       if (node != nullptr && (0.0 <= axis_diff || axis_diff2 < radius2))
         break;
     }
   }
   return index;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-void PhotonMap::initialize(const System& system) noexcept
-{
-  const auto num_of_threads = system.threadManager().numOfThreads();
-  thread_node_list_.resize(num_of_threads);
 }
 
 /*!
@@ -221,17 +230,15 @@ void PhotonMap::splitAtMedian(System& system,
                               NodeIterator begin,
                               NodeIterator end) noexcept
 {
-  if (tree_.size() <= (number - 1))
-    std::cout << "Size: " << tree_.size() << ", index: " << (number - 1) << std::endl;
-  ZISC_ASSERT((number - 1) < tree_.size(), "The index is out of range.");
+  ZISC_ASSERT((number - 1) < tree_->size(), "The index is out of range.");
   const uint size = zisc::cast<uint>(std::distance(begin, end));
   if (size == 0) {
-    tree_[number - 1] = nullptr;
+    (*tree_)[number - 1] = nullptr;
   }
   // Leaf node
   else if (size == 1) {
     (*begin)->setNodeType(PhotonMapNode::NodeType::kLeaf);
-    tree_[number - 1] = *begin;
+    (*tree_)[number - 1] = *begin;
   }
   // Internal node
   else if (1 < size) {
@@ -246,7 +253,7 @@ void PhotonMap::splitAtMedian(System& system,
     auto median = begin;
     std::advance(median, size >> 1);
     (*median)->setNodeType(axis);
-    tree_[number - 1] = *median;
+    (*tree_)[number - 1] = *median;
 
     // Operate the child nodes
     const uint left_number = number << 1;
@@ -263,8 +270,9 @@ void PhotonMap::splitAtMedian(System& system,
     // Threading
     if (threading) {
       auto& threads = system.threadManager();
-      auto left_result = threads.enqueue<void>(split_left_group);
-      auto right_result = threads.enqueue<void>(split_right_group);
+      auto work_resource = &system.globalMemoryManager();
+      auto left_result = threads.enqueue<void>(split_left_group, work_resource);
+      auto right_result = threads.enqueue<void>(split_right_group, work_resource);
       left_result.get();
       right_result.get();
     }

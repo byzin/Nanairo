@@ -33,7 +33,7 @@ namespace nanairo {
   */
 SmoothDielectricSurface::SmoothDielectricSurface(
     const SettingNodeBase* settings,
-    const std::vector<TextureModel*>& texture_list) noexcept
+    const zisc::pmr::vector<const TextureModel*>& texture_list) noexcept
 {
   initialize(settings, texture_list);
 }
@@ -78,7 +78,7 @@ SurfaceType SmoothDielectricSurface::type() const noexcept
   */
 void SmoothDielectricSurface::initialize(
     const SettingNodeBase* settings,
-    const std::vector<TextureModel*>& texture_list) noexcept
+    const zisc::pmr::vector<const TextureModel*>& texture_list) noexcept
 {
   const auto surface_settings = castNode<SurfaceSettingNode>(settings);
 

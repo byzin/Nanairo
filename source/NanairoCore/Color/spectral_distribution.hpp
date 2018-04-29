@@ -14,6 +14,7 @@
 #include <memory>
 // Zisc
 #include "zisc/arith_array.hpp"
+#include "zisc/memory_resource.hpp"
 // Nanairo
 #include "xyz_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -141,12 +142,12 @@ class SpectralDistribution
   Float min() const noexcept;
 
   //! Compute the spectra based on the system color mode
-  SpectralDistribution computeSystemColor(const System& system) const noexcept;
+  SpectralDistribution computeSystemColor(
+      const System& system,
+      zisc::pmr::memory_resource* work_resource) const noexcept;
 
   //! Make a spectra
-  static std::unique_ptr<SpectralDistribution> makeDistribution(
-      const System& system,
-      const SettingNodeBase* settings) noexcept;
+  void load(const System& system, const SettingNodeBase* settings) noexcept;
 
   //! Return the normalized distribution
   SpectralDistribution normalized() const noexcept;
@@ -187,7 +188,9 @@ class SpectralDistribution
   void loadSpectra(const SettingNodeBase* settings) noexcept;
 
   //! Convert RGB color to spectra color
-  SpectralDistribution toSpectraColor(const System& system) const noexcept;
+  SpectralDistribution toSpectraColor(
+      const System& system,
+      zisc::pmr::memory_resource* work_resource) const noexcept;
 
   //! Convert spectra color to RGB color
   SpectralDistribution toRgbSpectraColor(const System& system) const noexcept;

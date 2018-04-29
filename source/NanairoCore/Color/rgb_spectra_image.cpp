@@ -16,6 +16,7 @@
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/thread_manager.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -35,8 +36,12 @@ namespace nanairo {
   \details
   No detailed.
   */
-RgbSpectraImage::RgbSpectraImage(const uint width, const uint height) noexcept :
-    SpectraImageInterface(width, height)
+RgbSpectraImage::RgbSpectraImage(const uint width,
+                                 const uint height,
+                                 zisc::pmr::memory_resource* data_resource) noexcept :
+    SpectraImageInterface(width, height),
+    buffer_{data_resource},
+    compensation_{data_resource}
 {
   initialize();
 }
@@ -45,8 +50,11 @@ RgbSpectraImage::RgbSpectraImage(const uint width, const uint height) noexcept :
   \details
   No detailed.
   */
-RgbSpectraImage::RgbSpectraImage(const Index2d& resolution) noexcept :
-    SpectraImageInterface(resolution)
+RgbSpectraImage::RgbSpectraImage(const Index2d& resolution,
+                                 zisc::pmr::memory_resource* data_resource) noexcept :
+    SpectraImageInterface(resolution),
+    buffer_{data_resource},
+    compensation_{data_resource}
 {
   initialize();
 }
@@ -113,9 +121,10 @@ void RgbSpectraImage::toHdrImage(System& system,
 
   {
     auto& threads = system.threadManager();
+    auto& work_resource = system.globalMemoryManager();
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
-    auto result = threads.enqueueLoop(to_hdr_image, start, end);
+    auto result = threads.enqueueLoop(to_hdr_image, start, end, &work_resource);
     result.get();
   }
 }

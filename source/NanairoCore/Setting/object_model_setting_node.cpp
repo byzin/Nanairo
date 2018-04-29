@@ -12,11 +12,14 @@
 #include <istream>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <utility>
 // Zisc
 #include "zisc/binary_data.hpp"
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "camera_setting_node.hpp"
@@ -31,16 +34,29 @@ namespace nanairo {
 
 /*!
   */
+ObjectModelSettingNode::ObjectModelSettingNode(const SettingNodeBase* parent) noexcept :
+    SettingNodeBase(parent),
+    name_{dataResource()},
+    transformation_list_{dataResource()},
+    transformation_body_list_{dataResource()}
+{
+}
+
+/*!
+  */
 SettingNodeBase* ObjectModelSettingNode::addTransformation(
     const TransformationType type,
     const double x,
     const double y,
     const double z) noexcept
 {
-  transformation_list_.emplace_back(std::make_unique<TransformationSettingNode>());
-  auto t = zisc::cast<TransformationSettingNode*>(transformation_list_.back().get());
+  transformation_body_list_.emplace_back(
+      zisc::UniqueMemoryPointer<TransformationSettingNode>::make(dataResource(),
+                                                                 this));
+  auto t = zisc::cast<TransformationSettingNode*>(transformation_body_list_.back().get());
   t->setTransformationType(type);
   t->setValue(x, y, z);
+  transformation_list_.emplace_back(t);
   return t;
 }
 
@@ -51,14 +67,22 @@ void ObjectModelSettingNode::initialize() noexcept
   setName("Object");
   setVisibility(true);
   transformation_list_.clear();
+  transformation_body_list_.clear();
   setObject(ObjectType::kSingle);
 }
 
 /*!
   */
-const std::string& ObjectModelSettingNode::name() const noexcept
+std::string_view ObjectModelSettingNode::name() const noexcept
 {
-  return name_;
+  return std::string_view{name_};
+}
+
+/*!
+  */
+SettingNodeType ObjectModelSettingNode::nodeType() noexcept
+{
+  return SettingNodeType::kObjectModel;
 }
 
 /*!
@@ -81,8 +105,7 @@ void ObjectModelSettingNode::readData(std::istream* data_stream) noexcept
 {
   // Properties
   {
-    auto n = readString(data_stream);
-    setName(std::move(n));
+    name_ = readString(data_stream);
   }
   zisc::read(&visibility_, data_stream);
 
@@ -91,6 +114,7 @@ void ObjectModelSettingNode::readData(std::istream* data_stream) noexcept
     uint32 num_of_transformations;
     zisc::read(&num_of_transformations, data_stream);
     transformation_list_.reserve(num_of_transformations);
+    transformation_body_list_.reserve(num_of_transformations);
     for (uint i = 0; i < num_of_transformations; ++i) {
       SettingNodeType type;
       zisc::read(&type, data_stream);
@@ -119,16 +143,9 @@ void ObjectModelSettingNode::readData(std::istream* data_stream) noexcept
 
 /*!
   */
-void ObjectModelSettingNode::setName(const std::string& name) noexcept
+void ObjectModelSettingNode::setName(const std::string_view& name) noexcept
 {
   name_ = name;
-}
-
-/*!
-  */
-void ObjectModelSettingNode::setName(std::string&& name) noexcept
-{
-  name_ = std::move(name);
 }
 
 /*!
@@ -137,15 +154,18 @@ SettingNodeBase* ObjectModelSettingNode::setObject(const ObjectType type) noexce
 {
   switch (type) {
    case ObjectType::kCamera: {
-    object_setting_node_ = std::make_unique<CameraSettingNode>();
+    object_setting_node_ =
+        zisc::UniqueMemoryPointer<CameraSettingNode>::make(dataResource(), this);
     break;
    }
    case ObjectType::kGroup: {
-    object_setting_node_ = std::make_unique<GroupObjectSettingNode>();
+    object_setting_node_ =
+        zisc::UniqueMemoryPointer<GroupObjectSettingNode>::make(dataResource(), this);
     break;
    }
    case ObjectType::kSingle: {
-    object_setting_node_ = std::make_unique<SingleObjectSettingNode>();
+    object_setting_node_ =
+        zisc::UniqueMemoryPointer<SingleObjectSettingNode>::make(dataResource(), this);
     break;
    }
    default: {
@@ -166,17 +186,17 @@ void ObjectModelSettingNode::setVisibility(const bool visibility) noexcept
 
 /*!
   */
-std::vector<SettingNodeBase*>& ObjectModelSettingNode::transformationList() noexcept
+zisc::pmr::vector<SettingNodeBase*>& ObjectModelSettingNode::transformationList() noexcept
 {
-  return *zisc::treatAs<std::vector<SettingNodeBase*>*>(&transformation_list_);
+  return transformation_list_;
 }
 
 /*!
   */
-const std::vector<SettingNodeBase*>& ObjectModelSettingNode::transformationList()
+const zisc::pmr::vector<SettingNodeBase*>& ObjectModelSettingNode::transformationList()
     const noexcept
 {
-  return *zisc::treatAs<const std::vector<SettingNodeBase*>*>(&transformation_list_);
+  return transformation_list_;
 }
 
 /*!

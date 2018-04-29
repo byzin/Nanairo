@@ -117,8 +117,8 @@ bool GuiRendererManager::isDebugMode() const noexcept
 void GuiRendererManager::invokeRendering(const QVariant& scene_data,
                                          const bool is_previewing) noexcept
 {
-  QSharedPointer<QJsonObject> scene_value{
-      new QJsonObject{QJsonObject::fromVariantMap(scene_data.toMap())}};
+  auto scene_value = QSharedPointer<QJsonObject>::create(
+      QJsonObject::fromVariantMap(scene_data.toMap()));
   auto render = [this, scene_value, is_previewing]()
   {
     const GuiRenderer::RenderingMode mode = (is_previewing)
@@ -142,7 +142,7 @@ void GuiRendererManager::invokeRendering(const QVariant& scene_data,
       QTextStream{stderr} << "Error: " << error_message;
     }
   };
-  rendering_thread_.enqueue<void>(render);
+  rendering_thread_.enqueue<void>(std::move(render));
 }
 
 /*!

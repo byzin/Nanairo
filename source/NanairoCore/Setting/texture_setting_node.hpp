@@ -15,6 +15,10 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <string_view>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -42,7 +46,7 @@ struct ValueTextureParameters : public NodeParameterBase
 struct UnicolorTextureParameters : public NodeParameterBase
 {
   //! Initialize parameters
-  UnicolorTextureParameters() noexcept;
+  UnicolorTextureParameters(const SettingNodeBase* parent) noexcept;
 
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept;
@@ -50,14 +54,14 @@ struct UnicolorTextureParameters : public NodeParameterBase
   //! Write the parameters to the stream
   void writeData(std::ostream* data_stream) const noexcept;
 
-  std::unique_ptr<SettingNodeBase> color_;
+  zisc::UniqueMemoryPointer<SettingNodeBase> color_;
 };
 
 //! CheckerboardTexture parameters
 struct CheckerboardTextureParameters : public NodeParameterBase
 {
   //! Initialize parameters
-  CheckerboardTextureParameters() noexcept;
+  CheckerboardTextureParameters(const SettingNodeBase* parent) noexcept;
 
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept;
@@ -65,20 +69,23 @@ struct CheckerboardTextureParameters : public NodeParameterBase
   //! Write the parameters to the stream
   void writeData(std::ostream* data_stream) const noexcept;
 
-  std::array<std::unique_ptr<SettingNodeBase>, 2> color_;
-  std::array<uint32, 2> resolution_;
+  std::array<zisc::UniqueMemoryPointer<SettingNodeBase>, 2> color_;
+  std::array<uint32, 2> resolution_{{10, 10}};
 };
 
 //! ImageTexture parameters
 struct ImageTextureParameters : public NodeParameterBase
 {
+  //! Initialize parameters
+  ImageTextureParameters(zisc::pmr::memory_resource* data_resource) noexcept;
+
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept;
 
   //! Write the parameters to the stream
   void writeData(std::ostream* data_stream) const noexcept;
 
-  LdrImage image_{1, 1};
+  LdrImage image_;
 };
 
 /*!
@@ -86,6 +93,10 @@ struct ImageTextureParameters : public NodeParameterBase
 class TextureSettingNode : public SettingNodeBase
 {
  public:
+  //! Create a texture settings
+  TextureSettingNode(const SettingNodeBase* parent) noexcept;
+
+
   //! Return the checkerboard texture parameters
   CheckerboardTextureParameters& checkerboardTextureParameters() noexcept;
 
@@ -102,16 +113,16 @@ class TextureSettingNode : public SettingNodeBase
   void initialize() noexcept override;
 
   //! Return the name of the texture
-  const std::string& name() const noexcept;
+  std::string_view name() const noexcept;
+
+  //! Return the node type
+  static SettingNodeType nodeType() noexcept;
 
   //! Read the texture setting from the data stream
   void readData(std::istream* data_stream) noexcept override;
 
   //! Set the name of the texture
-  void setName(const std::string& name) noexcept;
-
-  //! Set the name of the texture
-  void setName(std::string&& name) noexcept;
+  void setName(const std::string_view& name) noexcept;
 
   //! Set the texture type
   void setTextureType(const TextureType type) noexcept;
@@ -138,8 +149,8 @@ class TextureSettingNode : public SettingNodeBase
   void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
-  std::unique_ptr<NodeParameterBase> parameters_;
-  std::string name_;
+  zisc::UniqueMemoryPointer<NodeParameterBase> parameters_;
+  zisc::pmr::string name_;
   TextureType texture_type_;
 };
 

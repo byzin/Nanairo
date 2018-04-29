@@ -58,13 +58,21 @@ std::array<Integer, 2> System::calcThreadRange(const Integer range,
 }
 
 /*!
+  */
+inline
+auto System::dataMemoryManager() noexcept -> MemoryManager&
+{
+  return memory_manager_list_[0];
+}
+
+/*!
   \details
   No detailed.
   */
 inline
 auto System::globalMemoryManager() noexcept -> MemoryManager&
 {
-  return memory_manager_list_[0];
+  return memory_manager_list_[1];
 }
 
 /*!
@@ -134,7 +142,7 @@ const zisc::ThreadManager& System::threadManager() const noexcept
 inline
 auto System::threadMemoryManager(const uint thread_number) noexcept -> MemoryManager&
 {
-  return memory_manager_list_[thread_number + 1];
+  return memory_manager_list_[thread_number + 2];
 }
 
 /*!

@@ -11,13 +11,17 @@
 // Standard C++ library
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "non_directional_emitter.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/system.hpp"
 #include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Setting/emitter_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
@@ -46,16 +50,20 @@ EmitterModel::EmitterModel(const SettingNodeBase* settings) noexcept
   \details
   No detailed.
   */
-std::unique_ptr<EmitterModel> EmitterModel::makeEmitter(
+zisc::UniqueMemoryPointer<EmitterModel> EmitterModel::makeEmitter(
+    System& system,
     const SettingNodeBase* settings,
-    const std::vector<TextureModel*>& texture_list) noexcept
+    const zisc::pmr::vector<const TextureModel*>& texture_list) noexcept
 {
   const auto emitter_settings = castNode<EmitterSettingNode>(settings);
 
-  std::unique_ptr<EmitterModel> emitter;
+  zisc::UniqueMemoryPointer<EmitterModel> emitter;
+  auto& data_resource = system.dataMemoryManager();
   switch (emitter_settings->emitterType()) {
    case EmitterType::kNonDirectional: {
-    emitter = std::make_unique<NonDirectionalEmitter>(settings, texture_list);
+    emitter = zisc::UniqueMemoryPointer<NonDirectionalEmitter>::make(&data_resource,
+                                                                     settings,
+                                                                     texture_list);
     break;
    }
    default: {
@@ -69,18 +77,18 @@ std::unique_ptr<EmitterModel> EmitterModel::makeEmitter(
 
 /*!
   */
-const std::string* EmitterModel::name() const noexcept
+std::string_view EmitterModel::name() const noexcept
 {
-  const std::string* object_name = nullptr;
 #ifdef Z_DEBUG_MODE
-  object_name = &name_;
+  return std::string_view{name_};
+#else // Z_DEBUG_MODE
+  return std::string_view{"EmitterModel"};
 #endif // Z_DEBUG_MODE
-  return object_name;
 }
 
 /*!
   */
-void EmitterModel::setName(const std::string& name) noexcept
+void EmitterModel::setName(const std::string_view& name) noexcept
 {
 #ifdef Z_DEBUG_MODE
   name_ = name;

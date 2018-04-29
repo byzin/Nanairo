@@ -12,6 +12,7 @@
 #include <cstddef>
 #include <memory>
 // Zisc
+#include "zisc/memory_resource.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "texture_model.hpp"
@@ -42,7 +43,7 @@ SampledSpectra UnicolorTexture::emissiveValue(
     const Point2& /* uv */,
     const WavelengthSamples& wavelengths) const noexcept
 {
-  return sample(*emissive_value_, wavelengths);
+  return sample(emissive_value_, wavelengths);
 }
 
 /*!
@@ -62,7 +63,7 @@ Float UnicolorTexture::reflectiveValue(
     const Point2& /* uv */,
     const uint16 wavelength) const noexcept
 {
-  return reflective_value_->getByWavelength(wavelength);
+  return reflective_value_.getByWavelength(wavelength);
 }
 
 /*!
@@ -73,7 +74,7 @@ SampledSpectra UnicolorTexture::reflectiveValue(
     const Point2& /* uv */,
     const WavelengthSamples& wavelengths) const noexcept
 {
-  return sample(*reflective_value_, wavelengths);
+  return sample(reflective_value_, wavelengths);
 }
 
 /*!
@@ -84,7 +85,7 @@ Float UnicolorTexture::spectraValue(
     const Point2& /* uv */,
     const uint16 wavelength) const noexcept
 {
-  return spectra_value_->getByWavelength(wavelength);
+  return spectra_value_.getByWavelength(wavelength);
 }
 
 /*!
@@ -95,7 +96,7 @@ SampledSpectra UnicolorTexture::spectraValue(
     const Point2& /* uv */,
     const WavelengthSamples& wavelengths) const noexcept
 {
-  return sample(*spectra_value_, wavelengths);
+  return sample(spectra_value_, wavelengths);
 }
 
 /*!
@@ -115,20 +116,18 @@ void UnicolorTexture::initialize(const System& system,
                                  const SettingNodeBase* settings) noexcept
 {
   const auto texture_settings = castNode<TextureSettingNode>(settings);
+  auto work_resource = settings->workResource();
 
   {
     const auto& parameters = texture_settings->unicolorTextureParameters();
-    spectra_value_ = SpectralDistribution::makeDistribution(system,
-                                                            parameters.color_.get());
-    *spectra_value_ = spectra_value_->computeSystemColor(system);
+    spectra_value_.load(system, parameters.color_.get());
+    spectra_value_ = spectra_value_.computeSystemColor(system, work_resource);
   }
   {
-    emissive_value_ = std::make_unique<SpectralDistribution>(
-                                             spectra_value_->toEmissiveColor());
-    reflective_value_ = std::make_unique<SpectralDistribution>(
-                                           spectra_value_->toReflectiveColor());
+    emissive_value_ = spectra_value_.toEmissiveColor();
+    reflective_value_ = spectra_value_.toReflectiveColor();
 
-    gray_scale_value_ = reflective_value_->toXyzForReflector(system).y();
+    gray_scale_value_ = reflective_value_.toXyzForReflector(system).y();
     gray_scale_value_ = zisc::clamp(gray_scale_value_, 0.0, 1.0);
   }
 }

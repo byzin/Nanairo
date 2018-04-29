@@ -12,10 +12,13 @@
 #include <istream>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <utility>
 // Zisc
 #include "zisc/binary_data.hpp"
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
@@ -43,6 +46,14 @@ void NonDirectionalEmitterParameters::writeData(std::ostream* data_stream)
 
 /*!
   */
+EmitterSettingNode::EmitterSettingNode(const SettingNodeBase* parent) noexcept :
+    SettingNodeBase(parent),
+    name_{dataResource()}
+{
+}
+
+/*!
+  */
 EmitterType EmitterSettingNode::emitterType() const noexcept
 {
   return emitter_type_;
@@ -58,9 +69,16 @@ void EmitterSettingNode::initialize() noexcept
 
 /*!
   */
-const std::string& EmitterSettingNode::name() const noexcept
+std::string_view EmitterSettingNode::name() const noexcept
 {
-  return name_;
+  return std::string_view{name_};
+}
+
+/*!
+  */
+SettingNodeType EmitterSettingNode::nodeType() noexcept
+{
+  return SettingNodeType::kEmitter;
 }
 
 /*!
@@ -90,8 +108,7 @@ EmitterSettingNode::nonDirectionalEmitterParameters() const noexcept
 void EmitterSettingNode::readData(std::istream* data_stream) noexcept
 {
   {
-    auto name = readString(data_stream);
-    setName(std::move(name));
+    name_= readString(data_stream);
   }
   {
     zisc::read(&emitter_type_, data_stream);
@@ -110,7 +127,8 @@ void EmitterSettingNode::setEmitterType(const EmitterType type) noexcept
   parameters_.reset();
   switch (emitter_type_) {
    case EmitterType::kNonDirectional: {
-    parameters_ = std::make_unique<NonDirectionalEmitterParameters>();
+    parameters_ =
+        zisc::UniqueMemoryPointer<NonDirectionalEmitterParameters>::make(dataResource());
     break;
    }
    default:
@@ -120,16 +138,9 @@ void EmitterSettingNode::setEmitterType(const EmitterType type) noexcept
 
 /*!
   */
-void EmitterSettingNode::setName(const std::string& name) noexcept
+void EmitterSettingNode::setName(const std::string_view& name) noexcept
 {
   name_ = name;
-}
-
-/*!
-  */
-void EmitterSettingNode::setName(std::string&& name) noexcept
-{
-  name_ = std::move(name);
 }
 
 /*!

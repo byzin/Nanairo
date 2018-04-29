@@ -37,8 +37,9 @@ class NonDirectionalEmitter : public EmitterModel
 {
  public:
   //! Create a non directional emitter
-  NonDirectionalEmitter(const SettingNodeBase* settings,
-                        const std::vector<TextureModel*>& texture_list) noexcept;
+  NonDirectionalEmitter(
+      const SettingNodeBase* settings,
+      const zisc::pmr::vector<const TextureModel*>& texture_list) noexcept;
 
 
   //! Make non-directional light
@@ -51,8 +52,9 @@ class NonDirectionalEmitter : public EmitterModel
 
  private:
   //! Initialize the emitter
-  void initialize(const SettingNodeBase* settings,
-                  const std::vector<TextureModel*>& texture_list) noexcept;
+  void initialize(
+      const SettingNodeBase* settings,
+      const zisc::pmr::vector<const TextureModel*>& texture_list) noexcept;
 
 
   const TextureModel* color_;

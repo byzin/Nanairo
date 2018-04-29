@@ -11,6 +11,7 @@
 // Standard C++ library
 #include <vector>
 // Zisc
+#include "zisc/memory_resource.hpp"
 #include "zisc/point.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -23,7 +24,10 @@ namespace nanairo {
   \details
   No detailed.
   */
-HdrImage::HdrImage(const uint width, const uint height) noexcept :
+HdrImage::HdrImage(const uint width,
+                   const uint height,
+                   zisc::pmr::memory_resource* data_resource) noexcept :
+    buffer_{data_resource},
     resolution_{Index2d{zisc::cast<uint32>(width), zisc::cast<uint32>(height)}}
 {
   initialize();
@@ -31,7 +35,9 @@ HdrImage::HdrImage(const uint width, const uint height) noexcept :
 
 /*!
   */
-HdrImage::HdrImage(const Index2d& resolution) noexcept :
+HdrImage::HdrImage(const Index2d& resolution,
+                   zisc::pmr::memory_resource* data_resource) noexcept :
+    buffer_{data_resource},
     resolution_{resolution}
 {
   initialize();

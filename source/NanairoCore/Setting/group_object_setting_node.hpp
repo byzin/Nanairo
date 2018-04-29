@@ -15,6 +15,9 @@
 #include <memory>
 #include <ostream>
 #include <vector>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
 
@@ -28,20 +31,27 @@ namespace nanairo {
 class GroupObjectSettingNode : public SettingNodeBase
 {
  public:
+  //! Create a group object settings
+  GroupObjectSettingNode(const SettingNodeBase* parent) noexcept;
+
+
   //! Make a object and add it to the group
   SettingNodeBase* addObject() noexcept;
 
   //! Initialize group object setting
   void initialize() noexcept override;
 
+  //! Return the node type
+  static SettingNodeType nodeType() noexcept;
+
   //! Read the group object setting data from the stream
   void readData(std::istream* data_stream) noexcept override;
 
   //! Return the object list
-  std::vector<SettingNodeBase*>& objectList() noexcept;
+  zisc::pmr::vector<SettingNodeBase*>& objectList() noexcept;
 
   //! Return the object list
-  const std::vector<SettingNodeBase*>& objectList() const noexcept;
+  const zisc::pmr::vector<SettingNodeBase*>& objectList() const noexcept;
 
   //! Return the node type
   SettingNodeType type() const noexcept override;
@@ -50,7 +60,8 @@ class GroupObjectSettingNode : public SettingNodeBase
   void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
-  std::vector<std::unique_ptr<SettingNodeBase>> object_list_;
+  zisc::pmr::vector<SettingNodeBase*> object_list_;
+  zisc::pmr::vector<zisc::UniqueMemoryPointer<SettingNodeBase>> object_body_list_;
 };
 
 //! \} Core

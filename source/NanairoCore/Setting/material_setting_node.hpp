@@ -15,6 +15,9 @@
 #include <memory>
 #include <ostream>
 #include <vector>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -30,6 +33,10 @@ template <SettingNodeType kMaterialType>
 class MaterialSettingNode : public SettingNodeBase
 {
  public:
+  //! Create a material settings
+  MaterialSettingNode(const SettingNodeBase* parent) noexcept;
+
+
   //! Make a material and add it to the material list
   SettingNodeBase* addMaterial() noexcept;
 
@@ -37,10 +44,13 @@ class MaterialSettingNode : public SettingNodeBase
   void initialize() noexcept override;
 
   //! Return the material list
-  std::vector<SettingNodeBase*>& materialList() noexcept;
+  zisc::pmr::vector<SettingNodeBase*>& materialList() noexcept;
 
   //! Return the material list
-  const std::vector<SettingNodeBase*>& materialList() const noexcept;
+  const zisc::pmr::vector<SettingNodeBase*>& materialList() const noexcept;
+
+  //! Return the node type
+  static SettingNodeType nodeType() noexcept;
 
   //! Return the num of materials
   uint numOfMaterials() const noexcept;
@@ -55,7 +65,8 @@ class MaterialSettingNode : public SettingNodeBase
   void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
-  std::vector<std::unique_ptr<SettingNodeBase>> material_list_;
+  zisc::pmr::vector<SettingNodeBase*> material_list_;
+  zisc::pmr::vector<zisc::UniqueMemoryPointer<SettingNodeBase>> material_body_list_;
 };
 
 using TextureModelSettingNode = MaterialSettingNode<SettingNodeType::kTextureModel>;

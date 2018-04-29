@@ -10,10 +10,9 @@
 #ifndef NANAIRO_FILM_HPP
 #define NANAIRO_FILM_HPP
 
-// Standard C++ library
-#include <memory>
 // Zisc
 #include "zisc/point.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo 
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/spectra_image_interface.hpp"
@@ -37,7 +36,7 @@ class Film
 {
  public:
   //! Create film
-  Film(const System& system, const SettingNodeBase* settings) noexcept;
+  Film(System& system, const SettingNodeBase* settings) noexcept;
 
 
   //! Return the aspect ratio of image
@@ -69,13 +68,13 @@ class Film
 
  private:
   //! Initialize
-  void initialize(const System& system, const SettingNodeBase* settings) noexcept;
+  void initialize(System& system, const SettingNodeBase* settings) noexcept;
 
   //! Return the inverse resolution
   const Point2& inverseResolution() const noexcept;
 
 
-  std::unique_ptr<SpectraImageInterface> spectra_buffer_; //!< The buffer of spectra
+  zisc::UniqueMemoryPointer<SpectraImageInterface> spectra_buffer_; //!< The buffer of spectra
   Point2 inverse_resolution_;
 };
 

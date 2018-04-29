@@ -79,7 +79,7 @@ class XyzColorMatchingFunction
   void initialize() noexcept;
 
 
-  std::array<std::unique_ptr<SpectralDistribution>, 3> bar_;
+  std::array<SpectralDistribution, 3> bar_;
 };
 
 //! \} Core

@@ -123,7 +123,7 @@ class PathTracing : public RenderingMethod
                        const Index2d& pixel_index) noexcept;
 
 
-  std::unique_ptr<LightSourceSampler> eye_path_light_sampler_;
+  zisc::UniqueMemoryPointer<LightSourceSampler> eye_path_light_sampler_;
 };
 
 //! \} Core

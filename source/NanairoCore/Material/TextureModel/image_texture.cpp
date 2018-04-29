@@ -18,6 +18,7 @@
 #include "zisc/algorithm.hpp"
 #include "zisc/compensated_summation.hpp"
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "texture_model.hpp"
@@ -41,8 +42,12 @@ namespace nanairo {
   \details
   No detailed.
   */
-ImageTexture::ImageTexture(const System& system,
-                           const SettingNodeBase* settings) noexcept
+ImageTexture::ImageTexture(System& system,
+                           const SettingNodeBase* settings) noexcept :
+    emissive_value_table_{&system.dataMemoryManager()},
+    reflective_value_table_{&system.dataMemoryManager()},
+    gray_scale_table_{&system.dataMemoryManager()},
+    color_index_table_{&system.dataMemoryManager()}
 {
   initialize(system, settings);
 }
@@ -148,32 +153,35 @@ uint ImageTexture::getPixelIndex(const Point2& uv) const noexcept
   \details
   No detailed.
   */
-void ImageTexture::initialize(const System& system,
+void ImageTexture::initialize(System& system,
                               const SettingNodeBase* settings) noexcept
 {
+  auto work_resource = settings->workResource();
   const auto texture_settings = castNode<TextureSettingNode>(settings);
 
   const auto& parameters = texture_settings->imageTextureParameters();
   {
     resolution_ = parameters.image_.resolution();
   }
-  initializeTables(system, parameters.image_);
+  initializeTables(system, parameters.image_, work_resource);
 }
 
 /*!
   \details
   No detailed.
   */
-void ImageTexture::initializeTables(const System& system, const LdrImage& image)
-    noexcept
+void ImageTexture::initializeTables(
+    System& system,
+    const LdrImage& image,
+    zisc::pmr::memory_resource* work_resource) noexcept
 {
   uint table_size = resolution_[0] * resolution_[1];
 
   // Make a color table
-  auto color_table = image.data();
+  zisc::pmr::vector<Rgba32> color_table{image.data(), work_resource};
   std::sort(color_table.begin(), color_table.end());
   auto table_end = std::unique(color_table.begin(), color_table.end());
-  zisc::toBinaryTree(color_table.begin(), table_end);
+  zisc::toBinaryTree(color_table.begin(), table_end, work_resource);
 
   // Make a color index table
   {
@@ -207,7 +215,7 @@ void ImageTexture::initializeTables(const System& system, const LdrImage& image)
       value.setByWavelength(CoreConfig::blueWavelength(), rgb.blue());
       value.setByWavelength(CoreConfig::greenWavelength(), rgb.green());
       value.setByWavelength(CoreConfig::redWavelength(), rgb.red());
-      value = value.computeSystemColor(system);
+      value = value.computeSystemColor(system, work_resource);
       emissive_value_table_[index] = value.toEmissiveColor();
       reflective_value_table_[index] = value.toReflectiveColor();
     }

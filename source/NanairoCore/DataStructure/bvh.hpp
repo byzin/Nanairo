@@ -15,7 +15,10 @@
 #include <memory>
 #include <vector>
 // Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/non_copyable.hpp"
 #include "zisc/sip_hash_engine.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "bvh_building_node.hpp"
 #include "bvh_tree_node.hpp"
@@ -44,18 +47,18 @@ enum class BvhType : uint32
   \details
   No detailed.
   */
-class Bvh
+class Bvh : public zisc::NonCopyable<Bvh>
 {
  public:
   //! Initialize BVH
-  Bvh(const SettingNodeBase* settings) noexcept;
+  Bvh(System& system, const SettingNodeBase* settings) noexcept;
 
   //! Finalize BVH
   virtual ~Bvh() noexcept;
 
 
   //! Return the tree of BVH
-  const std::vector<BvhTreeNode>& bvhTree() const noexcept;
+  const zisc::pmr::vector<BvhTreeNode>& bvhTree() const noexcept;
 
   //! Cast the ray and find the intersection closest to the ray origin
   IntersectionInfo castRay(const Ray& ray,
@@ -63,19 +66,24 @@ class Bvh
                            const bool expect_no_hit = false) const noexcept;
 
   //! Build BVH
-  void construct(System& system, std::vector<Object>&& object_list) noexcept;
+  void construct(System& system,
+                 const SettingNodeBase* settings,
+                 zisc::pmr::vector<Object>&& object_list) noexcept;
 
   //! Make BVH
-  static std::unique_ptr<Bvh> makeBvh(const SettingNodeBase* settings) noexcept;
+  static zisc::UniqueMemoryPointer<Bvh> makeBvh(
+      System& system,
+      const SettingNodeBase* settings) noexcept;
 
   //! Return the object list
-  const std::vector<Object>& objectList() const noexcept;
+  const zisc::pmr::vector<Object>& objectList() const noexcept;
 
  protected:
   //! Build BVH
-  virtual void constructBvh(System& system,
-                            const std::vector<Object>& object_list,
-                            std::vector<BvhBuildingNode>& tree) const noexcept = 0;
+  virtual void constructBvh(
+      System& system,
+      const zisc::pmr::vector<Object>& object_list,
+      zisc::pmr::vector<BvhBuildingNode>& tree) const noexcept = 0;
 
   //! Check if multi-threading is enabled
   static constexpr bool threadingIsEnabled() noexcept;
@@ -83,29 +91,29 @@ class Bvh
   //! Set the bounding box of the node
   template <bool threading = false>
   static void setupBoundingBoxes(System& system,
-                                 std::vector<BvhBuildingNode>& tree,
+                                 zisc::pmr::vector<BvhBuildingNode>& tree,
                                  const uint32 index) noexcept;
 
   //! Set the bounding box of the node
-  static void setupBoundingBox(std::vector<BvhBuildingNode>& tree,
+  static void setupBoundingBox(zisc::pmr::vector<BvhBuildingNode>& tree,
                                const uint32 index) noexcept;
 
  private:
   //! Set the tree node and the object list
-  void setTreeInfo(const std::vector<BvhBuildingNode>& tree,
-                   std::vector<Object>& object_list,
+  void setTreeInfo(const zisc::pmr::vector<BvhBuildingNode>& tree,
+                   zisc::pmr::vector<Object>& object_list,
                    const uint32 failure_next_index,
                    const uint32 index) noexcept;
 
   //! Set the tree with a object
-  void setTreeInfo(std::vector<Object>& object_list) noexcept;
+  void setTreeInfo(zisc::pmr::vector<Object>& object_list) noexcept;
 
   //! Sort nodes by the search order
-  void sortTreeNode(std::vector<BvhBuildingNode>& tree) const noexcept;
+  void sortTreeNode(zisc::pmr::vector<BvhBuildingNode>& tree) const noexcept;
 
   //! Sort nodes by the search order
-  void sortTreeNode(const std::vector<BvhBuildingNode>& tree,
-                    std::vector<BvhBuildingNode>& new_tree,
+  void sortTreeNode(const zisc::pmr::vector<BvhBuildingNode>& tree,
+                    zisc::pmr::vector<BvhBuildingNode>& new_tree,
                     const uint32 old_index,
                     uint32& index) const noexcept;
 
@@ -115,8 +123,8 @@ class Bvh
                                   IntersectionInfo* intersection) const noexcept;
 
 
-  std::vector<BvhTreeNode> tree_;
-  std::vector<Object> object_list_;
+  zisc::pmr::vector<BvhTreeNode> tree_;
+  zisc::pmr::vector<Object> object_list_;
 };
 
 //! \} Core

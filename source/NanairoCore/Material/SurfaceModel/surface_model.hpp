@@ -14,6 +14,7 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 // Zisc
 #include "zisc/memory_resource.hpp"
@@ -30,6 +31,7 @@ namespace nanairo {
 class IntersectionInfo;
 class Sampler;
 class ShaderModel;
+class System;
 class TextureModel;
 class WavelengthSamples;
 
@@ -73,15 +75,16 @@ class SurfaceModel
       zisc::pmr::memory_resource* mem_resource) const noexcept = 0;
 
   //! Make a surface scattering model
-  static std::unique_ptr<SurfaceModel> makeSurface(
+  static zisc::UniqueMemoryPointer<SurfaceModel> makeSurface(
+      System& system,
       const SettingNodeBase* settings,
-      const std::vector<TextureModel*>& texture_list) noexcept;
+      const zisc::pmr::vector<const TextureModel*>& texture_list) noexcept;
 
   //! Return the surface name
-  const std::string* name() const noexcept;
+  std::string_view name() const noexcept;
 
   //! Set the surface name
-  void setName(const std::string& name) noexcept;
+  void setName(const std::string_view& name) noexcept;
 
   //! Return the surface type
   virtual SurfaceType type() const noexcept = 0;

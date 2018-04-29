@@ -42,6 +42,9 @@ class PhotonMapNode
 
 
   //! Create a photon map node
+  PhotonMapNode() noexcept;
+
+  //! Create a photon map node
   PhotonMapNode(const SampledSpectra& energy,
                 const Point3& point,
                 const Vector3& vin,
@@ -50,23 +53,23 @@ class PhotonMapNode
   //! Create a photon map node
   PhotonMapNode(const PhotonCache& cache) noexcept;
 
-  //! Create a photon map node
-  PhotonMapNode(PhotonMapNode&& other) noexcept;
 
+  //! Return a photon cache of the node
+  PhotonCache& cache() noexcept;
 
-  //! Return the photon cache of the node
+  //! Return a photon cache of the node
   const PhotonCache& cache() const noexcept;
 
-  //! Return the type of node
+  //! Return a type of node
   NodeType nodeType() const noexcept;
 
-  //! Return the point of node
+  //! Return a point of node
   const Point3& point() const noexcept;
 
-  //! Set the type of the node
+  //! Set a type of the node
   void setNodeType(const NodeType type) noexcept;
 
-  //! Set the type of the node
+  //! Set a type of the node
   void setNodeType(const uint type) noexcept;
 
  private:

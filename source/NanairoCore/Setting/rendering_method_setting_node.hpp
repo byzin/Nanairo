@@ -14,6 +14,9 @@
 #include <istream>
 #include <memory>
 #include <ostream>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -74,6 +77,10 @@ struct ProbabilisticPpmParameters : public NodeParameterBase
 class RenderingMethodSettingNode : public SettingNodeBase
 {
  public:
+  //! Create a rendering method settings
+  RenderingMethodSettingNode(const SettingNodeBase* parent) noexcept;
+
+
   //! Initialize a rendering method
   void initialize() noexcept override;
 
@@ -82,6 +89,9 @@ class RenderingMethodSettingNode : public SettingNodeBase
 
   //! Return the LightTracing parameters
   const LightTracingParameters& lightTracingParameters() const noexcept;
+
+  //! Return the node type
+  static SettingNodeType nodeType() noexcept;
 
   //! Return the PathTracing parameters
   PathTracingParameters& pathTracingParameters() noexcept;
@@ -129,7 +139,7 @@ class RenderingMethodSettingNode : public SettingNodeBase
   void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
-  std::unique_ptr<NodeParameterBase> parameters_;
+  zisc::UniqueMemoryPointer<NodeParameterBase> parameters_;
   RenderingMethodType method_type_;
   double ray_cast_epsilon_;
   RouletteType roulette_type_;

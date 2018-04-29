@@ -11,10 +11,15 @@
 #define NANAIRO_SIMPLE_RENDERER_HPP
 
 // Standard C++ library
+#include <array>
+#include <fstream>
 #include <memory>
+#include <ostream>
 #include <string>
+#include <string_view>
 // Zisc
 #include "zisc/stopwatch.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/scene.hpp"
@@ -86,6 +91,11 @@ class SimpleRenderer
   //! Initialize the renderer for rendering the scene
   void initForRendering() noexcept;
 
+  //! Initialize logger
+  virtual void initLogger(const std::string& output_path,
+                          std::ostream* console_log_stream,
+                          std::ofstream* text_log_stream) noexcept;
+
   //! Return the LDR image
   LdrImage& ldrImage() noexcept;
 
@@ -123,16 +133,25 @@ class SimpleRenderer
   const WavelengthSampler& wavelengthSampler() const noexcept;
 
   //! Log a message
-  virtual void logMessage(const std::string& messsage) noexcept;
+  void logMessage(const std::string_view& messsage) noexcept;
 
   //! Output LDR image
   virtual void outputLdrImage(const std::string& output_path,
                               const uint64 cycle) noexcept;
 
   //! Notify of updating rendering information
-  virtual void notifyOfRenderingInfo(const std::string& info) const noexcept;
+  virtual void notifyOfRenderingInfo(const std::string_view& info) const noexcept;
 
  private:
+  //! Check if the rendered result should be saved
+  bool checkImageSavingFlag(const uint64 cycle,
+                            const Clock::duration previous_time,
+                            uint64* cycle_to_save_image,
+                            Clock::duration* time_to_save_image) const noexcept;
+
+  //! Clear work memories of system
+  void clearWorkMemory() noexcept;
+
   //! Convert Spectra image to HDR image
   void convertSpectraToHdr(const uint64 cycle) noexcept;
 
@@ -213,13 +232,14 @@ class SimpleRenderer
   void waitForNextFrame(const Clock::duration& wait_time) const noexcept;
 
 
-  std::unique_ptr<HdrImage> hdr_image_;
-  std::unique_ptr<LdrImage> ldr_image_;
-  std::unique_ptr<RenderingMethod> rendering_method_;
-  std::unique_ptr<Scene> scene_;
   std::unique_ptr<System> system_;
-  std::unique_ptr<ToneMappingOperator> tone_mapping_operator_;
-  std::unique_ptr<WavelengthSampler> wavelength_sampler_;
+  zisc::UniqueMemoryPointer<Scene> scene_;
+  zisc::UniqueMemoryPointer<WavelengthSampler> wavelength_sampler_;
+  zisc::UniqueMemoryPointer<RenderingMethod> rendering_method_;
+  zisc::UniqueMemoryPointer<ToneMappingOperator> tone_mapping_operator_;
+  zisc::UniqueMemoryPointer<HdrImage> hdr_image_;
+  zisc::UniqueMemoryPointer<LdrImage> ldr_image_;
+  std::array<std::ostream*, 2> log_stream_list_;
   Clock::duration time_to_finish_;
   Clock::duration time_interval_to_save_image_;
   uint64 cycle_to_finish_;

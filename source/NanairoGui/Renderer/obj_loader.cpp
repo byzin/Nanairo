@@ -19,6 +19,7 @@
 // Zisc
 #include "zisc/fnv_1a_hash_engine.hpp"
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -31,10 +32,10 @@ namespace nanairo  {
   */
 void ObjLoader::parse(
     QTextStream& obj_stream,
-    std::vector<Face>* face_list,
-    std::vector<std::array<double, 3>>* vertex_list,
-    std::vector<std::array<double, 3>>* vnormal_list,
-    std::vector<std::array<double, 2>>* vuv_list) noexcept
+    zisc::pmr::vector<Face>* face_list,
+    zisc::pmr::vector<std::array<double, 3>>* vertex_list,
+    zisc::pmr::vector<std::array<double, 3>>* vnormal_list,
+    zisc::pmr::vector<std::array<double, 2>>* vuv_list) noexcept
 {
   ZISC_ASSERT(obj_stream.device() != nullptr, "The obj_stream isn't initialized.");
   ZISC_ASSERT(face_list != nullptr, "The face_list is null.");
@@ -156,10 +157,10 @@ void ObjLoader::loadFace(QTextStream& face_line,
 /*!
   */
 void ObjLoader::loadMesh(QTextStream& obj_stream,
-                         std::vector<Face>* face_list,
-                         std::vector<std::array<double, 3>>* vertex_list,
-                         std::vector<std::array<double, 3>>* vnormal_list,
-                         std::vector<std::array<double, 2>>* vuv_list) noexcept
+                         zisc::pmr::vector<Face>* face_list,
+                         zisc::pmr::vector<std::array<double, 3>>* vertex_list,
+                         zisc::pmr::vector<std::array<double, 3>>* vnormal_list,
+                         zisc::pmr::vector<std::array<double, 2>>* vuv_list) noexcept
 {
   bool smoothing = false;
   QString value;

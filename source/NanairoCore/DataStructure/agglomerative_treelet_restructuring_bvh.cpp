@@ -18,6 +18,7 @@
 #include <vector>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/thread_manager.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -38,8 +39,9 @@ namespace nanairo {
   No detailed.
   */
 AgglomerativeTreeletRestructuringBvh::AgglomerativeTreeletRestructuringBvh(
+    System& system,
     const SettingNodeBase* settings) noexcept :
-        Bvh(settings)
+        Bvh(system, settings)
 {
   initialize(settings);
 }
@@ -47,7 +49,11 @@ AgglomerativeTreeletRestructuringBvh::AgglomerativeTreeletRestructuringBvh(
 /*!
   */
 AgglomerativeTreeletRestructuringBvh::RestructuringData::RestructuringData(
-    const uint treelet_size) noexcept
+    const uint treelet_size,
+    zisc::pmr::memory_resource* work_resource) noexcept :
+        inner_index_list_{work_resource},
+        leaf_index_list_{work_resource},
+        distance_matrix_{work_resource}
 {
   inner_index_list_.resize(treelet_size - 1);
   leaf_index_list_.resize(treelet_size);
@@ -63,7 +69,7 @@ void AgglomerativeTreeletRestructuringBvh::buildRelationship(
     const uint32 parent_index,
     const uint32 left_child_index,
     const uint32 right_child_index,
-    std::vector<BvhBuildingNode>& tree) const noexcept
+    zisc::pmr::vector<BvhBuildingNode>& tree) const noexcept
 {
   auto& parent = tree[parent_index];
   auto& left_child = tree[left_child_index];
@@ -96,13 +102,14 @@ Float AgglomerativeTreeletRestructuringBvh::calcNodeDistance(
   */
 void AgglomerativeTreeletRestructuringBvh::constructBvh(
     System& system,
-    const std::vector<Object>& object_list,
-    std::vector<BvhBuildingNode>& tree) const noexcept
+    const zisc::pmr::vector<Object>& object_list,
+    zisc::pmr::vector<BvhBuildingNode>& tree) const noexcept
 {
   // Make a simple BVH tree using fast construction algorithm
   BinaryRadixTreeBvh::constructBinaryRadixTreeBvh(system, object_list, tree);
 
-  RestructuringData data{treeletSize()};;
+  auto work_resource = tree.get_allocator().resource();
+  RestructuringData data{treeletSize(), work_resource};;
   for (uint i = 0; i < optimizationLoopCount(); ++i) {
     constexpr bool threading = threadingIsEnabled();
     restructureTreelet<threading>(system, 0, data, tree);
@@ -115,7 +122,7 @@ void AgglomerativeTreeletRestructuringBvh::constructBvh(
   */
 void AgglomerativeTreeletRestructuringBvh::constructOptimalTreelet(
     RestructuringData& data,
-    std::vector<BvhBuildingNode>& tree) const noexcept
+    zisc::pmr::vector<BvhBuildingNode>& tree) const noexcept
 {
   initializeDistanceMatrix(tree, data);
 
@@ -156,7 +163,7 @@ void AgglomerativeTreeletRestructuringBvh::constructOptimalTreelet(
   */
 std::tuple<uint, uint> AgglomerativeTreeletRestructuringBvh::findBestMatch(
     const uint num_of_leafs,
-    const std::vector<Float>& distance_matrix) const noexcept
+    const zisc::pmr::vector<Float>& distance_matrix) const noexcept
 {
   ZISC_ASSERT(2 < num_of_leafs, "Lack of leaf nodes.");
   uint row = 1,
@@ -185,7 +192,7 @@ std::tuple<uint, uint> AgglomerativeTreeletRestructuringBvh::findBestMatch(
 void AgglomerativeTreeletRestructuringBvh::formTreelet(
     const uint treelet_size,
     const uint32 root_index,
-    const std::vector<BvhBuildingNode>& tree,
+    const zisc::pmr::vector<BvhBuildingNode>& tree,
     RestructuringData& data) const noexcept
 {
   ZISC_ASSERT(3 <= treelet_size, "Treelet size is small: ", treelet_size);
@@ -255,7 +262,7 @@ void AgglomerativeTreeletRestructuringBvh::initialize(
   No detailed.
   */
 void AgglomerativeTreeletRestructuringBvh::initializeDistanceMatrix(
-    const std::vector<BvhBuildingNode>& tree,
+    const zisc::pmr::vector<BvhBuildingNode>& tree,
     RestructuringData& data) const noexcept
 {
   const auto& leaf_index_list = data.leaf_index_list_;
@@ -294,25 +301,28 @@ uint AgglomerativeTreeletRestructuringBvh::restructureTreelet(
     System& system,
     const uint32 index,
     RestructuringData& data,
-    std::vector<BvhBuildingNode>& tree) const noexcept
+    zisc::pmr::vector<BvhBuildingNode>& tree) const noexcept
 {
   ZISC_ASSERT(index < tree.size(), "BVH tree is buffer overrun!!.");
   auto& root = tree[index];
   uint num_of_subtree_nodes = 1;
   if (!root.isLeafNode()) {
     if (threading) {
+      auto work_resource = tree.get_allocator().resource();
       auto restructure_left_treelet = [this, &system, &root, &data, &tree]()
       {
         return restructureTreelet<>(system, root.leftChildIndex(), data, tree);
       };
-      auto restructure_right_treelet = [this, &system, &root, &tree]()
+      auto restructure_right_treelet = [this, &system, &root, &tree, work_resource]()
       {
-        RestructuringData d{treeletSize()};
+        RestructuringData d{treeletSize(), work_resource};
         return restructureTreelet<>(system, root.rightChildIndex(), d, tree);
       };
       auto& threads = system.threadManager();
-      auto left_result = threads.enqueue<uint>(restructure_left_treelet);
-      auto right_result = threads.enqueue<uint>(restructure_right_treelet);
+      auto left_result = threads.enqueue<uint>(restructure_left_treelet,
+                                               work_resource);
+      auto right_result = threads.enqueue<uint>(restructure_right_treelet,
+                                                work_resource);
       num_of_subtree_nodes += left_result.get();
       num_of_subtree_nodes += right_result.get();
     }
@@ -353,7 +363,7 @@ uint AgglomerativeTreeletRestructuringBvh::treeletSize() const noexcept
 /*!
   */
 void AgglomerativeTreeletRestructuringBvh::updateDistanceMatrix(
-    const std::vector<BvhBuildingNode>& tree,
+    const zisc::pmr::vector<BvhBuildingNode>& tree,
     const uint row,
     const uint column,
     RestructuringData& data) const noexcept

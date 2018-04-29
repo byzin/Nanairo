@@ -15,6 +15,7 @@
 #include <cstddef>
 #include <vector>
 // Zisc
+#include "zisc/memory_resource.hpp"
 #include "zisc/point.hpp"
 // Nanairo
 #include "rgba_32.hpp"
@@ -31,10 +32,13 @@ class LdrImage
 {
  public:
   //! Initialize as black image
-  LdrImage(const uint width, const uint height) noexcept;
+  LdrImage(const uint width,
+           const uint height,
+           zisc::pmr::memory_resource* data_resource) noexcept;
 
   //! Initialize as black image
-  LdrImage(const Index2d& resolution) noexcept;
+  LdrImage(const Index2d& resolution,
+           zisc::pmr::memory_resource* data_resource) noexcept;
 
 
   //! Return the RGBA by the index
@@ -45,10 +49,10 @@ class LdrImage
 
 
   //! Return the buffer data
-  std::vector<Rgba32>& data() noexcept;
+  zisc::pmr::vector<Rgba32>& data() noexcept;
 
   //! Return the buffer data
-  const std::vector<Rgba32>& data() const noexcept;
+  const zisc::pmr::vector<Rgba32>& data() const noexcept;
 
   //! Fill the image by the color
   void fill(const Rgba32 color) noexcept;
@@ -106,7 +110,7 @@ class LdrImage
   uint toIndex(const uint x, const uint y) const noexcept;
 
 
-  std::vector<Rgba32> buffer_;
+  zisc::pmr::vector<Rgba32> buffer_;
   Index2d resolution_;
 };
 

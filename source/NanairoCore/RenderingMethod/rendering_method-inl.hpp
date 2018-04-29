@@ -58,18 +58,6 @@ void RenderingMethod::operator()(System& system,
   No detailed.
   */
 inline
-void RenderingMethod::initMethod() noexcept
-{
-  auto& initializer = methodInitializer();
-  if (initializer)
-    initializer();
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
 Float RenderingMethod::rayCastEpsilon() const noexcept
 {
   return ray_cast_epsilon_;
@@ -216,18 +204,6 @@ Ray RenderingMethod::sampleNextRay(const uint length,
   No detailed.
   */
 inline
-void RenderingMethod::setMethodInitializer(std::function<void ()>&& initializer)
-    noexcept
-{
-  method_initializer_ = std::move(initializer);
-}
-
-
-/*!
-  \details
-  No detailed.
-  */
-inline
 void RenderingMethod::updateSelectedWavelengthInfo(
     const ShaderPointer& bxdf,
     Spectra* weight,
@@ -243,14 +219,6 @@ void RenderingMethod::updateSelectedWavelengthInfo(
     weight->setIntensity(index, intensity);
     *wavelength_is_selected = true;
   }
-}
-
-/*!
-  */
-inline
-std::function<void ()>& RenderingMethod::methodInitializer() noexcept
-{
-  return method_initializer_;
 }
 
 } // namespace nanairo

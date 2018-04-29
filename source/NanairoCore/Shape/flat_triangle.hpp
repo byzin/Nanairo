@@ -49,6 +49,11 @@ class FlatTriangle : public Shape
   //! Return the bounding box
   Aabb boundingBox() const noexcept override;
 
+  //! Calculate the surface area of the front side of the triangle
+  static Float calcSurfaceArea(const Point3& vertex1,
+                               const Point3& vertex2,
+                               const Point3& vertex3) noexcept;
+
   //! Return the edges of the triangle
   const std::array<Vector3, 2>& edge() const noexcept;
 

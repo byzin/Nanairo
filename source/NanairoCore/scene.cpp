@@ -10,12 +10,12 @@
 #include "scene.hpp"
 // Standard C++ library
 #include <future>
-#include <memory>
 #include <utility>
 // Zisc
 #include "zisc/thread_manager.hpp"
-#include "zisc/utility.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/unit.hpp"
+#include "zisc/utility.hpp"
 // Nanairo
 #include "world.hpp"
 #include "system.hpp"
@@ -44,21 +44,14 @@ Scene::Scene(System& system, const SettingNodeBase* settings) noexcept
 void Scene::initialize(System& system, const SettingNodeBase* settings) noexcept
 {
   const auto scene_settings = castNode<SceneSettingNode>(settings);
+  auto& data_resource = system.dataMemoryManager();
 
   // Create a camera
   const auto camera_settings = scene_settings->cameraSettingNode();
-  auto make_camera = [this, &system, camera_settings]()
-  {
-    initializeCamera(system, camera_settings);
-  };
-  auto& threads = system.threadManager();
-  auto camera_result = threads.enqueue<void>(make_camera);
+  initializeCamera(system, camera_settings);
 
   // Create a world
-  world_ = std::make_unique<World>(system, settings);
-
-  // Wait for the initialization completion
-  camera_result.get();
+  world_ = zisc::UniqueMemoryPointer<World>::make(&data_resource, system, settings);
 }
 
 /*!
@@ -66,10 +59,14 @@ void Scene::initialize(System& system, const SettingNodeBase* settings) noexcept
 void Scene::initializeCamera(System& system, const SettingNodeBase* settings) noexcept
 {
   const auto object_settings = castNode<ObjectModelSettingNode>(settings);
+  auto& data_resource = system.dataMemoryManager();
+
   // Film
-  film_ = std::make_unique<Film>(system, object_settings->objectSettingNode());
+  film_ = zisc::UniqueMemoryPointer<Film>::make(&data_resource,
+                                                system,
+                                                object_settings->objectSettingNode());
   // Camera
-  camera_ = CameraModel::makeCamera(object_settings->objectSettingNode());
+  camera_ = CameraModel::makeCamera(system, object_settings->objectSettingNode());
   camera_->setFilm(film_.get());
   // Transformation
   const auto& transformation_list = object_settings->transformationList();

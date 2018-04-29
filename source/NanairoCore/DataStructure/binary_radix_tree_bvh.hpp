@@ -13,6 +13,8 @@
 // Standard C++ library
 #include <vector>
 #include <utility>
+// Zisc
+#include "zisc/memory_resource.hpp"
 // Nanairo
 #include "bvh.hpp"
 #include "bvh_building_node.hpp"
@@ -39,26 +41,29 @@ class BinaryRadixTreeBvh : public Bvh
 {
  public:
   //! Create a binary radix BVH
-  BinaryRadixTreeBvh(const SettingNodeBase* settings) noexcept;
+  BinaryRadixTreeBvh(System& system,
+                     const SettingNodeBase* settings) noexcept;
 
 
   //! Build a binary radix tree BVH
-  static void constructBinaryRadixTreeBvh(System& system,
-                                          const std::vector<Object>& object_list,
-                                          std::vector<BvhBuildingNode>& tree) noexcept;
+  static void constructBinaryRadixTreeBvh(
+      System& system,
+      const zisc::pmr::vector<Object>& object_list,
+      zisc::pmr::vector<BvhBuildingNode>& tree) noexcept;
 
  private:
   //! Build a binary radix tree BVH
-  void constructBvh(System& system,
-                    const std::vector<Object>& object_list,
-                    std::vector<BvhBuildingNode>& tree) const noexcept override;
+  void constructBvh(
+      System& system,
+      const zisc::pmr::vector<Object>& object_list,
+      zisc::pmr::vector<BvhBuildingNode>& tree) const noexcept override;
 
   //! Split leaf node list using the morton code
   template <bool threading = false>
   static void split(System& system,
                     uint bit,
                     const uint32 index,
-                    std::vector<BvhBuildingNode>& tree,
+                    zisc::pmr::vector<BvhBuildingNode>& tree,
                     MortonCode::Iterator first,
                     MortonCode::Iterator begin,
                     MortonCode::Iterator end) noexcept;

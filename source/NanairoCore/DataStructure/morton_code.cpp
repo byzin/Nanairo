@@ -15,6 +15,7 @@
 #include <utility>
 // Zisc
 #include "zisc/math.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "aabb.hpp"
@@ -70,8 +71,8 @@ auto MortonCode::findSplit(const uint bit,
   \details
   No detailed.
   */
-std::vector<MortonCode> MortonCode::makeList(
-    const std::vector<BvhBuildingNode>& node_list) noexcept
+zisc::pmr::vector<MortonCode> MortonCode::makeList(
+    const zisc::pmr::vector<BvhBuildingNode>& node_list) noexcept
 {
   const uint num_of_objects = zisc::cast<uint>(node_list.size());
 
@@ -84,7 +85,8 @@ std::vector<MortonCode> MortonCode::makeList(
   const Float inverse_z = zisc::invert(range[2]);
 
   // Sort by the morton code
-  std::vector<MortonCode> morton_code_list;
+  auto work_resource = node_list.get_allocator().resource();
+  zisc::pmr::vector<MortonCode> morton_code_list{work_resource};
   morton_code_list.reserve(num_of_objects);
   for (auto& node : node_list) {
     const auto position = node.boundingBox().centroid() - min_point;

@@ -14,6 +14,7 @@
 #include <vector>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/point.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -24,14 +25,19 @@ namespace nanairo {
 
 /*!
   */
-LdrImage::LdrImage(const uint width, const uint height) noexcept
+LdrImage::LdrImage(const uint width,
+                   const uint height,
+                   zisc::pmr::memory_resource* data_resource) noexcept :
+    buffer_{data_resource}
 {
   setResolution(width, height);
 }
 
 /*!
   */
-LdrImage::LdrImage(const Index2d& resolution) noexcept
+LdrImage::LdrImage(const Index2d& resolution,
+                   zisc::pmr::memory_resource* data_resource) noexcept :
+    buffer_{data_resource}
 {
   setResolution(resolution);
 }

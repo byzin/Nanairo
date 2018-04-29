@@ -16,7 +16,11 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <vector>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -134,6 +138,10 @@ struct ClothParameters : public NodeParameterBase
 class SurfaceSettingNode : public SettingNodeBase
 {
  public:
+  //! Create a surface settings
+  SurfaceSettingNode(const SettingNodeBase* parent) noexcept;
+
+
   //! Return the cloth parameters
   ClothParameters& clothParameters() noexcept;
 
@@ -150,7 +158,10 @@ class SurfaceSettingNode : public SettingNodeBase
   const LayeredDiffuseParameters& layeredDiffuseParameters() const noexcept;
 
   //! Return the surface name
-  const std::string& name() const noexcept;
+  std::string_view name() const noexcept;
+
+  //! Return the node type
+  static SettingNodeType nodeType() noexcept;
 
   //! Read the surface setting from the stream
   virtual void readData(std::istream* data_stream) noexcept override;
@@ -168,10 +179,7 @@ class SurfaceSettingNode : public SettingNodeBase
   const RoughDielectricParameters& roughDielectricParameters() const noexcept;
 
   //! Set the surface name
-  void setName(const std::string& name) noexcept;
-
-  //! Set the surface name
-  void setName(std::string&& name) noexcept;
+  void setName(const std::string_view& name) noexcept;
 
   //! Set the surface type
   void setSurfaceType(const SurfaceType type) noexcept;
@@ -204,8 +212,8 @@ class SurfaceSettingNode : public SettingNodeBase
   virtual void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
-  std::unique_ptr<NodeParameterBase> parameters_;
-  std::string name_;
+  zisc::UniqueMemoryPointer<NodeParameterBase> parameters_;
+  zisc::pmr::string name_;
   SurfaceType surface_type_;
 };
 

@@ -15,6 +15,7 @@
 #include <utility>
 // Zisc
 #include "zisc/arith_array.hpp"
+#include "zisc/memory_resource.hpp"
 // Nanairo
 #include "color.hpp"
 #include "spectral_distribution.hpp"
@@ -30,7 +31,9 @@ class SpectralTransport
 {
  public:
   //! Convert XYZ to spectra
-  static SpectralDistribution toSpectra(const XyzColor& xyz) noexcept;
+  static SpectralDistribution toSpectra(
+      const XyzColor& xyz,
+      zisc::pmr::memory_resource* work_resource) noexcept;
 
  private:
   using XystarColor = Color<2>;
@@ -54,7 +57,8 @@ class SpectralTransport
   //! Convert XYZ to a spectrum
   static Float toSpectrum(const uint16 lambda,
                           const int cell_index,
-                          const UvColor& uv) noexcept;
+                          const UvColor& uv,
+                          zisc::pmr::memory_resource* work_resource) noexcept;
 
   //! Convert Yxy to UV
   static UvColor toUv(const YxyColor& yxy) noexcept;

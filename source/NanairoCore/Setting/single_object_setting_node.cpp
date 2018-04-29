@@ -17,6 +17,8 @@
 // Zisc
 #include "zisc/binary_data.hpp"
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
@@ -25,6 +27,16 @@
 #include "NanairoCore/Shape/shape.hpp"
 
 namespace nanairo {
+
+/*!
+  */
+MeshParameters::MeshParameters(zisc::pmr::memory_resource* data_resource) noexcept :
+    face_list_{data_resource},
+    vertex_list_{data_resource},
+    vnormal_list_{data_resource},
+    vuv_list_{data_resource}
+{
+}
 
 /*!
   */
@@ -121,6 +133,13 @@ void MeshParameters::writeData(std::ostream* data_stream) const noexcept
 
 /*!
   */
+SingleObjectSettingNode::SingleObjectSettingNode(const SettingNodeBase* parent) noexcept :
+    SettingNodeBase(parent)
+{
+}
+
+/*!
+  */
 uint32 SingleObjectSettingNode::emitterIndex() const noexcept
 {
   return emitter_index_;
@@ -165,6 +184,13 @@ const MeshParameters& SingleObjectSettingNode::meshParameters() const noexcept
 
 /*!
   */
+SettingNodeType SingleObjectSettingNode::nodeType() noexcept
+{
+  return SettingNodeType::kSingleObject;
+}
+
+/*!
+  */
 void SingleObjectSettingNode::readData(std::istream* data_stream) noexcept
 {
   {
@@ -198,10 +224,11 @@ void SingleObjectSettingNode::setShapeType(const ShapeType type) noexcept
 {
   shape_type_ = type;
   // Initialize parameters
-  parameters_.reset(nullptr);
+  parameters_.reset();
   switch (shape_type_) {
    case ShapeType::kMesh: {
-    parameters_ = std::make_unique<MeshParameters>();
+    parameters_ = zisc::UniqueMemoryPointer<MeshParameters>::make(dataResource(),
+                                                                  dataResource());
     break;
    }
    case ShapeType::kPlane:

@@ -18,6 +18,8 @@
 #include <vector>
 // Zisc
 #include "zisc/binary_data.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
@@ -42,7 +44,9 @@ void RgbParameters::writeData(std::ostream* data_stream) const noexcept
 
 /*!
   */
-SpectraParameters::SpectraParameters() noexcept
+SpectraParameters::SpectraParameters(
+    zisc::pmr::memory_resource* data_resource) noexcept :
+        spectra_{data_resource}
 {
   spectra_.reserve(2);
   spectra_.emplace_back(zisc::cast<double>(CoreConfig::shortestWavelength()), 0.0);
@@ -73,6 +77,13 @@ void SpectraParameters::writeData(std::ostream* data_stream) const noexcept
 
 /*!
   */
+SpectraSettingNode::SpectraSettingNode(const SettingNodeBase* parent) noexcept :
+    SettingNodeBase(parent)
+{
+}
+
+/*!
+  */
 ColorRepresentationType SpectraSettingNode::representationType() const noexcept
 {
   return color_type_;
@@ -83,6 +94,13 @@ ColorRepresentationType SpectraSettingNode::representationType() const noexcept
 void SpectraSettingNode::initialize() noexcept
 {
   setRepresentationType(ColorRepresentationType::kRgb);
+}
+
+/*!
+  */
+SettingNodeType SpectraSettingNode::nodeType() noexcept
+{
+  return SettingNodeType::kSpectra;
 }
 
 /*!
@@ -126,11 +144,12 @@ void SpectraSettingNode::setRepresentationType(const ColorRepresentationType typ
   parameters_.reset();
   switch (color_type_) {
    case ColorRepresentationType::kRgb: {
-    parameters_ = std::make_unique<RgbParameters>();
+    parameters_ = zisc::UniqueMemoryPointer<RgbParameters>::make(dataResource());
     break;
    }
    case ColorRepresentationType::kSpectra: {
-    parameters_ = std::make_unique<SpectraParameters>();
+    parameters_ = zisc::UniqueMemoryPointer<SpectraParameters>::make(dataResource(),
+                                                                     dataResource());
     break;
    }
    default:

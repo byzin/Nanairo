@@ -78,12 +78,13 @@ class CheckerboardTexture : public TextureModel
   uint getIndex(const Point2& uv) const noexcept;
 
   //! Initialize
-  void initialize(const System& system, const SettingNodeBase* settings) noexcept;
+  void initialize(const System& system,
+                  const SettingNodeBase* settings) noexcept;
 
 
-  std::array<std::unique_ptr<SpectralDistribution>, 2> spectra_value_;
-  std::array<std::unique_ptr<SpectralDistribution>, 2> emissive_value_;
-  std::array<std::unique_ptr<SpectralDistribution>, 2> reflective_value_;
+  std::array<SpectralDistribution, 2> spectra_value_;
+  std::array<SpectralDistribution, 2> emissive_value_;
+  std::array<SpectralDistribution, 2> reflective_value_;
   std::array<Float, 2> gray_scale_value_;
   std::array<Float, 2> resolution_;
 };

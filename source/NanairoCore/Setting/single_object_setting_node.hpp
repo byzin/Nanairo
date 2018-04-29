@@ -17,6 +17,9 @@
 #include <memory>
 #include <ostream>
 #include <vector>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -31,16 +34,20 @@ namespace nanairo {
 //! Mesh parameters
 struct MeshParameters : public NodeParameterBase
 {
+  //! Initialize parameters
+  MeshParameters(zisc::pmr::memory_resource* data_resource) noexcept;
+
+
   //! Read the parameters from the stream
   void readData(std::istream* data_stream) noexcept override;
 
   //! Write the parameters to the stream
   void writeData(std::ostream* data_stream) const noexcept override;
 
-  std::vector<Face> face_list_;
-  std::vector<std::array<double, 3>> vertex_list_;
-  std::vector<std::array<double, 3>> vnormal_list_;
-  std::vector<std::array<double, 2>> vuv_list_;
+  zisc::pmr::vector<Face> face_list_;
+  zisc::pmr::vector<std::array<double, 3>> vertex_list_;
+  zisc::pmr::vector<std::array<double, 3>> vnormal_list_;
+  zisc::pmr::vector<std::array<double, 2>> vuv_list_;
   uint8 smoothing_ = kFalse;
 };
 
@@ -49,6 +56,10 @@ struct MeshParameters : public NodeParameterBase
 class SingleObjectSettingNode : public SettingNodeBase
 {
  public:
+  //! Create a single object settings
+  SingleObjectSettingNode(const SettingNodeBase* parent) noexcept;
+
+
   //! Return the emitter index of the object
   uint32 emitterIndex() const noexcept;
 
@@ -63,6 +74,9 @@ class SingleObjectSettingNode : public SettingNodeBase
 
   //! Return the mesh parameters
   const MeshParameters& meshParameters() const noexcept;
+
+  //! Return the node type
+  static SettingNodeType nodeType() noexcept;
 
   //! Read the setting data from the stream
   void readData(std::istream* data_stream) noexcept override;
@@ -95,7 +109,7 @@ class SingleObjectSettingNode : public SettingNodeBase
   static constexpr uint32 kInvalidIndex = std::numeric_limits<uint32>::max();
 
  private:
-  std::unique_ptr<NodeParameterBase> parameters_;
+  zisc::UniqueMemoryPointer<NodeParameterBase> parameters_;
   ShapeType shape_type_;
   uint32 surface_index_,
          emitter_index_;

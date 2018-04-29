@@ -27,6 +27,13 @@ namespace nanairo {
 
 /*!
   */
+SystemSettingNode::SystemSettingNode(const SettingNodeBase* parent) noexcept :
+    SettingNodeBase(parent)
+{
+}
+
+/*!
+  */
 RenderingColorMode SystemSettingNode::colorMode() const noexcept
 {
   return color_mode_;
@@ -102,6 +109,13 @@ void SystemSettingNode::initialize() noexcept
   setGammaCorrection(2.2);
   setToneMappingType(ToneMappingType::kReinhard);
   setExposure(1.0);
+}
+
+/*!
+  */
+SettingNodeType SystemSettingNode::nodeType() noexcept
+{
+  return SettingNodeType::kSystem;
 }
 
 /*!

@@ -15,7 +15,11 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <vector>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -28,6 +32,10 @@ namespace nanairo {
 class ObjectModelSettingNode : public SettingNodeBase
 {
  public:
+  //! Create a object model settings
+  ObjectModelSettingNode(const SettingNodeBase* parent) noexcept;
+
+
   //! Make a transformation and add it to the transformation list
   SettingNodeBase* addTransformation(const TransformationType type,
                                      const double x,
@@ -38,7 +46,10 @@ class ObjectModelSettingNode : public SettingNodeBase
   void initialize() noexcept override;
 
   //! Return the object name
-  const std::string& name() const noexcept;
+  std::string_view name() const noexcept;
+
+  //! Return the node type
+  static SettingNodeType nodeType() noexcept;
 
   //! Return the number of visible faces
   uint numOfVisibleFaces() const noexcept;
@@ -53,10 +64,7 @@ class ObjectModelSettingNode : public SettingNodeBase
   void readData(std::istream* data_stream) noexcept override;
 
   //! Set the object name
-  void setName(const std::string& name) noexcept;
-
-  //! Set the object name
-  void setName(std::string&& name) noexcept;
+  void setName(const std::string_view& name) noexcept;
 
   //! Create new object instance and set to this object
   SettingNodeBase* setObject(const ObjectType type) noexcept;
@@ -65,10 +73,10 @@ class ObjectModelSettingNode : public SettingNodeBase
   void setVisibility(const bool visibility) noexcept;
 
   //! Return the transformation setting node list
-  std::vector<SettingNodeBase*>& transformationList() noexcept;
+  zisc::pmr::vector<SettingNodeBase*>& transformationList() noexcept;
 
   //! Return the transformation setting node list
-  const std::vector<SettingNodeBase*>& transformationList() const noexcept;
+  const zisc::pmr::vector<SettingNodeBase*>& transformationList() const noexcept;
 
   //! Return the node type
   SettingNodeType type() const noexcept override;
@@ -80,9 +88,10 @@ class ObjectModelSettingNode : public SettingNodeBase
   void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
-  std::string name_;
-  std::vector<std::unique_ptr<SettingNodeBase>> transformation_list_;
-  std::unique_ptr<SettingNodeBase> object_setting_node_;
+  zisc::pmr::string name_;
+  zisc::pmr::vector<SettingNodeBase*> transformation_list_;
+  zisc::pmr::vector<zisc::UniqueMemoryPointer<SettingNodeBase>> transformation_body_list_;
+  zisc::UniqueMemoryPointer<SettingNodeBase> object_setting_node_;
   uint8 visibility_;
 };
 

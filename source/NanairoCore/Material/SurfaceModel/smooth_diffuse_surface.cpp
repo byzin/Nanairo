@@ -32,7 +32,7 @@ namespace nanairo {
   */
 SmoothDiffuseSurface::SmoothDiffuseSurface(
     const SettingNodeBase* settings,
-    const std::vector<TextureModel*>& texture_list) noexcept
+    const zisc::pmr::vector<const TextureModel*>& texture_list) noexcept
 {
   initialize(settings, texture_list);
 }
@@ -71,7 +71,7 @@ SurfaceType SmoothDiffuseSurface::type() const noexcept
   */
 void SmoothDiffuseSurface::initialize(
     const SettingNodeBase* settings,
-    const std::vector<TextureModel*>& texture_list) noexcept
+    const zisc::pmr::vector<const TextureModel*>& texture_list) noexcept
 {
   const auto surface_settings = castNode<SurfaceSettingNode>(settings);
 

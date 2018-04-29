@@ -14,9 +14,12 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 // Zisc
+#include "zisc/memory_resource.hpp"
 #include "zisc/sip_hash_engine.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
@@ -64,12 +67,12 @@ class TextureModel
   virtual Float grayScaleValue(const Point2& uv) const noexcept = 0;
 
   //! Make a texture
-  static std::unique_ptr<TextureModel> makeTexture(
-      const System& system,
+  static zisc::UniqueMemoryPointer<TextureModel> makeTexture(
+      System& system,
       const SettingNodeBase* settings) noexcept;
 
   //! Return the texture name
-  const std::string* name() const noexcept;
+  std::string_view name() const noexcept;
 
   //! Evaluate the reflective value by the wavelength at the uv coordinate
   virtual Float reflectiveValue(
@@ -82,7 +85,7 @@ class TextureModel
       const WavelengthSamples& wavelengths) const noexcept = 0;
 
   //! Set the name of the texture
-  void setName(const std::string& name) noexcept;
+  void setName(const std::string_view& name) noexcept;
 
   //! Evaluate the spectra value by the wavelength at the uv coordinate
   virtual Float spectraValue(

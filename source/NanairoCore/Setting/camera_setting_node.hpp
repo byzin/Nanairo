@@ -14,6 +14,9 @@
 #include <istream>
 #include <memory>
 #include <ostream>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -41,6 +44,10 @@ struct PinholeCameraParameters : public NodeParameterBase
 class CameraSettingNode : public SettingNodeBase
 {
  public:
+  //! Create a camera settings
+  CameraSettingNode(const SettingNodeBase* parent) noexcept;
+
+
   //! Return the camera type
   CameraType cameraType() const noexcept;
 
@@ -49,6 +56,9 @@ class CameraSettingNode : public SettingNodeBase
 
   //! Return the jittering mode
   bool jittering() const noexcept;
+
+  //! Return the node type
+  static SettingNodeType nodeType() noexcept;
 
   //! Return the pinhole camera parameters
   PinholeCameraParameters& pinholeCameraParameters() noexcept;
@@ -72,7 +82,7 @@ class CameraSettingNode : public SettingNodeBase
   void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
-  std::unique_ptr<NodeParameterBase> parameters_;
+  zisc::UniqueMemoryPointer<NodeParameterBase> parameters_;
   CameraType type_;
   uint8 jittering_;
 };

@@ -18,6 +18,8 @@
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "path_tracing.hpp"
 #include "light_tracing.hpp"
@@ -53,28 +55,43 @@ RenderingMethod::RenderingMethod(const System& /* system */,
 }
 
 /*!
+  */
+void RenderingMethod::initMethod() noexcept
+{
+}
+
+/*!
   \details
   No detailed.
   */
-std::unique_ptr<RenderingMethod> RenderingMethod::makeMethod(
+zisc::UniqueMemoryPointer<RenderingMethod> RenderingMethod::makeMethod(
     System& system,
     const SettingNodeBase* settings,
     const Scene& scene) noexcept
 {
   const auto method_settings = castNode<RenderingMethodSettingNode>(settings);
 
-  std::unique_ptr<RenderingMethod> method;
+  zisc::UniqueMemoryPointer<RenderingMethod> method;
+  auto data_resource = &system.dataMemoryManager();
   switch (method_settings->methodType()) {
    case RenderingMethodType::kPathTracing: {
-    method = std::make_unique<PathTracing>(system, settings, scene);
+    method = zisc::UniqueMemoryPointer<PathTracing>::make(data_resource,
+                                                          system,
+                                                          settings,
+                                                          scene);
     break;
    }
    case RenderingMethodType::kLightTracing: {
-    method = std::make_unique<LightTracing>(system, settings, scene);
+    method = zisc::UniqueMemoryPointer<LightTracing>::make(data_resource,
+                                                           system,
+                                                           settings,
+                                                           scene);
     break;
    }
    case RenderingMethodType::kProbabilisticPpm:
-    method = std::make_unique<ProbabilisticPpm>(system, settings, scene);
+    method = zisc::UniqueMemoryPointer<ProbabilisticPpm>::make(data_resource,
+                                                               system,
+                                                               settings, scene);
     break;
    default: {
     zisc::raiseError("RenderingMethodError: Unsupported type is speficied.");

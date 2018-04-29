@@ -18,6 +18,7 @@
 #include "zisc/linear_interp.hpp"
 #include "zisc/math.hpp"
 #include "zisc/matrix.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "color_conversion.hpp"
@@ -73,14 +74,15 @@ bool SpectralDistribution::isRgbDistribution() const noexcept
 
 /*!
   */
-SpectralDistribution SpectralDistribution::computeSystemColor(const System& system)
-    const noexcept
+SpectralDistribution SpectralDistribution::computeSystemColor(
+    const System& system,
+    zisc::pmr::memory_resource* work_resource) const noexcept
 {
   SpectralDistribution distribution = *this;
   // RGB
   if (isRgbDistribution()) {
     if (system.colorMode() == RenderingColorMode::kSpectra)
-      distribution = distribution.toSpectraColor(system);
+      distribution = distribution.toSpectraColor(system, work_resource);
   }
   // Spectra
   else {
@@ -92,20 +94,17 @@ SpectralDistribution SpectralDistribution::computeSystemColor(const System& syst
 
 /*!
   */
-std::unique_ptr<SpectralDistribution> SpectralDistribution::makeDistribution(
-    const System& system,
-    const SettingNodeBase* settings) noexcept
+void SpectralDistribution::load(const System& system,
+                                const SettingNodeBase* settings) noexcept
 {
   const auto spectra_settings = castNode<SpectraSettingNode>(settings);
-
-  auto distribution = std::make_unique<SpectralDistribution>();
   switch (spectra_settings->representationType()) {
    case ColorRepresentationType::kRgb: {
-    distribution->loadRgb(system, settings);
+    loadRgb(system, settings);
     break;
    }
    case ColorRepresentationType::kSpectra: {
-    distribution->loadSpectra(settings);
+    loadSpectra(settings);
     break;
    }
    default: {
@@ -113,7 +112,6 @@ std::unique_ptr<SpectralDistribution> SpectralDistribution::makeDistribution(
     break;
    }
   }
-  return distribution;
 }
 
 /*!
@@ -165,9 +163,10 @@ void SpectralDistribution::loadRgb(const System& system,
   */
 void SpectralDistribution::loadSpectra(const SettingNodeBase* settings) noexcept
 {
+  auto work_resource = settings->workResource();
   const auto spectra_settings = castNode<SpectraSettingNode>(settings);
 
-  zisc::LinearInterp<Float> spectra_data;
+  zisc::LinearInterp<Float> spectra_data{work_resource};
   {
     const auto& parameters = spectra_settings->spectraParameters();
     for (const auto& wavelength_data : parameters.spectra_) {
@@ -186,8 +185,9 @@ void SpectralDistribution::loadSpectra(const SettingNodeBase* settings) noexcept
   \details
   No detailed.
   */
-SpectralDistribution SpectralDistribution::toSpectraColor(const System& system)
-    const noexcept
+SpectralDistribution SpectralDistribution::toSpectraColor(
+    const System& system,
+    zisc::pmr::memory_resource* work_resource) const noexcept
 {
   const RgbColor rgb{getByWavelength(CoreConfig::redWavelength()),
                      getByWavelength(CoreConfig::greenWavelength()),
@@ -195,7 +195,7 @@ SpectralDistribution SpectralDistribution::toSpectraColor(const System& system)
   const auto to_xyz_matrix = getRgbToXyzMatrix(system.colorSpace());
   const auto xyz = ColorConversion::toXyz(rgb, to_xyz_matrix);
 
-  auto spectra = SpectralTransport::toSpectra(xyz);
+  auto spectra = SpectralTransport::toSpectra(xyz, work_resource);
   spectra.clampAll(std::numeric_limits<Float>::epsilon(), max());
   return spectra;
 }

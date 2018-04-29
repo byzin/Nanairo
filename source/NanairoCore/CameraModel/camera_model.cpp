@@ -8,15 +8,15 @@
   */
 
 #include "camera_model.hpp"
-// Standard C++ library
-#include <memory>
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "pinhole_camera.hpp"
 //#include "thin_lens_camera_model.hpp"
+#include "NanairoCore/system.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Setting/camera_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
@@ -120,15 +120,18 @@ void CameraModel::initialize(const SettingNodeBase* settings) noexcept
   \details
   No detailed.
   */
-std::unique_ptr<CameraModel> CameraModel::makeCamera(
+zisc::UniqueMemoryPointer<CameraModel> CameraModel::makeCamera(
+    System& system,
     const SettingNodeBase* settings) noexcept
 {
   const auto camera_settings = castNode<CameraSettingNode>(settings);
 
-  std::unique_ptr<CameraModel> camera_model;
+  zisc::UniqueMemoryPointer<CameraModel> camera_model;
+  auto& data_resource = system.dataMemoryManager();
   switch (camera_settings->cameraType()) {
    case CameraType::kPinhole: {
-    camera_model = std::make_unique<PinholeCamera>(settings);
+    camera_model = zisc::UniqueMemoryPointer<PinholeCamera>::make(&data_resource,
+                                                                  settings);
     break;
    }
    case CameraType::kThinLens: {

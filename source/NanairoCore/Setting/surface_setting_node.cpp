@@ -14,11 +14,14 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <utility>
 // Zisc
 #include "zisc/binary_data.hpp"
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
@@ -163,6 +166,14 @@ void ClothParameters::writeData(std::ostream* data_stream) const noexcept
 
 /*!
   */
+SurfaceSettingNode::SurfaceSettingNode(const SettingNodeBase* parent) noexcept :
+    SettingNodeBase(parent),
+    name_{dataResource()}
+{
+}
+
+/*!
+  */
 ClothParameters& SurfaceSettingNode::clothParameters() noexcept
 {
   ZISC_ASSERT(surfaceType() == SurfaceType::kCloth,
@@ -212,9 +223,16 @@ const LayeredDiffuseParameters& SurfaceSettingNode::layeredDiffuseParameters()
 
 /*!
   */
-const std::string& SurfaceSettingNode::name() const noexcept
+std::string_view SurfaceSettingNode::name() const noexcept
 {
-  return name_;
+  return std::string_view{name_};
+}
+
+/*!
+  */
+SettingNodeType SurfaceSettingNode::nodeType() noexcept
+{
+  return SettingNodeType::kSurface;
 }
 
 /*!
@@ -222,8 +240,7 @@ const std::string& SurfaceSettingNode::name() const noexcept
 void SurfaceSettingNode::readData(std::istream* data_stream) noexcept
 {
   {
-    auto name = readString(data_stream);
-    setName(std::move(name));
+    name_ = readString(data_stream);
   }
   {
     zisc::read(&surface_type_, data_stream);
@@ -277,16 +294,9 @@ const RoughDielectricParameters& SurfaceSettingNode::roughDielectricParameters()
 
 /*!
   */
-void SurfaceSettingNode::setName(const std::string& name) noexcept
+void SurfaceSettingNode::setName(const std::string_view& name) noexcept
 {
   name_ = name;
-}
-
-/*!
-  */
-void SurfaceSettingNode::setName(std::string&& name) noexcept
-{
-  name_ = std::move(name);
 }
 
 /*!
@@ -298,31 +308,38 @@ void SurfaceSettingNode::setSurfaceType(const SurfaceType type) noexcept
   parameters_.reset();
   switch (surface_type_) {
    case SurfaceType::kSmoothDiffuse: {
-    parameters_ = std::make_unique<SmoothDiffuseParameters>();
+    parameters_ =
+        zisc::UniqueMemoryPointer<SmoothDiffuseParameters>::make(dataResource());
     break;
    }
    case SurfaceType::kSmoothDielectric: {
-    parameters_ = std::make_unique<SmoothDielectricParameters>();
+    parameters_ =
+        zisc::UniqueMemoryPointer<SmoothDielectricParameters>::make(dataResource());
     break;
    }
    case SurfaceType::kSmoothConductor: {
-    parameters_ = std::make_unique<SmoothConductorParameters>();
+    parameters_ =
+        zisc::UniqueMemoryPointer<SmoothConductorParameters>::make(dataResource());
     break;
    }
    case SurfaceType::kRoughDielectric: {
-    parameters_ = std::make_unique<RoughDielectricParameters>();
+    parameters_ =
+        zisc::UniqueMemoryPointer<RoughDielectricParameters>::make(dataResource());
     break;
    }
    case SurfaceType::kRoughConductor: {
-    parameters_ = std::make_unique<RoughConductorParameters>();
+    parameters_ =
+        zisc::UniqueMemoryPointer<RoughConductorParameters>::make(dataResource());
     break;
    }
    case SurfaceType::kLayeredDiffuse: {
-    parameters_ = std::make_unique<LayeredDiffuseParameters>();
+    parameters_ =
+        zisc::UniqueMemoryPointer<LayeredDiffuseParameters>::make(dataResource());
     break;
    }
    case SurfaceType::kCloth: {
-    parameters_ = std::make_unique<ClothParameters>();
+    parameters_ =
+        zisc::UniqueMemoryPointer<ClothParameters>::make(dataResource());
     break;
    }
    default:

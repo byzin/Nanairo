@@ -11,9 +11,11 @@
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "light_source_sampler.hpp"
+#include "NanairoCore/system.hpp"
 #include "NanairoCore/world.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/light_source_info.hpp"
@@ -86,7 +88,7 @@ void UniformLightSourceSampler::initialize(const World& world) noexcept
 /*!
   */
 inline
-const std::vector<const Object*>& UniformLightSourceSampler::lightSourceList()
+const zisc::pmr::vector<const Object*>& UniformLightSourceSampler::lightSourceList()
     const noexcept
 {
   return *light_source_list_;

@@ -11,7 +11,10 @@
 #define NANAIRO_GUI_RENDERER_HPP
 
 // Standard C++ library
+#include <fstream>
+#include <ostream>
 #include <string>
+#include <string_view>
 // Qt
 #include <QObject>
 // Zisc
@@ -68,11 +71,13 @@ class GuiRenderer : public QObject, public CuiRenderer
   //! Initialize the renderer
   void initialize() noexcept;
 
-  //! Log a message
-  void logMessage(const std::string& message) noexcept override;
+  //! Initialize logger
+  void initLogger(const std::string& output_path,
+                  std::ostream* console_log_stream,
+                  std::ofstream* text_log_stream) noexcept override;
 
   //! Notify of updating rendering information
-  void notifyOfRenderingInfo(const std::string& info) const noexcept override;
+  void notifyOfRenderingInfo(const std::string_view& info) const noexcept override;
 
   //! Output LDR image
   void outputLdrImage(const std::string& output_path,

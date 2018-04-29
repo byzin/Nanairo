@@ -12,6 +12,8 @@
 
 // Standard C++ library
 #include <vector>
+// Zisc
+#include "zisc/memory_resource.hpp"
 // Nanairo
 #include "bvh_building_node.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -27,8 +29,8 @@ class MortonCode
 {
  public:
   using CodeType = uint64;
-  using Iterator = std::vector<MortonCode>::iterator;
-  using ConstIterator = std::vector<MortonCode>::const_iterator;
+  using Iterator = zisc::pmr::vector<MortonCode>::iterator;
+  using ConstIterator = zisc::pmr::vector<MortonCode>::const_iterator;
 
 
   //! Create an invalid morton code
@@ -60,8 +62,8 @@ class MortonCode
   static constexpr CodeType invalidCode() noexcept;
 
   //! Make a morton code list
-  static std::vector<MortonCode> makeList(
-      const std::vector<BvhBuildingNode>& node_list) noexcept;
+  static zisc::pmr::vector<MortonCode> makeList(
+      const zisc::pmr::vector<BvhBuildingNode>& node_list) noexcept;
 
   //! Return the bvh node
   const BvhBuildingNode* node() const noexcept;

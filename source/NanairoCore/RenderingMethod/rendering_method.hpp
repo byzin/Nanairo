@@ -15,6 +15,7 @@
 #include <limits>
 #include <memory>
 // Zisc
+#include "zisc/memory_resource.hpp"
 #include "zisc/sip_hash_engine.hpp"
 #include "zisc/unique_memory_pointer.hpp"
 // Nanairo
@@ -73,10 +74,10 @@ class RenderingMethod
 
 
   //! Initialize the method for rendering
-  void initMethod() noexcept;
+  virtual void initMethod() noexcept;
 
   //! Make rendering method
-  static std::unique_ptr<RenderingMethod> makeMethod(
+  static zisc::UniqueMemoryPointer<RenderingMethod> makeMethod(
       System& system,
       const SettingNodeBase* settings,
       const Scene& scene) noexcept;
@@ -131,9 +132,6 @@ class RenderingMethod
                     Sampler& sampler,
                     Float* inverse_direction_pdf = nullptr) const noexcept;
 
-  //! Set the method initializer
-  void setMethodInitializer(std::function<void ()>&& initializer) noexcept;
-
   //! Update the wavelength selection info and the weight of the selected wavelength
   void updateSelectedWavelengthInfo(const ShaderPointer& bxdf,
                                     Spectra* weight,
@@ -144,11 +142,7 @@ class RenderingMethod
   //! Initialize the rendering method
   void initialize(const SettingNodeBase* settings) noexcept;
 
-  //! Return the method initializer
-  std::function<void ()>& methodInitializer() noexcept;
 
-
-  std::function<void ()> method_initializer_;
   RussianRoulette russian_roulette_;
   Float ray_cast_epsilon_;
 };

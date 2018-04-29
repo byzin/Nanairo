@@ -10,6 +10,7 @@
 // Standard C++ library
 #include <vector>
 // Zisc
+#include "zisc/memory_resource.hpp"
 #include "zisc/cumulative_distribution_function.hpp"
 // Nanairo
 #include "light_source_sampler.hpp"
@@ -21,7 +22,7 @@ namespace nanairo {
 /*!
   */
 inline
-std::vector<LightSourceInfo>&
+zisc::pmr::vector<LightSourceInfo>&
 PowerWeightedLightSourceSampler::infoList() noexcept
 {
   return info_list_;
@@ -30,7 +31,7 @@ PowerWeightedLightSourceSampler::infoList() noexcept
 /*!
   */
 inline
-const std::vector<LightSourceInfo>&
+const zisc::pmr::vector<LightSourceInfo>&
 PowerWeightedLightSourceSampler::infoList() const noexcept
 {
   return info_list_;

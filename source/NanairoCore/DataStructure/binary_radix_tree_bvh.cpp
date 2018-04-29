@@ -16,6 +16,7 @@
 #include <utility>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/thread_manager.hpp"
 // Nanairo
 #include "aabb.hpp"
@@ -33,8 +34,9 @@ namespace nanairo {
   \details
   No detailed.
   */
-BinaryRadixTreeBvh::BinaryRadixTreeBvh(const SettingNodeBase* settings) noexcept :
-    Bvh(settings)
+BinaryRadixTreeBvh::BinaryRadixTreeBvh(System& system,
+                                       const SettingNodeBase* settings) noexcept :
+    Bvh(system, settings)
 {
 }
 
@@ -44,16 +46,17 @@ BinaryRadixTreeBvh::BinaryRadixTreeBvh(const SettingNodeBase* settings) noexcept
   */
 void BinaryRadixTreeBvh::constructBinaryRadixTreeBvh(
     System& system,
-    const std::vector<Object>& object_list,
-    std::vector<BvhBuildingNode>& tree) noexcept
+    const zisc::pmr::vector<Object>& object_list,
+    zisc::pmr::vector<BvhBuildingNode>& tree) noexcept
 {
   const auto num_of_nodes = 2 * object_list.size() - 1;
   tree.resize(num_of_nodes);
 
+  auto work_resource = tree.get_allocator().resource();
   // Make a morton code list
-  std::vector<MortonCode> morton_code_list;
-  std::vector<BvhBuildingNode> leaf_node_list;
+  zisc::pmr::vector<MortonCode> morton_code_list{work_resource};
   {
+    zisc::pmr::vector<BvhBuildingNode> leaf_node_list{work_resource};
     leaf_node_list.reserve(object_list.size());
     for (const auto& object : object_list)
       leaf_node_list.emplace_back(&object);
@@ -75,9 +78,10 @@ void BinaryRadixTreeBvh::constructBinaryRadixTreeBvh(
   \details
   No detailed.
   */
-void BinaryRadixTreeBvh::constructBvh(System& system,
-                                      const std::vector<Object>& object_list,
-                                      std::vector<BvhBuildingNode>& tree) const noexcept
+void BinaryRadixTreeBvh::constructBvh(
+    System& system,
+    const zisc::pmr::vector<Object>& object_list,
+    zisc::pmr::vector<BvhBuildingNode>& tree) const noexcept
 {
   constructBinaryRadixTreeBvh(system, object_list, tree);
 }
@@ -90,7 +94,7 @@ template <bool threading>
 void BinaryRadixTreeBvh::split(System& system,
                                uint bit,
                                const uint32 index,
-                               std::vector<BvhBuildingNode>& tree,
+                               zisc::pmr::vector<BvhBuildingNode>& tree,
                                MortonCode::Iterator first,
                                MortonCode::Iterator begin,
                                MortonCode::Iterator end) noexcept
@@ -134,9 +138,10 @@ void BinaryRadixTreeBvh::split(System& system,
         split<>(system, key, right_child_index, tree, first, split_position, end);
       };
 
+      auto work_resource = tree.get_allocator().resource();
       auto& threads = system.threadManager();
-      auto left_result = threads.enqueue<void>(split_left_range);
-      auto right_result = threads.enqueue<void>(split_right_range);
+      auto left_result = threads.enqueue<void>(split_left_range, work_resource);
+      auto right_result = threads.enqueue<void>(split_right_range, work_resource);
       left_result.get();
       right_result.get();
     }

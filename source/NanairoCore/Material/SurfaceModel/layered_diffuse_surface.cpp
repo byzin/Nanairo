@@ -37,7 +37,7 @@ namespace nanairo {
   */
 LayeredDiffuseSurface::LayeredDiffuseSurface(
     const SettingNodeBase* settings,
-    const std::vector<TextureModel*>& texture_list) noexcept
+    const zisc::pmr::vector<const TextureModel*>& texture_list) noexcept
 {
   initialize(settings, texture_list);
 }
@@ -90,7 +90,7 @@ SurfaceType LayeredDiffuseSurface::type() const noexcept
   */
 void LayeredDiffuseSurface::initialize(
     const SettingNodeBase* settings,
-    const std::vector<TextureModel*>& texture_list) noexcept
+    const zisc::pmr::vector<const TextureModel*>& texture_list) noexcept
 {
   const auto surface_settings = castNode<SurfaceSettingNode>(settings);
 

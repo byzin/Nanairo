@@ -14,7 +14,9 @@
 #include <memory>
 #include <vector>
 // Zisc
+#include "zisc/memory_resource.hpp"
 #include "zisc/sip_hash_engine.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_test_result.hpp"
@@ -31,6 +33,7 @@ class Aabb;
 class IntersectionInfo;
 class Ray;
 class Sampler;
+class System;
 
 //! \addtogroup Core
 //! \{
@@ -67,7 +70,8 @@ class Shape
   virtual Float getTraversalCost() const noexcept = 0;
 
   //! Make geometries
-  static std::vector<std::unique_ptr<Shape>> makeShape(
+  static zisc::pmr::vector<zisc::UniqueMemoryPointer<Shape>> makeShape(
+      System& system,
       const SettingNodeBase* settings) noexcept;
 
   //! Return the surface area of the shape

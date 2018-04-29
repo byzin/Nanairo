@@ -13,6 +13,8 @@
 // Standard C++ library
 #include <array>
 #include <vector>
+// Zisc
+#include "zisc/memory_resource.hpp"
 // Nanairo
 #include "aabb.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -108,8 +110,9 @@ class BvhBuildingNode
 };
 
 //! Get the bounding box overlapping nodes
-Aabb combineBoundingBoxes(std::vector<BvhBuildingNode>::const_iterator begin,
-                          std::vector<BvhBuildingNode>::const_iterator end) noexcept;
+Aabb combineBoundingBoxes(
+    zisc::pmr::vector<BvhBuildingNode>::const_iterator begin,
+    zisc::pmr::vector<BvhBuildingNode>::const_iterator end) noexcept;
 
 //! \} Core
 

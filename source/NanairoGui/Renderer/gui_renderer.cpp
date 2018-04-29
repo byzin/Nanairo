@@ -9,7 +9,10 @@
 
 #include "gui_renderer.hpp"
 // Standard C++ library
+#include <fstream>
+#include <ostream>
 #include <string>
+#include <string_view>
 // Qt
 #include <QObject>
 #include <QString>
@@ -79,15 +82,18 @@ void GuiRenderer::initialize() noexcept
 
 /*!
   */
-void GuiRenderer::logMessage(const std::string&) noexcept
+void GuiRenderer::initLogger(const std::string& output_path,
+                             std::ostream*,
+                             std::ofstream* text_log_stream) noexcept
 {
+  CuiRenderer::initLogger(output_path, nullptr, text_log_stream);
 }
 
 /*!
   */
-void GuiRenderer::notifyOfRenderingInfo(const std::string& info) const noexcept
+void GuiRenderer::notifyOfRenderingInfo(const std::string_view& info) const noexcept
 {
-  QString information{info.c_str()};
+  QString information{info.data()};
   notifiedOfRenderingInfo(information);
 }
 

@@ -15,6 +15,9 @@
 #include <cstddef>
 #include <tuple>
 #include <vector>
+// Zisc
+#include "zisc/non_copyable.hpp"
+#include "zisc/memory_resource.hpp"
 // Nanairo
 #include "bvh.hpp"
 #include "bvh_building_node.hpp"
@@ -39,16 +42,18 @@ class AgglomerativeTreeletRestructuringBvh : public Bvh
 {
  public:
   //! Create a treelet restructuring BVH
-  AgglomerativeTreeletRestructuringBvh(const SettingNodeBase* settings) noexcept;
+  AgglomerativeTreeletRestructuringBvh(System& system,
+                                       const SettingNodeBase* settings) noexcept;
 
  private:
-  struct RestructuringData
+  struct RestructuringData : public zisc::NonCopyable<RestructuringData>
   {
-    RestructuringData(const uint treelet_size) noexcept;
+    RestructuringData(const uint treelet_size,
+                      zisc::pmr::memory_resource* work_resource) noexcept;
 
-    std::vector<uint32> inner_index_list_;
-    std::vector<uint32> leaf_index_list_;
-    std::vector<Float> distance_matrix_;
+    zisc::pmr::vector<uint32> inner_index_list_;
+    zisc::pmr::vector<uint32> leaf_index_list_;
+    zisc::pmr::vector<Float> distance_matrix_;
   };
 
 
@@ -56,37 +61,39 @@ class AgglomerativeTreeletRestructuringBvh : public Bvh
   void buildRelationship(const uint32 parent_index,
                          const uint32 left_child_index,
                          const uint32 right_child_index,
-                         std::vector<BvhBuildingNode>& tree) const noexcept;
+                         zisc::pmr::vector<BvhBuildingNode>& tree) const noexcept;
 
   //! Calculate the surface area of the combined bounding box
   Float calcNodeDistance(const BvhBuildingNode& lhs,
                          const BvhBuildingNode& rhs) const noexcept;
 
   //! Build a treelet restructuring BVH
-  void constructBvh(System& system,
-                    const std::vector<Object>& object_list,
-                    std::vector<BvhBuildingNode>& tree) const noexcept override;
+  void constructBvh(
+      System& system,
+      const zisc::pmr::vector<Object>& object_list,
+      zisc::pmr::vector<BvhBuildingNode>& tree) const noexcept override;
 
   //! Construct the optimal binary treelet
-  void constructOptimalTreelet(RestructuringData& data,
-                               std::vector<BvhBuildingNode>& tree) const noexcept;
+  void constructOptimalTreelet(
+      RestructuringData& data,
+      zisc::pmr::vector<BvhBuildingNode>& tree) const noexcept;
 
   //! Return the row column of the minimum distance
   std::tuple<uint, uint> findBestMatch(
       const uint num_of_leafs,
-      const std::vector<Float>& distance_matrix) const noexcept;
+      const zisc::pmr::vector<Float>& distance_matrix) const noexcept;
 
   //! Form a treelet from the root
   void formTreelet(const uint treelet_size,
                    const uint32 root_index,
-                   const std::vector<BvhBuildingNode>& tree,
+                   const zisc::pmr::vector<BvhBuildingNode>& tree,
                    RestructuringData& data) const noexcept;
 
   //! Initialize
   void initialize(const SettingNodeBase* settings) noexcept;
 
   //! Initialize the distance matrix, calculate the distances
-  void initializeDistanceMatrix(const std::vector<BvhBuildingNode>& tree,
+  void initializeDistanceMatrix(const zisc::pmr::vector<BvhBuildingNode>& tree,
                                 RestructuringData& data) const noexcept;
 
   //! Return the optimization loop count
@@ -97,13 +104,13 @@ class AgglomerativeTreeletRestructuringBvh : public Bvh
   uint restructureTreelet(System& system,
                           const uint32 index,
                           RestructuringData& data,
-                          std::vector<BvhBuildingNode>& tree) const noexcept;
+                          zisc::pmr::vector<BvhBuildingNode>& tree) const noexcept;
 
   //! Return the treelet size
   uint treeletSize() const noexcept;
 
   //! Update the distance matrix
-  void updateDistanceMatrix(const std::vector<BvhBuildingNode>& tree,
+  void updateDistanceMatrix(const zisc::pmr::vector<BvhBuildingNode>& tree,
                             const uint row,
                             const uint column,
                             RestructuringData& data) const noexcept;

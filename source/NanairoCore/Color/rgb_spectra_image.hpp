@@ -13,6 +13,8 @@
 // Standard C++ library
 #include <cstddef>
 #include <vector>
+// Zisc
+#include "zisc/memory_resource.hpp"
 // Nanairo
 #include "rgb_color.hpp"
 #include "spectra_image_interface.hpp"
@@ -37,10 +39,13 @@ class RgbSpectraImage : public SpectraImageInterface
 {
  public:
   //! Initialize the RGB image
-  RgbSpectraImage(const uint width, const uint height) noexcept;
+  RgbSpectraImage(const uint width,
+                  const uint height,
+                  zisc::pmr::memory_resource* data_resource) noexcept;
 
   //! Initialize the RGB image
-  RgbSpectraImage(const Index2d& resolution) noexcept;
+  RgbSpectraImage(const Index2d& resolution,
+                  zisc::pmr::memory_resource* data_resource) noexcept;
 
 
   //! Add radiance from a sample
@@ -63,8 +68,8 @@ class RgbSpectraImage : public SpectraImageInterface
   void initialize() noexcept;
 
 
-  std::vector<RgbColor> buffer_;
-  std::vector<RgbColor> compensation_;
+  zisc::pmr::vector<RgbColor> buffer_;
+  zisc::pmr::vector<RgbColor> compensation_;
 };
 
 //! \} Core

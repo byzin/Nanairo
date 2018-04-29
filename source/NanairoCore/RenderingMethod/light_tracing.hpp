@@ -15,6 +15,7 @@
 #include <thread>
 // Zisc
 #include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "rendering_method.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -107,7 +108,7 @@ class LightTracing : public RenderingMethod
 
 
   std::mutex lock_;
-  std::unique_ptr<LightSourceSampler> light_path_light_sampler_;
+  zisc::UniqueMemoryPointer<LightSourceSampler> light_path_light_sampler_;
 };
 
 //! \} Core

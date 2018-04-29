@@ -22,6 +22,8 @@
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
 #include "zisc/math.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "agglomerative_treelet_restructuring_bvh.hpp"
@@ -41,7 +43,9 @@ namespace nanairo {
   \details
   No detailed.
   */
-Bvh::Bvh(const SettingNodeBase* /* settings */) noexcept
+Bvh::Bvh(System& system, const SettingNodeBase* /* settings */) noexcept :
+    tree_{&system.dataMemoryManager()},
+    object_list_{&system.dataMemoryManager()}
 {
 }
 
@@ -86,7 +90,9 @@ IntersectionInfo Bvh::castRay(const Ray& ray,
   \details
   No detailed.
   */
-void Bvh::construct(System& system, std::vector<Object>&& object_list) noexcept
+void Bvh::construct(System& system,
+                    const SettingNodeBase* settings,
+                    zisc::pmr::vector<Object>&& object_list) noexcept
 {
   ZISC_ASSERT(object_list.size() <= BvhBuildingNode::maxNumOfLeafs(),
               "The size of objects is over.");
@@ -97,7 +103,8 @@ void Bvh::construct(System& system, std::vector<Object>&& object_list) noexcept
     setTreeInfo(object_list);
   }
   else {
-    std::vector<BvhBuildingNode> tree;
+    auto work_resource = settings->workResource();
+    zisc::pmr::vector<BvhBuildingNode> tree{work_resource};
     constructBvh(system, object_list, tree);
     sortTreeNode(tree);
     tree_.resize(tree.size());
@@ -111,18 +118,26 @@ void Bvh::construct(System& system, std::vector<Object>&& object_list) noexcept
   \details
   No detailed.
   */
-std::unique_ptr<Bvh> Bvh::makeBvh(const SettingNodeBase* settings) noexcept
+zisc::UniqueMemoryPointer<Bvh> Bvh::makeBvh(
+    System& system,
+    const SettingNodeBase* settings) noexcept
 {
   const auto bvh_setting_node = castNode<BvhSettingNode>(settings);
 
-  std::unique_ptr<Bvh> bvh;
+  zisc::UniqueMemoryPointer<Bvh> bvh;
   switch (bvh_setting_node->bvhType()) {
    case BvhType::kBinaryRadixTree: {
-    bvh = std::make_unique<BinaryRadixTreeBvh>(settings);
+    bvh = zisc::UniqueMemoryPointer<BinaryRadixTreeBvh>::make(
+        &system.dataMemoryManager(),
+        system,
+        settings);
     break;
    }
    case BvhType::kAgglomerativeTreeletRestructuring: {
-    bvh = std::make_unique<AgglomerativeTreeletRestructuringBvh>(settings);
+    bvh = zisc::UniqueMemoryPointer<AgglomerativeTreeletRestructuringBvh>::make(
+        &system.dataMemoryManager(),
+        system,
+        settings);
     break;
    }
    default: {
@@ -135,7 +150,7 @@ std::unique_ptr<Bvh> Bvh::makeBvh(const SettingNodeBase* settings) noexcept
 
 /*!
   */
-void Bvh::setupBoundingBox(std::vector<BvhBuildingNode>& tree,
+void Bvh::setupBoundingBox(zisc::pmr::vector<BvhBuildingNode>& tree,
                            const uint32 index) noexcept
 {
   auto& node = tree[index];
@@ -165,8 +180,8 @@ void Bvh::setupBoundingBox(std::vector<BvhBuildingNode>& tree,
   \details
   No detailed.
   */
-void Bvh::setTreeInfo(const std::vector<BvhBuildingNode>& tree,
-                      std::vector<Object>& object_list,
+void Bvh::setTreeInfo(const zisc::pmr::vector<BvhBuildingNode>& tree,
+                      zisc::pmr::vector<Object>& object_list,
                       const uint32 failure_next_index,
                       const uint32 index) noexcept
 {
@@ -201,7 +216,7 @@ void Bvh::setTreeInfo(const std::vector<BvhBuildingNode>& tree,
   \details
   No detailed.
   */
-void Bvh::setTreeInfo(std::vector<Object>& object_list) noexcept
+void Bvh::setTreeInfo(zisc::pmr::vector<Object>& object_list) noexcept
 {
   // Set the object
   object_list_.emplace_back(std::move(object_list[0]));
@@ -216,12 +231,12 @@ void Bvh::setTreeInfo(std::vector<Object>& object_list) noexcept
   \details
   No detailed.
   */
-void Bvh::sortTreeNode(std::vector<BvhBuildingNode>& tree) const noexcept
+void Bvh::sortTreeNode(zisc::pmr::vector<BvhBuildingNode>& tree) const noexcept
 {
   uint32 index = 0;
   // Sort the tree data
   {
-    std::vector<BvhBuildingNode> new_tree;
+    zisc::pmr::vector<BvhBuildingNode> new_tree{tree.get_allocator().resource()};
     new_tree.resize(tree.size());
     sortTreeNode(tree, new_tree, index, index);
     ZISC_ASSERT(index < tree.size(), "Invalid sort operation.");
@@ -237,8 +252,8 @@ void Bvh::sortTreeNode(std::vector<BvhBuildingNode>& tree) const noexcept
   \details
   No detailed.
   */
-void Bvh::sortTreeNode(const std::vector<BvhBuildingNode>& tree,
-                       std::vector<BvhBuildingNode>& new_tree,
+void Bvh::sortTreeNode(const zisc::pmr::vector<BvhBuildingNode>& tree,
+                       zisc::pmr::vector<BvhBuildingNode>& new_tree,
                        const uint32 index,
                        uint32& new_index) const noexcept
 {

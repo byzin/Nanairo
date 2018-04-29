@@ -32,6 +32,10 @@ namespace nanairo {
 class SystemSettingNode : public SettingNodeBase
 {
  public:
+  //! Create a system settings
+  SystemSettingNode(const SettingNodeBase* parent) noexcept;
+
+
   // Return the rendering color mode
   RenderingColorMode colorMode() const noexcept;
 
@@ -55,6 +59,9 @@ class SystemSettingNode : public SettingNodeBase
 
   //! Initialize a systemm node
   void initialize() noexcept override;
+
+  //! Return the node type
+  static SettingNodeType nodeType() noexcept;
 
   //! Return the num of threads used for rendering
   uint32 numOfThreads() const noexcept;

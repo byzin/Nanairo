@@ -13,7 +13,9 @@
 // Standard C++ library
 #include <memory>
 // Zisc
+#include "zisc/memory_resource.hpp"
 #include "zisc/sip_hash_engine.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
@@ -57,8 +59,8 @@ class ToneMappingOperator
   Float inverseGamma() const noexcept;
 
   //! Make tonemapping method
-  static std::unique_ptr<ToneMappingOperator> makeOperator(
-      const System& system,
+  static zisc::UniqueMemoryPointer<ToneMappingOperator> makeOperator(
+      System& system,
       const SettingNodeBase* settings) noexcept;
 
   //! Apply a tonemapping operator

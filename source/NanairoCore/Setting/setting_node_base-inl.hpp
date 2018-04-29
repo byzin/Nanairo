@@ -21,13 +21,39 @@ namespace nanairo {
 
 /*!
   */
+inline
+bool SettingNodeBase::isRoot() const noexcept
+{
+  const bool is_root = parent() == nullptr;
+  return is_root;
+}
+
+/*!
+  */
+inline
+const SettingNodeBase* SettingNodeBase::parent() const noexcept
+{
+  return parent_;
+}
+
+/*!
+  */
+inline
+const SettingNodeBase* SettingNodeBase::root() const noexcept
+{
+  const SettingNodeBase* r = isRoot() ? this : parent()->root();
+  return r;
+}
+
+/*!
+  */
 template <typename NodeType> inline
 NodeType* castNode(SettingNodeBase* node) noexcept
 {
   static_assert(std::is_base_of<SettingNodeBase, NodeType>::value,
                 "The NodeType isn't derived from SettingNodeBase.");
   ZISC_ASSERT(node != nullptr, "The setting node is null.");
-  ZISC_ASSERT(node->type() == NodeType{}.type(),
+  ZISC_ASSERT(node->type() == NodeType::nodeType(),
               "Wrong setting node is specified.");
   return zisc::cast<NodeType*>(node);
 }
@@ -40,7 +66,7 @@ const NodeType* castNode(const SettingNodeBase* node) noexcept
   static_assert(std::is_base_of<SettingNodeBase, NodeType>::value,
                 "The NodeType isn't derived from SettingNodeBase.");
   ZISC_ASSERT(node != nullptr, "The setting node is null.");
-  ZISC_ASSERT(node->type() == NodeType{}.type(),
+  ZISC_ASSERT(node->type() == NodeType::nodeType(),
               "Wrong setting node is specified.");
   return zisc::cast<const NodeType*>(node);
 }

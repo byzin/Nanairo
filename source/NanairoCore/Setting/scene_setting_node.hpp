@@ -13,10 +13,16 @@
 // Standard C++ library
 #include <istream>
 #include <memory>
+#include <mutex>
 #include <ostream>
 #include <string>
+#include <string_view>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
+#include "NanairoCore/system.hpp"
 
 namespace nanairo {
 
@@ -29,7 +35,10 @@ class SceneSettingNode : public SettingNodeBase
 {
  public:
   //!
-  SceneSettingNode() noexcept;
+  SceneSettingNode(const SettingNodeBase* parent = nullptr) noexcept;
+
+  //!
+  ~SceneSettingNode() noexcept override;
 
 
   //! Return the bvh setting node
@@ -44,6 +53,9 @@ class SceneSettingNode : public SettingNodeBase
   //! Return the camera setting node
   const SettingNodeBase* cameraSettingNode() const noexcept;
 
+  //! Return the memory resource for data allocation
+  zisc::pmr::memory_resource* dataResource() const noexcept override;
+
   //! Return the emitter model setting node
   SettingNodeBase* emitterModelSettingNode() noexcept;
 
@@ -52,6 +64,9 @@ class SceneSettingNode : public SettingNodeBase
 
   //! Initialize a scene node
   void initialize() noexcept override;
+
+  //! Return the node type
+  static SettingNodeType nodeType() noexcept;
 
   //! Return the object setting node
   SettingNodeBase* objectSettingNode() noexcept;
@@ -69,13 +84,10 @@ class SceneSettingNode : public SettingNodeBase
   const SettingNodeBase* renderingMethodSettingNode() const noexcept;
 
   //! Return the scene name
-  const std::string& sceneName() const noexcept;
+  std::string_view sceneName() const noexcept;
 
   //! Set the scene name
-  void setSceneName(const std::string& scene_name) noexcept;
-
-  //! Set the scene name
-  void setSceneName(std::string&& scene_name) noexcept;
+  void setSceneName(const std::string_view& scene_name) noexcept;
 
   //! Return the surface model setting node
   SettingNodeBase* surfaceModelSettingNode() noexcept;
@@ -98,19 +110,26 @@ class SceneSettingNode : public SettingNodeBase
   //! Return the setting node type
   SettingNodeType type() const noexcept override;
 
+  //! Return the memory resource for temporary works
+  zisc::pmr::memory_resource* workResource() const noexcept override;
+
   //! Write the setting data to the stream
   void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
-  std::string scene_name_;
-  std::unique_ptr<SettingNodeBase> system_setting_node_;
-  std::unique_ptr<SettingNodeBase> rendering_method_setting_node_;
-  std::unique_ptr<SettingNodeBase> texture_model_setting_node_;
-  std::unique_ptr<SettingNodeBase> surface_model_setting_node_;
-  std::unique_ptr<SettingNodeBase> emitter_model_setting_node_;
-  std::unique_ptr<SettingNodeBase> camera_setting_node_;
-  std::unique_ptr<SettingNodeBase> object_setting_node_;
-  std::unique_ptr<SettingNodeBase> bvh_setting_node_;
+  System::MemoryManager data_resource_;
+  System::MemoryManager work_resource_;
+  std::mutex data_mutex_;
+  std::mutex work_mutex_;
+  zisc::pmr::string scene_name_;
+  zisc::UniqueMemoryPointer<SettingNodeBase> system_setting_node_;
+  zisc::UniqueMemoryPointer<SettingNodeBase> rendering_method_setting_node_;
+  zisc::UniqueMemoryPointer<SettingNodeBase> texture_model_setting_node_;
+  zisc::UniqueMemoryPointer<SettingNodeBase> surface_model_setting_node_;
+  zisc::UniqueMemoryPointer<SettingNodeBase> emitter_model_setting_node_;
+  zisc::UniqueMemoryPointer<SettingNodeBase> camera_setting_node_;
+  zisc::UniqueMemoryPointer<SettingNodeBase> object_setting_node_;
+  zisc::UniqueMemoryPointer<SettingNodeBase> bvh_setting_node_;
 };
 
 //! \} Core

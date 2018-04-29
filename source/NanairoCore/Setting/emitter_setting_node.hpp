@@ -15,6 +15,10 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <string_view>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
 #include "NanairoCore/Material/EmitterModel/emitter_model.hpp"
@@ -42,6 +46,10 @@ struct NonDirectionalEmitterParameters : public NodeParameterBase
 class EmitterSettingNode : public SettingNodeBase
 {
  public:
+  //! Create a emitter settings
+  EmitterSettingNode(const SettingNodeBase* parent) noexcept;
+
+
   //! Return the emitter type
   EmitterType emitterType() const noexcept;
 
@@ -49,7 +57,10 @@ class EmitterSettingNode : public SettingNodeBase
   void initialize() noexcept override;
 
   //! Return the emitter name
-  const std::string& name() const noexcept;
+  std::string_view name() const noexcept;
+
+  //! Return the node type
+  static SettingNodeType nodeType() noexcept;
 
   //! Return the non directional emitter parameters
   NonDirectionalEmitterParameters& nonDirectionalEmitterParameters() noexcept;
@@ -65,10 +76,7 @@ class EmitterSettingNode : public SettingNodeBase
   void setEmitterType(const EmitterType type) noexcept;
 
   //! Set the emitter name
-  void setName(const std::string& name) noexcept;
-
-  //! Set the emitter name
-  void setName(std::string&& name) noexcept;
+  void setName(const std::string_view& name) noexcept;
 
   //! Return the node type
   SettingNodeType type() const noexcept override;
@@ -77,8 +85,8 @@ class EmitterSettingNode : public SettingNodeBase
   void writeData(std::ostream* data_stream) const noexcept override;
 
  private:
-  std::unique_ptr<NodeParameterBase> parameters_;
-  std::string name_;
+  zisc::UniqueMemoryPointer<NodeParameterBase> parameters_;
+  zisc::pmr::string name_;
   EmitterType emitter_type_;
 };
 

@@ -49,7 +49,6 @@ class ProbabilisticPpm : public RenderingMethod
 {
  public:
   using Method = RenderingMethod;
-  using Map = PhotonMap;
   using Photon = Ray;
   using Spectra = typename Method::Spectra;
   using Shader = ShaderModel;
@@ -58,10 +57,13 @@ class ProbabilisticPpm : public RenderingMethod
 
 
   //! Initialize probabilistic ppm method
-  ProbabilisticPpm(const System& system,
+  ProbabilisticPpm(System& system,
                    const SettingNodeBase* settings,
                    const Scene& scene) noexcept;
 
+
+  //! Initialize the rendering method
+  void initMethod() noexcept override;
 
   //! Render scene using probabilistic ppm method
   void render(System& system,
@@ -88,8 +90,8 @@ class ProbabilisticPpm : public RenderingMethod
                               zisc::pmr::memory_resource* mem_resource,
                               Spectra* contribution) const noexcept;
 
-  //! Return the expected max reflection count
-  static constexpr uint expectedMaxReflectionCount() noexcept;
+  //! Return the estimated max reflection count
+  static constexpr uint estimatedMaxReflectionCount() noexcept;
 
   //! Generate a photon
   Photon generatePhoton(Spectra* light_contribution,
@@ -105,7 +107,7 @@ class ProbabilisticPpm : public RenderingMethod
                   Spectra* weight) const noexcept;
 
   //! Initialize
-  void initialize(const System& system,
+  void initialize(System& system,
                   const SettingNodeBase* settings,
                   const Scene& scene) noexcept;
 
@@ -151,14 +153,15 @@ class ProbabilisticPpm : public RenderingMethod
   void updateRadius() noexcept;
 
 
-  Map photon_map_;
-  std::vector<KnnPhotonList> thread_photon_list_;
+  PhotonMap photon_map_;
+  zisc::pmr::vector<KnnPhotonList> thread_photon_list_;
+  Float init_radius2_;
   Float radius2_;
   Float inverse_radius_;
   Float inverse_estimation_area_;
   Float alpha_;
   Float photon_power_scale_;
-  std::unique_ptr<PowerWeightedLightSourceSampler> light_path_light_sampler_;
+  zisc::UniqueMemoryPointer<PowerWeightedLightSourceSampler> light_path_light_sampler_;
   uint cycle_;
   uint num_of_thread_photons_;
 };

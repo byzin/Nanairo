@@ -14,6 +14,8 @@
 #include <ostream>
 // Zisc
 #include "zisc/binary_data.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
@@ -45,6 +47,13 @@ CameraType CameraSettingNode::cameraType() const noexcept
 
 /*!
   */
+CameraSettingNode::CameraSettingNode(const SettingNodeBase* parent) noexcept :
+    SettingNodeBase(parent)
+{
+}
+
+/*!
+  */
 void CameraSettingNode::initialize() noexcept
 {
   setCameraType(CameraType::kPinhole);
@@ -56,6 +65,13 @@ void CameraSettingNode::initialize() noexcept
 bool CameraSettingNode::jittering() const noexcept
 {
   return jittering_ == kTrue;
+}
+
+/*!
+  */
+SettingNodeType CameraSettingNode::nodeType() noexcept
+{
+  return SettingNodeType::kCameraObject;
 }
 
 /*!
@@ -98,10 +114,11 @@ void CameraSettingNode::setCameraType(const CameraType type) noexcept
 {
   type_ = type;
   // Initialize parameters
-  parameters_.reset(nullptr);
+  parameters_.reset();
   switch (type_) {
    case CameraType::kPinhole: {
-    parameters_ = std::make_unique<PinholeCameraParameters>();
+    parameters_ = 
+        zisc::UniqueMemoryPointer<PinholeCameraParameters>::make(dataResource());
     break;
    }
    case CameraType::kThinLens:

@@ -15,6 +15,7 @@
 #include "zisc/arith_array.hpp"
 #include "zisc/error.hpp"
 #include "zisc/matrix.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "color.hpp"
@@ -48,7 +49,9 @@ constexpr int SpectralTransport::gridSize() noexcept
 
 /*!
   */
-SpectralDistribution SpectralTransport::toSpectra(const XyzColor& xyz) noexcept
+SpectralDistribution SpectralTransport::toSpectra(
+    const XyzColor& xyz,
+    zisc::pmr::memory_resource* work_resource) noexcept
 {
   using zisc::cast;
 
@@ -66,7 +69,7 @@ SpectralDistribution SpectralTransport::toSpectra(const XyzColor& xyz) noexcept
     for (uint i = 0; i < CoreConfig::spectraSize(); ++i) {
       const uint16 lambda = CoreConfig::shortestWavelength() +
                             cast<uint16>(i) * CoreConfig::wavelengthResolution();
-      Float spectrum = toSpectrum(lambda, cell_index, uv);
+      Float spectrum = toSpectrum(lambda, cell_index, uv, work_resource);
       // Now we have a spectrum which corresponds to the xy chromaticities of the input.
       // Need to scale according to the input brightness X+Y+Z now
       spectrum = spectrum * (xyz.x() + xyz.y() + xyz.z());
@@ -100,14 +103,16 @@ zisc::ArithArray<Float, 2> SpectralTransport::dehom(
 
 /*!
   */
-Float SpectralTransport::toSpectrum(const uint16 lambda,
-                                    const int cell_index,
-                                    const UvColor& uv) noexcept
+Float SpectralTransport::toSpectrum(
+    const uint16 lambda,
+    const int cell_index,
+    const UvColor& uv,
+    zisc::pmr::memory_resource* work_resource) noexcept
 {
   using zisc::cast;
   const auto& cell = spectral_transport::kGrid[cell_index];
   // Get Linearly interpolated spectral power for the corner vertices.
-  std::vector<Float> p;
+  zisc::pmr::vector<Float> p{work_resource};
   p.resize(cell.num_points_, 0.0);
   // This clamping is only necessary if lambda is not sure to be [min, max].
   constexpr int spectra_size = cast<int>(CoreConfig::spectraSize());

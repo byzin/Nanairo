@@ -14,6 +14,9 @@
 #include <array>
 #include <istream>
 #include <ostream>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
@@ -25,11 +28,18 @@ namespace nanairo {
 class TransformationSettingNode : public SettingNodeBase
 {
  public:
+  //! Create a transformation settings
+  TransformationSettingNode(const SettingNodeBase* parent) noexcept;
+
+
   //! Initialize the value
   void initialize() noexcept override;
 
   //! Check if the transformation is enabled
   bool isEnabled() const noexcept;
+
+  //! Return the node type
+  static SettingNodeType nodeType() noexcept;
 
   //! Read the transformation data from the stream
   void readData(std::istream* data_stream) noexcept override;

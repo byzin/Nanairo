@@ -15,11 +15,14 @@
 #include <vector>
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "flat_triangle.hpp"
 #include "shape.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/system.hpp"
 #include "NanairoCore/Data/face.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
@@ -33,20 +36,30 @@ namespace nanairo  {
   \details
   No detailed.
   */
-std::vector<std::unique_ptr<Shape>> TriangleMesh::makeMeshes(
+zisc::pmr::vector<zisc::UniqueMemoryPointer<Shape>> TriangleMesh::makeMeshes(
+    System& system,
     const SettingNodeBase* settings) noexcept
 {
   const auto object_settings = castNode<SingleObjectSettingNode>(settings);
 
+  auto data_resource = &system.dataMemoryManager();
+  auto work_resource = settings->workResource();
+
   const auto& parameters = object_settings->meshParameters();
-  std::vector<std::unique_ptr<Shape>> mesh_list;
+  zisc::pmr::vector<zisc::UniqueMemoryPointer<Shape>> mesh_list{work_resource};
   mesh_list.reserve(parameters.face_list_.size());
 
   //! \todo Add smoothed mesh
   //! \todo Add quadrangle mesh
   for (const auto& face : parameters.face_list_) {
     const auto vertices = getVertices(parameters, face);
-    auto mesh = std::make_unique<FlatTriangle>(vertices[0], vertices[1], vertices[2]);
+    // Skip invisible mesh
+    if (FlatTriangle::calcSurfaceArea(vertices[0], vertices[1], vertices[2]) <= 0.0)
+      continue;
+    auto mesh = zisc::UniqueMemoryPointer<FlatTriangle>::make(data_resource,
+                                                              vertices[0],
+                                                              vertices[1],
+                                                              vertices[2]);
     if (face.hasVuv()) {
       const auto vuvs = getUvs(parameters, face);
       mesh->setUv(vuvs[0], vuvs[1], vuvs[2]);

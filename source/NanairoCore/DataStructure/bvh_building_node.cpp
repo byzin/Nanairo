@@ -13,6 +13,7 @@
 #include <vector>
 #include <utility>
 // Zisc
+#include "zisc/memory_resource.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "aabb.hpp"
@@ -25,8 +26,9 @@ namespace nanairo {
   \details
   No detailed.
   */
-Aabb combineBoundingBoxes(std::vector<BvhBuildingNode>::const_iterator begin,
-                          std::vector<BvhBuildingNode>::const_iterator end) noexcept
+Aabb combineBoundingBoxes(
+    zisc::pmr::vector<BvhBuildingNode>::const_iterator begin,
+    zisc::pmr::vector<BvhBuildingNode>::const_iterator end) noexcept
 {
   auto i = begin;
   auto min_point = i->boundingBox().minPoint().data();

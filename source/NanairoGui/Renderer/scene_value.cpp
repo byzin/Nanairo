@@ -25,6 +25,7 @@
 // Zisc
 #include "zisc/fnv_1a_hash_engine.hpp"
 #include "zisc/csv.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/unit.hpp"
 // Nanairo
 #include "obj_loader.hpp"
@@ -258,7 +259,7 @@ void SceneValue::toObjectModelSetting(const QJsonObject& object_value,
 void SceneValue::toObjectSetting(const QJsonArray& value,
                                  SettingNodeBase* setting) noexcept
 {
-  std::vector<SettingNodeBase*> group_list;
+  zisc::pmr::vector<SettingNodeBase*> group_list{setting->workResource()};
   group_list.reserve(16);
 
   // World group
@@ -559,7 +560,7 @@ void SceneValue::toSpectraSetting(const QJsonObject& spectra_value,
       csv_text.readLine();
       csv_text.readLine();
       // Load distribution
-      zisc::Csv<double, double> csv;
+      zisc::Csv<double, double> csv{setting->workResource()};
       for (auto line = csv_text.readLine(); !line.isNull(); line = csv_text.readLine())
         csv.append(line.toStdString());
       // Set distribution

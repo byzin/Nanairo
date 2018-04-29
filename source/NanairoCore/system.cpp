@@ -9,11 +9,13 @@
 
 #include "system.hpp"
 // Standard C++ library
-#include <memory>
+#include <cstddef>
 #include <vector>
 // Zisc
 #include "zisc/memory_manager.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/thread_manager.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "Color/xyz_color_matching_function.hpp"
@@ -28,7 +30,9 @@ namespace nanairo {
   \details
   No detailed.
   */
-System::System(const SettingNodeBase* system_settings) noexcept
+System::System(const SettingNodeBase* system_settings) noexcept :
+    memory_manager_list_{zisc::cast<std::size_t>(castNode<SystemSettingNode>(system_settings)->numOfThreads() + 2)},
+    sampler_list_{&dataMemoryManager()}
 {
   initialize(system_settings);
 }
@@ -39,6 +43,10 @@ System::System(const SettingNodeBase* system_settings) noexcept
   */
 System::~System() noexcept
 {
+  // Destroy before the memory managers are destroyed
+  sampler_list_.clear();
+  thread_manager_.reset();
+  xyz_color_matching_function_.reset();
 }
 
 /*!
@@ -49,10 +57,14 @@ void System::initialize(const SettingNodeBase* settings) noexcept
 {
   const auto system_settings = castNode<SystemSettingNode>(settings);
 
+  auto& data_resource = dataMemoryManager();
   // Thread pool
   {
     const auto num_of_threads = system_settings->numOfThreads();
-    thread_manager_ = std::make_unique<zisc::ThreadManager>(num_of_threads);
+    thread_manager_ = zisc::UniqueMemoryPointer<zisc::ThreadManager>::make(
+        &data_resource,
+        num_of_threads,
+        &data_resource);
   }
   // Sampler
   {
@@ -62,13 +74,6 @@ void System::initialize(const SettingNodeBase* settings) noexcept
       const auto seed = zisc::cast<uint64>(system_settings->randomSeed()) + i;
       sampler_list_.emplace_back(seed);
     }
-  }
-  // Memory pool
-  {
-    const auto num_of_memory_manager = system_settings->numOfThreads() + 1;
-    memory_manager_list_.reserve(num_of_memory_manager);
-    for (uint i = 0; i < num_of_memory_manager; ++i)
-      memory_manager_list_.emplace_back();
   }
   // Image resolution
   {
@@ -89,7 +94,8 @@ void System::initialize(const SettingNodeBase* settings) noexcept
   }
   // Color matching function
   {
-    xyz_color_matching_function_ = std::make_unique<XyzColorMatchingFunction>();
+    xyz_color_matching_function_ =
+        zisc::UniqueMemoryPointer<XyzColorMatchingFunction>::make(&data_resource);
   }
 
   // Check type properties

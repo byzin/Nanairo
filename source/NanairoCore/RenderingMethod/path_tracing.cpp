@@ -278,9 +278,11 @@ void PathTracing::initialize(System& system,
 
   {
     const auto sampler_type = parameters.eye_path_light_sampler_type_;
-    eye_path_light_sampler_ = LightSourceSampler::makeSampler(sampler_type,
-                                                              scene.world(),
-                                                              system);
+    eye_path_light_sampler_ = LightSourceSampler::makeSampler(
+        system,
+        sampler_type,
+        scene.world(),
+        settings->workResource());
   }
 }
 
@@ -331,9 +333,10 @@ void PathTracing::traceCameraPath(System& system,
   {
     const auto& camera = scene.camera();
     auto& threads = system.threadManager();
+    auto& work_resource = system.globalMemoryManager();
     constexpr uint start = 0;
     const uint end = RenderingMethod::calcNumOfTiles(camera.imageResolution());
-    auto result = threads.enqueueLoop(trace_camera_path, start, end);
+    auto result = threads.enqueueLoop(trace_camera_path, start, end, &work_resource);
     result.get();
   }
 }

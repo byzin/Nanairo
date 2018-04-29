@@ -14,9 +14,11 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 // Zisc
 #include "zisc/sip_hash_engine.hpp"
+#include "zisc/memory_resource.hpp"
 #include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -68,9 +70,10 @@ class EmitterModel
 
 
   //! Make a emitter model
-  static std::unique_ptr<EmitterModel> makeEmitter(
+  static zisc::UniqueMemoryPointer<EmitterModel> makeEmitter(
+      System& system,
       const SettingNodeBase* settings,
-      const std::vector<TextureModel*>& texture_list) noexcept;
+      const zisc::pmr::vector<const TextureModel*>& texture_list) noexcept;
 
   //! Make a light shader model
   virtual ShaderPointer makeLight(const Point2& uv,
@@ -78,13 +81,13 @@ class EmitterModel
                                   zisc::pmr::memory_resource* mem_resource) const noexcept = 0;
 
   //! Return the emitter name 
-  const std::string* name() const noexcept;
+  std::string_view name() const noexcept;
 
   //! Return the radiant exitance
   Float radiantExitance() const noexcept;
 
   //! Set the emitter name
-  void setName(const std::string& name) noexcept;
+  void setName(const std::string_view& name) noexcept;
 
   //! Return the emitter type
   virtual EmitterType type() const noexcept = 0;

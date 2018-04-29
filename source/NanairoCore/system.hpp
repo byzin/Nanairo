@@ -12,14 +12,15 @@
 
 // Standard C++ library
 #include <array>
-#include <memory>
 #include <vector>
 // Zisc
 #include "zisc/memory_manager.hpp"
 #include "zisc/memory_resource.hpp"
+#include "zisc/non_copyable.hpp"
 #include "zisc/point.hpp"
 #include "zisc/sip_hash_engine.hpp"
 #include "zisc/thread_manager.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "Color/color_space.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -44,7 +45,7 @@ enum class RenderingColorMode : uint32
   \details
   No detailed.
   */
-class System
+class System : public zisc::NonCopyable<System>
 {
  public:
   using MemoryManager = zisc::DynamicMemoryManager<CoreConfig::memoryPoolSize()>;
@@ -68,6 +69,9 @@ class System
   template <typename Integer>
   std::array<Integer, 2> calcThreadRange(const Integer range,
                                          const int thread_id) const noexcept;
+
+  //! Return the memory manager for data allocation
+  MemoryManager& dataMemoryManager() noexcept;
 
   //! Return the global memory manager
   MemoryManager& globalMemoryManager() noexcept;
@@ -120,10 +124,10 @@ class System
   void initialize(const SettingNodeBase* settings) noexcept;
 
 
-  std::vector<Sampler> sampler_list_;
   std::vector<MemoryManager> memory_manager_list_;
-  std::unique_ptr<zisc::ThreadManager> thread_manager_;
-  std::unique_ptr<XyzColorMatchingFunction> xyz_color_matching_function_;
+  zisc::pmr::vector<Sampler> sampler_list_;
+  zisc::UniqueMemoryPointer<zisc::ThreadManager> thread_manager_;
+  zisc::UniqueMemoryPointer<XyzColorMatchingFunction> xyz_color_matching_function_;
   Float gamma_;
   Index2d image_resolution_;
   RenderingColorMode color_mode_;

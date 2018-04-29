@@ -14,6 +14,9 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/non_copyable.hpp"
 // Nanairo
 #include "NanairoCore/Data/photon_cache.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -27,14 +30,17 @@ namespace nanairo {
   \details
   No detailed.
   */
-class KnnPhotonList
+class KnnPhotonList : public zisc::NonCopyable<KnnPhotonList>
 {
  public:
   using PhotonPoint = std::tuple<Float, const PhotonCache*>;
 
 
   //! Create knn photon list
-  KnnPhotonList() noexcept;
+  KnnPhotonList(zisc::pmr::memory_resource* data_resource) noexcept;
+
+  //! Move data from other
+  KnnPhotonList(KnnPhotonList&& other) noexcept;
 
 
   //! Return the photon cache and distance by the index
@@ -60,7 +66,7 @@ class KnnPhotonList
   uint size() const noexcept;
 
  private:
-  std::vector<PhotonPoint> photon_list_;
+  zisc::pmr::vector<PhotonPoint> photon_list_;
   uint k_;
 };
 

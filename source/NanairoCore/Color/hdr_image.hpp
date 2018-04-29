@@ -14,6 +14,7 @@
 #include <cstddef>
 #include <vector>
 // Zisc
+#include "zisc/memory_resource.hpp"
 #include "zisc/point.hpp"
 // Nanairo
 #include "xyz_color.hpp"
@@ -32,10 +33,13 @@ class HdrImage
 {
  public:
   //! Create a hdr image
-  HdrImage(const uint width, const uint height) noexcept;
+  HdrImage(const uint width,
+           const uint height,
+           zisc::pmr::memory_resource* data_resource) noexcept;
 
   //! Create a hdr image
-  HdrImage(const Index2d& resolution) noexcept;
+  HdrImage(const Index2d& resolution,
+           zisc::pmr::memory_resource* data_resource) noexcept;
 
 
   //! Returh the pixel color by index
@@ -46,10 +50,10 @@ class HdrImage
 
 
   //! Return the buffer data
-  std::vector<XyzColor>& data() noexcept;
+  zisc::pmr::vector<XyzColor>& data() noexcept;
 
   //! Return the buffer data
-  const std::vector<XyzColor>& data() const noexcept;
+  const zisc::pmr::vector<XyzColor>& data() const noexcept;
 
   //! Return the pixel color by index
   XyzColor& get(const uint index) noexcept;
@@ -104,7 +108,7 @@ class HdrImage
   uint toIndex(const uint x, const uint y) const noexcept;
 
 
-  std::vector<XyzColor> buffer_;
+  zisc::pmr::vector<XyzColor> buffer_;
   Index2d resolution_;
 };
 

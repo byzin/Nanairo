@@ -96,16 +96,16 @@ std::unique_ptr<NanairoParameters> processCommandLine(int& argc, char** argv)
     }
 
     // Parse command line
-    options.parse_positional(std::vector<std::string>{"binpath"});
+    options.parse_positional(std::vector<std::string>{{"binpath"}});
     options.parse(argc, argv);
 
     // Process command line arguments
     if (0 < options.count("help")) {
-      std::cout << options.help(std::vector<std::string>{""}) << std::endl;
+      std::cout << options.help(std::vector<std::string>{{""}}) << std::endl;
       exit(EXIT_SUCCESS);
     }
     if (options.count("binpath") == 0) {
-      std::cout << options.help(std::vector<std::string>{""}) << std::endl;
+      std::cout << options.help(std::vector<std::string>{{""}}) << std::endl;
       exit(EXIT_SUCCESS);
     }
     if (options.count("outputpath") == 0) {

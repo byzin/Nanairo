@@ -28,9 +28,7 @@ namespace nanairo {
   No detailed.
   */
 XyzColorMatchingFunction::XyzColorMatchingFunction() noexcept :
-    bar_{{std::make_unique<SpectralDistribution>(),
-          std::make_unique<SpectralDistribution>(),
-          std::make_unique<SpectralDistribution>()}}
+    bar_{}
 {
   initialize();
 }
@@ -44,7 +42,7 @@ XyzColor XyzColorMatchingFunction::toXyzForEmitter(
 {
   XyzColor xyz;
   for (uint color = 0; color < 3; ++color) {
-    const auto& bar = *bar_[color];
+    const auto& bar = bar_[color];
     zisc::CompensatedSummation<Float> s{0.0};
     for (uint i = 0; i < CoreConfig::spectraSize(); ++i)
       s.add(bar[i] * spectra[i]);
@@ -61,7 +59,7 @@ XyzColor XyzColorMatchingFunction::toXyzForReflector(
   XyzColor xyz;
   const Float k = zisc::invert(yBar().sum());
   for (uint color = 0; color < 3; ++color) {
-    const auto& bar = *bar_[color];
+    const auto& bar = bar_[color];
     zisc::CompensatedSummation<Float> s{0.0};
     for (uint i = 0; i < CoreConfig::spectraSize(); ++i)
       s.add(bar[i] * spectra[i]);

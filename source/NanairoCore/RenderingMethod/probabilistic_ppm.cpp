@@ -55,14 +55,23 @@ namespace nanairo {
   \details
   No detailed.
   */
-ProbabilisticPpm::ProbabilisticPpm(const System& system,
+ProbabilisticPpm::ProbabilisticPpm(System& system,
                                    const SettingNodeBase* settings,
                                    const Scene& scene) noexcept :
     RenderingMethod(system, settings),
-    photon_map_{system},
+    thread_photon_list_{
+        decltype(thread_photon_list_)::allocator_type{&system.dataMemoryManager()}},
     cycle_{0}
 {
   initialize(system, settings, scene);
+}
+
+/*!
+  */
+void ProbabilisticPpm::initMethod() noexcept
+{
+  cycle_ = 0;
+  radius2_ = init_radius2_;
 }
 
 /*!
@@ -73,10 +82,19 @@ void ProbabilisticPpm::render(System& system,
                               Scene& scene,
                               const Wavelengths& sampled_wavelengths) noexcept
 {
-  photon_map_.clear();
+  const std::size_t num_of_caches = thread_photon_list_.size() *
+                                    num_of_thread_photons_ *
+                                    estimatedMaxReflectionCount();
+  photon_map_.initialize(system, num_of_caches);
+
   updateRadius();
   tracePhoton(system, scene, sampled_wavelengths);
+
+  photon_map_.construct(system);
+
   traceCameraPath(system, scene, sampled_wavelengths);
+
+  photon_map_.reset();
 }
 
 /*!
@@ -111,6 +129,7 @@ auto ProbabilisticPpm::estimateRadiance(
 
   // Estimate radiance
   Spectra radiance{wavelengths, 0.0};
+  Float weight_sum = 0.0;
   for (uint i = 0; i < photon_list.size(); ++i) {
     const auto& photon_point = photon_list[i];
     // Evaluate reflectance
@@ -123,6 +142,7 @@ auto ProbabilisticPpm::estimateRadiance(
     const Float t = distance * inverse_radius_;
     ZISC_ASSERT(zisc::isInBounds(t, 0.0, 1.0), "The t is out of the range [0, 1).");
     const auto weight = calcWeight(t);
+    weight_sum += weight;
     ZISC_ASSERT(0.0 < weight, "The kernel weight is negative.");
     // Calculate the contribution
     const auto contribution = f * photon_cache->energy() * weight;
@@ -132,7 +152,9 @@ auto ProbabilisticPpm::estimateRadiance(
     else
       radiance += contribution;
   }
-  return radiance * inverse_estimation_area_;
+  return (0 < photon_list.size())
+      ? radiance * (inverse_estimation_area_ / weight_sum)
+      : Spectra{};
 }
 
 /*!
@@ -172,7 +194,7 @@ void ProbabilisticPpm::evalImplicitConnection(
 /*!
   */
 inline
-constexpr uint ProbabilisticPpm::expectedMaxReflectionCount() noexcept
+constexpr uint ProbabilisticPpm::estimatedMaxReflectionCount() noexcept
 {
   return 16;
 }
@@ -245,7 +267,7 @@ Ray ProbabilisticPpm::generateRay(
   \details
   No detailed.
   */
-void ProbabilisticPpm::initialize(const System& system,
+void ProbabilisticPpm::initialize(System& system,
                                   const SettingNodeBase* settings,
                                   const Scene& scene) noexcept
 {
@@ -266,32 +288,26 @@ void ProbabilisticPpm::initialize(const System& system,
   }
   {
     const Float initial_radius = cast<Float>(parameters.photon_search_radius_);
-    radius2_ = zisc::power<2>(initial_radius) / alpha_;
+    init_radius2_ = zisc::power<2>(initial_radius) / alpha_;
+    radius2_ = init_radius2_;
   }
 
-  // Set the method initializer 
   {
-    const auto radius2 = radius2_;
-    auto method_initializer = [this, radius2]()
-    {
-      cycle_ = 0;
-      radius2_ = radius2;
-    };
-    setMethodInitializer(method_initializer);
-  }
-
-  photon_map_.reserve(num_of_thread_photons_ * expectedMaxReflectionCount());
-  thread_photon_list_.resize(threads.numOfThreads());
-
-  {
-    const uint k = parameters.k_nearest_neighbor_;
-    for (auto& photon_list : thread_photon_list_)
-      photon_list.setK(k);
+    thread_photon_list_.reserve(threads.numOfThreads());
+    for (uint i = 0; i < threads.numOfThreads(); ++i) {
+      const uint k = parameters.k_nearest_neighbor_;
+      thread_photon_list_.emplace_back(&system.dataMemoryManager());
+      thread_photon_list_.back().setK(k);
+    }
   }
 
   {
     light_path_light_sampler_ =
-        std::make_unique<PowerWeightedLightSourceSampler>(scene.world());
+        zisc::UniqueMemoryPointer<PowerWeightedLightSourceSampler>::make(
+            &system.dataMemoryManager(),
+            system,
+            scene.world(),
+            settings->workResource());
   }
 }
 
@@ -343,9 +359,10 @@ void ProbabilisticPpm::traceCameraPath(
 
   {
     auto& threads = system.threadManager();
+    auto& work_resource = system.globalMemoryManager();
     constexpr uint start = 0;
     const uint end = camera.heightResolution();
-    auto result = threads.enqueueLoop(trace_camera_path, start, end);
+    auto result = threads.enqueueLoop(trace_camera_path, start, end, &work_resource);
     result.get();
   }
 }
@@ -434,13 +451,12 @@ void ProbabilisticPpm::tracePhoton(
   // Trace photons
   {
     auto& threads = system.threadManager();
+    auto& work_resource = system.globalMemoryManager();
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
-    auto result = threads.enqueueLoop(trace_photon, start, end);
+    auto result = threads.enqueueLoop(trace_photon, start, end, &work_resource);
     result.get();
   }
-  // Construct a photon map
-  photon_map_.construct(system);
 }
 
 /*!
@@ -492,7 +508,7 @@ void ProbabilisticPpm::tracePhoton(
 
     if (surfaceHasPhotonMap(bxdf)) {
       const auto photon_energy = light_contribution * photon_weight;
-      photon_map_.store(thread_id, intersection.point(), photon.direction(),
+      photon_map_.store(intersection.point(), photon.direction(),
                         photon_energy, wavelength_is_selected);
     }
 

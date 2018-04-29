@@ -13,6 +13,9 @@
 // Standard C++ library
 #include <memory>
 #include <vector>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "shape.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -25,6 +28,7 @@ namespace nanairo {
 // Forward declaration
 class Face;
 struct MeshParameters;
+class System;
 
 //! \addtogroup Core
 //! \{
@@ -48,7 +52,8 @@ class TriangleMesh
 {
  public:
   //! Make meshes
-  static std::vector<std::unique_ptr<Shape>> makeMeshes(
+  static zisc::pmr::vector<zisc::UniqueMemoryPointer<Shape>> makeMeshes(
+      System& system,
       const SettingNodeBase* settings) noexcept;
 
  private:

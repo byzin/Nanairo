@@ -12,10 +12,14 @@
 
 // Standard C++ library
 #include <atomic>
+#include <cstddef>
 #include <mutex>
-#include <thread>
 #include <vector>
 #include <utility>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/non_copyable.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "photon_map_node.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -37,21 +41,22 @@ class System;
   \details
   No detailed.
   */
-class PhotonMap
+class PhotonMap : public zisc::NonCopyable<PhotonMap>
 {
  public:
   //! Create a photon map
-  PhotonMap(const System& system) noexcept;
+  PhotonMap() noexcept;
 
-
-  //! Clear the node list
-  void clear() noexcept;
 
   //! Construct the photon map
   void construct(System& system) noexcept;
 
-  //! Reserve storage
-  void reserve(const uint num_of_thread_caches) noexcept;
+  //! Initialize node lists
+  void initialize(System& system,
+                  const std::size_t estimated_num_of_nodes) noexcept;
+
+  //! Reset node lists
+  void reset() noexcept;
 
   //! Search photons inside the circle on the same face
   void search(const Point3& point,
@@ -60,32 +65,22 @@ class PhotonMap
               KnnPhotonList* photon_list) const noexcept;
 
   //! Store a photon cache
-  void store(const int thread_id,
-             const Point3& point,
+  void store(const Point3& point,
              const Vector3& vin,
              const SampledSpectra& photon_energy,
              const bool wavelength_is_selected) noexcept;
 
  private:
-  using NodeIterator = typename std::vector<PhotonMapNode*>::iterator;
+  using NodeIterator = typename zisc::pmr::vector<PhotonMapNode*>::iterator;
 
 
   //! Return the longest axis
   uint getLongestAxis(NodeIterator begin, NodeIterator end) const noexcept;
 
-  //! Initialize
-  void initialize(const System& system) noexcept;
-
   //!
   uint nextSearchIndex(const Point3& point,
                        const Float radius2,
                        uint index) const noexcept;
-
-  //! Return the num of nodes 
-  uint numOfNodes() const noexcept;
-
-  //! Return the num of threads
-  uint numOfThreads() const noexcept;
 
   //! Split at median
   template <bool threading>
@@ -106,10 +101,10 @@ class PhotonMap
 
 
   std::mutex lock_;
-  std::vector<std::vector<PhotonMapNode>> thread_node_list_;
-  std::vector<PhotonMapNode*> node_list_;
-  std::vector<const PhotonMapNode*> tree_;
-  std::atomic<uint> node_counter_;
+  zisc::UniqueMemoryPointer<zisc::pmr::vector<PhotonMapNode*>> node_list_;
+  zisc::UniqueMemoryPointer<zisc::pmr::vector<PhotonMapNode>> node_body_list_;
+  zisc::UniqueMemoryPointer<zisc::pmr::vector<const PhotonMapNode*>> tree_;
+  std::atomic<std::size_t> num_of_nodes_;
 };
 
 //! \} Core

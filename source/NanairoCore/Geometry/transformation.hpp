@@ -16,6 +16,7 @@
 // Zisc
 #include "zisc/sip_hash_engine.hpp"
 #include "zisc/matrix.hpp"
+#include "zisc/memory_resource.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
@@ -61,7 +62,7 @@ class Transformation
 
   //! Make transformation matrix
   static Matrix4x4 makeTransformation(
-      const std::vector<SettingNodeBase*>& settings_list) noexcept;
+      const zisc::pmr::vector<SettingNodeBase*>& settings_list) noexcept;
 
   //! Make transformation matrix
   static Matrix4x4 makeTransformation(const SettingNodeBase* settings) noexcept;

@@ -45,7 +45,7 @@ class SmoothDielectricSurface : public SurfaceModel
   //! Create a smooth dielectric surface
   SmoothDielectricSurface(
       const SettingNodeBase* settings,
-      const std::vector<TextureModel*>& texture_list) noexcept;
+      const zisc::pmr::vector<const TextureModel*>& texture_list) noexcept;
 
 
   //! Make a Fresnel BRDF
@@ -60,8 +60,9 @@ class SmoothDielectricSurface : public SurfaceModel
 
  private:
   //! Initialize
-  void initialize(const SettingNodeBase* settings,
-                  const std::vector<TextureModel*>& texture_list) noexcept;
+  void initialize(
+      const SettingNodeBase* settings,
+      const zisc::pmr::vector<const TextureModel*>& texture_list) noexcept;
 
 
   const TextureModel* outer_refractive_index_;

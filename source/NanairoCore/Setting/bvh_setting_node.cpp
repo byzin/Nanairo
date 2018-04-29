@@ -15,6 +15,8 @@
 // Zisc
 #include "zisc/binary_data.hpp"
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
@@ -37,6 +39,13 @@ void AgglomerativeTreeletRestructuringParameters::writeData(
 {
   zisc::write(&treelet_size_, data_stream);
   zisc::write(&optimization_loop_, data_stream);
+}
+
+/*!
+  */
+BvhSettingNode::BvhSettingNode(const SettingNodeBase* parent) noexcept :
+    SettingNodeBase(parent)
+{
 }
 
 /*!
@@ -79,6 +88,13 @@ void BvhSettingNode::initialize() noexcept
 
 /*!
   */
+SettingNodeType BvhSettingNode::nodeType() noexcept
+{
+  return SettingNodeType::kBvh;
+}
+
+/*!
+  */
 void BvhSettingNode::readData(std::istream* data_stream) noexcept
 {
   {
@@ -95,10 +111,11 @@ void BvhSettingNode::setBvhType(const BvhType type) noexcept
 {
   bvh_type_ = type;
   // Initialize parameters
-  parameters_.reset(nullptr);
+  parameters_.reset();
   switch (bvh_type_) {
    case BvhType::kAgglomerativeTreeletRestructuring: {
-    parameters_ = std::make_unique<AgglomerativeTreeletRestructuringParameters>();
+    parameters_ =
+        zisc::UniqueMemoryPointer<AgglomerativeTreeletRestructuringParameters>::make(dataResource());
     break;
    }
    case BvhType::kBinaryRadixTree:

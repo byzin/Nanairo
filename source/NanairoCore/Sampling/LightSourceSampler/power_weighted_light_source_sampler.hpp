@@ -13,7 +13,9 @@
 // Standard C++ library
 #include <vector>
 // Zisc
+#include "zisc/memory_resource.hpp"
 #include "zisc/cumulative_distribution_function.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "light_source_sampler.hpp"
 #include "NanairoCore/Data/light_source_info.hpp"
@@ -23,6 +25,7 @@ namespace nanairo {
 // Forward declaration
 class IntersectionInfo;
 class Sampler;
+class System;
 class World;
 
 //! \addtogroup Core
@@ -40,7 +43,10 @@ class PowerWeightedLightSourceSampler : public LightSourceSampler
 
 
   //! Create a light source sampler
-  PowerWeightedLightSourceSampler(const World& world) noexcept;
+  PowerWeightedLightSourceSampler(
+      System& system,
+      const World& world,
+      zisc::pmr::memory_resource* work_resource) noexcept;
 
 
   //! Return the light source info by the light source
@@ -48,10 +54,10 @@ class PowerWeightedLightSourceSampler : public LightSourceSampler
                           const Object* light_source) const noexcept override;
 
   //! Return the info list of light source
-  std::vector<LightSourceInfo>& infoList() noexcept;
+  zisc::pmr::vector<LightSourceInfo>& infoList() noexcept;
 
   //! Return the info list of light source
-  const std::vector<LightSourceInfo>& infoList() const noexcept;
+  const zisc::pmr::vector<LightSourceInfo>& infoList() const noexcept;
 
   //! Return the light source CDF
   LightSourceCdf& lightSourceCdf() noexcept;
@@ -71,14 +77,16 @@ class PowerWeightedLightSourceSampler : public LightSourceSampler
   LightSourceInfo getInfo(const Object* light_source) const noexcept;
 
   //! Initialize
-  void initialize(const World& world) noexcept;
+  void initialize(System& system,
+                  const World& world,
+                  zisc::pmr::memory_resource* work_resource) noexcept;
 
   //! Sample a light source
   const LightSourceInfo& sampleInfo(Sampler& sampler) const noexcept;
 
 
-  std::vector<LightSourceInfo> info_list_;
-  std::unique_ptr<LightSourceCdf> light_source_cdf_;
+  zisc::pmr::vector<LightSourceInfo> info_list_;
+  zisc::UniqueMemoryPointer<LightSourceCdf> light_source_cdf_;
 };
 
 //! \} Core

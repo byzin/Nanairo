@@ -233,9 +233,11 @@ void LightTracing::initialize(System& system,
 
   {
     const auto sampler_type = parameters.light_path_light_sampler_type_;
-    light_path_light_sampler_ = LightSourceSampler::makeSampler(sampler_type,
-                                                                scene.world(),
-                                                                system);
+    light_path_light_sampler_ = LightSourceSampler::makeSampler(
+        system,
+        sampler_type,
+        scene.world(),
+        settings->workResource());
   }
 }
 
@@ -279,9 +281,10 @@ void LightTracing::traceLightPath(
 
   {
     auto& threads = system.threadManager();
+    auto& work_resource = system.globalMemoryManager();
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
-    auto result = threads.enqueueLoop(trace_light_path, start, end);
+    auto result = threads.enqueueLoop(trace_light_path, start, end, &work_resource);
     result.get();
   }
 }

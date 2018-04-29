@@ -76,9 +76,9 @@ class UnicolorTexture : public TextureModel
   void initialize(const System& system, const SettingNodeBase* settings) noexcept;
 
 
-  std::unique_ptr<SpectralDistribution> spectra_value_;
-  std::unique_ptr<SpectralDistribution> emissive_value_;
-  std::unique_ptr<SpectralDistribution> reflective_value_;
+  SpectralDistribution spectra_value_;
+  SpectralDistribution emissive_value_;
+  SpectralDistribution reflective_value_;
   Float gray_scale_value_;
 };
 

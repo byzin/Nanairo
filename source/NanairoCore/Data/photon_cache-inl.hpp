@@ -20,14 +20,19 @@
 namespace nanairo {
 
 /*!
-  \details
-  No detailed.
+  */
+inline
+PhotonCache::PhotonCache() noexcept
+{
+}
+
+/*!
   */
 inline
 PhotonCache::PhotonCache(const SampledSpectra& energy,
                          const Point3& point,
                          const Vector3& vin,
-                         const bool wavelength_is_selected) :
+                         const bool wavelength_is_selected) noexcept :
     energy_{energy},
     point_{point},
     vin_{vin},
@@ -36,31 +41,9 @@ PhotonCache::PhotonCache(const SampledSpectra& energy,
 }
 
 /*!
-  \details
-  No detailed.
   */
 inline
-const Vector3& PhotonCache::incidentDirection() const
-{
-  return vin_;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-const Point3& PhotonCache::point() const
-{
-  return point_;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-const SampledSpectra& PhotonCache::energy() const
+const SampledSpectra& PhotonCache::energy() const noexcept
 {
   return energy_;
 }
@@ -70,7 +53,57 @@ const SampledSpectra& PhotonCache::energy() const
   No detailed.
   */
 inline
-bool PhotonCache::wavelengthIsSelected() const
+const Vector3& PhotonCache::incidentDirection() const noexcept
+{
+  return vin_;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
+const Point3& PhotonCache::point() const noexcept
+{
+  return point_;
+}
+
+/*!
+  */
+inline
+void PhotonCache::setEnergy(const SampledSpectra& e) noexcept
+{
+  energy_ = e;
+}
+
+/*!
+  */
+inline
+void PhotonCache::setIncidentDirection(const Vector3& v) noexcept
+{
+  vin_ = v;
+}
+
+/*!
+  */
+inline
+void PhotonCache::setPoint(const Point3& p) noexcept
+{
+  point_ = p;
+}
+
+/*!
+  */
+inline
+void PhotonCache::setWavelengthIsSelected(const bool is_selected) noexcept
+{
+  wavelength_is_selected_ = is_selected;
+}
+
+/*!
+  */
+inline
+bool PhotonCache::wavelengthIsSelected() const noexcept
 {
   return wavelength_is_selected_;
 }

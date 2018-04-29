@@ -17,6 +17,8 @@
 // Zisc
 #include "zisc/binary_data.hpp"
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
@@ -43,8 +45,11 @@ void ValueTextureParameters::writeData(std::ostream* data_stream) const noexcept
 
 /*!
   */
-UnicolorTextureParameters::UnicolorTextureParameters() noexcept :
-    color_{std::make_unique<SpectraSettingNode>()}
+UnicolorTextureParameters::UnicolorTextureParameters(
+    const SettingNodeBase* parent) noexcept :
+        color_{zisc::UniqueMemoryPointer<SpectraSettingNode>::make(
+            parent->dataResource(),
+            parent)}
 {
   color_->initialize();
 }
@@ -53,7 +58,7 @@ UnicolorTextureParameters::UnicolorTextureParameters() noexcept :
   */
 void UnicolorTextureParameters::readData(std::istream* data_stream) noexcept
 {
-  ZISC_ASSERT(color_ != nullptr, "The color is null.");
+  ZISC_ASSERT(color_.get() != nullptr, "The color is null.");
 
   SettingNodeType type;
   zisc::read(&type, data_stream);
@@ -65,16 +70,20 @@ void UnicolorTextureParameters::readData(std::istream* data_stream) noexcept
   */
 void UnicolorTextureParameters::writeData(std::ostream* data_stream) const noexcept
 {
-  ZISC_ASSERT(color_ != nullptr, "The color is null.");
+  ZISC_ASSERT(color_.get() != nullptr, "The color is null.");
   color_->writeData(data_stream);
 }
 
 /*!
   */
-CheckerboardTextureParameters::CheckerboardTextureParameters() noexcept :
-    color_{{std::make_unique<SpectraSettingNode>(),
-            std::make_unique<SpectraSettingNode>()}},
-    resolution_{{10, 10}}
+CheckerboardTextureParameters::CheckerboardTextureParameters(
+    const SettingNodeBase* parent) noexcept :
+        color_{{zisc::UniqueMemoryPointer<SpectraSettingNode>::make(
+            parent->dataResource(),
+            parent),
+                zisc::UniqueMemoryPointer<SpectraSettingNode>::make(
+            parent->dataResource(),
+            parent)}}
 {
   color_[0]->initialize();
   color_[1]->initialize();
@@ -84,8 +93,8 @@ CheckerboardTextureParameters::CheckerboardTextureParameters() noexcept :
   */
 void CheckerboardTextureParameters::readData(std::istream* data_stream) noexcept
 {
-  ZISC_ASSERT(color_[0] != nullptr, "The color1 is null.");
-  ZISC_ASSERT(color_[1] != nullptr, "The color2 is null.");
+  ZISC_ASSERT(color_[0].get() != nullptr, "The color1 is null.");
+  ZISC_ASSERT(color_[1].get() != nullptr, "The color2 is null.");
 
   SettingNodeType type;
   zisc::read(&type, data_stream);
@@ -104,11 +113,19 @@ void CheckerboardTextureParameters::readData(std::istream* data_stream) noexcept
 void CheckerboardTextureParameters::writeData(std::ostream* data_stream)
     const noexcept
 {
-  ZISC_ASSERT(color_[0] != nullptr, "The color1 is null.");
-  ZISC_ASSERT(color_[1] != nullptr, "The color2 is null.");
+  ZISC_ASSERT(color_[0].get() != nullptr, "The color1 is null.");
+  ZISC_ASSERT(color_[1].get() != nullptr, "The color2 is null.");
   color_[0]->writeData(data_stream);
   color_[1]->writeData(data_stream);
   zisc::write(&resolution_[0], data_stream, sizeof(resolution_[0]) * 2);
+}
+
+/*!
+  */
+ImageTextureParameters::ImageTextureParameters(
+    zisc::pmr::memory_resource* data_resource) noexcept :
+        image_{1, 1, data_resource}
+{
 }
 
 /*!
@@ -140,6 +157,14 @@ void ImageTextureParameters::writeData(std::ostream* data_stream) const noexcept
     const auto& buffer = image_.data();
     zisc::write(&buffer[0], data_stream, sizeof(buffer[0]) * buffer.size());
   }
+}
+
+/*!
+  */
+TextureSettingNode::TextureSettingNode(const SettingNodeBase* parent) noexcept :
+    SettingNodeBase(parent),
+    name_{dataResource()}
+{
 }
 
 /*!
@@ -197,9 +222,16 @@ void TextureSettingNode::initialize() noexcept
 
 /*!
   */
-const std::string& TextureSettingNode::name() const noexcept
+std::string_view TextureSettingNode::name() const noexcept
 {
-  return name_;
+  return std::string_view{name_};
+}
+
+/*!
+  */
+SettingNodeType TextureSettingNode::nodeType() noexcept
+{
+  return SettingNodeType::kTexture;
 }
 
 /*!
@@ -207,8 +239,7 @@ const std::string& TextureSettingNode::name() const noexcept
 void TextureSettingNode::readData(std::istream* data_stream) noexcept
 {
   {
-    auto name = readString(data_stream);
-    setName(std::move(name));
+    name_ = readString(data_stream);
   }
   {
     zisc::read(&texture_type_, data_stream);
@@ -220,16 +251,9 @@ void TextureSettingNode::readData(std::istream* data_stream) noexcept
 
 /*!
   */
-void TextureSettingNode::setName(const std::string& name) noexcept
+void TextureSettingNode::setName(const std::string_view& name) noexcept
 {
   name_ = name;
-}
-
-/*!
-  */
-void TextureSettingNode::setName(std::string&& name) noexcept
-{
-  name_ = std::move(name);
 }
 
 /*!
@@ -241,19 +265,26 @@ void TextureSettingNode::setTextureType(const TextureType type) noexcept
   parameters_.reset();
   switch (texture_type_) {
    case TextureType::kValue: {
-    parameters_ = std::make_unique<ValueTextureParameters>();
+    parameters_ =
+        zisc::UniqueMemoryPointer<ValueTextureParameters>::make(dataResource());
     break;
    }
    case TextureType::kUnicolor: {
-    parameters_ = std::make_unique<UnicolorTextureParameters>();
+    parameters_ =
+        zisc::UniqueMemoryPointer<UnicolorTextureParameters>::make(dataResource(),
+                                                                   this);
     break;
    }
    case TextureType::kCheckerboard: {
-    parameters_ = std::make_unique<CheckerboardTextureParameters>();
+    parameters_ =
+        zisc::UniqueMemoryPointer<CheckerboardTextureParameters>::make(dataResource(),
+                                                                       this);
     break;
    }
    case TextureType::kImage: {
-    parameters_ = std::make_unique<ImageTextureParameters>();
+    parameters_ =
+        zisc::UniqueMemoryPointer<ImageTextureParameters>::make(dataResource(),
+                                                                dataResource());
     break;
    }
    default:

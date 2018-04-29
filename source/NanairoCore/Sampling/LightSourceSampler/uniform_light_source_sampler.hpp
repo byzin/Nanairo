@@ -12,6 +12,8 @@
 
 // Standard C++ library
 #include <vector>
+// Zisc
+#include "zisc/memory_resource.hpp"
 // Nanairo
 #include "light_source_sampler.hpp"
 #include "NanairoCore/Data/light_source_info.hpp"
@@ -22,6 +24,7 @@ namespace nanairo {
 class IntersectionInfo;
 class Object;
 class Sampler;
+class System;
 class World;
 
 //! \addtogroup Core
@@ -59,7 +62,7 @@ class UniformLightSourceSampler : public LightSourceSampler
   void initialize(const World& world) noexcept;
 
   //! Return the light source list
-  const std::vector<const Object*>& lightSourceList() const noexcept;
+  const zisc::pmr::vector<const Object*>& lightSourceList() const noexcept;
 
   //! Sample a light source
   LightSourceInfo sampleInfo(Sampler& sampler) const noexcept;
@@ -68,7 +71,7 @@ class UniformLightSourceSampler : public LightSourceSampler
   Float weightPerLight() const noexcept;
 
 
-  const std::vector<const Object*>* light_source_list_;
+  const zisc::pmr::vector<const Object*>* light_source_list_ = nullptr;
   Float weight_per_light_;
 };
 

@@ -15,11 +15,14 @@
 // Zisc
 #include "zisc/algorithm.hpp"
 #include "zisc/error.hpp"
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "plane.hpp"
 #include "triangle_mesh.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/system.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/single_object_setting_node.hpp"
@@ -43,19 +46,23 @@ Shape::~Shape() noexcept
   \details
   No detailed.
   */
-std::vector<std::unique_ptr<Shape>> Shape::makeShape(
+zisc::pmr::vector<zisc::UniqueMemoryPointer<Shape>> Shape::makeShape(
+    System& system,
     const SettingNodeBase* settings) noexcept
 {
   const auto object_settings = castNode<SingleObjectSettingNode>(settings);
 
-  std::vector<std::unique_ptr<Shape>> shape_list;
+  auto data_resource = &system.dataMemoryManager();
+  auto work_resource = settings->workResource();
+  zisc::pmr::vector<zisc::UniqueMemoryPointer<Shape>> shape_list{work_resource};
   switch (object_settings->shapeType()) {
    case ShapeType::kPlane: {
-    shape_list.emplace_back(std::make_unique<Plane>());
+    auto s = zisc::UniqueMemoryPointer<Plane>::make(data_resource);
+    shape_list.emplace_back(std::move(s));
     break;
    }
    case ShapeType::kMesh: {
-    shape_list = TriangleMesh::makeMeshes(settings);
+    shape_list = TriangleMesh::makeMeshes(system, settings);
     break;
    }
    default: {

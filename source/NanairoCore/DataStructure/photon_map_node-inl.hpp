@@ -26,19 +26,24 @@ namespace nanairo {
 /*!
   */
 inline
-PhotonMapNode::PhotonMapNode(
-    const SampledSpectra& energy,
-    const Point3& point,
-    const Vector3& vin,
-    const bool wavelength_is_selected) noexcept :
-        cache_{energy, point, vin, wavelength_is_selected},
-        type_{NodeType::kXAxisSplit}
+PhotonMapNode::PhotonMapNode() noexcept :
+    type_{NodeType::kXAxisSplit}
 {
 }
 
 /*!
-  \details
-  No detailed.
+  */
+inline
+PhotonMapNode::PhotonMapNode(const SampledSpectra& energy,
+                             const Point3& point,
+                             const Vector3& vin,
+                             const bool wavelength_is_selected) noexcept :
+    cache_{energy, point, vin, wavelength_is_selected},
+    type_{NodeType::kXAxisSplit}
+{
+}
+
+/*!
   */
 inline
 PhotonMapNode::PhotonMapNode(const PhotonCache& cache) noexcept :
@@ -50,15 +55,12 @@ PhotonMapNode::PhotonMapNode(const PhotonCache& cache) noexcept :
 /*!
   */
 inline
-PhotonMapNode::PhotonMapNode(PhotonMapNode&& other) noexcept :
-    cache_{std::move(other.cache_)},
-    type_{other.type_}
+PhotonCache& PhotonMapNode::cache() noexcept
 {
+  return cache_;
 }
 
 /*!
-  \details
-  No detailed.
   */
 inline
 const PhotonCache& PhotonMapNode::cache() const noexcept
@@ -67,8 +69,6 @@ const PhotonCache& PhotonMapNode::cache() const noexcept
 }
 
 /*!
-  \details
-  No detailed.
   */
 inline
 auto PhotonMapNode::nodeType() const noexcept -> NodeType
@@ -77,8 +77,6 @@ auto PhotonMapNode::nodeType() const noexcept -> NodeType
 }
 
 /*!
-  \details
-  No detailed.
   */
 inline
 const Point3& PhotonMapNode::point() const noexcept
@@ -87,8 +85,6 @@ const Point3& PhotonMapNode::point() const noexcept
 }
 
 /*!
-  \details
-  No detailed.
   */
 inline
 void PhotonMapNode::setNodeType(const NodeType type) noexcept
