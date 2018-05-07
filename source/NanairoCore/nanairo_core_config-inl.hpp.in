@@ -139,9 +139,9 @@ constexpr uint CoreConfig::spectraSize() noexcept
 /*!
   */
 inline
-constexpr uint CoreConfig::renderingTileSize() noexcept
+constexpr uint CoreConfig::sizeOfRenderingTileSide() noexcept
 {
-  constexpr uint tile_size = 32;
+  constexpr uint tile_size = 4;
   return tile_size;
 }
 

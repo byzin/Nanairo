@@ -109,8 +109,8 @@ class CoreConfig
   //! Return the spectra size
   static constexpr uint spectraSize() noexcept;
 
-  //! Return the size of the rendering tile
-  static constexpr uint renderingTileSize() noexcept;
+  //! Return the size of a rendering tile side
+  static constexpr uint sizeOfRenderingTileSide() noexcept;
 
   //! Return the max num of objects contained in a BVH node
   static constexpr uint maxNumOfNodeObjects() noexcept;

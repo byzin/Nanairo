@@ -9,6 +9,7 @@
 
 #include "path_tracing.hpp"
 // Standard C++ library
+#include <atomic>
 #include <future>
 #include <thread>
 #include <tuple>
@@ -316,26 +317,31 @@ void PathTracing::traceCameraPath(System& system,
     camera.jitter(sampler);
   }
 
+  std::atomic<uint> tile_count{0};
+
   auto trace_camera_path =
-  [this, &system, &scene, &sampled_wavelengths](const int thread_id,
-                                                const uint index)
+  [this, &system, &scene, &sampled_wavelengths, &tile_count]
+  (const int thread_id, const uint) noexcept
   {
     const auto& camera = scene.camera();
-    auto tile = RenderingMethod::getRenderingTile(camera.imageResolution(), index);
+    const uint num_of_tiles =
+        RenderingMethod::calcNumOfTiles(camera.imageResolution());
 
-    for (uint i = 0; i < tile.numOfPixels(); ++i) {
-      const auto& pixel_index = tile.current();
-      traceCameraPath(system, scene, sampled_wavelengths, thread_id, pixel_index);
-      tile.next();
+    for (uint index = tile_count++; index < num_of_tiles; index = tile_count++) {
+      auto tile = RenderingMethod::getRenderingTile(camera.imageResolution(), index);
+      for (uint i = 0; i < tile.numOfPixels(); ++i) {
+        const auto& pixel_index = tile.current();
+        traceCameraPath(system, scene, sampled_wavelengths, thread_id, pixel_index);
+        tile.next();
+      }
     }
   };
 
   {
-    const auto& camera = scene.camera();
     auto& threads = system.threadManager();
     auto& work_resource = system.globalMemoryManager();
     constexpr uint start = 0;
-    const uint end = RenderingMethod::calcNumOfTiles(camera.imageResolution());
+    const uint end = threads.numOfThreads();
     auto result = threads.enqueueLoop(trace_camera_path, start, end, &work_resource);
     result.get();
   }

@@ -80,6 +80,7 @@ function(getNanairoWarningOption nanairo_warning_flags)
                                 -Wno-global-constructors
                                 -Wno-padded
                                 -Wno-sign-conversion
+                                -Wno-switch-enum
                                 -Wno-undefined-reinterpret-cast
                                 -Wno-weak-vtables
                                 )

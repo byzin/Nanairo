@@ -68,7 +68,7 @@ Float RenderingMethod::rayCastEpsilon() const noexcept
 inline
 uint RenderingMethod::calcNumOfTiles(const Index2d& resolution) const noexcept
 {
-  constexpr uint s = CoreConfig::renderingTileSize();
+  constexpr uint s = CoreConfig::sizeOfRenderingTileSide();
   const uint dx = (resolution[0] / s) + ((resolution[0] % s != 0) ? 1 : 0);
   const uint dy = (resolution[1] / s) + ((resolution[1] % s != 0) ? 1 : 0);
   const uint n = dx * dy;
@@ -105,7 +105,7 @@ inline
 RenderingTile RenderingMethod::getRenderingTile(const Index2d& resolution,
                                                 const uint index) const noexcept
 {
-  constexpr uint s = CoreConfig::renderingTileSize();
+  constexpr uint s = CoreConfig::sizeOfRenderingTileSide();
   const uint dx = (resolution[0] / s) + ((resolution[0] % s != 0) ? 1 : 0);
 
   const uint x = index % dx;

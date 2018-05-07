@@ -9,6 +9,7 @@
 
 #include "light_tracing.hpp"
 // Standard C++ library
+#include <atomic>
 #include <future>
 #include <memory>
 #include <thread>
@@ -267,16 +268,28 @@ void LightTracing::traceLightPath(
     camera.sampleLensPoint(sampler);
   }
 
+  std::atomic<uint> path_set_index{0};
+
   auto trace_light_path =
-  [this, &system, &scene, &sampled_wavelengths](const int thread_id, const uint)
+  [this, &system, &scene, &sampled_wavelengths, &path_set_index]
+  (const int thread_id, const uint)
   {
     const auto& camera = scene.camera();
     const uint num_of_pixels = camera.widthResolution() * camera.heightResolution();
 
-    const auto range = system.calcThreadRange(num_of_pixels, thread_id);
-
-    for (uint i = range[0]; i < range[1]; ++i)
-      traceLightPath(system, scene, sampled_wavelengths, thread_id);
+    bool flag = true;
+    for (uint index = path_set_index++; flag; index = path_set_index++) {
+      constexpr uint path_set_size =
+          zisc::power<2>(CoreConfig::sizeOfRenderingTileSide());
+      for (uint i = 0; i < path_set_size; ++i) {
+        const uint path_index = index * path_set_size + i;
+        if (num_of_pixels <= path_index) {
+          flag = false;
+          break;
+        }
+        traceLightPath(system, scene, sampled_wavelengths, thread_id);
+      }
+    }
   };
 
   {
