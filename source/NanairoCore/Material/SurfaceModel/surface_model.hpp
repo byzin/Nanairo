@@ -18,7 +18,7 @@
 #include <vector>
 // Zisc
 #include "zisc/memory_resource.hpp"
-#include "zisc/sip_hash_engine.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 #include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -44,13 +44,13 @@ class WavelengthSamples;
   */
 enum class SurfaceType : uint32
 {
-  kSmoothDiffuse               = zisc::SipHash32::hash("SmoothDiffuse"),
-  kSmoothDielectric            = zisc::SipHash32::hash("SmoothDielectric"),
-  kSmoothConductor             = zisc::SipHash32::hash("SmoothConductor"),
-  kRoughDielectric             = zisc::SipHash32::hash("RoughDielectric"),
-  kRoughConductor              = zisc::SipHash32::hash("RoughConductor"),
-  kLayeredDiffuse              = zisc::SipHash32::hash("LayeredDiffuse"),
-  kCloth                       = zisc::SipHash32::hash("Cloth")
+  kSmoothDiffuse               = zisc::Fnv1aHash32::hash("SmoothDiffuse"),
+  kSmoothDielectric            = zisc::Fnv1aHash32::hash("SmoothDielectric"),
+  kSmoothConductor             = zisc::Fnv1aHash32::hash("SmoothConductor"),
+  kRoughDielectric             = zisc::Fnv1aHash32::hash("RoughDielectric"),
+  kRoughConductor              = zisc::Fnv1aHash32::hash("RoughConductor"),
+  kLayeredDiffuse              = zisc::Fnv1aHash32::hash("LayeredDiffuse"),
+  kCloth                       = zisc::Fnv1aHash32::hash("Cloth")
 };
 
 /*!

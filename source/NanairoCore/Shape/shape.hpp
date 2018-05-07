@@ -15,7 +15,7 @@
 #include <vector>
 // Zisc
 #include "zisc/memory_resource.hpp"
-#include "zisc/sip_hash_engine.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 #include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -42,8 +42,8 @@ class System;
   */
 enum class ShapeType : uint32
 {
-  kPlane                      = zisc::SipHash32::hash("Plane"),
-  kMesh                       = zisc::SipHash32::hash("Mesh")
+  kPlane                      = zisc::Fnv1aHash32::hash("Plane"),
+  kMesh                       = zisc::Fnv1aHash32::hash("Mesh")
 };
 
 /*!

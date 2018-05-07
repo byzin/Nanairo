@@ -14,7 +14,7 @@
 #include <memory>
 // Zisc
 #include "zisc/memory_resource.hpp"
-#include "zisc/sip_hash_engine.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 #include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -32,9 +32,9 @@ class System;
 
 enum class ToneMappingType : uint32
 {
-  kReinhard                   = zisc::SipHash32::hash("Reinhard"),
-  kFilmic                     = zisc::SipHash32::hash("Filmic"),
-  kUncharted2Filmic           = zisc::SipHash32::hash("Uncharted2Filmic")
+  kReinhard                   = zisc::Fnv1aHash32::hash("Reinhard"),
+  kFilmic                     = zisc::Fnv1aHash32::hash("Filmic"),
+  kUncharted2Filmic           = zisc::Fnv1aHash32::hash("Uncharted2Filmic")
 };
 
 /*!

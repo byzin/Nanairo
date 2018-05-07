@@ -12,6 +12,9 @@
 #include <array>
 // GoogleTest
 #include "gtest/gtest.h"
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/simple_memory_resource.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/DataStructure/morton_code.hpp"
@@ -30,7 +33,9 @@ TEST(MortonCodeTest, SplitTest)
       0b11001,
       0b11110}};
 
-  std::vector<MortonCode> morton_code_list;
+  auto work_resource = zisc::SimpleMemoryResource::sharedResource();
+  zisc::pmr::vector<MortonCode> morton_code_list{
+      decltype(morton_code_list)::allocator_type{work_resource}};
   {
     morton_code_list.reserve(code_list.size());
     for (const auto code : code_list)

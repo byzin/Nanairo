@@ -475,9 +475,9 @@ void SimpleRenderer::updateRenderingInfo(const uint64 cycle,
 
   char info_string[] = "000.00 fps,  0000000000 cycles,  00 h 00 m 00.000 s";
   std::sprintf(info_string,
-               "%06.2lf fps,  %010d cycles,  %02d h %02d m %02d.%03d s",
+               "%06.2lf fps,  %010u cycles,  %02d h %02d m %02d.%03d s",
                fps,
-               cast<int>(cycle),
+               cast<uint32>(cycle),
                hours,
                minutes,
                seconds,

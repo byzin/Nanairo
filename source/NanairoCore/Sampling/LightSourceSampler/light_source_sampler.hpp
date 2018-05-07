@@ -15,7 +15,7 @@
 #include <vector>
 // Zisc
 #include "zisc/memory_resource.hpp"
-#include "zisc/sip_hash_engine.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 #include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/Data/light_source_info.hpp"
@@ -34,9 +34,9 @@ class World;
 
 enum class LightSourceSamplerType : uint32
 {
-  kUniform                    = zisc::SipHash32::hash("UniformLightSampler"),
-  kPowerWeighted              = zisc::SipHash32::hash("PowerWeightedLightSampler"),
-  kContributionWeighted       = zisc::SipHash32::hash("ContributionWeightedLightSampler")
+  kUniform                    = zisc::Fnv1aHash32::hash("UniformLightSampler"),
+  kPowerWeighted              = zisc::Fnv1aHash32::hash("PowerWeightedLightSampler"),
+  kContributionWeighted       = zisc::Fnv1aHash32::hash("ContributionWeightedLightSampler")
 };
 
 /*!

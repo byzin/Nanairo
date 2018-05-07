@@ -7,7 +7,7 @@
 #define NANAIRO_WAVELENGTH_SAMPLER_HPP
 
 // Zisc
-#include "zisc/sip_hash_engine.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 // Nanairo
 #include "sampled_wavelengths.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -24,9 +24,9 @@ class World;
 
 enum class WavelengthSamplerType : uint32
 {
-  kRegular                    = zisc::SipHash32::hash("Regular"),
-  kRandom                     = zisc::SipHash32::hash("Random"),
-  kStratified                 = zisc::SipHash32::hash("Stratified")
+  kRegular                    = zisc::Fnv1aHash32::hash("Regular"),
+  kRandom                     = zisc::Fnv1aHash32::hash("Random"),
+  kStratified                 = zisc::Fnv1aHash32::hash("Stratified")
 };
 
 /*!

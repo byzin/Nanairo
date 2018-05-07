@@ -16,7 +16,7 @@
 #include <string>
 #include <type_traits>
 // Zisc
-#include "zisc/sip_hash_engine.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 #include "@nanairo_core_sampler_header_path@"
 
 // Forward declaration
@@ -65,9 +65,9 @@ using SamplerType = @nanairo_core_sampler_type@;
   */
 enum class ObjectType : uint32
 {
-  kCamera                     = zisc::SipHash32::hash("Camera"),
-  kGroup                      = zisc::SipHash32::hash("Group"),
-  kSingle                     = zisc::SipHash32::hash("Single")
+  kCamera                     = zisc::Fnv1aHash32::hash("Camera"),
+  kGroup                      = zisc::Fnv1aHash32::hash("Group"),
+  kSingle                     = zisc::Fnv1aHash32::hash("Single")
 };
 
 /*!

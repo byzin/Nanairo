@@ -16,7 +16,7 @@
 #include <memory>
 // Zisc
 #include "zisc/memory_resource.hpp"
-#include "zisc/sip_hash_engine.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 #include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -42,9 +42,9 @@ class World;
 
 enum class RenderingMethodType : uint32
 {
-  kPathTracing                = zisc::SipHash32::hash("PathTracing"),
-  kLightTracing               = zisc::SipHash32::hash("LightTracing"),
-  kProbabilisticPpm           = zisc::SipHash32::hash("ProbabilisticPPM")
+  kPathTracing                = zisc::Fnv1aHash32::hash("PathTracing"),
+  kLightTracing               = zisc::Fnv1aHash32::hash("LightTracing"),
+  kProbabilisticPpm           = zisc::Fnv1aHash32::hash("ProbabilisticPPM")
 };
 
 /*!

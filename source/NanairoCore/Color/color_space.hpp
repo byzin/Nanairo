@@ -11,7 +11,7 @@
 #define NANAIRO_COLOR_SPACE_HPP
 
 // Zisc
-#include "zisc/sip_hash_engine.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 
@@ -22,10 +22,10 @@ namespace nanairo {
 
 enum class ColorSpaceType : uint32
 {
-  kSRgbD65                     = zisc::SipHash32::hash("sRGBD65"),
-  kSRgbD50                     = zisc::SipHash32::hash("sRGBD50"),
-  kAdobeRgbD65                 = zisc::SipHash32::hash("AdobeRGBD65"),
-  kAdobeRgbD50                 = zisc::SipHash32::hash("AdobeRGBD50")
+  kSRgbD65                     = zisc::Fnv1aHash32::hash("sRGBD65"),
+  kSRgbD50                     = zisc::Fnv1aHash32::hash("sRGBD50"),
+  kAdobeRgbD65                 = zisc::Fnv1aHash32::hash("AdobeRGBD65"),
+  kAdobeRgbD50                 = zisc::Fnv1aHash32::hash("AdobeRGBD50")
 };
 
 //! Get XYZ to RGB matrix.

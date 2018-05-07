@@ -18,7 +18,7 @@
 #include "zisc/memory_resource.hpp"
 #include "zisc/non_copyable.hpp"
 #include "zisc/point.hpp"
-#include "zisc/sip_hash_engine.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 #include "zisc/thread_manager.hpp"
 #include "zisc/unique_memory_pointer.hpp"
 // Nanairo
@@ -37,8 +37,8 @@ class XyzColorMatchingFunction;
 
 enum class RenderingColorMode : uint32
 {
-  kRgb                        = zisc::SipHash32::hash("RGB"),
-  kSpectra                    = zisc::SipHash32::hash("Spectra")
+  kRgb                        = zisc::Fnv1aHash32::hash("RGB"),
+  kSpectra                    = zisc::Fnv1aHash32::hash("Spectra")
 };
 
 /*!

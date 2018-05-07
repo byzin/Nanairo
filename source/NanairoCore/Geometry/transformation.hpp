@@ -14,7 +14,7 @@
 #include <tuple>
 #include <vector>
 // Zisc
-#include "zisc/sip_hash_engine.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 #include "zisc/matrix.hpp"
 #include "zisc/memory_resource.hpp"
 // Nanairo
@@ -31,9 +31,9 @@ using Matrix4x4 = zisc::Matrix<Float, 4, 4>;
 
 enum class TransformationType : uint32
 {
-  kTranslation                = zisc::SipHash32::hash("Translation"),
-  kScaling                    = zisc::SipHash32::hash("Scaling"),
-  kRotation                   = zisc::SipHash32::hash("Rotation")
+  kTranslation                = zisc::Fnv1aHash32::hash("Translation"),
+  kScaling                    = zisc::Fnv1aHash32::hash("Scaling"),
+  kRotation                   = zisc::Fnv1aHash32::hash("Rotation")
 };
 
 /*!

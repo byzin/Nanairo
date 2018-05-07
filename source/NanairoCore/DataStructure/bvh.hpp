@@ -17,7 +17,7 @@
 // Zisc
 #include "zisc/memory_resource.hpp"
 #include "zisc/non_copyable.hpp"
-#include "zisc/sip_hash_engine.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 #include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "bvh_building_node.hpp"
@@ -39,8 +39,8 @@ class System;
 
 enum class BvhType : uint32
 {
-  kBinaryRadixTree            = zisc::SipHash32::hash("BinaryRadixTree"),
-  kAgglomerativeTreeletRestructuring = zisc::SipHash32::hash("AgglomerativeTreeletRestructuring")
+  kBinaryRadixTree            = zisc::Fnv1aHash32::hash("BinaryRadixTree"),
+  kAgglomerativeTreeletRestructuring = zisc::Fnv1aHash32::hash("AgglomerativeTreeletRestructuring")
 };
 
 /*!

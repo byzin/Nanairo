@@ -17,7 +17,7 @@
 #include <string_view>
 #include <vector>
 // Zisc
-#include "zisc/sip_hash_engine.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 #include "zisc/memory_resource.hpp"
 #include "zisc/unique_memory_pointer.hpp"
 // Nanairo
@@ -49,7 +49,7 @@ class WavelengthSamples;
   */
 enum class EmitterType : uint32
 {
-  kNonDirectional              = zisc::SipHash32::hash("NonDirectional")
+  kNonDirectional              = zisc::Fnv1aHash32::hash("NonDirectional")
 };
 
 /*!

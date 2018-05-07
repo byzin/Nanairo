@@ -18,7 +18,7 @@
 #include <vector>
 // Zisc
 #include "zisc/memory_resource.hpp"
-#include "zisc/sip_hash_engine.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 #include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -41,10 +41,10 @@ class WavelengthSamples;
   */
 enum class TextureType : uint32
 {
-  kValue                       = zisc::SipHash32::hash("Value"),
-  kUnicolor                    = zisc::SipHash32::hash("Unicolor"),
-  kCheckerboard                = zisc::SipHash32::hash("Checkerboard"),
-  kImage                       = zisc::SipHash32::hash("Image")
+  kValue                       = zisc::Fnv1aHash32::hash("Value"),
+  kUnicolor                    = zisc::Fnv1aHash32::hash("Unicolor"),
+  kCheckerboard                = zisc::Fnv1aHash32::hash("Checkerboard"),
+  kImage                       = zisc::Fnv1aHash32::hash("Image")
 };
 
 /*!

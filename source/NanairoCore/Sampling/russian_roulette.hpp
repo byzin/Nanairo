@@ -11,7 +11,7 @@
 #define NANAIRO_RUSSIAN_ROULETTE_HPP
 
 // Zisc
-#include "zisc/sip_hash_engine.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/roulette_result.hpp"
@@ -28,9 +28,9 @@ class Sampler;
 
 enum class RouletteType : uint32
 {
-  kMaxWeight                   = zisc::SipHash32::hash("MaxWeight"),
-  kAverageWeight               = zisc::SipHash32::hash("AverageWeight"),
-  kPathLength                  = zisc::SipHash32::hash("PathLength")
+  kMaxWeight                   = zisc::Fnv1aHash32::hash("MaxWeight"),
+  kAverageWeight               = zisc::Fnv1aHash32::hash("AverageWeight"),
+  kPathLength                  = zisc::Fnv1aHash32::hash("PathLength")
 };
 
 /*!

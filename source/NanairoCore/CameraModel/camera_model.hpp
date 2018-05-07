@@ -13,7 +13,7 @@
 // Standard C++ library
 #include <array>
 // Zisc
-#include "zisc/sip_hash_engine.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 #include "zisc/memory_resource.hpp"
 #include "zisc/unique_memory_pointer.hpp"
 // Nanairo
@@ -41,8 +41,8 @@ class WavelengthSamples;
   */
 enum class CameraType : uint32
 {
-  kPinhole                     = zisc::SipHash32::hash("Pinhole"),
-  kThinLens                    = zisc::SipHash32::hash("ThinLens")
+  kPinhole                     = zisc::Fnv1aHash32::hash("Pinhole"),
+  kThinLens                    = zisc::Fnv1aHash32::hash("ThinLens")
 };
 
 /*!
