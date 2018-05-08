@@ -9,6 +9,7 @@
 
 // Standard C++ library
 #include <fstream>
+#include <initializer_list>
 #include <memory>
 #include <string>
 #include <utility>
@@ -29,14 +30,14 @@ struct NanairoParameters
 };
 
 //! Process command line arguments
-std::unique_ptr<NanairoParameters> processCommandLine(int& argc, char** argv);
+std::unique_ptr<NanairoParameters> processCommandLine(int& argc, const char** argv);
 
 //! Load Nanairo binary file
 std::ifstream loadSceneBinary(const std::string& nanabin_file_path);
 
 }
 
-int main(int argc, char** argv)
+int main(int argc, const char** argv)
 {
   std::string output_path;
   std::unique_ptr<nanairo::SimpleRenderer> renderer;
@@ -68,7 +69,7 @@ namespace {
 
 /*!
   */
-std::unique_ptr<NanairoParameters> processCommandLine(int& argc, char** argv)
+std::unique_ptr<NanairoParameters> processCommandLine(int& argc, const char** argv)
 {
   auto parameters = std::make_unique<NanairoParameters>();
 
@@ -96,19 +97,19 @@ std::unique_ptr<NanairoParameters> processCommandLine(int& argc, char** argv)
     }
 
     // Parse command line
-    options.parse_positional(std::vector<std::string>{{"binpath"}});
-    options.parse(argc, argv);
+    options.parse_positional({"binpath"});
+    auto result = options.parse(argc, argv);
 
     // Process command line arguments
-    if (0 < options.count("help")) {
-      std::cout << options.help(std::vector<std::string>{{""}}) << std::endl;
+    if (0 < result.count("help")) {
+      std::cout << options.help({""}) << std::endl;
       exit(EXIT_SUCCESS);
     }
-    if (options.count("binpath") == 0) {
-      std::cout << options.help(std::vector<std::string>{{""}}) << std::endl;
+    if (result.count("binpath") == 0) {
+      std::cout << options.help({""}) << std::endl;
       exit(EXIT_SUCCESS);
     }
-    if (options.count("outputpath") == 0) {
+    if (result.count("outputpath") == 0) {
       parameters->output_path_.clear();
     }
   }
