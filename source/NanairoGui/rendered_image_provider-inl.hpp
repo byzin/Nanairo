@@ -21,9 +21,17 @@ namespace nanairo {
   No detailed.
   */
 inline
-void RenderedImageProvider::setImage(const QImage* image) noexcept
+QImage& RenderedImageProvider::image() noexcept
 {
-  image_ = image;
+  return image_;
+}
+
+/*!
+  */
+inline
+const QImage& RenderedImageProvider::image() const noexcept
+{
+  return image_;
 }
 
 } // namespace nanairo

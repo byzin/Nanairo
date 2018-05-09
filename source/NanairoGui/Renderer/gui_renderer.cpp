@@ -9,6 +9,8 @@
 
 #include "gui_renderer.hpp"
 // Standard C++ library
+#include <cstddef>
+#include <cstring>
 #include <fstream>
 #include <ostream>
 #include <string>
@@ -27,6 +29,7 @@
 #include "NanairoCore/scene.hpp"
 #include "NanairoCore/CameraModel/camera_model.hpp"
 #include "NanairoCore/CameraModel/film.hpp"
+#include "NanairoCore/Color/ldr_image.hpp"
 
 namespace nanairo {
 
@@ -102,10 +105,20 @@ void GuiRenderer::notifyOfRenderingInfo(const std::string_view& info) const noex
 void GuiRenderer::outputLdrImage(const std::string& output_path,
                                  const uint64 cycle) noexcept
 {
+  const auto& ldr_image_helper = ldrImageHelper();
+
+  // Copy image
+  const auto& ldr_image = ldrImage();
+  auto data = const_cast<uint8*>(ldr_image_helper.constBits());
+  const std::size_t memory_size = sizeof(ldr_image[0]) * ldr_image.size();
+  std::memcpy(data, ldr_image.data().data(), memory_size);
+
   if (mode_ == RenderingMode::kRendering) {
     const auto ldr_path = makeImagePath(output_path, cycle);
-    const auto& ldr_image_helper = ldrImageHelper();
-    ldr_image_helper.save(QString{ldr_path.c_str()});
+
+    const bool result = ldr_image_helper.save(QString{ldr_path.c_str()});
+    if (!result)
+      logMessage("QImage error: saving image failed: " + ldr_path);
   }
 }
 

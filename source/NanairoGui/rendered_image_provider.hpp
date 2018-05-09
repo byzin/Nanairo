@@ -36,15 +36,18 @@ class RenderedImageProvider : public QQuickImageProvider
 
 
   //! Return the rendered image
-  QPixmap requestPixmap(const QString& id, 
-                        QSize* size, 
-                        const QSize& requested_size) noexcept override;
+  QImage requestImage(const QString& id, 
+                      QSize* size, 
+                      const QSize& requested_size) noexcept override;
 
-  //! Set image
-  void setImage(const QImage* image) noexcept;
+  //! Return an image body
+  QImage& image() noexcept;
+
+  //! Return an image body
+  const QImage& image() const noexcept;
 
  private:
-  const QImage* image_;
+  QImage image_;
 };
 
 //! \} Gui

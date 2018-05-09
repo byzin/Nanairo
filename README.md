@@ -4,7 +4,7 @@
 
 **Nanairo** is a physically plausible spectral renderer.
 
-Version: 0.0.3
+Version: 0.0.4
 
 ## Description ##
 
@@ -14,15 +14,11 @@ Version: 0.0.3
 
 ### Features ###
 
-Basic
-
-* Correlated Multi-Jittered: [[paper](https://graphics.pixar.com/library/MultiJitteredSampling/paper.pdf), [Cycles](https://www.cycles-renderer.org/)]
-
 **Monte calro ray tracing method**
 
-* Path tracing
+* Path tracing [[paper](https://dl.acm.org/citation.cfm?id=15902)]
 * Light tracing
-* Progressive photon mapping [[paper](http://www.cgg.unibe.ch/publications/2011/progressive-photon-mapping-a-probabilistic-approach)]
+* ~~Progressive photon mapping~~ [[paper](http://www.cgg.unibe.ch/publications/2011/progressive-photon-mapping-a-probabilistic-approach)]
 
 **BVH**
 
@@ -62,17 +58,14 @@ Basic
 
 ## Requirement ##
 
-### Compiler ###
-
-* C++17 support compiler
-
 ### Build tools ###
 
+* C++17 support compiler
 * CMake (version 3.10 or later) [[page](http://www.cmake.org/)]
 
 ### Dependency Library ###
 
-* Qt (version 5.9.0 or later) [[page](http://qt-project.org/)]
+* Qt (version 5.10.0 or later) [[page](http://qt-project.org/)]
 
 ## Usage ##
 Please see [wiki](https://github.com/byzin/Nanairo/wiki/Home "NanairoWiki").
@@ -84,10 +77,10 @@ Building step is tested in the following environments
 
 * macOS High Sierra + Apple Clang 9.1 + Qt 5.9.4 + CMake 3.11.0
 * macOS High Sierra + GCC 7.3 + Qt 5.9.4 + CMake 3.11.0
-* Ubuntu 16.04 + GCC 7.3 + Qt 5.9.4 + CMake 3.11.0
-* Ubuntu 16.04 + Clang 5.0 + Qt 5.9.4 + CMake 3.11.0
+* Ubuntu 16.04 + GCC 7.3 + Qt 5.10.1 + CMake 3.11.1
+* Ubuntu 16.04 + Clang 6.0 + Qt 5.10.1 + CMake 3.11.1
 * Windows 10 (64bit) + MinGW GCC 7.3 + Qt 5.9.4 + CMake 3.11.0
-* Windows 10 (64bit) + MSVC (Visual Studio 2017) + Qt 5.9.4 + CMake 3.11.0
+* Windows 10 (64bit) + MSVC (Visual Studio 2017) + Qt 5.10.1 + CMake 3.11.1
 
 ### Download source code ###
 
@@ -99,9 +92,15 @@ Building step is tested in the following environments
 ```
 
 ### Setup ###
-To build Nanairo, you need to add the Qt qmake path to **$PATH**.  
-``% export PATH=${qmake_path}:$PATH``  
-For example, on Mac, qmake path is maybe ``${qt_root}/${qt_version}/clang_64/bin``  
+To build Nanairo, you need to add the Qt qmake path to **PATH**.  
+On Windows,
+```
+% set PATH=${qmake_path};%PATH%
+```
+On Linux and macOS,
+```
+% export PATH=${qmake_path}:$PATH
+```
 
 #### Python environment setup ####
 Please see [wiki](https://github.com/byzin/Nanairo/wiki/Python-environment-setup "Python environment setup") for details.
@@ -115,7 +114,7 @@ First, You need to move the build directory.
 
 Next, we generate a Makefile using cmake.
 
-#### On Mac or Linux ####
+#### On Linux or macOS ####
 
 GCC  
 ```
@@ -131,17 +130,10 @@ Clang
 
 #### On Windows (MSVC) ####
 
-Visual Studio 2015 64bit
+Visual Studio 2017 64bit
 ```
 % cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release ..
 % cmake --build . --config Release
-```
-
-#### On Windows (MinGW) ####
-
-```
-% cmake -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ..
-% cmake --build .
 ```
 
 ### Packaging ###

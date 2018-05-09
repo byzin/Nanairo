@@ -9,11 +9,13 @@
 
 #include "cui_renderer.hpp"
 // Standard C++ library
+#include <cstdint>
+#include <cstring>
 #include <string>
 // Qt
 #include <QImage>
-#include <QScopedPointer>
 // Zisc
+#include "zisc/error.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "simple_renderer.hpp"
@@ -24,21 +26,33 @@ namespace nanairo {
 
 /*!
   */
-CuiRenderer::CuiRenderer() noexcept
+CuiRenderer::CuiRenderer() noexcept :
+    ldr_image_helper_{nullptr}
 {
   initialize();
 }
 
 /*!
   */
-void CuiRenderer::initLdrImageHelper() noexcept
+QImage& CuiRenderer::ldrImageHelper() noexcept
 {
-  const auto& ldr_image = ldrImage();
-  auto image = new QImage{zisc::treatAs<const uint8*>(&(ldr_image.data()[0])),
-                          zisc::cast<int>(ldr_image.widthResolution()),
-                          zisc::cast<int>(ldr_image.heightResolution()),
-                          QImage::Format_RGB32};
-  ldr_image_helper_.reset(image);
+  ZISC_ASSERT(ldr_image_helper_ != nullptr, "The image is null.");
+  return *ldr_image_helper_;
+}
+
+/*!
+  */
+const QImage& CuiRenderer::ldrImageHelper() const noexcept
+{
+  ZISC_ASSERT(ldr_image_helper_ != nullptr, "The image is null.");
+  return *ldr_image_helper_;
+}
+
+/*!
+  */
+void CuiRenderer::setImage(QImage* image) noexcept
+{
+  ldr_image_helper_ = image;
 }
 
 /*!
@@ -46,9 +60,17 @@ void CuiRenderer::initLdrImageHelper() noexcept
 void CuiRenderer::outputLdrImage(const std::string& output_path,
                                  const uint64 cycle) noexcept
 {
+  ZISC_ASSERT(ldr_image_helper_ != nullptr, "The image is null.");
+
+  // Copy image
+  const auto& ldr_image = ldrImage();
+  auto data = const_cast<uint8*>(ldr_image_helper_->constBits());
+  const std::size_t memory_size = sizeof(ldr_image[0]) * ldr_image.size();
+  std::memcpy(data, ldr_image.data().data(), memory_size);
+
   const auto ldr_path = makeImagePath(output_path, cycle);
-  const auto& ldr_image_helper = ldrImageHelper();
-  const bool result = ldr_image_helper.save(QString{ldr_path.c_str()});
+
+  const bool result = ldr_image_helper_->save(QString{ldr_path.c_str()});
   if (!result)
     logMessage("QImage error: saving image failed: " + ldr_path);
 }

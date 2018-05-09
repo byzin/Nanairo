@@ -38,6 +38,24 @@ bool SimpleRenderer::isRunnable() const noexcept
 /*!
   */
 inline
+LdrImage& SimpleRenderer::ldrImage() noexcept
+{
+  ZISC_ASSERT(ldr_image_.get() != nullptr, "The LDR image is null.");
+  return *ldr_image_;
+}
+
+/*!
+  */
+inline
+const LdrImage& SimpleRenderer::ldrImage() const noexcept
+{
+  ZISC_ASSERT(ldr_image_.get() != nullptr, "The LDR image is null.");
+  return *ldr_image_;
+}
+
+/*!
+  */
+inline
 constexpr int SimpleRenderer::maxFps() noexcept
 {
   constexpr int max_fps = 50;
@@ -90,24 +108,6 @@ const HdrImage& SimpleRenderer::hdrImage() const noexcept
 {
   ZISC_ASSERT(hdr_image_.get() != nullptr, "The HDR image is null.");
   return *hdr_image_;
-}
-
-/*!
-  */
-inline
-LdrImage& SimpleRenderer::ldrImage() noexcept
-{
-  ZISC_ASSERT(ldr_image_.get() != nullptr, "The LDR image is null.");
-  return *ldr_image_;
-}
-
-/*!
-  */
-inline
-const LdrImage& SimpleRenderer::ldrImage() const noexcept
-{
-  ZISC_ASSERT(ldr_image_.get() != nullptr, "The LDR image is null.");
-  return *ldr_image_;
 }
 
 /*!

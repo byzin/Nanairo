@@ -130,6 +130,16 @@ void GuiRendererManager::invokeRendering(const QVariant& scene_data,
     // Prepare for rendering
     prepareForRendering(*scene_value, renderer.data(), &output_dir, &error_message);
     if (renderer->isRunnable()) {
+      // Init image
+      {
+        const auto& ldr_image = renderer->ldrImage();
+        auto image_provider = renderedImageProvider();
+        auto& image = image_provider->image();
+        image =QImage{static_cast<int>(ldr_image.widthResolution()),
+                      static_cast<int>(ldr_image.heightResolution()),
+                      QImage::Format_RGB32};
+        renderer->setImage(&image);
+      }
       // Start rendering
       connectWithRenderer(renderer.data());
       emit started();
@@ -178,7 +188,6 @@ void GuiRendererManager::setRenderedImageProvider(
     RenderedImageProvider* image_provider) noexcept
 {
   image_provider_ = image_provider;
-  image_provider_->setImage(nullptr);
 }
 
 /*!
@@ -212,8 +221,6 @@ void GuiRendererManager::connectWithRenderer(GuiRenderer* renderer) noexcept
     };
     connect(this, &GuiRendererManager::previewEvent, handle_camera_event);
   }
-  auto image_provider = renderedImageProvider();
-  image_provider->setImage(&renderer->ldrImageHelper());
 }
 
 /*!
@@ -222,8 +229,6 @@ void GuiRendererManager::disconnectFromRenderer() noexcept
 {
   disconnect(this, &GuiRendererManager::stopRendering, nullptr, nullptr);
   disconnect(this, &GuiRendererManager::previewEvent, nullptr, nullptr);
-  auto image_provider = renderedImageProvider();
-  image_provider->setImage(nullptr);
 }
 
 /*!

@@ -14,6 +14,7 @@
 // Qt
 #include <QDate>
 #include <QDir>
+#include <QImage>
 #include <QJsonObject>
 #include <QString>
 #include <QTime>
@@ -54,6 +55,7 @@ void CuiRendererManager::invokeRendering(const QString& scene_file_path)
     const noexcept
 {
   CuiRenderer renderer;
+  QImage image;
   QString output_dir;
   QString error_message;
 
@@ -64,10 +66,19 @@ void CuiRendererManager::invokeRendering(const QString& scene_file_path)
       prepareForRendering(scene_value, &renderer, &output_dir, &error_message);
   }
 
-  if (renderer.isRunnable())
+  if (renderer.isRunnable()) {
+    {
+      const auto& ldr_image = renderer.ldrImage();
+      image = QImage{static_cast<int>(ldr_image.widthResolution()),
+                     static_cast<int>(ldr_image.heightResolution()),
+                     QImage::Format_RGB32};
+      renderer.setImage(&image);
+    }
     renderer.render(output_dir.toStdString());
-  else
+  }
+  else {
     QTextStream{stderr} << "Error: " << error_message;
+  }
 }
 
 bool CuiRendererManager::isSavingSceneBinaryEnabled() const noexcept
@@ -116,9 +127,8 @@ bool CuiRendererManager::prepareForRendering(const QJsonObject& scene_value,
 
   {
     std::string message;
-    if (renderer->loadScene(*scene_settings, &message))
-      renderer->initLdrImageHelper();
-    else
+    const bool result = renderer->loadScene(*scene_settings, &message);
+    if (!result)
       *error_message = message.c_str();
   }
 

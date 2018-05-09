@@ -14,7 +14,6 @@
 #include <string>
 // Qt
 #include <QImage>
-#include <QScopedPointer>
 // Nanairo
 #include "simple_renderer.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -33,11 +32,14 @@ class CuiRenderer : public SimpleRenderer
   CuiRenderer() noexcept;
 
 
-  //! Init LDR image helper
-  void initLdrImageHelper() noexcept;
+  //! Return the LDR image for Qt
+  QImage& ldrImageHelper() noexcept;
 
-  //! Return the LDR image helper
+  //! Return the LDR image for Qt
   const QImage& ldrImageHelper() const noexcept;
+
+  //! Set the image body
+  void setImage(QImage* image) noexcept;
 
  protected:
   //! Output LDR image
@@ -49,13 +51,11 @@ class CuiRenderer : public SimpleRenderer
   void initialize() noexcept;
 
 
-  QScopedPointer<QImage> ldr_image_helper_;
+  QImage* ldr_image_helper_;
 };
 
 //! \} Gui
 
 } // namespace nanairo
-
-#include "cui_renderer-inl.hpp"
 
 #endif // NANAIRO_CUI_RENDERER_HPP

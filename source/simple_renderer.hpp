@@ -53,6 +53,12 @@ class SimpleRenderer
   //! Check if the renderer is runnable
   bool isRunnable() const noexcept;
 
+  //! Return the LDR image
+  LdrImage& ldrImage() noexcept;
+
+  //! Return the LDR image
+  const LdrImage& ldrImage() const noexcept;
+
   //! Load the rendering scene
   bool loadScene(const SettingNodeBase& settings,
                  std::string* error_message) noexcept;
@@ -95,12 +101,6 @@ class SimpleRenderer
   virtual void initLogger(const std::string& output_path,
                           std::ostream* console_log_stream,
                           std::ofstream* text_log_stream) noexcept;
-
-  //! Return the LDR image
-  LdrImage& ldrImage() noexcept;
-
-  //! Return the LDR image
-  const LdrImage& ldrImage() const noexcept;
 
   //! Return the rendering method
   RenderingMethod& renderingMethod() noexcept;
