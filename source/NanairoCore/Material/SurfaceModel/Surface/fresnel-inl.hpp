@@ -67,11 +67,10 @@ bool Fresnel::checkSnellsLaw(const Float n,
                              const Float cos_i,
                              const Float cos_o) noexcept
 {
-  constexpr Float epsilon = 1.0e-7;
-  ZISC_ASSERT(epsilon != 0.0, "The epsilon is zero.");
   const Float sin_i2 = 1.0 - zisc::power<2>(cos_i);
   const Float sin_o2 = 1.0 - zisc::power<2>(cos_o);
-  const bool is_valid = zisc::abs(sin_i2 - zisc::power<2>(n) * sin_o2) < epsilon;
+  const bool is_valid = zisc::constant::isAlmostEqual(sin_i2,
+                                                      zisc::power<2>(n) * sin_o2);
   return is_valid;
 }
 

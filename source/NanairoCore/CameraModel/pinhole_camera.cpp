@@ -266,7 +266,7 @@ PinholeCamera::FilmShape::FilmShape(const Point3& c) noexcept :
   No detailed.
   */
 void PinholeCamera::FilmShape::initialize(const Float aspect_ratio,
-                             const Float angle_of_view) noexcept
+                                          const Float angle_of_view) noexcept
 {
   ZISC_ASSERT(zisc::isInBounds(angle_of_view, 0.0, zisc::kPi<Float>),
               "The angle of view is invalid: ", angle_of_view);

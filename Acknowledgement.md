@@ -10,4 +10,10 @@ Nanairo includes the following 3d models and spectrum files.  I thank the author
 
 ## Spectrum files ##
 
+- ColorCheckers "Ohta, N. (1997). The basis of color reproduction engineering."
+- CIE Standard Colorimetric Observer <http://www.rit.edu/cos/colorscience/index.php>
 - (Complex) refractive index: <http://www.filmetrics.com/>
+
+## Textures ##
+
+- UV checker <https://github.com/Arahnoid/UVChecker-map>

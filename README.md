@@ -75,11 +75,11 @@ Please see [wiki](https://github.com/byzin/Nanairo/wiki/Home "NanairoWiki").
 ### Test environments ###
 Building step is tested in the following environments  
 
-* macOS High Sierra + Apple Clang 9.1 + Qt 5.9.4 + CMake 3.11.0
-* macOS High Sierra + GCC 7.3 + Qt 5.9.4 + CMake 3.11.0
+* macOS High Sierra + Apple Clang 9.1 + Qt 5.10.1 + CMake 3.11.1
+* ~~macOS High Sierra + GCC 8.1 + Qt 5.10.1 + CMake 3.11.1~~
 * Ubuntu 16.04 + GCC 7.3 + Qt 5.10.1 + CMake 3.11.1
 * Ubuntu 16.04 + Clang 6.0 + Qt 5.10.1 + CMake 3.11.1
-* Windows 10 (64bit) + MinGW GCC 7.3 + Qt 5.9.4 + CMake 3.11.0
+* Windows 10 (64bit) + MinGW GCC 7.3 + Qt 5.10.1 + CMake 3.11.1
 * Windows 10 (64bit) + MSVC (Visual Studio 2017) + Qt 5.10.1 + CMake 3.11.1
 
 ### Download source code ###
@@ -120,12 +120,14 @@ GCC
 ```
 % CC=gcc CXX=g++ cmake -DCMAKE_BUILD_TYPE=Release ..
 % cmake --build .
+% ./Nanairo -style material
 ```
 
 Clang  
 ```
 % CC=clang CXX=clang++ cmake -DCMAKE_BUILD_TYPE=Release -DZ_CLANG_USES_LIBCXX=ON ..
 % cmake --build .
+% ./Nanairo -style material
 ```
 
 #### On Windows (MSVC) ####
@@ -134,6 +136,7 @@ Visual Studio 2017 64bit
 ```
 % cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release ..
 % cmake --build . --config Release
+% Release\Nanairo -style material
 ```
 
 ### Packaging ###

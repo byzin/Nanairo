@@ -175,7 +175,7 @@ std::tuple<SampledSpectra, Float> GgxDielectricBsdf::evalRadianceAndPdf(
 
   // Check if the ray is reflected or refracted
   const Float cos_no = vout_d[2];
-  const bool is_reflection = (0.0 < cos_no);
+  const bool is_reflection = 0.0 < cos_no;
 
   // Calculate the microfacet normal
   const auto m_normal = (is_reflection)
@@ -184,9 +184,11 @@ std::tuple<SampledSpectra, Float> GgxDielectricBsdf::evalRadianceAndPdf(
   SampledSpectra radiance{wavelengths};
   Float pdf = 0.0;
   const Float cos_mi = zisc::dot(m_normal, vin_d);
+  const Float cos_mo = zisc::dot(m_normal, vout_d);
   const bool is_valid =
       (0.0 < m_normal[2]) &&
-      (is_reflection || Fresnel::checkSnellsLaw(n_, cos_mi, zisc::dot(m_normal, vout_d)));
+      (0.0 < cos_mi) &&
+      (is_reflection || Fresnel::checkSnellsLaw(n_, cos_mi, cos_mo));
   if (is_valid) {
     // Calculate the fresnel term
     const Float fresnel = Fresnel::evalFresnel(n_, cos_mi);
