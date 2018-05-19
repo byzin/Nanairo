@@ -81,9 +81,25 @@ void CuiRendererManager::invokeRendering(const QString& scene_file_path)
   }
 }
 
+/*!
+  */
 bool CuiRendererManager::isSavingSceneBinaryEnabled() const noexcept
 {
   return is_saving_scene_binary_enabled_;
+}
+
+/*!
+  */
+const QString& CuiRendererManager::outputPath() const noexcept
+{
+  return output_path_;
+}
+
+/*!
+  */
+void CuiRendererManager::setOutputPath(const QString& output_path) noexcept
+{
+  output_path_ = output_path;
 }
 
 /*!
@@ -158,7 +174,7 @@ QString CuiRendererManager::makeOutputDir(const SettingNodeBase* settings)
   const auto scene_settings = castNode<SceneSettingNode>(settings);
   const auto scene_name = QString{scene_settings->sceneName().data()};
 
-  QString dir_name = "results/" + scene_name + "_" + getCurrentTime();
+  QString dir_name = outputPath() + "/" + scene_name + "_" + getCurrentTime();
   const bool result = QDir::current().mkpath(dir_name);
   if (!result)
     dir_name.clear();

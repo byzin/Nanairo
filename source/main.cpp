@@ -21,6 +21,7 @@
 #include <QCommandLineOption>
 #include <QDateTime>
 #include <QDir>
+#include <QFileInfo>
 #include <QFont>
 #include <QGuiApplication>
 #include <QScopedPointer>
@@ -53,6 +54,7 @@ enum class RendererManagerType
 struct NanairoParameters
 {
   QString scene_file_path_;
+  QString output_path_;
   RendererManagerType manager_type_ = RendererManagerType::kGui;
   bool is_saving_scene_binary_enabled_ = false;
 };
@@ -87,13 +89,10 @@ int main(int argc, char** argv)
     };
   initQt();
 
-  std::function<int ()> render_runner;
-  {
-    // Parse command line arguments
-    const auto parameters = processCommandLine(*application);
-    // Make a render runner
-    render_runner = makeRenderRunner(*application, *parameters);
-  }
+  // Parse command line arguments
+  const auto parameters = processCommandLine(*application);
+  // Make a render runner
+  const auto render_runner = makeRenderRunner(*application, *parameters);
   // Launch render runner
   return render_runner();
 }
@@ -152,15 +151,22 @@ std::unique_ptr<NanairoParameters> processCommandLine(
   QCommandLineOption working_directory_option{
       {"w", "workingdirectory"},
       "Set the current working directory of Nanairo application.",
-      "dir"};
+      "path"};
   parser.addOption(working_directory_option);
   // Scene file
-  QCommandLineOption scene_file_option{
+  QCommandLineOption scene_file_path_option{
       {"s", "scenefile"},
       "Specify the rendering scene for cui rendering.",
       "path",
       ":/NanairoGui/scene/DefaultScene.nana"};
-  parser.addOption(scene_file_option);
+  parser.addOption(scene_file_path_option);
+  // Output path
+  QCommandLineOption output_path_option{
+      {"o", "outputfilepath"},
+      "Specify the output path of rendered images.",
+      "path",
+      "results"};
+  parser.addOption(output_path_option);
   // Scene binary
   QCommandLineOption scene_binary_option{
       {"b", "savescenebinary"},
@@ -189,13 +195,22 @@ std::unique_ptr<NanairoParameters> processCommandLine(
     if (!result)
       zisc::raiseError("Invalid working directory is specified: ", dir.toStdString());
   }
-  // Scene file
+  // Scene file path
   {
-    const auto file_path = parser.value(scene_file_option);
+    const auto file_path = parser.value(scene_file_path_option);
     QString error_message;
     if (!nanairo::SceneDocument::isSceneDocument(file_path, error_message))
       zisc::raiseError(error_message.toStdString());
     parameters->scene_file_path_ = file_path;
+  }
+  // Output path
+  {
+    const auto output_path = parser.value(output_path_option);
+    QDir::current().mkpath(output_path);
+    const QFileInfo output_dir{output_path};
+    if (!output_dir.isWritable())
+      zisc::raiseError("The output dir isn't writable: ", output_path.toStdString());
+    parameters->output_path_ = output_dir.canonicalFilePath();
   }
   // Scene binary
   if (parser.isSet(scene_binary_option)) {
@@ -214,28 +229,25 @@ std::function<int ()> makeRenderRunner(
   std::function<int ()> render_runner;
   switch (parameters.manager_type_) {
     case RendererManagerType::kGui: {
-      const bool is_saving_scene_binary_enabled =
-          parameters.is_saving_scene_binary_enabled_;
-      render_runner = [&application, is_saving_scene_binary_enabled]()
+      render_runner = [&application, &parameters]()
       {
         // Initialize GUI
         nanairo::GuiEngine engine;
         engine.load(QUrl{"qrc:/NanairoGui/NMainWindow.qml"});
         auto& manager = engine.rendererManager();
-        manager.enableSavingSceneBinary(is_saving_scene_binary_enabled);
+        manager.enableSavingSceneBinary(parameters.is_saving_scene_binary_enabled_);
+        manager.setOutputPath(parameters.output_path_);
         return application.exec();
       };
       break;
     }
     case RendererManagerType::kCui: {
-      const auto scene_file_path = parameters.scene_file_path_;
-      const bool is_saving_scene_binary_enabled =
-          parameters.is_saving_scene_binary_enabled_;
-      render_runner = [scene_file_path, is_saving_scene_binary_enabled]()
+      render_runner = [&parameters]()
       {
         nanairo::CuiRendererManager manager;
-        manager.enableSavingSceneBinary(is_saving_scene_binary_enabled);
-        manager.invokeRendering(scene_file_path);
+        manager.enableSavingSceneBinary(parameters.is_saving_scene_binary_enabled_);
+        manager.invokeRendering(parameters.scene_file_path_);
+        manager.setOutputPath(parameters.output_path_);
         return 0;
       };
       break;

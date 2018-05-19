@@ -46,6 +46,12 @@ class CuiRendererManager
   //! Check whether is saving scene binary enabled
   bool isSavingSceneBinaryEnabled() const noexcept;
 
+  //! Return an output path of rendered images
+  const QString& outputPath() const noexcept;
+
+  //! Set an output path of rendered images
+  void setOutputPath(const QString& output_path) noexcept;
+
  protected:
   //! Prepare renderer with the scene for rendering
   bool prepareForRendering(const QJsonObject& scene_value,
@@ -64,6 +70,7 @@ class CuiRendererManager
   QString makeOutputDir(const SettingNodeBase* settings) const noexcept;
 
 
+  QString output_path_;
   bool is_saving_scene_binary_enabled_;
 };
 
