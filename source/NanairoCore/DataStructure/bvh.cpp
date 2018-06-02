@@ -34,6 +34,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/object.hpp"
+#include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Setting/bvh_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 
@@ -69,9 +70,10 @@ IntersectionInfo Bvh::castRay(const Ray& ray,
   uint32 index = 0;
   const auto& bvh_tree = bvhTree();
   const uint32 end_index = zisc::cast<uint32>(bvh_tree.size());
+  const auto inv_dir = invert(ray.direction());
   while ((index != end_index) && !(intersection.isIntersected() && expect_no_hit)) {
     const auto& node = bvh_tree[index];
-    const auto result = node.boundingBox().testIntersection(ray);
+    const auto result = node.boundingBox().testIntersection(ray, inv_dir);
     // If the ray hits the bounding box of the node, enter the node
     if (result.isSuccess() && (result.rayDistance() < intersection.rayDistance())) {
       // A case of leaf node

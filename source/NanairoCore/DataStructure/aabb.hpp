@@ -42,7 +42,8 @@ class Aabb
   Point3 centroid() const noexcept;
 
   //! Test ray-AABB intersection
-  IntersectionTestResult testIntersection(const Ray& ray) const noexcept;
+  IntersectionTestResult testIntersection(const Ray& ray,
+                                          const Vector3& inv_dir) const noexcept;
 
   //! Return the longest axis number
   uint longestAxis() const noexcept;

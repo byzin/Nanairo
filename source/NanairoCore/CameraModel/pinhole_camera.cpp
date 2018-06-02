@@ -95,7 +95,7 @@ bool PinholeCamera::calcPixelLocation(const Vector3& ray_direction,
 
   const auto& shape = filmShape();
 
-  const auto ray = Ray::makeRay<false>(sampledLensPoint(), ray_direction);
+  const auto ray = Ray::makeRay(sampledLensPoint(), ray_direction);
   Point2 st;
   const bool is_hit = shape.testIntersection(ray, &st);
   if (is_hit) {

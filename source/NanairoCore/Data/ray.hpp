@@ -36,17 +36,10 @@ class Ray
   //! Return the direction
   const Vector3& direction() const noexcept;
 
-  //! Initialize the inverse direction
-  void initInvDirection() noexcept;
-
-  //! Return the inverted direction
-  const Vector3& invDirection() const noexcept;
-
   //! Check if the ray is alive
   bool isAlive() const noexcept;
 
   //! Make a ray
-  template <bool init_inv_direction = true>
   static Ray makeRay(const Point3& origin, const Vector3& direction) noexcept;
 
   //! Return the origin
@@ -61,9 +54,6 @@ class Ray
   //! Set ray origin
   void setOrigin(const Point3& origin) noexcept;
 
-  //! Return the direction sign
-  std::array<uint8, 3> sign() const noexcept;
-
  private:
   //! Create ray
   Ray(const Point3& origin, const Vector3& direction) noexcept;
@@ -73,11 +63,9 @@ class Ray
 
 
   Point3 origin_;
-  Vector3 direction_,
-          inv_direction_;
-  std::array<uint8, 3> sign_;
+  Vector3 direction_;
   uint8 is_alive_;
-  std::array<uint8, 4> padding_;
+  std::array<uint8, 7> padding_;
 };
 
 //! \} Core

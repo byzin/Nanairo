@@ -11,6 +11,8 @@
 #define NANAIRO_AABB_INL_HPP
 
 #include "aabb.hpp"
+// Standard C++ library
+#include <algorithm>
 // Zisc
 #include "zisc/math.hpp"
 // Nanairo
@@ -38,24 +40,17 @@ Point3 Aabb::centroid() const noexcept
   http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-box-intersection/
   */
 inline
-IntersectionTestResult Aabb::testIntersection(const Ray& ray) const noexcept
+IntersectionTestResult Aabb::testIntersection(const Ray& ray,
+                                              const Vector3& inv_dir) const noexcept
 {
-  const auto& origin = ray.origin();
-  const auto& inv_dir = ray.invDirection();
-  const auto s = ray.sign();
-
-  Float tmin = 0.0;
-  {
-    const Point3 min_p{point_[s[0]][0], point_[s[1]][1], point_[s[2]][2]};
-    auto t0 = (min_p - origin).data() * inv_dir.data();
-    tmin = zisc::max(zisc::max(t0[0], t0[1]), t0[2]);
+  auto t0 = (minPoint() - ray.origin()).data() * inv_dir.data();
+  auto t1 = (maxPoint() - ray.origin()).data() * inv_dir.data();
+  for (uint i = 0; i < inv_dir.size(); ++i) {
+    if (inv_dir[i] < 0.0)
+      std::swap(t0[i], t1[i]);
   }
-  Float tmax = 0.0;
-  {
-    const Point3 max_p{point_[1-s[0]][0], point_[1-s[1]][1], point_[1-s[2]][2]};
-    auto t1 = (max_p - origin).data() * inv_dir.data();
-    tmax = zisc::min(zisc::min(t1[0], t1[1]), t1[2]);
-  }
+  const Float tmin = zisc::max(zisc::max(t0[0], t0[1]), t0[2]);
+  const Float tmax = zisc::min(zisc::min(t1[0], t1[1]), t1[2]);
 
   const auto result = (tmin <= tmax) ? IntersectionTestResult{tmin}
                                      : IntersectionTestResult{};

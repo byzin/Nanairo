@@ -58,30 +58,6 @@ const Vector3& Ray::direction() const noexcept
 }
 
 /*!
-  */
-inline
-void Ray::initInvDirection() noexcept
-{
-  inv_direction_ = invert(direction());
-  // Set the sign of the direction
-  static_assert(kTrue == 1, "");
-  static_assert(kFalse == 0, "");
-  sign_[0] = (inv_direction_[0] < 0.0) ? kTrue : kFalse;
-  sign_[1] = (inv_direction_[1] < 0.0) ? kTrue : kFalse;
-  sign_[2] = (inv_direction_[2] < 0.0) ? kTrue : kFalse;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-const Vector3& Ray::invDirection() const noexcept
-{
-  return inv_direction_;
-}
-
-/*!
   \details
   No detailed.
   */
@@ -93,12 +69,10 @@ bool Ray::isAlive() const noexcept
 
 /*!
   */
-template <bool init_inv_direction> inline
+inline
 Ray Ray::makeRay(const Point3& origin, const Vector3& direction) noexcept
 {
   Ray ray{origin, direction};
-  if (init_inv_direction)
-    ray.initInvDirection();
   return ray;
 }
 
@@ -120,7 +94,6 @@ inline
 void Ray::setDirection(const Vector3& direction) noexcept
 {
   direction_ = direction;
-  initInvDirection();
 }
 
 /*!
@@ -141,16 +114,6 @@ inline
 void Ray::setAlive(const bool is_alive) noexcept
 {
   is_alive_ = is_alive ? kTrue : kFalse;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-std::array<uint8, 3> Ray::sign() const noexcept
-{
-  return sign_;
 }
 
 /*!
