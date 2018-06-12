@@ -20,9 +20,8 @@
 // Nanairo
 #include "film.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Color/spectral_distribution.hpp"
-#include "NanairoCore/Color/spectra_image_interface.hpp"
 #include "NanairoCore/Material/Sensor/sensor.hpp"
+#include "NanairoCore/Sampling/sample_statistics.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_point.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
@@ -34,11 +33,11 @@ namespace nanairo {
   No detailed.
   */
 inline
-void CameraModel::addContribution(const Index2d& index,
+void CameraModel::addContribution(const Index2d index,
                                   const SampledSpectra& contribution) noexcept
 {
-  auto& spectra_buffer = film().spectraBuffer();
-  spectra_buffer.addContribution(index, contribution);
+  auto& sample_statistics  = film().sampleStatistics();
+  sample_statistics.addSample(index, contribution);
 }
 
 /*!
@@ -66,7 +65,7 @@ const Film& CameraModel::film() const noexcept
 /*!
   */
 inline
-const Index2d& CameraModel::imageResolution() const noexcept
+Index2d CameraModel::imageResolution() const noexcept
 {
   return film().imageResolution();
 }

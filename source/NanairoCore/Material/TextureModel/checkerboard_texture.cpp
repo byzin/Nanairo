@@ -16,13 +16,14 @@
 #include <memory>
 #include <vector>
 // Zisc
+#include "zisc/math.hpp"
 #include "zisc/memory_resource.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "texture_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Color/xyz_color.hpp"
+#include "NanairoCore/Color/SpectralDistribution/spectral_distribution.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
@@ -35,7 +36,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-CheckerboardTexture::CheckerboardTexture(const System& system,
+CheckerboardTexture::CheckerboardTexture(System& system,
                                          const SettingNodeBase* settings) noexcept
 {
   initialize(system, settings);
@@ -50,7 +51,9 @@ SampledSpectra CheckerboardTexture::emissiveValue(
     const WavelengthSamples& wavelengths) const noexcept
 {
   const uint index = getIndex(uv);
-  return sample(emissive_value_[index], wavelengths);
+  const Float scale = emissive_scale_[index];
+  const auto e = sample(*color_value_[index], wavelengths) * scale;
+  return e;
 }
 
 /*!
@@ -72,7 +75,9 @@ Float CheckerboardTexture::reflectiveValue(
     const uint16 wavelength) const noexcept
 {
   const uint index = getIndex(uv);
-  return reflective_value_[index].getByWavelength(wavelength);
+  auto r = color_value_[index]->getByWavelength(wavelength);
+  r = zisc::clamp(r, 0.0, 1.0);
+  return r;
 }
 
 /*!
@@ -84,7 +89,9 @@ SampledSpectra CheckerboardTexture::reflectiveValue(
     const WavelengthSamples& wavelengths) const noexcept
 {
   const uint index = getIndex(uv);
-  return sample(reflective_value_[index], wavelengths);
+  auto r = sample(*color_value_[index], wavelengths);
+  r.clampAll(0.0, 1.0);
+  return r;
 }
 
 /*!
@@ -96,7 +103,7 @@ Float CheckerboardTexture::spectraValue(
     const uint16 wavelength) const noexcept
 {
   const uint index = getIndex(uv);
-  return spectra_value_[index].getByWavelength(wavelength);
+  return data_value_[index]->getByWavelength(wavelength);
 }
 
 /*!
@@ -108,7 +115,7 @@ SampledSpectra CheckerboardTexture::spectraValue(
     const WavelengthSamples& wavelengths) const noexcept
 {
   const uint index = getIndex(uv);
-  return sample(spectra_value_[index], wavelengths);
+  return sample(*data_value_[index], wavelengths);
 }
 
 /*!
@@ -135,25 +142,34 @@ uint CheckerboardTexture::getIndex(const Point2& uv) const noexcept
   \details
   No detailed.
   */
-void CheckerboardTexture::initialize(const System& system,
+void CheckerboardTexture::initialize(System& system,
                                      const SettingNodeBase* settings) noexcept
 {
   const auto texture_settings = castNode<TextureSettingNode>(settings);
-  auto work_resource = settings->workResource();
-
   const auto& parameters = texture_settings->checkerboardTextureParameters();
+
   for (std::size_t i = 0; i < 2; ++i) {
     resolution_[i] = zisc::cast<Float>(parameters.resolution_[i]);
     resolution_[i] = std::nextafter(resolution_[i], 0.0);
   }
   for (std::size_t i = 0; i < 2; ++i) {
-    spectra_value_[i].load(system, parameters.color_[i].get());
-    spectra_value_[i] = spectra_value_[i].computeSystemColor(system, work_resource);
+    {
+      const auto color_settings = parameters.color_[i].get();
+      auto data_resource = &system.dataMemoryManager();
+      auto work_resource = settings->workResource();
+      const auto d = SpectralDistribution::makeDistribution(system,
+                                                            color_settings,
+                                                            work_resource);
+      data_value_[i] = SpectralDistribution::makeDistribution(system.colorMode(),
+                                                              data_resource);
+      data_value_[i]->setData(*d);
+      color_value_[i] = SpectralDistribution::makeDistribution(system.colorMode(),
+                                                               data_resource);
+      color_value_[i]->setColor(system, *d, work_resource);
+    }
 
-    emissive_value_[i] = spectra_value_[i].toEmissiveColor();
-    reflective_value_[i] = spectra_value_[i].toReflectiveColor();
-
-    gray_scale_value_[i]= reflective_value_[i].toXyzForReflector(system).y();
+    emissive_scale_[i] = zisc::invert(color_value_[i]->compensatedSum());
+    gray_scale_value_[i] = color_value_[i]->toXyzForReflector(system).y();
     gray_scale_value_[i]= zisc::clamp(gray_scale_value_[i], 0.0, 1.0);
   }
 }

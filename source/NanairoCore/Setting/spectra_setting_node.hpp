@@ -23,7 +23,7 @@
 // Nanairo
 #include "setting_node_base.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Color/SpectralDistribution/spectral_distribution.hpp"
 
 namespace nanairo {
 
@@ -62,6 +62,9 @@ struct SpectraParameters : public NodeParameterBase
 class SpectraSettingNode : public SettingNodeBase
 {
  public:
+  using RepresentationType = SpectralDistribution::RepresentationType;
+
+
   //! Create a spectra settings
   SpectraSettingNode(const SettingNodeBase* parent) noexcept;
 
@@ -76,7 +79,7 @@ class SpectraSettingNode : public SettingNodeBase
   void readData(std::istream* data_stream) noexcept override;
 
   //! Return the color representation type
-  ColorRepresentationType representationType() const noexcept;
+  RepresentationType representationType() const noexcept;
 
   //! Return the RGB parameters
   RgbParameters& rgbParameters() noexcept;
@@ -85,7 +88,7 @@ class SpectraSettingNode : public SettingNodeBase
   const RgbParameters& rgbParameters() const noexcept;
 
   //! Set the color type
-  void setRepresentationType(const ColorRepresentationType type) noexcept;
+  void setRepresentationType(const RepresentationType type) noexcept;
 
   //! Return the spectra parameters
   SpectraParameters& spectraParameters() noexcept;
@@ -101,7 +104,7 @@ class SpectraSettingNode : public SettingNodeBase
 
  private:
   zisc::UniqueMemoryPointer<NodeParameterBase> parameters_;
-  ColorRepresentationType color_type_;
+  RepresentationType color_type_;
 };
 
 //! \} Core

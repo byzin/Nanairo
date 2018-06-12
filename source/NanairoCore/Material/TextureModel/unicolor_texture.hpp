@@ -16,7 +16,7 @@
 // Nanairo
 #include "texture_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Color/SpectralDistribution/spectral_distribution.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
@@ -36,8 +36,12 @@ class WavelengthSamples;
 class UnicolorTexture : public TextureModel
 {
  public:
+  using SpectralDistributionPointer =
+      SpectralDistribution::SpectralDistributionPointer;
+
+
   //! Create a unicolor texture
-  UnicolorTexture(const System& system, const SettingNodeBase* settings) noexcept;
+  UnicolorTexture(System& system, const SettingNodeBase* settings) noexcept;
 
 
   //! Evaluate a emissive spectra at the uv coordinate
@@ -73,12 +77,12 @@ class UnicolorTexture : public TextureModel
 
  private:
   //! Initialize
-  void initialize(const System& system, const SettingNodeBase* settings) noexcept;
+  void initialize(System& system, const SettingNodeBase* settings) noexcept;
 
 
-  SpectralDistribution spectra_value_;
-  SpectralDistribution emissive_value_;
-  SpectralDistribution reflective_value_;
+  SpectralDistributionPointer data_value_;
+  SpectralDistributionPointer color_value_;
+  Float emissive_scale_;
   Float gray_scale_value_;
 };
 

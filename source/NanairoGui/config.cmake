@@ -77,7 +77,7 @@ endfunction(makeGuiConfigFile)
 
 
 # Make Nanairo UI resource file
-function(makeGuiResource gui_resource_dir gui_resource_file)
+function(makeGuiResource gui_resource_dir gui_resource_file gui_resources)
   file(MAKE_DIRECTORY ${gui_resource_dir})
 
   setGuiKeywords(${nanairo_keyword_list})
@@ -112,6 +112,11 @@ function(makeGuiResource gui_resource_dir gui_resource_file)
   # Write the code to file
   file(WRITE ${gui_resource_dir}/${gui_resource_file} ${resource_file_code})
   source_group(NanairoGui FILES ${gui_resource_dir}/${gui_resource_file})
+
+  # Compile qml files
+  qtquick_compiler_add_resources(qt_resources
+                                 ${gui_resource_dir}/${gui_resource_file})
+  set(${gui_resources} ${qt_resources} PARENT_SCOPE)
 endfunction(makeGuiResource)
 
 
@@ -131,8 +136,8 @@ function(getNanairoGui gui_source_files gui_definitions)
   list(APPEND source_files ${config_file_path})
   # Resource
   set(resource_dir ${PROJECT_BINARY_DIR}/resource_code)
-  makeGuiResource(${resource_dir} gui_resource.qrc)
-  list(APPEND source_files ${resource_dir}/gui_resource.qrc)
+  makeGuiResource(${resource_dir} gui_resource.qrc gui_resources)
+  list(APPEND source_files ${gui_resources})
 
 
   # Output variables

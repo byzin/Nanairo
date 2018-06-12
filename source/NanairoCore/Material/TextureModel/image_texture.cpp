@@ -18,6 +18,7 @@
 #include "zisc/algorithm.hpp"
 #include "zisc/compensated_summation.hpp"
 #include "zisc/error.hpp"
+#include "zisc/math.hpp"
 #include "zisc/memory_resource.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -29,7 +30,7 @@
 #include "NanairoCore/Color/ldr_image.hpp"
 #include "NanairoCore/Color/rgb_color.hpp"
 #include "NanairoCore/Color/rgba_32.hpp"
-#include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Color/SpectralDistribution/spectral_distribution.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
@@ -44,8 +45,8 @@ namespace nanairo {
   */
 ImageTexture::ImageTexture(System& system,
                            const SettingNodeBase* settings) noexcept :
-    emissive_value_table_{&system.dataMemoryManager()},
-    reflective_value_table_{&system.dataMemoryManager()},
+    spectra_value_table_{&system.dataMemoryManager()},
+    emissive_scale_table_{&system.dataMemoryManager()},
     gray_scale_table_{&system.dataMemoryManager()},
     color_index_table_{&system.dataMemoryManager()}
 {
@@ -61,7 +62,9 @@ SampledSpectra ImageTexture::emissiveValue(
     const WavelengthSamples& wavelengths) const noexcept
 {
   const uint index = getColorIndex(uv);
-  return sample(emissive_value_table_[index], wavelengths);
+  const Float scale = emissive_scale_table_[index];
+  auto e = sample(*spectra_value_table_[index], wavelengths) * scale;
+  return e;
 }
 
 /*!
@@ -82,7 +85,9 @@ Float ImageTexture::reflectiveValue(const Point2& uv,
                                     const uint16 wavelength) const noexcept
 {
   const uint index = getColorIndex(uv);
-  return reflective_value_table_[index].getByWavelength(wavelength);
+  auto r = spectra_value_table_[index]->getByWavelength(wavelength);
+  r = zisc::clamp(r, 0.0, 1.0);
+  return r;
 }
 
 /*!
@@ -94,7 +99,9 @@ SampledSpectra ImageTexture::reflectiveValue(
     const WavelengthSamples& wavelengths) const noexcept
 {
   const uint index = getColorIndex(uv);
-  return sample(reflective_value_table_[index], wavelengths);
+  auto r = sample(*spectra_value_table_[index], wavelengths);
+  r.clampAll(0.0, 1.0);
+  return r;
 }
 
 /*!
@@ -105,7 +112,7 @@ Float ImageTexture::spectraValue(const Point2& uv,
                                  const uint16 wavelength) const noexcept
 {
   const uint index = getColorIndex(uv);
-  return reflective_value_table_[index].getByWavelength(wavelength);
+  return spectra_value_table_[index]->getByWavelength(wavelength);
 }
 
 /*!
@@ -117,7 +124,7 @@ SampledSpectra ImageTexture::spectraValue(
     const WavelengthSamples& wavelengths) const noexcept
 {
   const uint index = getColorIndex(uv);
-  return sample(reflective_value_table_[index], wavelengths);
+  return sample(*spectra_value_table_[index], wavelengths);
 }
 
 /*!
@@ -196,28 +203,38 @@ void ImageTexture::initializeTables(
 
   // Make a value tables
   table_size = zisc::cast<uint>(std::distance(color_table.begin(), table_end));
-  emissive_value_table_.resize(table_size);
-  reflective_value_table_.resize(table_size);
+  spectra_value_table_.resize(table_size);
+  emissive_scale_table_.resize(table_size);
   gray_scale_table_.resize(table_size);
-  const auto to_xyz_matrix = getRgbToXyzMatrix(system.colorSpace());
+
+  auto rgb_distribution = SpectralDistribution::makeDistribution(
+      SpectralDistribution::RepresentationType::kRgb,
+      work_resource);
+
   for (uint index = 0; index < table_size; ++index) {
     auto rgb = ColorConversion::toFloatRgb(color_table[index]);
     rgb.correctGamma(system.gamma());
-    rgb.clampAll(std::numeric_limits<Float>::epsilon(), rgb.max());
     // Float value
     {
+      const auto to_xyz_matrix = getRgbToXyzMatrix(system.colorSpace());
       const Float y = ColorConversion::toXyz(rgb, to_xyz_matrix).y();
       gray_scale_table_[index] = zisc::clamp(y, 0.0, 1.0);
     }
     // Spectra values
     {
-      SpectralDistribution value;
-      value.setByWavelength(CoreConfig::blueWavelength(), rgb.blue());
-      value.setByWavelength(CoreConfig::greenWavelength(), rgb.green());
-      value.setByWavelength(CoreConfig::redWavelength(), rgb.red());
-      value = value.computeSystemColor(system, work_resource);
-      emissive_value_table_[index] = value.toEmissiveColor();
-      reflective_value_table_[index] = value.toReflectiveColor();
+      rgb_distribution->setByWavelength(CoreConfig::blueWavelength(), rgb.blue());
+      rgb_distribution->setByWavelength(CoreConfig::greenWavelength(), rgb.green());
+      rgb_distribution->setByWavelength(CoreConfig::redWavelength(), rgb.red());
+
+      auto data_resource = &system.dataMemoryManager();
+      spectra_value_table_[index] = SpectralDistribution::makeDistribution(
+          system.colorMode(),
+          data_resource);
+      spectra_value_table_[index]->setColor(system,
+                                            *rgb_distribution,
+                                            work_resource);
+      emissive_scale_table_[index] =
+          zisc::invert(spectra_value_table_[index]->compensatedSum());
     }
   }
 }

@@ -74,7 +74,7 @@ buildSimpleNanairoApp()
 if(${NANAIRO_BUILD_APP})
   # Library
   include(${PROJECT_SOURCE_DIR}/cmake/qt5.cmake)
-  findQt5(5.9 Core Gui Qml Quick)
+  findQt5(5.11 Core Gui Qml Quick)
   # Nanairo app
   buildNanairoApp()
   # Packaging

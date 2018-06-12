@@ -20,7 +20,10 @@
 // Nanairo
 #include "Color/xyz_color_matching_function.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "RenderingMethod/rendering_method.hpp"
+#include "Sampling/sample_statistics.hpp"
 #include "Sampling/sampler.hpp"
+#include "Setting/rendering_method_setting_node.hpp"
 #include "Setting/setting_node_base.hpp"
 #include "Setting/system_setting_node.hpp"
 
@@ -30,11 +33,12 @@ namespace nanairo {
   \details
   No detailed.
   */
-System::System(const SettingNodeBase* system_settings) noexcept :
-    memory_manager_list_{zisc::cast<std::size_t>(castNode<SystemSettingNode>(system_settings)->numOfThreads() + 2)},
+System::System(const SettingNodeBase* settings,
+               const SettingNodeBase* method_settings) noexcept :
+    memory_manager_list_{zisc::cast<std::size_t>(castNode<SystemSettingNode>(settings)->numOfThreads() + 2)},
     sampler_list_{&dataMemoryManager()}
 {
-  initialize(system_settings);
+  initialize(settings, method_settings);
 }
 
 /*!
@@ -53,7 +57,8 @@ System::~System() noexcept
   \details
   No detailed.
   */
-void System::initialize(const SettingNodeBase* settings) noexcept
+void System::initialize(const SettingNodeBase* settings,
+                        const SettingNodeBase* method_settings) noexcept
 {
   const auto system_settings = castNode<SystemSettingNode>(settings);
 
@@ -96,6 +101,19 @@ void System::initialize(const SettingNodeBase* settings) noexcept
   {
     xyz_color_matching_function_ =
         zisc::UniqueMemoryPointer<XyzColorMatchingFunction>::make(&data_resource);
+  }
+
+  // Sample statistics
+  {
+    auto pos = zisc::cast<std::size_t>(SampleStatistics::Type::kExpectedValue);
+    statistics_flag_.set(pos, true);
+
+    const auto m_settings = castNode<RenderingMethodSettingNode>(method_settings);
+
+    if (m_settings->methodType() == RenderingMethodType::kProbabilisticPpm) {
+      pos = zisc::cast<std::size_t>(SampleStatistics::Type::kVariance);
+      statistics_flag_.set(pos, true);
+    }
   }
 
   // Check type properties

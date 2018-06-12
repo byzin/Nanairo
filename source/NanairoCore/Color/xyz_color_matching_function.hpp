@@ -14,9 +14,10 @@
 #include <array>
 #include <memory>
 // Nanairo
-#include "spectral_distribution.hpp"
 #include "xyz_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "SpectralDistribution/spectral_distribution.hpp"
+#include "SpectralDistribution/spectral_distribution_spectra.hpp"
 
 namespace nanairo {
 
@@ -79,7 +80,7 @@ class XyzColorMatchingFunction
   void initialize() noexcept;
 
 
-  std::array<SpectralDistribution, 3> bar_;
+  std::array<SpectraDistribution, 3> bar_;
 };
 
 //! \} Core

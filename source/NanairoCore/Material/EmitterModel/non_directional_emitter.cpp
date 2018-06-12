@@ -18,7 +18,6 @@
 // Nanairo
 #include "emitter_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Material/Light/non_directional_light.hpp"
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"

@@ -21,7 +21,6 @@
 // Nanairo
 #include "surface_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Material/Bxdf/interfaced_lambertian_brdf.hpp"

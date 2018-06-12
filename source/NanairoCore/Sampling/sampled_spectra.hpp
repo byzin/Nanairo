@@ -81,8 +81,11 @@ class SampledSpectra
   SampledSpectra& operator*=(const SampledSpectra& samples) noexcept;
 
 
-  // Get the average of intensities
+  //! Get the average of intensities
   Float average() const noexcept;
+
+  //! Clamp all elements
+  void clampAll(const Float min_value, const Float max_value) noexcept;
 
   //! Check if the samples contain inf value
   bool hasInf() const noexcept;

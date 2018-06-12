@@ -20,12 +20,12 @@
 // Nanairo
 #include "color.hpp"
 #include "color_conversion.hpp"
-#include "spectral_distribution.hpp"
 #include "xyz_color.hpp"
 #include "xyz_color_matching_function.hpp"
 #include "yxy_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Color/SpectralTransportParameter/spectral_transport_parameters.hpp"
+#include "SpectralDistribution/spectral_distribution.hpp"
 
 namespace nanairo {
 
@@ -49,13 +49,13 @@ constexpr int SpectralTransport::gridSize() noexcept
 
 /*!
   */
-SpectralDistribution SpectralTransport::toSpectra(
+void SpectralTransport::toSpectra(
     const XyzColor& xyz,
+    SpectralDistribution* spectra,
     zisc::pmr::memory_resource* work_resource) noexcept
 {
   using zisc::cast;
 
-  SpectralDistribution spectra;
   const auto yxy = ColorConversion::toYxy(xyz);
   const auto uv = toUv(yxy); // Rotate to align with grid
   constexpr auto grid_res = gridResolution();
@@ -66,9 +66,8 @@ SpectralDistribution SpectralTransport::toSpectra(
     ZISC_ASSERT(zisc::isInBounds(cell_index, 0, gridSize()),
                 "The cell index is out of range.");
 
-    for (uint i = 0; i < CoreConfig::spectraSize(); ++i) {
-      const uint16 lambda = CoreConfig::shortestWavelength() +
-                            cast<uint16>(i) * CoreConfig::wavelengthResolution();
+    for (uint i = 0; i < spectra->size(); ++i) {
+      const uint16 lambda = spectra->getWavelength(i);
       Float spectrum = toSpectrum(lambda, cell_index, uv, work_resource);
       // Now we have a spectrum which corresponds to the xy chromaticities of the input.
       // Need to scale according to the input brightness X+Y+Z now
@@ -77,10 +76,9 @@ SpectralDistribution SpectralTransport::toSpectra(
       // that xyz = (1, 1, 1) maps to a spectrum that is constant 1.
       spectrum = spectrum * spectral_transport::kInvEqualEnergyReflectance;
 
-      spectra[i] = spectrum;
+      spectra->set(i, spectrum);
     }
   }
-  return spectra;
 }
 
 /*!

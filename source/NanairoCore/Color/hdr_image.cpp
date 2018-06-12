@@ -11,12 +11,16 @@
 // Standard C++ library
 #include <vector>
 // Zisc
+#include "zisc/math.hpp"
 #include "zisc/memory_resource.hpp"
 #include "zisc/point.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
 #include "xyz_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/system.hpp"
+#include "NanairoCore/Color/SpectralDistribution/spectral_distribution.hpp"
 
 namespace nanairo {
 
@@ -41,6 +45,35 @@ HdrImage::HdrImage(const Index2d& resolution,
     resolution_{resolution}
 {
   initialize();
+}
+
+/*!
+  */
+void HdrImage::toHdr(System& system,
+                     const uint64 num_of_samples,
+                     const zisc::pmr::vector<SpectralDistribution::SpectralDistributionPointer>& sample_table) noexcept
+{
+  using zisc::cast;
+  const Float inv_n = zisc::invert(cast<Float>(num_of_samples));
+  auto to_hdr = [this, &system, inv_n, &sample_table](const int thread_id)
+  {
+    // Set the calculation range
+    const auto range = system.calcThreadRange(numOfPixels(), thread_id);
+    // Convert to HDR
+    for (uint index = range[0]; index < range[1]; ++index) {
+      const auto& sample_p = sample_table[index];
+      buffer_[index] = sample_p->toXyzForEmitter(system) * inv_n;
+    }
+  };
+
+  {
+    auto& threads = system.threadManager();
+    auto& work_resource = system.globalMemoryManager();
+    constexpr uint start = 0;
+    const uint end = threads.numOfThreads();
+    auto result = threads.enqueueLoop(to_hdr, start, end, &work_resource);
+    result.get();
+  }
 }
 
 /*!

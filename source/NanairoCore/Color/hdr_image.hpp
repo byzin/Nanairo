@@ -16,11 +16,16 @@
 // Zisc
 #include "zisc/memory_resource.hpp"
 #include "zisc/point.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "xyz_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Color/SpectralDistribution/spectral_distribution.hpp"
 
 namespace nanairo {
+
+// Forward declaration
+class System;
 
 //! \addtogroup Core
 //! \{
@@ -96,6 +101,11 @@ class HdrImage
 
   //! Set pixel color
   void set(const Index2d& index, const XyzColor& color) noexcept;
+
+  //! Convert a sample table to a HDR image
+  void toHdr(System& system,
+             const uint64 num_of_samples,
+             const zisc::pmr::vector<SpectralDistribution::SpectralDistributionPointer>& sample_table) noexcept;
 
   //! Return the height resolution
   uint widthResolution() const noexcept;

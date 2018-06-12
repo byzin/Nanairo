@@ -14,8 +14,8 @@
 // Standard C++ library
 #include <memory>
 // Nanairo
-#include "spectral_distribution.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "SpectralDistribution/spectral_distribution.hpp"
 
 namespace nanairo {
 

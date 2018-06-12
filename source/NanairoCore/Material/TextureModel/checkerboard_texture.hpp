@@ -17,7 +17,7 @@
 // Nanairo
 #include "texture_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Color/SpectralDistribution/spectral_distribution.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
@@ -37,8 +37,12 @@ class WavelengthSamples;
 class CheckerboardTexture : public TextureModel
 {
  public:
+  using SpectralDistributionPointer =
+      SpectralDistribution::SpectralDistributionPointer;
+
+
   //! Create a checkerboard texture
-  CheckerboardTexture(const System& system,
+  CheckerboardTexture(System& system,
                       const SettingNodeBase* settings) noexcept;
 
 
@@ -78,13 +82,13 @@ class CheckerboardTexture : public TextureModel
   uint getIndex(const Point2& uv) const noexcept;
 
   //! Initialize
-  void initialize(const System& system,
+  void initialize(System& system,
                   const SettingNodeBase* settings) noexcept;
 
 
-  std::array<SpectralDistribution, 2> spectra_value_;
-  std::array<SpectralDistribution, 2> emissive_value_;
-  std::array<SpectralDistribution, 2> reflective_value_;
+  std::array<SpectralDistributionPointer, 2> data_value_;
+  std::array<SpectralDistributionPointer, 2> color_value_;
+  std::array<Float, 2> emissive_scale_;
   std::array<Float, 2> gray_scale_value_;
   std::array<Float, 2> resolution_;
 };

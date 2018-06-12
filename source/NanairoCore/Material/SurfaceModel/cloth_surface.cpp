@@ -21,7 +21,6 @@
 #include "surface_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
-#include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Material/Bxdf/microcylinder_cloth_brdf.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Setting/surface_setting_node.hpp"

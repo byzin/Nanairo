@@ -19,7 +19,7 @@
 // Nanairo
 #include "sampled_wavelengths.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Color/SpectralDistribution/spectral_distribution.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
 #include "NanairoCore/Utility/value.hpp"
 
@@ -197,6 +197,14 @@ Float SampledSpectra::average() const noexcept
 
   constexpr Float averager = zisc::invert(cast<Float>(size()));
   return intensities_.sum() * averager;
+}
+
+/*!
+  */
+inline
+void SampledSpectra::clampAll(const Float min_value, const Float max_value) noexcept
+{
+  intensities_.clampAll(min_value, max_value);
 }
 
 /*!

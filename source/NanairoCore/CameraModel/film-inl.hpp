@@ -16,9 +16,9 @@
 #include "zisc/utility.hpp"
 // Nanairo 
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Color/spectra_image_interface.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
+#include "NanairoCore/Sampling/sample_statistics.hpp"
 
 namespace nanairo {
 
@@ -29,9 +29,9 @@ namespace nanairo {
 inline
 Float Film::aspectRatio() const noexcept
 {
-  const auto& r = imageResolution();
-  const auto& inv_r = inverseResolution();
-  return zisc::cast<Float>(r[0]) * inv_r[1];
+  const auto r = imageResolution();
+  const Float aspect_ratio = zisc::cast<Float>(r[0]) / zisc::cast<Float>(r[1]);
+  return aspect_ratio;
 }
 
 /*!
@@ -42,9 +42,11 @@ inline
 Point2 Film::coordinate(const Index2d& index,
                         const Vector2& jittering) const noexcept 
 {
-  const auto& inv_r = inverseResolution();
-  const Float s = (zisc::cast<Float>(index[0]) + jittering[0]) * inv_r[0];
-  const Float t = (zisc::cast<Float>(index[1]) + jittering[1]) * inv_r[1];
+  using zisc::cast;
+
+  const auto r = imageResolution();
+  const Float s = (cast<Float>(index[0]) + jittering[0]) / cast<Float>(r[0]);
+  const Float t = (cast<Float>(index[1]) + jittering[1]) / cast<Float>(r[1]);
   ZISC_ASSERT(zisc::isInClosedBounds(s, 0.0, 1.0),
               "The coordinate s is out of the range [0, 1].");
   ZISC_ASSERT(zisc::isInClosedBounds(t, 0.0, 1.0),
@@ -57,7 +59,7 @@ Point2 Film::coordinate(const Index2d& index,
 inline
 void Film::clear() noexcept
 {
-  spectraBuffer().clear();
+  sample_statistics_.clear();
 }
 
 /*!
@@ -67,47 +69,32 @@ void Film::clear() noexcept
 inline
 uint Film::heightResolution() const noexcept
 {
-  return spectra_buffer_->heightResolution();
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-Float Film::inverseAspectRatio() const noexcept
-{
-  const auto& r = imageResolution();
-  const auto& inv_r = inverseResolution();
-  return zisc::cast<Float>(r[1]) * inv_r[0];
+  const auto r = imageResolution();
+  return r[1];
 }
 
 /*!
   */
 inline
-const Index2d& Film::imageResolution() const noexcept
+Index2d Film::imageResolution() const noexcept
 {
-  return spectra_buffer_->resolution();
+  return sample_statistics_.resolution();
 }
 
 /*!
-  \details
-  No detailed.
   */
 inline
-SpectraImageInterface& Film::spectraBuffer() noexcept
+SampleStatistics& Film::sampleStatistics() noexcept
 {
-  return *spectra_buffer_;
+  return sample_statistics_;
 }
 
 /*!
-  \details
-  No detailed.
   */
 inline
-const SpectraImageInterface& Film::spectraBuffer() const noexcept
+const SampleStatistics& Film::sampleStatistics() const noexcept
 {
-  return *spectra_buffer_;
+  return sample_statistics_;
 }
 
 /*!
@@ -117,15 +104,8 @@ const SpectraImageInterface& Film::spectraBuffer() const noexcept
 inline
 uint Film::widthResolution() const noexcept
 {
-  return spectra_buffer_->widthResolution();
-}
-
-/*!
-  */
-inline
-const Point2& Film::inverseResolution() const noexcept
-{
-  return inverse_resolution_;
+  const auto r = imageResolution();
+  return r[0];
 }
 
 } // namespace nanairo

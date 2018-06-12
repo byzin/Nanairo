@@ -63,7 +63,7 @@ class CameraModel
 
 
   //! Add ray radiance to film
-  void addContribution(const Index2d& index,
+  void addContribution(const Index2d index,
                        const SampledSpectra& contribution) noexcept;
 
   //! Calculate the pdf
@@ -98,7 +98,7 @@ class CameraModel
   uint heightResolution() const noexcept;
 
   //! Return the image resolution
-  const Index2d& imageResolution() const noexcept;
+  Index2d imageResolution() const noexcept;
 
   //! Jitter the point on the pixel
   void jitter(Sampler& sampler) noexcept;

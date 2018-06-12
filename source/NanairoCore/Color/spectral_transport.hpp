@@ -18,10 +18,10 @@
 #include "zisc/memory_resource.hpp"
 // Nanairo
 #include "color.hpp"
-#include "spectral_distribution.hpp"
 #include "xyz_color.hpp"
 #include "yxy_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "SpectralDistribution/spectral_distribution.hpp"
 
 namespace nanairo {
 
@@ -31,9 +31,9 @@ class SpectralTransport
 {
  public:
   //! Convert XYZ to spectra
-  static SpectralDistribution toSpectra(
-      const XyzColor& xyz,
-      zisc::pmr::memory_resource* work_resource) noexcept;
+  static void toSpectra(const XyzColor& xyz,
+                        SpectralDistribution* spectra,
+                        zisc::pmr::memory_resource* work_resource) noexcept;
 
  private:
   using XystarColor = Color<2>;

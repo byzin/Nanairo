@@ -19,7 +19,7 @@
 // Nanairo
 #include "texture_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Color/SpectralDistribution/spectral_distribution.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
@@ -40,6 +40,10 @@ class WavelengthSamples;
 class ImageTexture : public TextureModel
 {
  public:
+  using SpectralDistributionPointer =
+      SpectralDistribution::SpectralDistributionPointer;
+
+
   //! Create a image texture
   ImageTexture(System& system, const SettingNodeBase* settings) noexcept;
 
@@ -91,8 +95,8 @@ class ImageTexture : public TextureModel
                         zisc::pmr::memory_resource* work_resource) noexcept;
 
 
-  zisc::pmr::vector<SpectralDistribution> emissive_value_table_;
-  zisc::pmr::vector<SpectralDistribution> reflective_value_table_;
+  zisc::pmr::vector<SpectralDistributionPointer> spectra_value_table_;
+  zisc::pmr::vector<Float> emissive_scale_table_;
   zisc::pmr::vector<Float> gray_scale_table_;
   zisc::pmr::vector<uint> color_index_table_;
   Index2d resolution_;

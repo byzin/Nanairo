@@ -33,6 +33,7 @@
 #include "NanairoCore/Color/color_space.hpp"
 #include "NanairoCore/Color/rgba_32.hpp"
 #include "NanairoCore/Color/ldr_image.hpp"
+#include "NanairoCore/Color/SpectralDistribution/spectral_distribution.hpp"
 #include "NanairoCore/CameraModel/camera_model.hpp"
 #include "NanairoCore/DataStructure/bvh.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
@@ -516,13 +517,13 @@ void SceneValue::toSpectraSetting(const QJsonObject& spectra_value,
   auto spectra_setting = castNode<SpectraSettingNode>(setting);
   {
     const auto color_mode = toString(spectra_value, keyword::colorMode);
-    const ColorRepresentationType type = (color_mode == keyword::rgb)
-        ? ColorRepresentationType::kRgb
-        : ColorRepresentationType::kSpectra; 
+    const auto type = (color_mode == keyword::rgb)
+        ? SpectralDistribution::RepresentationType::kRgb
+        : SpectralDistribution::RepresentationType::kSpectra; 
     spectra_setting->setRepresentationType(type);
   }
   switch (spectra_setting->representationType()) {
-   case ColorRepresentationType::kRgb: {
+   case SpectralDistribution::RepresentationType::kRgb: {
     auto& parameters = spectra_setting->rgbParameters();
     {
       const auto rgb = toArray(spectra_value, keyword::value);
@@ -541,7 +542,7 @@ void SceneValue::toSpectraSetting(const QJsonObject& spectra_value,
     }
     break;
    }
-   case ColorRepresentationType::kSpectra: {
+   case SpectralDistribution::RepresentationType::kSpectra: {
     auto& parameters = spectra_setting->spectraParameters();
     {
       const auto spectra_file_path = toString(spectra_value, keyword::value);

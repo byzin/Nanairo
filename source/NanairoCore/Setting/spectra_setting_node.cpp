@@ -24,7 +24,7 @@
 // Nanairo
 #include "setting_node_base.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Color/spectral_distribution.hpp"
+#include "NanairoCore/Color/SpectralDistribution/spectral_distribution.hpp"
 
 namespace nanairo {
 
@@ -84,7 +84,7 @@ SpectraSettingNode::SpectraSettingNode(const SettingNodeBase* parent) noexcept :
 
 /*!
   */
-ColorRepresentationType SpectraSettingNode::representationType() const noexcept
+auto SpectraSettingNode::representationType() const noexcept -> RepresentationType
 {
   return color_type_;
 }
@@ -93,7 +93,7 @@ ColorRepresentationType SpectraSettingNode::representationType() const noexcept
   */
 void SpectraSettingNode::initialize() noexcept
 {
-  setRepresentationType(ColorRepresentationType::kRgb);
+  setRepresentationType(RepresentationType::kRgb);
 }
 
 /*!
@@ -119,7 +119,7 @@ void SpectraSettingNode::readData(std::istream* data_stream) noexcept
   */
 RgbParameters& SpectraSettingNode::rgbParameters() noexcept
 {
-  ZISC_ASSERT(representationType() == ColorRepresentationType::kRgb,
+  ZISC_ASSERT(representationType() == RepresentationType::kRgb,
               "Invalid color type is specified.");
   auto parameters = zisc::cast<RgbParameters*>(parameters_.get());
   return *parameters;
@@ -129,7 +129,7 @@ RgbParameters& SpectraSettingNode::rgbParameters() noexcept
   */
 const RgbParameters& SpectraSettingNode::rgbParameters() const noexcept
 {
-  ZISC_ASSERT(representationType() == ColorRepresentationType::kRgb,
+  ZISC_ASSERT(representationType() == RepresentationType::kRgb,
               "Invalid color type is specified.");
   auto parameters = zisc::cast<const RgbParameters*>(parameters_.get());
   return *parameters;
@@ -137,17 +137,17 @@ const RgbParameters& SpectraSettingNode::rgbParameters() const noexcept
 
 /*!
   */
-void SpectraSettingNode::setRepresentationType(const ColorRepresentationType type) noexcept
+void SpectraSettingNode::setRepresentationType(const RepresentationType type) noexcept
 {
   color_type_ = type;
   // Initialize parameters
   parameters_.reset();
   switch (color_type_) {
-   case ColorRepresentationType::kRgb: {
+   case RepresentationType::kRgb: {
     parameters_ = zisc::UniqueMemoryPointer<RgbParameters>::make(dataResource());
     break;
    }
-   case ColorRepresentationType::kSpectra: {
+   case RepresentationType::kSpectra: {
     parameters_ = zisc::UniqueMemoryPointer<SpectraParameters>::make(dataResource(),
                                                                      dataResource());
     break;
@@ -161,7 +161,7 @@ void SpectraSettingNode::setRepresentationType(const ColorRepresentationType typ
   */
 SpectraParameters& SpectraSettingNode::spectraParameters() noexcept
 {
-  ZISC_ASSERT(representationType() == ColorRepresentationType::kSpectra,
+  ZISC_ASSERT(representationType() == RepresentationType::kSpectra,
               "Invalid color type is specified.");
   auto parameters = zisc::cast<SpectraParameters*>(parameters_.get());
   return *parameters;
@@ -171,7 +171,7 @@ SpectraParameters& SpectraSettingNode::spectraParameters() noexcept
   */
 const SpectraParameters& SpectraSettingNode::spectraParameters() const noexcept
 {
-  ZISC_ASSERT(representationType() == ColorRepresentationType::kSpectra,
+  ZISC_ASSERT(representationType() == RepresentationType::kSpectra,
               "Invalid color type is specified.");
   auto parameters = zisc::cast<SpectraParameters*>(parameters_.get());
   return *parameters;

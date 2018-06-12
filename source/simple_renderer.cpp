@@ -35,6 +35,7 @@
 #include "NanairoCore/Color/ldr_image.hpp"
 #include "NanairoCore/Color/rgba_32.hpp"
 #include "NanairoCore/RenderingMethod/rendering_method.hpp"
+#include "NanairoCore/Sampling/sample_statistics.hpp"
 #include "NanairoCore/Sampling/wavelength_sampler.hpp"
 #include "NanairoCore/Setting/scene_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
@@ -79,7 +80,8 @@ bool SimpleRenderer::loadScene(const SettingNodeBase& settings,
   // System
   const auto system_settings = 
       castNode<SystemSettingNode>(scene_settings->systemSettingNode());
-  system_ = std::make_unique<System>(system_settings);
+  const auto method_settings = scene_settings->renderingMethodSettingNode();
+  system_ = std::make_unique<System>(system_settings, method_settings);
 
   std::mutex data_mutex;
   auto& data_resource = system_->dataMemoryManager();
@@ -101,7 +103,6 @@ bool SimpleRenderer::loadScene(const SettingNodeBase& settings,
 
   // Rendering method
   {
-    const auto method_settings = scene_settings->renderingMethodSettingNode();
     rendering_method_ = RenderingMethod::makeMethod(system(),
                                                     method_settings,
                                                     scene());
@@ -332,8 +333,9 @@ inline
 void SimpleRenderer::convertSpectraToHdr(const uint64 cycle) noexcept
 {
   const auto& film = scene().film();
-  const auto& spectra_image = film.spectraBuffer();
-  spectra_image.toHdrImage(system(), cycle, &hdrImage());
+  const auto& sample_statistics = film.sampleStatistics();
+  auto& hdr_image = hdrImage();
+  hdr_image.toHdr(system(), cycle, sample_statistics.sampleTable());
 }
 
 /*!

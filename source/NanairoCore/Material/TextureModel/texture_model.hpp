@@ -28,7 +28,6 @@ namespace nanairo {
 
 // Forward declaration
 class SampledSpectra;
-class SpectralDistribution;
 class System;
 class WavelengthSamples;
 

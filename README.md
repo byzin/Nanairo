@@ -65,7 +65,7 @@ Version: 0.0.4
 
 ### Dependency Library ###
 
-* Qt (version 5.10.0 or later) [[page](http://qt-project.org/)]
+* Qt (version 5.11.0 or later) [[page](http://qt-project.org/)]
 
 ## Usage ##
 Please see [wiki](https://github.com/byzin/Nanairo/wiki/Home "NanairoWiki").
@@ -77,8 +77,8 @@ Building step is tested in the following environments
 
 * macOS High Sierra + Apple Clang 9.1 + Qt 5.10.1 + CMake 3.11.1
 * ~~macOS High Sierra + GCC 8.1 + Qt 5.10.1 + CMake 3.11.1~~
-* Ubuntu 16.04 + GCC 7.3 + Qt 5.10.1 + CMake 3.11.1
-* Ubuntu 16.04 + Clang 6.0 + Qt 5.10.1 + CMake 3.11.1
+* Ubuntu 16.04 + GCC 7.3 + Qt 5.11.0 + CMake 3.11.3
+* Ubuntu 16.04 + Clang 6.0 + Qt 5.11.0 + CMake 3.11.3
 * Windows 10 (64bit) + MinGW GCC 7.3 + Qt 5.10.1 + CMake 3.11.1
 * Windows 10 (64bit) + MSVC (Visual Studio 2017) + Qt 5.10.1 + CMake 3.11.1
 

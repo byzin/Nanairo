@@ -12,6 +12,7 @@
 
 // Standard C++ library
 #include <array>
+#include <bitset>
 #include <vector>
 // Zisc
 #include "zisc/memory_manager.hpp"
@@ -49,10 +50,12 @@ class System : public zisc::NonCopyable<System>
 {
  public:
   using MemoryManager = zisc::DynamicMemoryManager<CoreConfig::memoryPoolSize()>;
+  using SampleStatisticsFlag = std::bitset<32>;
 
 
   //! Initialize the renderer system
-  System(const SettingNodeBase* system_settings) noexcept;
+  System(const SettingNodeBase* settings,
+         const SettingNodeBase* method_settings) noexcept;
 
   //! Finalize the renderer system
   ~System() noexcept;
@@ -116,12 +119,16 @@ class System : public zisc::NonCopyable<System>
   //! Check if the renderer is spectra rendering mode
   bool isSpectraMode() const noexcept;
 
+  //! Return the flag of sample statistics
+  SampleStatisticsFlag sampleStatisticsFlag() const noexcept;
+
   //! Return the XYZ color matching function
   const XyzColorMatchingFunction& xyzColorMatchingFunction() const noexcept;
 
  private:
   //! Initialize the renderer system
-  void initialize(const SettingNodeBase* settings) noexcept;
+  void initialize(const SettingNodeBase* settings,
+                  const SettingNodeBase* method_settings) noexcept;
 
 
   std::vector<MemoryManager> memory_manager_list_;
@@ -132,6 +139,7 @@ class System : public zisc::NonCopyable<System>
   Index2d image_resolution_;
   RenderingColorMode color_mode_;
   ColorSpaceType color_space_;
+  SampleStatisticsFlag statistics_flag_;
 };
 
 //! \} Core

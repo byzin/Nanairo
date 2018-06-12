@@ -15,7 +15,6 @@
 #include <utility>
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 

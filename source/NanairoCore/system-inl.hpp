@@ -204,6 +204,14 @@ bool System::isSpectraMode() const noexcept
 }
 
 /*!
+  */
+inline
+auto System::sampleStatisticsFlag() const noexcept -> SampleStatisticsFlag
+{
+  return statistics_flag_;
+}
+
+/*!
   \details
   No detailed.
   */

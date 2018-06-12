@@ -16,10 +16,9 @@
 #include "zisc/error.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
-#include "spectral_distribution.hpp"
 #include "xyz_color.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "NanairoCore/Utility/value.hpp"
+#include "SpectralDistribution/spectral_distribution.hpp"
 
 namespace nanairo {
 
@@ -27,8 +26,7 @@ namespace nanairo {
   \details
   No detailed.
   */
-XyzColorMatchingFunction::XyzColorMatchingFunction() noexcept :
-    bar_{}
+XyzColorMatchingFunction::XyzColorMatchingFunction() noexcept
 {
   initialize();
 }
@@ -77,21 +75,21 @@ void XyzColorMatchingFunction::initialize() noexcept
   {
     auto& x_bar = xBar();
     for (uint i = 0; i < CoreConfig::spectraSize(); ++i) {
-      const Float x = calcX(getWavelength(i));
+      const Float x = calcX(x_bar.getWavelength(i));
       x_bar.set(i, x);
     }
   }
   {
     auto& y_bar = yBar();
     for (uint i = 0; i < CoreConfig::spectraSize(); ++i) {
-      const Float y = calcY(getWavelength(i));
+      const Float y = calcY(y_bar.getWavelength(i));
       y_bar.set(i, y);
     }
   }
   {
     auto& z_bar = zBar();
     for (uint i = 0; i < CoreConfig::spectraSize(); ++i) {
-      const Float z = calcZ(getWavelength(i));
+      const Float z = calcZ(z_bar.getWavelength(i));
       z_bar.set(i, z);
     }
   }

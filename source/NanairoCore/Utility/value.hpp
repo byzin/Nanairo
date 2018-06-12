@@ -20,10 +20,10 @@ namespace nanairo {
 //! \addtogroup Core
 //! \{
 
-//! Get the index from the wavelength
+//! Get the index correspond to the given wavelength 
 constexpr uint getIndex(const uint16 wavelength) noexcept;
 
-//! Get the wavelength from the index
+//! Get the wavelength correspond to the given index
 constexpr uint16 getWavelength(const uint index) noexcept;
 
 //! Check if the array has negative value

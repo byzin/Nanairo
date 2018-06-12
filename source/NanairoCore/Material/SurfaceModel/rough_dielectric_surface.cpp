@@ -21,7 +21,6 @@
 #include "surface_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
-#include "NanairoCore/Color/spectral_distribution.hpp"
 #include "NanairoCore/Material/Bxdf/ggx_dielectric_bsdf.hpp"
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"

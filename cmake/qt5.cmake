@@ -20,6 +20,7 @@ macro(findQt5 __qt_version__)
 
   set(__module_list__ ${ARGN})
   find_package(Qt5 ${__qt_version__} REQUIRED ${__module_list__})
+  find_package(Qt5QuickCompiler REQUIRED)
   message(STATUS "Qt5 version: ${Qt5_VERSION}")
   foreach(module ${__module_list__})
     list(APPEND __include_dirs__ ${Qt5${module}_INCLUDE_DIRS})
