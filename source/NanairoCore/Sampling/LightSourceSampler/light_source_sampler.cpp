@@ -16,7 +16,6 @@
 #include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
-#include "contribution_weighted_light_source_sampler.hpp"
 #include "power_weighted_light_source_sampler.hpp"
 #include "uniform_light_source_sampler.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -67,15 +66,6 @@ zisc::UniqueMemoryPointer<LightSourceSampler> LightSourceSampler::makeSampler(
         system,
         world,
         work_resource);
-    break;
-   }
-   case LightSourceSamplerType::kContributionWeighted: {
-//    const uint max_surface_split =
-//        zisc::cast<uint>(sampler_settings->lightSamplerMaxSurfaceSplit());
-//    const uint num_of_photons =
-//        zisc::cast<uint>(sampler_settings->lightSamplerNumOfPhotons());
-//    sampler = std::make_unique<ContributionWeightedLightSourceSampler>(
-//        system, world, max_surface_split, num_of_photons);
     break;
    }
    default:

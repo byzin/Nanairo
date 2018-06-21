@@ -44,6 +44,9 @@ class PhotonCache
   //! Return an incident direction to the cached point
   const Vector3& incidentDirection() const noexcept;
 
+  //! Return an inverse path sampling pdf
+  Float inversePdf() const noexcept;
+
   //! Return a cached point
   const Point3& point() const noexcept;
 
@@ -52,6 +55,9 @@ class PhotonCache
 
   //! Set an incident direction to the cached point
   void setIncidentDirection(const Vector3& v) noexcept;
+
+  //! Set an inverse path sampling pdf
+  void setInversePdf(const Float inverse_pdf) noexcept;
 
   //! Set a radiance
   void setPoint(const Point3& p) noexcept;
@@ -66,6 +72,7 @@ class PhotonCache
   SampledSpectra energy_;
   Point3 point_;
   Vector3 vin_;
+  Float inverse_pdf_;
   bool wavelength_is_selected_;
 };
 

@@ -59,6 +59,14 @@ const Vector3& PhotonCache::incidentDirection() const noexcept
 }
 
 /*!
+  */
+inline
+Float PhotonCache::inversePdf() const noexcept
+{
+  return inverse_pdf_;
+}
+
+/*!
   \details
   No detailed.
   */
@@ -82,6 +90,14 @@ inline
 void PhotonCache::setIncidentDirection(const Vector3& v) noexcept
 {
   vin_ = v;
+}
+
+/*!
+  */
+inline
+void PhotonCache::setInversePdf(const Float inverse_pdf) noexcept
+{
+  inverse_pdf_ = inverse_pdf;
 }
 
 /*!

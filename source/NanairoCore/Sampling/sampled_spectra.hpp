@@ -120,6 +120,9 @@ class SampledSpectra
   //! Set the intensity by the index
   void setIntensity(const uint index, const Float intensity) noexcept;
 
+  //! Validate components
+  void validate() const noexcept;
+
   //! Get the wavelength by the index
   uint16 wavelength(const uint index) const noexcept;
 

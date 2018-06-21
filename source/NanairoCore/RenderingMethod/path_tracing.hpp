@@ -57,58 +57,58 @@ class PathTracing : public RenderingMethod
               const Scene& scene) noexcept;
 
 
+  //! Calculate the MIS weight
+  static Float calcMisWeight(const Float pdf1, const Float inverse_pdf2) noexcept;
+
+  //! Generate a camera ray
+  static Ray generateRay(const CameraModel& camera,
+                         const Index2d& pixel_index,
+                         Sampler& sampler,
+                         zisc::pmr::memory_resource* mem_resource,
+                         Spectra* ray_weight,
+                         Float* inverse_direction_pdf) noexcept;
+
   //! Render scene using path tracing method
   void render(System& system,
               Scene& scene,
-              const Wavelengths& sampled_wavelengths) noexcept override;
+              const Wavelengths& sampled_wavelengths,
+              const uint64 cycle) noexcept override;
 
  private:
   //! Evaluate the explicit connection
-  void evalExplicitConnection(const World& world,
-                              const Ray& ray,
-                              const ShaderPointer& bxdf,
-                              const IntersectionInfo& intersection,
-                              const Spectra& camera_contribution,
-                              const Spectra& ray_weight,
-                              Sampler& sampler,
-                              zisc::pmr::memory_resource* mem_resource,
-                              Spectra* contribution) const noexcept;
+  void evalExplicitConnection(
+      const World& world,
+      const Ray& ray,
+      const ShaderPointer& bxdf,
+      const IntersectionInfo& intersection,
+      const Spectra& camera_contribution,
+      const Spectra& ray_weight,
+      const bool emplicit_connection_is_enabled,
+      const bool implicit_connection_is_enabled,
+      Sampler& sampler,
+      zisc::pmr::memory_resource* mem_resource,
+      Spectra* contribution) const noexcept;
 
   //! Evaluate the implicit connection
-  void evalImplicitConnection(const World& world,
-                              const Ray& ray,
-                              const Float inverse_direction_pdf,
-                              const IntersectionInfo& intersection,
-                              const Spectra& camera_contribution,
-                              const Spectra& ray_weight,
-                              const bool mis,
-                              zisc::pmr::memory_resource* mem_resource,
-                              Spectra* contribution) const noexcept;
-
-  //! Check if the explicit connection is enabled
-  static constexpr bool explicitConnectionIsEnabled() noexcept;
+  void evalImplicitConnection(
+      const World& world,
+      const Ray& ray,
+      const Float inverse_direction_pdf,
+      const IntersectionInfo& intersection,
+      const Spectra& camera_contribution,
+      const Spectra& ray_weight,
+      const bool implicit_connection_is_enabled,
+      const bool emplicit_connection_is_enabled,
+      zisc::pmr::memory_resource* mem_resource,
+      Spectra* contribution) const noexcept;
 
   //! Return the light source sampler for eye path
   const LightSourceSampler& eyePathLightSampler() const noexcept;
-
-  //! Check if the implicit connection is enabled
-  static constexpr bool implicitConnectionIsEnabled() noexcept;
-
-  //! Generate a camera ray
-  Ray generateRay(const CameraModel& camera,
-                  const Index2d& pixel_index,
-                  Sampler& sampler,
-                  zisc::pmr::memory_resource* mem_resource,
-                  Spectra* ray_weight,
-                  Float* inverse_direction_pdf) const noexcept;
 
   //! Initialize
   void initialize(System& system,
                   const SettingNodeBase* settings,
                   const Scene& scene) noexcept;
-
-  //! Calculate the MIS weight
-  Float calcMisWeight(const Float pdf1, const Float inverse_pdf2) const noexcept;
 
   //! Parallelize path tracing
   void traceCameraPath(System& system,

@@ -38,6 +38,21 @@ NonDirectionalLight::NonDirectionalLight(
   \details
   No detailed.
   */
+Float NonDirectionalLight::evalPdf(
+    const Vector3* /* vin */,
+    const Vector3* vout,
+    const WavelengthSamples& /* wavelengths */,
+    const IntersectionInfo* info) const noexcept
+{
+  ZISC_ASSERT(info != nullptr, "The info is null.");
+  const Float pdf = Diffuse::evalPdf(*vout, info->normal());
+  return pdf;
+}
+
+/*!
+  \details
+  No detailed.
+  */
 SampledSpectra NonDirectionalLight::evalRadiance(
     const Vector3* /* vin */,
     const Vector3* /* vout */,
@@ -46,6 +61,22 @@ SampledSpectra NonDirectionalLight::evalRadiance(
 {
   const auto radiance = Diffuse::evalRadiance(radiant_exitance_);
   return radiance;
+}
+
+/*!
+  \details
+  No detailed.
+  */
+std::tuple<SampledSpectra, Float> NonDirectionalLight::evalRadianceAndPdf(
+    const Vector3* /* vin */,
+    const Vector3* vout,
+    const WavelengthSamples& /* wavelengths */,
+    const IntersectionInfo* info) const noexcept
+{
+  ZISC_ASSERT(info != nullptr, "The info is null.");
+  const auto radiance = Diffuse::evalRadiance(radiant_exitance_);
+  const auto pdf = Diffuse::evalPdf(*vout, info->normal());
+  return std::make_tuple(radiance, pdf);
 }
 
 /*!

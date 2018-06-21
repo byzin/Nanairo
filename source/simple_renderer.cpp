@@ -185,7 +185,7 @@ void SimpleRenderer::render(const std::string& output_path) noexcept
     handleCameraEvent(&stopwatch, &cycle, &previous_time);
 
     // Render
-    renderScene();
+    renderScene(cycle);
 
     // Save image
     bool saving_image = checkImageSavingFlag(cycle,
@@ -377,14 +377,14 @@ void SimpleRenderer::processLdrForLodepng() noexcept
 /*!
   */
 inline
-void SimpleRenderer::renderScene() noexcept
+void SimpleRenderer::renderScene(const uint64 cycle) noexcept
 {
   auto& sampler = system().globalSampler();
   const auto& wavelength_sampler = wavelengthSampler();
   auto& method = renderingMethod();
 
   const auto sampled_wavelengths = wavelength_sampler(sampler);
-  method.render(system(), scene(), sampled_wavelengths);
+  method.render(system(), scene(), sampled_wavelengths, cycle);
 }
 
 /*!

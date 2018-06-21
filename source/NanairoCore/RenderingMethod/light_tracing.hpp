@@ -61,7 +61,8 @@ class LightTracing : public RenderingMethod
   //! Render scene using light tracing method
   void render(System& system,
               Scene& scene,
-              const Wavelengths& sampled_wavelengths) noexcept override;
+              const Wavelengths& sampled_wavelengths,
+              const uint64 cycle) noexcept override;
 
  private:
   //! Add a light contribution to buffer

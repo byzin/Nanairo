@@ -199,7 +199,7 @@ class SimpleRenderer
   void processLdrForLodepng() noexcept;
 
   //! Render the scene
-  void renderScene() noexcept;
+  void renderScene(const uint64 cycle) noexcept;
 
   //! Set the cycle interval to save image
   void setCycleIntervalToSave(const uint64 cycle) noexcept;

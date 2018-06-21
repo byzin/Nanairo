@@ -15,13 +15,13 @@
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
+#include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 
 namespace nanairo {
 
 // Forward declaration
 class IntersectionInfo;
-class SampledDirection;
 class Sampler;
 class WavelengthSamples;
 
@@ -39,8 +39,22 @@ class NonDirectionalLight : public DiffuseShaderModel
   NonDirectionalLight(const SampledSpectra& radiant_exitance) noexcept;
 
 
+  //! Evaluate the pdf
+  Float evalPdf(
+      const Vector3* vin,
+      const Vector3* vout,
+      const WavelengthSamples& wavelengths,
+      const IntersectionInfo* info) const noexcept override;
+
   //! Evaluate the radiance of area sampling
   SampledSpectra evalRadiance(
+      const Vector3* vin,
+      const Vector3* vout,
+      const WavelengthSamples& wavelengths,
+      const IntersectionInfo* info) const noexcept override;
+
+  //! Evaluate the radiance of area sampling
+  std::tuple<SampledSpectra, Float> evalRadianceAndPdf(
       const Vector3* vin,
       const Vector3* vout,
       const WavelengthSamples& wavelengths,

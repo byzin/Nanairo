@@ -62,12 +62,15 @@ class PhotonMap : public zisc::NonCopyable<PhotonMap>
   void search(const Point3& point,
               const Vector3& normal,
               const Float radius2,
+              const bool is_frontside_culling,
+              const bool is_backside_culling,
               KnnPhotonList* photon_list) const noexcept;
 
   //! Store a photon cache
   void store(const Point3& point,
              const Vector3& vin,
              const SampledSpectra& photon_energy,
+             const Float inverse_sampling_pdf,
              const bool wavelength_is_selected) noexcept;
 
  private:
@@ -94,6 +97,8 @@ class PhotonMap : public zisc::NonCopyable<PhotonMap>
                         const Vector3& normal,
                         const Float radius2,
                         const PhotonMapNode* node,
+                        const bool is_frontside_culling,
+                        const bool is_backside_culling,
                         KnnPhotonList* photon_list) const noexcept;
 
   //! Check if the multithreading is enabled

@@ -48,7 +48,7 @@
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
 #include "NanairoCore/Sampling/sampler.hpp"
-#include "NanairoCore/Sampling/LightSourceSampler/power_weighted_light_source_sampler.hpp"
+#include "NanairoCore/Sampling/LightSourceSampler/light_source_sampler.hpp"
 #include "NanairoCore/Setting/rendering_method_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 
@@ -72,7 +72,8 @@ LightTracing::LightTracing(System& system,
   */
 void LightTracing::render(System& system,
                           Scene& scene,
-                          const Wavelengths& sampled_wavelengths) noexcept
+                          const Wavelengths& sampled_wavelengths,
+                          const uint64 /* cycle */) noexcept
 {
   traceLightPath(system, scene, sampled_wavelengths);
 }

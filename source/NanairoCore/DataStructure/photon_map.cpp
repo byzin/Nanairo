@@ -110,12 +110,15 @@ void PhotonMap::reset() noexcept
 void PhotonMap::search(const Point3& point,
                        const Vector3& normal,
                        const Float radius2,
+                       const bool is_frontside_culling,
+                       const bool is_backside_culling,
                        KnnPhotonList* photon_list) const noexcept
 {
   uint index = 1;
   while (index != 0) {
     const auto node = (*tree_)[index - 1];
-    testInsideCircle(point, normal, radius2, node, photon_list);
+    testInsideCircle(point, normal, radius2, node,
+                     is_frontside_culling, is_backside_culling, photon_list);
     // Internal node
     if (node->nodeType() != PhotonMapNode::NodeType::kLeaf) {
       const uint axis = zisc::cast<uint>(node->nodeType());
@@ -149,6 +152,7 @@ void PhotonMap::search(const Point3& point,
 void PhotonMap::store(const Point3& point,
                       const Vector3& vin,
                       const SampledSpectra& photon_energy,
+                      const Float inverse_sampling_pdf,
                       const bool wavelength_is_selected) noexcept
 {
   const std::size_t index = num_of_nodes_++;
@@ -167,6 +171,7 @@ void PhotonMap::store(const Point3& point,
     cache.setEnergy(photon_energy);
     cache.setPoint(point);
     cache.setIncidentDirection(vin);
+    cache.setInversePdf(inverse_sampling_pdf);
     cache.setWavelengthIsSelected(wavelength_is_selected);
   }
   (*node_list_)[index] = &node;
@@ -291,6 +296,8 @@ void PhotonMap::testInsideCircle(const Point3& point,
                                  const Vector3& normal,
                                  const Float radius2,
                                  const PhotonMapNode* node,
+                                 const bool is_frontside_culling,
+                                 const bool is_backside_culling,
                                  KnnPhotonList* photon_list) const noexcept
 {
   const Float distance2 = (point - node->point()).squareNorm();
@@ -298,7 +305,8 @@ void PhotonMap::testInsideCircle(const Point3& point,
     const auto& cache = node->cache();
     const auto& vin = cache.incidentDirection();
     const Float cos_theta = -zisc::dot(normal, vin);
-    if (0.0 < cos_theta)
+    if ((!is_frontside_culling && (0.0 < cos_theta)) ||
+        (!is_backside_culling && (cos_theta < 0.0)))
       photon_list->insert(distance2, &cache);
   }
 }

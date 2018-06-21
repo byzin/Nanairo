@@ -12,8 +12,6 @@
 
 // Standard C++ library
 #include <tuple>
-// Zisc
-#include "zisc/math.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Material/shader_model.hpp"

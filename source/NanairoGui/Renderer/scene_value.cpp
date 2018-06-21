@@ -355,10 +355,8 @@ void SceneValue::toRenderingMethodSetting(const QJsonObject& value,
   {
     const LightSourceSamplerType sampler_type =
         (light_sampler == keyword::uniformLightSampler)
-            ? LightSourceSamplerType::kUniform :
-        (light_sampler == keyword::powerWeightedLightSampler)
-            ? LightSourceSamplerType::kPowerWeighted
-            : LightSourceSamplerType::kContributionWeighted;
+            ? LightSourceSamplerType::kUniform
+            : LightSourceSamplerType::kPowerWeighted;
     return sampler_type;
   };
 
@@ -392,16 +390,6 @@ void SceneValue::toRenderingMethodSetting(const QJsonObject& value,
       const uint32 k_nearest_neighbor = toInt<uint32>(method_value,
                                                       keyword::kNearestNeighbor);
       parameters.k_nearest_neighbor_ = k_nearest_neighbor;
-    }
-    {
-      const double photon_search_radius = toFloat<double>(method_value,
-                                                          keyword::photonSearchRadius);
-      parameters.photon_search_radius_ = photon_search_radius;
-    }
-    {
-      const double radius_reduction_rate = toFloat<double>(method_value,
-                                                           keyword::radiusReductionRate);
-      parameters.radius_reduction_rate_ = radius_reduction_rate;
     }
     {
       const auto light_sampler = toString(method_value, keyword::lightPathLightSampler);

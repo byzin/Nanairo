@@ -64,8 +64,6 @@ struct ProbabilisticPpmParameters : public NodeParameterBase
   //! Write the parameters to the stream
   void writeData(std::ostream* data_stream) const noexcept override;
 
-  double photon_search_radius_ = 0.02;
-  double radius_reduction_rate_ = 2.0 / 3.0;
   uint32 num_of_photons_ = 131072;
   uint32 k_nearest_neighbor_ = 8;
   LightSourceSamplerType light_path_light_sampler_type_ =

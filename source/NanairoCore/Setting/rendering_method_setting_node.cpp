@@ -59,8 +59,6 @@ void LightTracingParameters::writeData(std::ostream* data_stream) const noexcept
   */
 void ProbabilisticPpmParameters::readData(std::istream* data_stream) noexcept
 {
-  zisc::read(&photon_search_radius_, data_stream);
-  zisc::read(&radius_reduction_rate_, data_stream);
   zisc::read(&num_of_photons_, data_stream);
   zisc::read(&k_nearest_neighbor_, data_stream);
   zisc::read(&light_path_light_sampler_type_, data_stream);
@@ -70,8 +68,6 @@ void ProbabilisticPpmParameters::readData(std::istream* data_stream) noexcept
   */
 void ProbabilisticPpmParameters::writeData(std::ostream* data_stream) const noexcept
 {
-  zisc::write(&photon_search_radius_, data_stream);
-  zisc::write(&radius_reduction_rate_, data_stream);
   zisc::write(&num_of_photons_, data_stream);
   zisc::write(&k_nearest_neighbor_, data_stream);
   zisc::write(&light_path_light_sampler_type_, data_stream);

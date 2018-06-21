@@ -54,6 +54,7 @@ SampledSpectra::SampledSpectra(const WavelengthSamples& wavelengths,
     wavelengths_{&wavelengths}
 {
   intensities_.fill(intensity);
+  validate();
 }
 
 /*!
@@ -66,6 +67,7 @@ SampledSpectra::SampledSpectra(const WavelengthSamples& wavelengths,
     intensities_{intensities},
     wavelengths_{&wavelengths}
 {
+  validate();
 }
 
 /*!
@@ -292,6 +294,27 @@ Float SampledSpectra::max() const noexcept
   No detailed.
   */
 inline
+void SampledSpectra::setIntensity(const uint index,
+                                  const Float intensity) noexcept
+{
+  intensities_.set(index, intensity);
+  validate();
+}
+
+/*!
+  */
+inline
+void SampledSpectra::validate() const noexcept
+{
+  ZISC_ASSERT(!hasNan(), "The sample has nan");
+  ZISC_ASSERT(!hasInf(), "The sample has inf");
+}
+
+/*!
+  \details
+  No detailed.
+  */
+inline
 uint16 SampledSpectra::wavelength(const uint index) const noexcept
 {
   return (*wavelengths_)[index];
@@ -305,17 +328,6 @@ inline
 const WavelengthSamples& SampledSpectra::wavelengths() const noexcept
 {
   return *wavelengths_;
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-void SampledSpectra::setIntensity(const uint index,
-                                  const Float intensity) noexcept
-{
-  intensities_.set(index, intensity);
 }
 
 /*!

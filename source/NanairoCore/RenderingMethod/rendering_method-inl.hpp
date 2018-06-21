@@ -48,9 +48,10 @@ class System;
 inline
 void RenderingMethod::operator()(System& system,
                                  Scene& scene,
-                                 const Wavelengths& sampled_wavelengths) noexcept
+                                 const Wavelengths& sampled_wavelengths,
+                                 const uint64 cycle) noexcept
 {
-  render(system, scene, sampled_wavelengths);
+  render(system, scene, sampled_wavelengths, cycle);
 }
 
 /*!

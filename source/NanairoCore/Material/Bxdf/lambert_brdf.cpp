@@ -19,6 +19,7 @@
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Material/SurfaceModel/Surface/diffuse.hpp"
+#include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 
 

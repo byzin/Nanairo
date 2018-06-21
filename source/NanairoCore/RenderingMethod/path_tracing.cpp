@@ -64,25 +64,13 @@ PathTracing::PathTracing(System& system,
 }
 
 /*!
-  */
-constexpr bool PathTracing::explicitConnectionIsEnabled() noexcept
-{
-  return CoreConfig::pathTracingExplicitConnectionIsEnabled();
-}
-/*!
-  */
-constexpr bool PathTracing::implicitConnectionIsEnabled() noexcept
-{
-  return CoreConfig::pathTracingImplicitConnectionIsEnabled();
-}
-
-/*!
   \details
   No detailed.
   */
 void PathTracing::render(System& system,
                          Scene& scene,
-                         const Wavelengths& sampled_wavelengths) noexcept
+                         const Wavelengths& sampled_wavelengths,
+                         const uint64 /* cycle */) noexcept
 {
   traceCameraPath(system, scene, sampled_wavelengths);
 }
@@ -98,12 +86,13 @@ void PathTracing::evalExplicitConnection(
     const IntersectionInfo& intersection,
     const Spectra& camera_contribution,
     const Spectra& ray_weight,
+    const bool explicit_connection_is_enabled,
+    const bool implicit_connection_is_enabled,
     Sampler& sampler,
     zisc::pmr::memory_resource* mem_resource,
     Spectra* contribution) const noexcept
 {
-  constexpr bool connection_is_enabled = explicitConnectionIsEnabled();
-  if (!connection_is_enabled || (bxdf->type() == ShaderType::Specular))
+  if (!explicit_connection_is_enabled)
     return;
 
   // Select a light source and sample a point on the light source
@@ -170,9 +159,10 @@ void PathTracing::evalExplicitConnection(
   // Calculate the MIS weight
   const Float inverse_selection_pdf = light_source_info.inverseWeight() *
                                       light_point_info.inversePdf();
-  const Float mis_weight = implicitConnectionIsEnabled()
+  const Float mis_weight = implicit_connection_is_enabled
       ? calcMisWeight(direction_pdf, inverse_selection_pdf)
       : 1.0;
+
   // Calculate the contribution
   const auto c = (camera_contribution * ray_weight * f * radiance) *
                  (geometry_term * inverse_selection_pdf * mis_weight);
@@ -191,12 +181,12 @@ void PathTracing::evalImplicitConnection(
     const IntersectionInfo& intersection,
     const Spectra& camera_contribution,
     const Spectra& ray_weight,
-    const bool mis,
+    const bool implicit_connection_is_enabled,
+    const bool explicit_connection_is_enabled,
     zisc::pmr::memory_resource* mem_resource,
     Spectra* contribution) const noexcept
 {
-  constexpr bool connection_is_enabled = implicitConnectionIsEnabled();
-  if (!connection_is_enabled)
+  if (!implicit_connection_is_enabled)
     return;
 
   const auto object = intersection.object();
@@ -205,26 +195,28 @@ void PathTracing::evalImplicitConnection(
     return;
 
   const auto& wavelengths = ray_weight.wavelengths();
-  const auto& vin = ray.direction();
+  const auto vout = -ray.direction();
 
   // Get the light
   const auto& emitter = material.emitter();
   const auto light = emitter.makeLight(intersection.uv(), wavelengths, mem_resource);
 
   // Evaluate the radiance
-  const auto radiance = light->evalRadiance(&vin,
-                                            nullptr,
+  const auto radiance = light->evalRadiance(nullptr,
+                                            &vout,
                                             wavelengths,
                                             &intersection);
 
   // Calculate the MIS weight
-  const auto& light_sampler = eyePathLightSampler();
-  const auto light_source_info = light_sampler.getInfo(intersection, object);
-  const Float selection_pdf = zisc::invert(light_source_info.inverseWeight() *
-                                           object->shape().surfaceArea());
-  const Float mis_weight = (explicitConnectionIsEnabled() && mis)
-      ? calcMisWeight(selection_pdf, inverse_direction_pdf)
-      : 1.0;
+  Float mis_weight = 1.0;
+  if (explicit_connection_is_enabled) {
+    const auto& light_sampler = eyePathLightSampler();
+    const auto light_source_info = light_sampler.getInfo(intersection, object);
+    const Float selection_pdf = zisc::invert(light_source_info.inverseWeight() *
+                                             object->shape().surfaceArea());
+    mis_weight = calcMisWeight(selection_pdf, inverse_direction_pdf);
+  }
+
   // Calculate the contribution
   const auto c = (camera_contribution * ray_weight * radiance) * mis_weight;
   ZISC_ASSERT(!c.hasNegative(), "The contribution has negative values.");
@@ -249,7 +241,7 @@ Ray PathTracing::generateRay(const CameraModel& camera,
                              Sampler& sampler,
                              zisc::pmr::memory_resource* mem_resource,
                              Spectra* weight,
-                             Float* inverse_direction_pdf) const noexcept
+                             Float* inverse_direction_pdf) noexcept
 {
   const auto& wavelengths = weight->wavelengths();
   // Sample a ray origin
@@ -291,9 +283,7 @@ void PathTracing::initialize(System& system,
   \details
   No detailed.
   */
-inline
-Float PathTracing::calcMisWeight(const Float pdf1,
-                                 const Float inverse_pdf2) const noexcept
+Float PathTracing::calcMisWeight(const Float pdf1, const Float inverse_pdf2) noexcept
 {
   const Float p = zisc::power<CoreConfig::misHeuristicBeta()>(pdf1 * inverse_pdf2);
   return zisc::invert(p + 1.0);
@@ -371,6 +361,10 @@ void PathTracing::traceCameraPath(System& system,
   uint path_length = 1;
   bool wavelength_is_selected = false;
 
+  constexpr bool implicit_connection_is_enabled =
+      CoreConfig::pathTracingImplicitConnectionIsEnabled();
+  bool explicit_connection_is_enabled = false; // Explicit camera-light connection isn't performed
+
   // Generate a camera ray
   Float inverse_direction_pdf;
   Spectra ray_weight{wavelengths, 1.0};
@@ -383,9 +377,10 @@ void PathTracing::traceCameraPath(System& system,
     if (!intersection.isIntersected())
       break;
 
-    const bool mis = path_length != 1;
     evalImplicitConnection(world, ray, inverse_direction_pdf, intersection,
-                           camera_contribution, ray_weight, mis,
+                           camera_contribution, ray_weight,
+                           implicit_connection_is_enabled,
+                           explicit_connection_is_enabled,
                            &memory_manager, &contribution);
 
     // Get a BxDF of the surface
@@ -408,8 +403,13 @@ void PathTracing::traceCameraPath(System& system,
       break;
     ++path_length;
 
+    explicit_connection_is_enabled = (bxdf->type() != ShaderType::Specular) &&
+        CoreConfig::pathTracingExplicitConnectionIsEnabled();
+
     evalExplicitConnection(world, ray, bxdf, intersection,
                            camera_contribution, ray_weight,
+                           explicit_connection_is_enabled,
+                           implicit_connection_is_enabled,
                            sampler, &memory_manager, &contribution);
 
     // Update ray

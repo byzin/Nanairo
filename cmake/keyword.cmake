@@ -81,18 +81,10 @@ function(getNanairoKeywords nanairo_keyword_list)
       eyePathLightSampler "EyePathLightSampler"
           uniformLightSampler "UniformLightSampler"
           powerWeightedLightSampler "PowerWeightedLightSampler"
-          contributionWeightedLightSampler "ContributionWeightedLightSampler"
-              lightSamplerMaxSurfaceSplit "LightSamplerMaxSurfaceSplit"
-              lightSamplerNumOfPhotons "LightSamplerNumOfPhotons"
       # Probabilistic PPM
       numOfPhotons "NumOfPhotons"
       photonSearchRadius "PhotonSearchRadius"
-      radiusReductionRate "RadiusReductionRate"
       kNearestNeighbor "KNearestNeighbor"
-      kernelType "KernelType"
-          noKernel "NoKernel"
-          coneKernel "ConeKernel"
-          perlinKernel "PerlinKernel"
 
       # BVH
       bvh "Bvh"

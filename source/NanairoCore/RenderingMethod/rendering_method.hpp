@@ -70,7 +70,8 @@ class RenderingMethod
   //! Render the scene
   void operator()(System& system,
                   Scene& scene,
-                  const Wavelengths& sampled_wavelengths) noexcept;
+                  const Wavelengths& sampled_wavelengths,
+                  const uint64 cycle) noexcept;
 
 
   //! Initialize the method for rendering
@@ -88,7 +89,8 @@ class RenderingMethod
   //! Render the scene
   virtual void render(System& system,
                       Scene& scene,
-                      const Wavelengths& sampled_wavelengths) noexcept = 0;
+                      const Wavelengths& sampled_wavelengths,
+                      const uint64 cycle) noexcept = 0;
 
  protected:
   //! Calculate the number of rendering tiles

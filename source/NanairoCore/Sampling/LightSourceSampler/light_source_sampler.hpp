@@ -36,7 +36,6 @@ enum class LightSourceSamplerType : uint32
 {
   kUniform                    = zisc::Fnv1aHash32::hash("UniformLightSampler"),
   kPowerWeighted              = zisc::Fnv1aHash32::hash("PowerWeightedLightSampler"),
-  kContributionWeighted       = zisc::Fnv1aHash32::hash("ContributionWeightedLightSampler")
 };
 
 /*!

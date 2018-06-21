@@ -21,7 +21,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/DataStructure/knn_photon_list.hpp"
 #include "NanairoCore/DataStructure/photon_map.hpp"
-#include "NanairoCore/Sampling/LightSourceSampler/power_weighted_light_source_sampler.hpp"
+#include "NanairoCore/Sampling/LightSourceSampler/light_source_sampler.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
@@ -62,49 +62,52 @@ class ProbabilisticPpm : public RenderingMethod
                    const Scene& scene) noexcept;
 
 
-  //! Initialize the rendering method
-  void initMethod() noexcept override;
-
   //! Render scene using probabilistic ppm method
   void render(System& system,
               Scene& scene,
-              const Wavelengths& sampled_wavelengths) noexcept override;
+              const Wavelengths& sampled_wavelengths,
+              const uint64 cycle) noexcept override;
 
  private:
-  //! Calculate the photon weight using the smoothing kernel
-  Float calcWeight(const Float t) const noexcept;
+  //! Calculate a photon search radius
+  Float calcPhotonSearchRadius(const uint64 cycle) const noexcept;
 
-  //! Estimate the radiance
-  Spectra estimateRadiance(const int thread_id,
-                           const Vector3& vin,
-                           const IntersectionInfo& intersection,
-                           const ShaderPointer& bxdf,
-                           const WavelengthSamples& wavelengths,
-                           const bool wavelength_is_selected) noexcept;
+  //! Evaluate the perlin kernel
+  Float evalKernel(const Float t) const noexcept;
 
-  //! Evaluate implicit connection
-  void evalImplicitConnection(const Ray& ray,
-                              const IntersectionInfo& intersection,
-                              const Spectra& camera_contribution,
-                              const Spectra& ray_weight,
-                              zisc::pmr::memory_resource* mem_resource,
-                              Spectra* contribution) const noexcept;
+  //!
+  void estimateExplicitConnection(
+      const Ray& ray,
+      const ShaderPointer& bxdf,
+      const IntersectionInfo& intersection,
+      const Spectra& camera_contribution,
+      const Spectra& ray_weight,
+      const Float search_radius,
+      const bool wavelength_is_selected,
+      const bool explicit_connection_is_enabled,
+      const bool implicit_connection_is_enabled,
+      KnnPhotonList& photon_list,
+      Spectra* contribution) const noexcept;
 
-  //! Return the estimated max reflection count
-  static constexpr uint estimatedMaxReflectionCount() noexcept;
+  //! Evaluate the implicit connection
+  void evalImplicitConnection(
+      const World& world,
+      const Ray& ray,
+      const Float inverse_direction_pdf,
+      const IntersectionInfo& intersection,
+      const Spectra& camera_contribution,
+      const Spectra& ray_weight,
+      const Float search_radius,
+      const bool implicit_connection_is_enabled,
+      const bool emplicit_connection_is_enabled,
+      zisc::pmr::memory_resource* mem_resource,
+      Spectra* contribution) const noexcept;
 
   //! Generate a photon
-  Photon generatePhoton(Spectra* light_contribution,
-                        Sampler& sampler,
-                        zisc::pmr::memory_resource* mem_resource) const noexcept;
-
-  //! Generate a camera ray
-  Ray generateRay(const CameraModel& camera,
-                  const uint x,
-                  const uint y,
-                  Sampler& sampler,
-                  zisc::pmr::memory_resource* mem_resource,
-                  Spectra* weight) const noexcept;
+  Photon generatePhoton(Sampler& sampler,
+                        zisc::pmr::memory_resource* mem_resource,
+                        Spectra* weight,
+                        Float* inverse_sampling_pdf) const noexcept;
 
   //! Initialize
   void initialize(System& system,
@@ -112,7 +115,7 @@ class ProbabilisticPpm : public RenderingMethod
                   const Scene& scene) noexcept;
 
   //! Return the light sampler for light path
-  const PowerWeightedLightSourceSampler& lightPathLightSampler() const noexcept;
+  const LightSourceSampler& lightPathLightSampler() const noexcept;
 
   //! Sample next photon
   Ray sampleNextRay(const Ray& ray,
@@ -128,15 +131,16 @@ class ProbabilisticPpm : public RenderingMethod
   //! Trace camera path
   void traceCameraPath(System& system,
                        Scene& scene,
-                       const Wavelengths& wavelengths) noexcept;
+                       const Wavelengths& wavelengths,
+                       const uint64 cycle) noexcept;
 
   //! Trace camera path
   void traceCameraPath(System& system,
                        Scene& scene,
                        const Wavelengths& wavelengths,
+                       const uint64 cycle,
                        const int thread_id,
-                       const uint x,
-                       const uint y) noexcept;
+                       const Index2d& pixel_index) noexcept;
 
   //! Trace photons
   void tracePhoton(System& system,
@@ -149,21 +153,11 @@ class ProbabilisticPpm : public RenderingMethod
                    const Wavelengths& sampled_wavelengths,
                    const int thread_id) noexcept;
 
-  //! Update the photon search radius
-  void updateRadius() noexcept;
-
 
   PhotonMap photon_map_;
   zisc::pmr::vector<KnnPhotonList> thread_photon_list_;
-  Float init_radius2_;
-  Float radius2_;
-  Float inverse_radius_;
-  Float inverse_estimation_area_;
-  Float alpha_;
-  Float photon_power_scale_;
-  zisc::UniqueMemoryPointer<PowerWeightedLightSourceSampler> light_path_light_sampler_;
-  uint cycle_;
-  uint num_of_thread_photons_;
+  zisc::UniqueMemoryPointer<LightSourceSampler> light_path_light_sampler_;
+  uint num_of_photons_;
 };
 
 //! \} Core

@@ -35,8 +35,6 @@ NPane {
       Component.onCompleted: {
         var samplerList = [Definitions.uniformLightSampler,
                            Definitions.powerWeightedLightSampler];
-        if (lightSamplerItem.isEyePathSampler)
-          samplerList.push(Definitions.contributionWeightedLightSampler);
         model = samplerList;
       }
     }
