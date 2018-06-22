@@ -210,7 +210,6 @@ Ray LightTracing::generateRay(const World& world,
   \details
   No detailed.
   */
-inline
 void LightTracing::addLightContribution(CameraModel& camera,
                                         const Index2d& index,
                                         const Spectra& contribution) noexcept
@@ -225,7 +224,6 @@ void LightTracing::addLightContribution(CameraModel& camera,
   \details
   No detailed.
   */
-inline
 void LightTracing::initialize(System& system,
                               const SettingNodeBase* settings,
                               const Scene& scene) noexcept
@@ -245,7 +243,6 @@ void LightTracing::initialize(System& system,
 
 /*!
   */
-inline
 const LightSourceSampler& LightTracing::lightPathLightSampler() const noexcept
 {
   return *light_path_light_sampler_;
@@ -255,7 +252,6 @@ const LightSourceSampler& LightTracing::lightPathLightSampler() const noexcept
   \details
   No detailed.
   */
-inline
 void LightTracing::traceLightPath(
     System& system,
     Scene& scene,

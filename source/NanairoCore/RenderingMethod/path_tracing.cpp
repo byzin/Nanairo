@@ -225,7 +225,6 @@ void PathTracing::evalImplicitConnection(
 
 /*!
   */
-inline
 const LightSourceSampler& PathTracing::eyePathLightSampler() const noexcept
 {
   return *eye_path_light_sampler_;
@@ -235,7 +234,6 @@ const LightSourceSampler& PathTracing::eyePathLightSampler() const noexcept
   \details
   No detailed.
   */
-inline
 Ray PathTracing::generateRay(const CameraModel& camera,
                              const Index2d& pixel_index,
                              Sampler& sampler,
@@ -293,7 +291,6 @@ Float PathTracing::calcMisWeight(const Float pdf1, const Float inverse_pdf2) noe
   \details
   No detailed.
   */
-inline
 void PathTracing::traceCameraPath(System& system,
                                   Scene& scene,
                                   const Wavelengths& sampled_wavelengths) noexcept

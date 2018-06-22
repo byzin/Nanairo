@@ -241,7 +241,6 @@ void ProbabilisticPpm::evalImplicitConnection(
   \details
   No detailed.
   */
-inline
 auto ProbabilisticPpm::generatePhoton(
     Sampler& sampler,
     zisc::pmr::memory_resource* mem_resource,
@@ -325,7 +324,6 @@ void ProbabilisticPpm::initialize(System& system,
 
 /*!
   */
-inline
 const LightSourceSampler& ProbabilisticPpm::lightPathLightSampler() const noexcept
 {
   return *light_path_light_sampler_;
@@ -335,7 +333,6 @@ const LightSourceSampler& ProbabilisticPpm::lightPathLightSampler() const noexce
   \details
   No detailed.
   */
-inline
 bool ProbabilisticPpm::surfaceHasPhotonMap(
     const ShaderPointer& bxdf) const noexcept
 {
@@ -347,7 +344,6 @@ bool ProbabilisticPpm::surfaceHasPhotonMap(
   \details
   No detailed.
   */
-inline
 void ProbabilisticPpm::traceCameraPath(
     System& system,
     Scene& scene,
