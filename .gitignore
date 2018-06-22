@@ -42,6 +42,9 @@
 !/source/NanairoCore/Color/*.hpp
 !/source/NanairoCore/Color/*.cpp
 !/source/NanairoCore/Color/*.py.in
+!/source/NanairoCore/Color/SpectralDistribution/
+!/source/NanairoCore/Color/SpectralDistribution/*.hpp
+!/source/NanairoCore/Color/SpectralDistribution/*.cpp
 !/source/NanairoCore/Color/SpectralTransportParameters/
 !/source/NanairoCore/Color/SpectralTransportParameters/*.hpp
 !/source/NanairoCore/Color/SpectralTransportParameters/*.hpp.in
