@@ -129,6 +129,8 @@ void ProbabilisticPpm::estimateExplicitConnection(
     const bool is_backside_culling = !bxdf->isTransmissive();
     photon_map_.search(intersection.point(), intersection.normal(), radius2,
                        is_frontside_culling, is_backside_culling, &photon_list);
+    if (photon_list.size() == 0)
+      return;
   }
 
   // Estimate radiance
