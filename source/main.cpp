@@ -246,8 +246,8 @@ std::function<int ()> makeRenderRunner(
       {
         nanairo::CuiRendererManager manager;
         manager.enableSavingSceneBinary(parameters.is_saving_scene_binary_enabled_);
-        manager.invokeRendering(parameters.scene_file_path_);
         manager.setOutputPath(parameters.output_path_);
+        manager.invokeRendering(parameters.scene_file_path_);
         return 0;
       };
       break;
