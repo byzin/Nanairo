@@ -44,7 +44,7 @@ GuiRenderer::GuiRenderer(const RenderingMode mode) noexcept :
 /*!
   */
 void GuiRenderer::handleCameraEvent(zisc::Stopwatch* stopwatch,
-                                    uint64* cycle,
+                                    uint32* cycle,
                                     Clock::duration* time) noexcept
 {
   auto& camera_event = cameraEvent();
@@ -103,7 +103,7 @@ void GuiRenderer::notifyOfRenderingInfo(const std::string_view& info) const noex
 /*!
   */
 void GuiRenderer::outputLdrImage(const std::string& output_path,
-                                 const uint64 cycle) noexcept
+                                 const uint32 cycle) noexcept
 {
   const auto& ldr_image_helper = ldrImageHelper();
 

@@ -24,6 +24,7 @@ namespace nanairo {
 
 // Forward declaration
 class IntersectionInfo;
+class PathState;
 class SampledDirection;
 class Sampler;
 class SurfaceModel;
@@ -107,6 +108,7 @@ std::tuple<SampledDirection, SampledSpectra> ShaderModel::sample(
     const Vector3* /* vin */,
     const WavelengthSamples& wavelengths,
     Sampler& /* sampler */,
+    PathState& /* path_state */,
     const IntersectionInfo* /* info */) const noexcept
 {
   zisc::raiseError("The sample function is not implemented.");

@@ -20,8 +20,9 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/light_source_info.hpp"
 #include "NanairoCore/Data/object.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Material/material.hpp"
-#include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 
 namespace nanairo {
 
@@ -45,9 +46,11 @@ LightSourceInfo UniformLightSourceSampler::getInfo(
 
 /*!
   */
-LightSourceInfo UniformLightSourceSampler::sample(Sampler& sampler) const noexcept
+LightSourceInfo UniformLightSourceSampler::sample(
+    Sampler& sampler,
+    const PathState& path_state) const noexcept
 {
-  return sampleInfo(sampler);
+  return sampleInfo(sampler, path_state);
 }
 
 /*!
@@ -56,9 +59,10 @@ LightSourceInfo UniformLightSourceSampler::sample(Sampler& sampler) const noexce
   */
 LightSourceInfo UniformLightSourceSampler::sample(
     const IntersectionInfo& /* info */,
-    Sampler& sampler) const noexcept
+    Sampler& sampler,
+    const PathState& path_state) const noexcept
 {
-  return sampleInfo(sampler);
+  return sampleInfo(sampler, path_state);
 }
 
 /*!
@@ -97,12 +101,14 @@ const zisc::pmr::vector<const Object*>& UniformLightSourceSampler::lightSourceLi
 /*!
   */
 inline
-LightSourceInfo UniformLightSourceSampler::sampleInfo(Sampler& sampler)
-    const noexcept
+LightSourceInfo UniformLightSourceSampler::sampleInfo(
+    Sampler& sampler,
+    const PathState& path_state) const noexcept
 {
   const auto& light_source_list = lightSourceList();
   const Float k = zisc::cast<Float>(light_source_list.size());
-  const uint light_number = zisc::cast<uint>(k * sampler.sample());
+  const Float r = sampler.draw1D(path_state);
+  const uint light_number = zisc::cast<uint>(k * r);
   return LightSourceInfo{light_source_list[light_number], weightPerLight()};
 }
 

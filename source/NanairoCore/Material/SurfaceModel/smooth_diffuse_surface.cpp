@@ -18,6 +18,7 @@
 #include "surface_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Material/Bxdf/lambert_brdf.hpp"
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
@@ -45,6 +46,7 @@ auto SmoothDiffuseSurface::makeBxdf(
     const IntersectionInfo& info,
     const WavelengthSamples& wavelengths,
     Sampler& /* sampler */,
+    const PathState& /* path_state */,
     zisc::pmr::memory_resource* mem_resource) const noexcept -> ShaderPointer
 {
   // Evaluate the reflectance

@@ -15,6 +15,7 @@
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Data/shape_point.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
@@ -22,6 +23,7 @@
 #include "NanairoCore/Material/SurfaceModel/Surface/microfacet_ggx.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 
 namespace nanairo {
 
@@ -185,6 +187,7 @@ std::tuple<SampledDirection, SampledSpectra> GgxConductorBrdf::sample(
     const Vector3* vin,
     const WavelengthSamples& wavelengths,
     Sampler& sampler,
+    PathState& path_state,
     const IntersectionInfo* info) const noexcept
 {
   const auto& point = info->shapePoint();
@@ -197,10 +200,8 @@ std::tuple<SampledDirection, SampledSpectra> GgxConductorBrdf::sample(
   ZISC_ASSERT(isUnitVector(vin_d), "The vin isn't unit vector.");
 
   // Sample a microfacet normal
-  const auto m_normal = MicrofacetGgx::sampleNormal(roughness_x_,
-                                                    roughness_y_,
-                                                    vin_d,
-                                                    sampler);
+  const auto m_normal = MicrofacetGgx::sampleNormal(roughness_x_, roughness_y_,
+                                                    vin_d, sampler, path_state);
   // Get the reflection direction
   auto vout = Microfacet::calcReflectionDirection(vin_d, m_normal);
 

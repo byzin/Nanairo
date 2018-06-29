@@ -35,7 +35,11 @@ var scene = "@scene@";
 // System
 var system = "@system@";
 var numOfThreads = "@numOfThreads@";
-var randomSeed = "@randomSeed@";
+var samplerType = "@samplerType@";
+    var pcgSampler = "@pcgSampler@";
+    var xoshiroSampler = "@xoshiroSampler@";
+    var cmjSampler = "@cmjSampler@";
+var samplerSeed = "@samplerSeed@";
 var terminationCycle = "@terminationCycle@";
 var terminationTime = "@terminationTime@";
 var imageResolution = "@imageResolution@";

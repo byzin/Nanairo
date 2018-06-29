@@ -20,6 +20,7 @@
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Color/color_space.hpp"
 #include "NanairoCore/Sampling/wavelength_sampler.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 #include "NanairoCore/ToneMappingOperator/tone_mapping_operator.hpp"
 
 namespace nanairo {
@@ -69,11 +70,14 @@ class SystemSettingNode : public SettingNodeBase
   //! Return the power2 cycle saving flag
   bool power2CycleSaving() const noexcept;
 
-  //! Return the seed of random number generator
-  uint32 randomSeed() const noexcept;
-
   //! Read the setting datafrom the stream
   void readData(std::istream* data_stream) noexcept override;
+
+  //! Return the seed of a sampler
+  uint32 samplerSeed() const noexcept;
+
+  //! Return the sampler type
+  SamplerType samplerType() const noexcept;
 
   //! Return the saving interval cycle
   uint32 savingIntervalCycle() const noexcept;
@@ -108,8 +112,11 @@ class SystemSettingNode : public SettingNodeBase
   //! Set the power2 cycle saving flag
   void setPower2CycleSaving(const bool power2_cycle_saving) noexcept;
 
-  //! Set the seed of random number generator
-  void setRandomSeed(const uint32 seed) noexcept;
+  //! Set the seed of a sampler
+  void setSamplerSeed(const uint32 seed) noexcept;
+
+  //! Set the sampler type
+  void setSamplerType(const SamplerType type) noexcept;
 
   //! Set the saving interval cycle
   void setSavingIntervalCycle(const uint32 interval_cycle) noexcept;
@@ -149,7 +156,8 @@ class SystemSettingNode : public SettingNodeBase
 
  private:
   uint32 num_of_threads_;
-  uint32 random_seed_;
+  SamplerType sampler_type_;
+  uint32 sampler_seed_;
   uint32 termination_time_,
          termination_cycle_;
   uint32 saving_interval_time_,

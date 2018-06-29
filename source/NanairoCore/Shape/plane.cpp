@@ -21,6 +21,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/intersection_test_result.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/Data/shape_point.hpp"
 #include "NanairoCore/DataStructure/aabb.hpp"
@@ -28,7 +29,7 @@
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Sampling/sampled_point.hpp"
-#include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 
 namespace nanairo {
 
@@ -166,13 +167,14 @@ bool Plane::testIntersection(const Point3& v,
   \details
   No detailed.
   */
-ShapePoint Plane::samplePoint(Sampler& sampler) const noexcept
+ShapePoint Plane::samplePoint(Sampler& sampler,
+                              const PathState& path_state) const noexcept
 {
   const auto& v = vertex0();
   const auto& e = edge();
 
-  const Point2 st{sampler.sample(),
-                  sampler.sample()};
+  const auto r = sampler.draw2D(path_state);
+  const Point2 st{r[0], r[1]};
   const auto point = v + st[0] * e[0] + st[1] * e[1];
 
   const auto tangents = Transformation::calcDefaultTangent(normal());

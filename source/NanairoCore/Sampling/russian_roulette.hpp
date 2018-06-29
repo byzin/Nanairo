@@ -20,6 +20,7 @@
 namespace nanairo {
 
 // Forward declaration
+class PathState;
 class SampledSpectra;
 class Sampler;
 
@@ -42,15 +43,15 @@ class RussianRoulette
   RussianRoulette(const SettingNodeBase* settings) noexcept;
 
   //! Play russian roulette
-  RouletteResult operator()(const uint path,
-                            const SampledSpectra& weight,
-                            Sampler& sampler) const noexcept;
+  RouletteResult operator()(const SampledSpectra& weight,
+                            Sampler& sampler,
+                            const PathState& path_state) const noexcept;
 
 
   //! Play russian roulette
-  RouletteResult play(const uint path,
-                      const SampledSpectra& weight,
-                      Sampler& sampler) const noexcept;
+  RouletteResult play(const SampledSpectra& weight,
+                      Sampler& sampler,
+                      const PathState& path_state) const noexcept;
 
  private:
   //! Initialize
@@ -58,14 +59,16 @@ class RussianRoulette
 
   //! Play russian roulette
   RouletteResult playWithAverage(const SampledSpectra& weight,
-                                 Sampler& sampler) const noexcept;
+                                 Sampler& sampler,
+                                 const PathState& path_state) const noexcept;
 
   //! Play russian roulette
   RouletteResult playWithMax(const SampledSpectra& weight,
-                             Sampler& sampler) const noexcept;
+                             Sampler& sampler,
+                             const PathState& path_state) const noexcept;
 
   //! Play russian roulette
-  RouletteResult playWithPath(const uint path) const noexcept;
+  RouletteResult playWithPath(const PathState& path_state) const noexcept;
 
 
   RouletteType type_;

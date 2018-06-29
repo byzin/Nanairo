@@ -17,12 +17,13 @@
 #include "zisc/utility.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Data/shape_point.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
-#include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 
 namespace nanairo {
 
@@ -51,18 +52,21 @@ SampledSpectra Diffuse::evalRadiance(const SampledSpectra& reflectance) noexcept
 /*!
   */
 inline
-SampledDirection Diffuse::sample(Sampler& sampler) noexcept
+SampledDirection Diffuse::sample(Sampler& sampler,
+                                 const PathState& path_state) noexcept
 {
-  const auto vout = SampledDirection::sampleOnHemisphere<1>(sampler);
+  const auto vout = SampledDirection::sampleOnHemisphere<1>(sampler, path_state);
   return vout;
 }
 
 /*!
   */
 inline
-SampledDirection Diffuse::sample(const ShapePoint& point, Sampler& sampler) noexcept
+SampledDirection Diffuse::sample(const ShapePoint& point,
+                                 Sampler& sampler,
+                                 const PathState& path_state) noexcept
 {
-  auto vout = sample(sampler);
+  auto vout = sample(sampler, path_state);
   {
     const auto vout_d = Transformation::fromLocal(point.tangent(),
                                                   point.bitangent(),

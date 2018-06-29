@@ -44,7 +44,7 @@ class CuiRenderer : public SimpleRenderer
  protected:
   //! Output LDR image
   void outputLdrImage(const std::string& output_path,
-                      const uint64 cycle) noexcept override;
+                      const uint32 cycle) noexcept override;
 
  private:
   //! Initialize the renderer

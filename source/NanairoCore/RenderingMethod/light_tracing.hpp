@@ -28,12 +28,12 @@ namespace nanairo {
 class CameraModel;
 class IntersectionInfo;
 class Material;
+class PathState;
 class Ray;
 class Sampler;
 class Scene;
 class ShaderModel;
 class System;
-template <typename> class UniquePointer;
 
 //! \addtogroup Core
 //! \{
@@ -62,7 +62,7 @@ class LightTracing : public RenderingMethod
   void render(System& system,
               Scene& scene,
               const Wavelengths& sampled_wavelengths,
-              const uint64 cycle) noexcept override;
+              const uint32 cycle) noexcept override;
 
  private:
   //! Add a light contribution to buffer
@@ -86,6 +86,7 @@ class LightTracing : public RenderingMethod
                   const Spectra& ray_weight,
                   CameraModel& camera,
                   Sampler& sampler,
+                  PathState& path_state,
                   zisc::pmr::memory_resource* mem_resource) noexcept;
 
   //! Initialize
@@ -99,13 +100,16 @@ class LightTracing : public RenderingMethod
   //! Parallelize light tracing
   void traceLightPath(System& system,
                       Scene& scene,
-                      const Wavelengths& sampled_wavelengths) noexcept;
+                      const Wavelengths& sampled_wavelengths,
+                      const uint32 cycle) noexcept;
 
   //! Trace the light path
   void traceLightPath(System& system,
                       Scene& scene,
                       const Wavelengths& sampled_wavelengths,
-                      const int thread_id) noexcept;
+                      const uint32 cycle,
+                      const int thread_id,
+                      const uint path_index) noexcept;
 
 
   std::mutex lock_;

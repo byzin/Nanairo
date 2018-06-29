@@ -20,10 +20,11 @@
 #include "microfacet.hpp"
 #include "microfacet_ggx.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
-#include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 
 namespace nanairo {
 
@@ -74,6 +75,7 @@ Float LayeredDiffuse::evalReflectance(
     const Float k_d,
     const Float re,
     Sampler& sampler,
+    const PathState& path_state,
     Float* pdf) noexcept
 {
   const Float ri = toRi(n, re);
@@ -99,6 +101,7 @@ Float LayeredDiffuse::evalReflectance(
                                         k_d,
                                         ri,
                                         sampler,
+                                        path_state,
                                         pdf);
   const Float pdf_b = (pdf != nullptr) ? *pdf : 0.0;
   // Evaluate the pdf of the reflection direction
@@ -125,10 +128,10 @@ std::tuple<SampledDirection, Float> LayeredDiffuse::sample(
     const Float n,
     const Float k_d,
     const Float re,
-    Sampler& sampler) noexcept
+    Sampler& sampler,
+    PathState& path_state) noexcept
 {
   const Float ri = toRi(n, re);
-  const Float u = sampler.sample();
   // Calculate the probability of the reflection direction sampler
   const Float rs = re;
   const Float rb = calcTotalBodyReflectance(n, k_d, ri);
@@ -136,12 +139,15 @@ std::tuple<SampledDirection, Float> LayeredDiffuse::sample(
   // Sample a reflection direction
   Vector3 m_normal;
   SampledDirection sampled_vout;
-  if (u < ps) { // Glossy term sampling
+  const Float r = sampler.draw1D(path_state);
+  path_state.setDimension(path_state.dimension() + 1);
+  if (r < ps) { // Glossy term sampling
     // Sample a reflection direction
     const auto sampled_m_normal = MicrofacetGgx::sampleNormal(roughness_x,
                                                               roughness_y,
                                                               vin,
                                                               sampler,
+                                                              path_state,
                                                               false);
     sampled_vout = Microfacet::calcReflectionDirection(vin, sampled_m_normal);
     // Store the microfacet normal
@@ -149,7 +155,7 @@ std::tuple<SampledDirection, Float> LayeredDiffuse::sample(
   }
   else { // Body term sampling
     // Sample a reflection direction
-    sampled_vout = Diffuse::sample(sampler);
+    sampled_vout = Diffuse::sample(sampler, path_state);
     // Store the microfacet normal
     const auto& vout = sampled_vout.direction();
     m_normal = Microfacet::calcReflectionHalfVector(vin, vout);
@@ -172,6 +178,7 @@ std::tuple<SampledDirection, Float> LayeredDiffuse::sample(
                                                      &pdf_s);
     // Evaluate the reflectance and the pdf of the body term
     Float pdf_b = 0.0;
+    path_state.setDimension(path_state.dimension() + 1);
     const Float f_b = evalBodyReflectance(roughness_x,
                                           roughness_y,
                                           vin,
@@ -180,6 +187,7 @@ std::tuple<SampledDirection, Float> LayeredDiffuse::sample(
                                           k_d,
                                           ri,
                                           sampler,
+                                          path_state,
                                           &pdf_b);
     // Evaluate the pdf of the reflection direction
     const Float pdf = ps * pdf_s + (1.0 - ps) * pdf_b;
@@ -238,6 +246,7 @@ Float LayeredDiffuse::evalBodyReflectance(
     const Float k_d,
     const Float ri,
     Sampler& sampler,
+    const PathState& path_state,
     Float* pdf) noexcept
 {
   const Float cos_no = vout[2];
@@ -249,6 +258,7 @@ Float LayeredDiffuse::evalBodyReflectance(
                                                             roughness_y,
                                                             vin,
                                                             sampler,
+                                                            path_state,
                                                             false);
   const auto& m_normal = sampled_m_normal.direction();
   const Float cos_mo = zisc::dot(m_normal, vout);

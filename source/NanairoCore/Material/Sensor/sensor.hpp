@@ -22,6 +22,7 @@ namespace nanairo {
 // Forward declaration
 class IntersectionInfo;
 class CameraModel;
+class PathState;
 class SampledSpectra;
 class Sampler;
 class WavelengthSamples;
@@ -69,6 +70,7 @@ class Sensor : public GlossyShaderModel
       const Vector3* vin,
       const WavelengthSamples& wavelengths,
       Sampler& sampler,
+      PathState& path_state,
       const IntersectionInfo* info) const noexcept override;
 
   //! Check is wavelength selection occured

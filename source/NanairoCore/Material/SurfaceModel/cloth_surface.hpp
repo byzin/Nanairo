@@ -25,6 +25,7 @@ namespace nanairo {
 
 // Forward declaration
 class IntersectionInfo;
+class PathState;
 class Sampler;
 class TextureModel;
 class WavelengthSamples;
@@ -66,6 +67,7 @@ class ClothSurface : public SurfaceModel
       const IntersectionInfo& info,
       const WavelengthSamples& wavelengths,
       Sampler& sampler,
+      const PathState& path_state,
       zisc::pmr::memory_resource* mem_resource) const noexcept override;
 
   //! Return the bandwidth parameter

@@ -16,6 +16,7 @@
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Material/SurfaceModel/Surface/fresnel.hpp"
@@ -50,6 +51,7 @@ std::tuple<SampledDirection, SampledSpectra> SpecularBrdf::sample(
     const Vector3* vin,
     const WavelengthSamples& /* wavelengths */,
     Sampler& /* sampler */,
+    PathState& /* path_state */,
     const IntersectionInfo* info) const noexcept
 {
   ZISC_ASSERT(info != nullptr, "The info is null.");

@@ -24,6 +24,7 @@
 namespace nanairo {
 
 // Forward declaration
+class PathState;
 class Ray;
 class SampledDirection;
 class Sampler;
@@ -122,7 +123,8 @@ class PinholeCamera : public CameraModel
   const Point3& sampledLensPoint() const noexcept override;
 
   //! Sample pinhole point
-  void sampleLensPoint(Sampler& sampler) noexcept override;
+  void sampleLensPoint(Sampler& sampler,
+                       const PathState& path_state) noexcept override;
 
   //! Apply affine transformation
   void transform(const Matrix4x4& matrix) noexcept override;

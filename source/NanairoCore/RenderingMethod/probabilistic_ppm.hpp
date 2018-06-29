@@ -30,12 +30,12 @@ namespace nanairo {
 class CameraModel;
 class IntersectionInfo;
 class Material;
+class PathState;
 class Ray;
 class Sampler;
 class Scene;
 class ShaderModel;
 class System;
-template <typename> class UniquePointer;
 class World;
 
 //! \addtogroup Core
@@ -66,7 +66,7 @@ class ProbabilisticPpm : public RenderingMethod
   void render(System& system,
               Scene& scene,
               const Wavelengths& sampled_wavelengths,
-              const uint64 cycle) noexcept override;
+              const uint32 cycle) noexcept override;
 
  private:
   //! Calculate a photon search radius
@@ -105,6 +105,7 @@ class ProbabilisticPpm : public RenderingMethod
 
   //! Generate a photon
   Photon generatePhoton(Sampler& sampler,
+                        PathState& path_state,
                         zisc::pmr::memory_resource* mem_resource,
                         Spectra* weight,
                         Float* inverse_sampling_pdf) const noexcept;
@@ -117,14 +118,6 @@ class ProbabilisticPpm : public RenderingMethod
   //! Return the light sampler for light path
   const LightSourceSampler& lightPathLightSampler() const noexcept;
 
-  //! Sample next photon
-  Ray sampleNextRay(const Ray& ray,
-                    const ShaderPointer& bxdf,
-                    const IntersectionInfo& intersection,
-                    Sampler& sampler,
-                    Spectra* photon_energy,
-                    bool* wavelength_is_selected) const noexcept;
-
   //! Check if the surface has the photon map
   bool surfaceHasPhotonMap(const ShaderPointer& bxdf) const noexcept;
 
@@ -132,26 +125,29 @@ class ProbabilisticPpm : public RenderingMethod
   void traceCameraPath(System& system,
                        Scene& scene,
                        const Wavelengths& wavelengths,
-                       const uint64 cycle) noexcept;
+                       const uint32 cycle) noexcept;
 
   //! Trace camera path
   void traceCameraPath(System& system,
                        Scene& scene,
                        const Wavelengths& wavelengths,
-                       const uint64 cycle,
+                       const uint32 cycle,
                        const int thread_id,
                        const Index2d& pixel_index) noexcept;
 
   //! Trace photons
   void tracePhoton(System& system,
                    Scene& scene,
-                   const Wavelengths& sampled_wavelengths) noexcept;
+                   const Wavelengths& sampled_wavelengths,
+                   const uint32 cycle) noexcept;
 
   //! Trace photons
   void tracePhoton(System& system,
                    Scene& scene,
                    const Wavelengths& sampled_wavelengths,
-                   const int thread_id) noexcept;
+                   const uint32 cycle,
+                   const int thread_id,
+                   const uint photon_index) noexcept;
 
 
   PhotonMap photon_map_;

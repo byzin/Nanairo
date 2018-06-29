@@ -14,6 +14,7 @@
 #include <tuple>
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
@@ -23,6 +24,7 @@ namespace nanairo {
 
 // Forward declaration
 class IntersectionInfo;
+class PathState;
 class Sampler;
 class WavelengthSamples;
 
@@ -41,7 +43,8 @@ class InterfacedLambertianBrdf : public GlossyShaderModel
                            const Float roughness_x,
                            const Float roughness_y,
                            const Float n,
-                           Sampler& sampler) noexcept;
+                           Sampler& sampler,
+                           const PathState& path_state) noexcept;
 
 
   //! Evaluate the pdf
@@ -72,6 +75,7 @@ class InterfacedLambertianBrdf : public GlossyShaderModel
       const Vector3* vin,
       const WavelengthSamples& wavelengths,
       Sampler& sampler,
+      PathState& path_state,
       const IntersectionInfo* info) const noexcept override;
 
   //! Check if wavelength selection occured
@@ -79,6 +83,7 @@ class InterfacedLambertianBrdf : public GlossyShaderModel
 
  private:
   Sampler* sampler_;
+  const PathState path_state_;
   const Float k_d_;
   const Float roughness_x_;
   const Float roughness_y_;

@@ -16,6 +16,7 @@
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Data/shape_point.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
@@ -23,6 +24,7 @@
 #include "NanairoCore/Material/SurfaceModel/Surface/layered_diffuse.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 
 namespace nanairo {
 
@@ -35,8 +37,10 @@ InterfacedLambertianBrdf::InterfacedLambertianBrdf(
     const Float roughness_x,
     const Float roughness_y,
     const Float n,
-    Sampler& sampler) noexcept :
+    Sampler& sampler,
+    const PathState& path_state) noexcept :
         sampler_{&sampler},
+        path_state_{path_state},
         k_d_{k_d},
         roughness_x_{roughness_x},
         roughness_y_{roughness_y},
@@ -119,7 +123,8 @@ SampledSpectra InterfacedLambertianBrdf::evalRadiance(
                                                   n_,
                                                   k_d_,
                                                   re_,
-                                                  *sampler_);
+                                                  *sampler_,
+                                                  path_state_);
   SampledSpectra radiance{wavelengths};
   radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
 
@@ -163,6 +168,7 @@ std::tuple<SampledSpectra, Float> InterfacedLambertianBrdf::evalRadianceAndPdf(
                                                   k_d_,
                                                   re_,
                                                   *sampler_,
+                                                  path_state_,
                                                   &pdf);
   SampledSpectra radiance{wavelengths};
   radiance.setIntensity(wavelengths.primaryWavelengthIndex(), f);
@@ -183,6 +189,7 @@ std::tuple<SampledDirection, SampledSpectra> InterfacedLambertianBrdf::sample(
     const Vector3* vin,
     const WavelengthSamples& wavelengths,
     Sampler& sampler,
+    PathState& path_state,
     const IntersectionInfo* info) const noexcept
 {
   ZISC_ASSERT(info != nullptr, "The info is null.");
@@ -202,7 +209,8 @@ std::tuple<SampledDirection, SampledSpectra> InterfacedLambertianBrdf::sample(
                                        n_,
                                        k_d_,
                                        re_,
-                                       sampler);
+                                       sampler,
+                                       path_state);
   // Calculate the reflection direction
   auto& vout = std::get<0>(result);
   const Float cos_no = vout.direction()[2];

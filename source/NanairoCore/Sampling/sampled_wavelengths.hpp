@@ -21,6 +21,7 @@
 namespace nanairo {
 
 // Forward declaration
+class PathState;
 class Sampler;
 
 //! \addtogroup Core
@@ -41,7 +42,8 @@ class SampledWavelengths
   const IntensitySamples& inverseProbabilities() const noexcept;
 
   //! Select primary wavelength randomly
-  void selectPrimaryWavelength(Sampler& sampler) noexcept;
+  void selectPrimaryWavelength(Sampler& sampler,
+                               const PathState& path_state) noexcept;
 
   //! Set wavelength
   void set(const uint index,

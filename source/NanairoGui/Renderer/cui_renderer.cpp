@@ -58,7 +58,7 @@ void CuiRenderer::setImage(QImage* image) noexcept
 /*!
   */
 void CuiRenderer::outputLdrImage(const std::string& output_path,
-                                 const uint64 cycle) noexcept
+                                 const uint32 cycle) noexcept
 {
   ZISC_ASSERT(ldr_image_helper_ != nullptr, "The image is null.");
 

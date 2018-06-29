@@ -65,7 +65,7 @@ class GuiRenderer : public QObject, public CuiRenderer
  private:
   //! Handle camera event
   void handleCameraEvent(zisc::Stopwatch* stopwatch,
-                         uint64* cycle,
+                         uint32* cycle,
                          Clock::duration* time) noexcept override;
 
   //! Initialize the renderer
@@ -81,7 +81,7 @@ class GuiRenderer : public QObject, public CuiRenderer
 
   //! Output LDR image
   void outputLdrImage(const std::string& output_path,
-                      const uint64 cycle) noexcept override;
+                      const uint32 cycle) noexcept override;
 
 
   CameraEvent camera_event_;

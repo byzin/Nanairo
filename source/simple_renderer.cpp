@@ -34,6 +34,7 @@
 #include "NanairoCore/Color/hdr_image.hpp"
 #include "NanairoCore/Color/ldr_image.hpp"
 #include "NanairoCore/Color/rgba_32.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/RenderingMethod/rendering_method.hpp"
 #include "NanairoCore/Sampling/sample_statistics.hpp"
 #include "NanairoCore/Sampling/wavelength_sampler.hpp"
@@ -127,7 +128,7 @@ bool SimpleRenderer::loadScene(const SettingNodeBase& settings,
 
   //
   {
-    auto termination_cycle = cast<uint64>(system_settings->terminationCycle());
+    auto termination_cycle = system_settings->terminationCycle();
     setCycleToFinish(termination_cycle);
   }
   {
@@ -159,8 +160,8 @@ bool SimpleRenderer::loadScene(const SettingNodeBase& settings,
   */
 void SimpleRenderer::render(const std::string& output_path) noexcept
 {
-  uint64 cycle = 0;
-  uint64 cycle_to_save_image = getNextCycleToSaveImage(cycle);
+  uint32 cycle = 0;
+  uint32 cycle_to_save_image = getNextCycleToSaveImage(cycle);
   auto previous_time = Clock::duration::zero();
   auto time_to_save_image = getNextTimeToSaveImage(previous_time);
   bool rendering_flag = true;
@@ -215,7 +216,7 @@ void SimpleRenderer::enableSavingAtEachCycle(const bool flag) noexcept
 /*!
   */
 void SimpleRenderer::handleCameraEvent(zisc::Stopwatch*,
-                                       uint64*,
+                                       uint32*,
                                        Clock::duration*) noexcept
 {
 }
@@ -260,7 +261,7 @@ void SimpleRenderer::logMessage(const std::string_view& message) noexcept
 /*!
   */
 void SimpleRenderer::outputLdrImage(const std::string& output_path,
-                                    const uint64 cycle) noexcept
+                                    const uint32 cycle) noexcept
 {
 #ifdef NANAIRO_HAS_LODEPNG
   processLdrForLodepng();
@@ -293,9 +294,9 @@ void SimpleRenderer::notifyOfRenderingInfo(const std::string_view&) const noexce
   */
 inline
 bool SimpleRenderer::checkImageSavingFlag(
-    const uint64 cycle,
+    const uint32 cycle,
     const Clock::duration previous_time,
-    uint64* cycle_to_save_image,
+    uint32* cycle_to_save_image,
     Clock::duration* time_to_save_image) const noexcept
 {
   // Save image
@@ -330,7 +331,7 @@ void SimpleRenderer::clearWorkMemory() noexcept
 /*!
   */
 inline
-void SimpleRenderer::convertSpectraToHdr(const uint64 cycle) noexcept
+void SimpleRenderer::convertSpectraToHdr(const uint32 cycle) noexcept
 {
   const auto& film = scene().film();
   const auto& sample_statistics = film.sampleStatistics();
@@ -377,31 +378,34 @@ void SimpleRenderer::processLdrForLodepng() noexcept
 /*!
   */
 inline
-void SimpleRenderer::renderScene(const uint64 cycle) noexcept
+void SimpleRenderer::renderScene(const uint32 cycle) noexcept
 {
   auto& sampler = system().globalSampler();
-  const auto& wavelength_sampler = wavelengthSampler();
-  auto& method = renderingMethod();
+  PathState path_state{cycle};
+  path_state.setDimension(SampleDimension::kWavelengthSample1);
 
-  const auto sampled_wavelengths = wavelength_sampler(sampler);
+  const auto& wavelength_sampler = wavelengthSampler();
+  const auto sampled_wavelengths = wavelength_sampler(sampler, path_state);
+
+  auto& method = renderingMethod();
   method.render(system(), scene(), sampled_wavelengths, cycle);
 }
 
 /*!
   */
-void SimpleRenderer::setCycleIntervalToSave(const uint64 cycle) noexcept
+void SimpleRenderer::setCycleIntervalToSave(const uint32 cycle) noexcept
 {
   cycle_interval_to_save_image_ = (cycle == 0)
-      ? std::numeric_limits<uint64>::max()
+      ? std::numeric_limits<uint32>::max()
       : cycle;
 }
 
 /*!
   */
-void SimpleRenderer::setCycleToFinish(const uint64 cycle) noexcept
+void SimpleRenderer::setCycleToFinish(const uint32 cycle) noexcept
 {
   cycle_to_finish_ = (cycle == 0)
-      ? std::numeric_limits<uint64>::max()
+      ? std::numeric_limits<uint32>::max()
       : cycle;
 }
 
@@ -441,7 +445,7 @@ void SimpleRenderer::toneMap() noexcept
 
 /*!
   */
-void SimpleRenderer::updateRenderingInfo(const uint64 cycle,
+void SimpleRenderer::updateRenderingInfo(const uint32 cycle,
                                          const Clock::duration& time) noexcept
 {
   using namespace std::string_literals;
@@ -479,7 +483,7 @@ void SimpleRenderer::updateRenderingInfo(const uint64 cycle,
   std::sprintf(info_string,
                "%06.2lf fps,  %010u cycles,  %02d h %02d m %02d.%03d s",
                fps,
-               cast<uint32>(cycle),
+               cycle,
                hours,
                minutes,
                seconds,

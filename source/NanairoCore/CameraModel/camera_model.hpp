@@ -26,6 +26,7 @@ namespace nanairo {
 
 // Forward decralation
 class Film;
+class PathState;
 class SampledSpectra;
 class Sampler;
 class ShaderModel;
@@ -101,7 +102,7 @@ class CameraModel
   Index2d imageResolution() const noexcept;
 
   //! Jitter the point on the pixel
-  void jitter(Sampler& sampler) noexcept;
+  void jitter(Sampler& sampler, const PathState& path_state) noexcept;
 
   //! Return the jittering
   const Vector2& jittering() const noexcept;
@@ -130,7 +131,8 @@ class CameraModel
   virtual const Point3& sampledLensPoint() const noexcept = 0;
 
   //! Sample lens point
-  virtual void sampleLensPoint(Sampler& sampler) noexcept = 0;
+  virtual void sampleLensPoint(Sampler& sampler,
+                               const PathState& path_state) noexcept = 0;
 
   //! Set a film
   void setFilm(Film* film) noexcept;

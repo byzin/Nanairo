@@ -27,6 +27,7 @@
 #include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
+#include "light_tracing.hpp"
 #include "path_tracing.hpp"
 #include "rendering_method.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -35,6 +36,7 @@
 #include "NanairoCore/CameraModel/camera_model.hpp"
 #include "NanairoCore/Data/light_source_info.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
 #include "NanairoCore/DataStructure/bvh.hpp"
@@ -47,7 +49,7 @@
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
-#include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 #include "NanairoCore/Sampling/LightSourceSampler/light_source_sampler.hpp"
 #include "NanairoCore/Setting/rendering_method_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
@@ -75,10 +77,10 @@ ProbabilisticPpm::ProbabilisticPpm(System& system,
 void ProbabilisticPpm::render(System& system,
                               Scene& scene,
                               const Wavelengths& sampled_wavelengths,
-                              const uint64 cycle) noexcept
+                              const uint32 cycle) noexcept
 {
   photon_map_.initialize(system, num_of_photons_);
-  tracePhoton(system, scene, sampled_wavelengths);
+  tracePhoton(system, scene, sampled_wavelengths, cycle);
   photon_map_.construct(system);
   traceCameraPath(system, scene, sampled_wavelengths, cycle);
   photon_map_.reset();
@@ -245,6 +247,7 @@ void ProbabilisticPpm::evalImplicitConnection(
   */
 auto ProbabilisticPpm::generatePhoton(
     Sampler& sampler,
+    PathState& path_state,
     zisc::pmr::memory_resource* mem_resource,
     Spectra* weight,
     Float* inverse_sampling_pdf) const noexcept -> Photon
@@ -252,16 +255,21 @@ auto ProbabilisticPpm::generatePhoton(
   const auto& wavelengths = weight->wavelengths();
   // Sample a light point
   const auto& light_sampler = lightPathLightSampler();
-  const auto light_source_info = light_sampler.sample(sampler);
+  path_state.setDimension(SampleDimension::kLightSourceSelection);
+  const auto light_source_info = light_sampler.sample(sampler, path_state);
   const auto light_source = light_source_info.object();
-  const auto light_point_info = light_source->shape().samplePoint(sampler);
+  path_state.setDimension(SampleDimension::kLightPointSample);
+  const auto light_point_info = light_source->shape().samplePoint(sampler,
+                                                                  path_state);
   ZISC_ASSERT(0.0 < light_point_info.pdf(), "The point pdf is negative.");
 
   // Sample a direction
   const auto& emitter = light_source->material().emitter();
   const IntersectionInfo intersection{light_source, light_point_info};
   const auto light = emitter.makeLight(intersection.uv(), wavelengths, mem_resource);
-  const auto result = light->sample(nullptr, wavelengths, sampler, &intersection);
+  path_state.setDimension(SampleDimension::kLightSample1);
+  const auto result = light->sample(nullptr, wavelengths,
+                                    sampler, path_state, &intersection);
   const auto& sampled_vout = std::get<0>(result);
   ZISC_ASSERT(0.0 < sampled_vout.pdf(), "The vout pdf is negative.");
   const auto& vout = sampled_vout.direction();
@@ -350,15 +358,18 @@ void ProbabilisticPpm::traceCameraPath(
     System& system,
     Scene& scene,
     const Wavelengths& sampled_wavelengths,
-    const uint64 cycle) noexcept
+    const uint32 cycle) noexcept
 {
   auto& sampler = system.globalSampler();
 
   // Init camera
   {
+    PathState path_state{cycle};
     auto& camera = scene.camera();
-    camera.sampleLensPoint(sampler);
-    camera.jitter(sampler);
+    path_state.setDimension(SampleDimension::kCameraJittering);
+    camera.jitter(sampler, path_state);
+    path_state.setDimension(SampleDimension::kCameraLensSample);
+    camera.sampleLensPoint(sampler, path_state);
   }
 
   std::atomic<uint> tile_count{0};
@@ -375,8 +386,8 @@ void ProbabilisticPpm::traceCameraPath(
       auto tile = RenderingMethod::getRenderingTile(camera.imageResolution(), index);
       for (uint i = 0; i < tile.numOfPixels(); ++i) {
         const auto& pixel_index = tile.current();
-        traceCameraPath(system, scene, sampled_wavelengths, cycle,
-                        thread_id, pixel_index);
+        traceCameraPath(system, scene, sampled_wavelengths,
+                        cycle, thread_id, pixel_index);
         tile.next();
       }
     }
@@ -400,21 +411,24 @@ void ProbabilisticPpm::traceCameraPath(
     System& system,
     Scene& scene,
     const Wavelengths& sampled_wavelengths,
-    const uint64 cycle,
+    const uint32 cycle,
     const int thread_id,
     const Index2d& pixel_index) noexcept
 {
   // System
-  auto& sampler = system.threadSampler(thread_id);
   auto& memory_manager = system.threadMemoryManager(thread_id);
+  const uint path_index = pixel_index[0] +
+                          pixel_index[1] * system.imageWidthResolution();
+  auto& sampler = system.localSampler(path_index);
   // Scene
   const auto& world = scene.world();
   auto& camera = scene.camera();
   // Trace info
+  PathState path_state{cycle};
+  path_state.setLength(1);
   const auto& wavelengths = sampled_wavelengths.wavelengths();
   auto camera_contribution = makeSampledSpectra(sampled_wavelengths);
   Spectra contribution{wavelengths};
-  uint path_length = 1;
   bool wavelength_is_selected = false;
 
   const bool implicit_connection_is_enabled =
@@ -424,7 +438,8 @@ void ProbabilisticPpm::traceCameraPath(
   // Generate a camera ray
   Float inverse_direction_pdf;
   Spectra ray_weight{wavelengths, 1.0};
-  auto ray = PathTracing::generateRay(camera, pixel_index, sampler, &memory_manager,
+  auto ray = PathTracing::generateRay(camera, pixel_index, sampler, path_state,
+                                      &memory_manager,
                                       &camera_contribution, &inverse_direction_pdf);
 
   const Float photon_search_radius = calcPhotonSearchRadius(cycle);
@@ -438,28 +453,28 @@ void ProbabilisticPpm::traceCameraPath(
     evalImplicitConnection(world, ray, inverse_direction_pdf, intersection,
                            camera_contribution, ray_weight, photon_search_radius,
                            implicit_connection_is_enabled,
-                           explicit_connection_is_enabled && (1 < path_length),
+                           explicit_connection_is_enabled,
                            &memory_manager, &contribution);
 
     // Evaluate material
     const auto& material = intersection.object()->material();
     const auto& surface = material.surface();
-    const auto bxdf = surface.makeBxdf(intersection,
-                                       wavelengths,
-                                       sampler,
-                                       &memory_manager);
+    path_state.setDimension(SampleDimension::kBxdfSample1);
+    const auto bxdf = surface.makeBxdf(intersection, wavelengths,
+                                       sampler, path_state, &memory_manager);
     RenderingMethod::updateSelectedWavelengthInfo(bxdf,
                                                   &ray_weight,
                                                   &wavelength_is_selected);
 
     // Sample next ray
     auto next_ray_weight = ray_weight;
-    const auto next_ray = Method::sampleNextRay(path_length, ray, bxdf, intersection,
+    const auto next_ray = Method::sampleNextRay(ray, bxdf, intersection,
                                                 &ray_weight, &next_ray_weight,
-                                                sampler, &inverse_direction_pdf);
+                                                sampler, path_state,
+                                                &inverse_direction_pdf);
     if (!next_ray.isAlive())
       break;
-    ++path_length;
+    path_state.incrementLength();
 
     explicit_connection_is_enabled = surfaceHasPhotonMap(bxdf) &&
         CoreConfig::pathTracingExplicitConnectionIsEnabled();
@@ -475,8 +490,6 @@ void ProbabilisticPpm::traceCameraPath(
     // Update ray
     ray = next_ray;
     ray_weight = next_ray_weight;
-    // Clear memory
-    memory_manager.reset();
   }
   camera.addContribution(pixel_index, contribution);
   // Clear memory
@@ -490,12 +503,13 @@ void ProbabilisticPpm::traceCameraPath(
 void ProbabilisticPpm::tracePhoton(
     System& system,
     Scene& scene,
-    const Wavelengths& sampled_wavelengths) noexcept
+    const Wavelengths& sampled_wavelengths,
+    const uint32 cycle) noexcept
 {
   std::atomic<uint> photon_set_index{0};
 
   auto trace_photon =
-  [this, &system, &scene, &sampled_wavelengths, &photon_set_index]
+  [this, &system, &scene, &sampled_wavelengths, cycle, &photon_set_index]
   (const int thread_id, const uint)
   {
     bool flag = true;
@@ -508,7 +522,8 @@ void ProbabilisticPpm::tracePhoton(
           flag = false;
           break;
         }
-        tracePhoton(system, scene, sampled_wavelengths, thread_id);
+        tracePhoton(system, scene, sampled_wavelengths,
+                    cycle, thread_id, photon_index);
       }
     }
   };
@@ -531,23 +546,26 @@ void ProbabilisticPpm::tracePhoton(
     System& system,
     Scene& scene,
     const Wavelengths& sampled_wavelengths,
-    const int thread_id) noexcept
+    const uint32 cycle,
+    const int thread_id,
+    const uint photon_index) noexcept
 {
   // System
-  auto& sampler = system.threadSampler(thread_id);
   auto& memory_manager = system.threadMemoryManager(thread_id);
+  auto& sampler = system.localSampler(photon_index);
   // Scene
   const auto& world = scene.world();
   // Trace info
+  PathState path_state{cycle};
+  path_state.setLength(2);
   const auto& wavelengths = sampled_wavelengths.wavelengths();
   Spectra light_contribution{wavelengths, 1.0};
-  uint path_length = 2;
   bool wavelength_is_selected = false;
 
   // Generate a photon
   Float inverse_sampling_pdf;
   auto photon_weight = light_contribution;
-  auto photon = generatePhoton(sampler, &memory_manager,
+  auto photon = generatePhoton(sampler, path_state, &memory_manager,
                                &light_contribution, &inverse_sampling_pdf);
 
   while(true) {
@@ -558,10 +576,9 @@ void ProbabilisticPpm::tracePhoton(
 
     // Evaluate the surface
     const auto& surface = intersection.object()->material().surface();
-    const auto bxdf = surface.makeBxdf(intersection,
-                                       wavelengths,
-                                       sampler,
-                                       &memory_manager);
+    path_state.setDimension(SampleDimension::kBxdfSample1);
+    const auto bxdf = surface.makeBxdf(intersection, wavelengths,
+                                       sampler, path_state, &memory_manager);
 
     if (surfaceHasPhotonMap(bxdf)) {
       const auto photon_energy = light_contribution * photon_weight;
@@ -576,20 +593,17 @@ void ProbabilisticPpm::tracePhoton(
 
     Float inverse_direction_pdf;
     auto next_photon_weight = photon_weight;
-    photon = Method::sampleNextRay(path_length, photon, bxdf,
-                                   intersection, &photon_weight,
-                                   &next_photon_weight, sampler,
-                                   &inverse_direction_pdf);
+    photon = Method::sampleNextRay(photon, bxdf, intersection,
+                                   &photon_weight, &next_photon_weight,
+                                   sampler, path_state, &inverse_direction_pdf);
     if (!photon.isAlive())
       break;
-    ++path_length;
+    path_state.incrementLength();
 
     // Update the photon
     photon_weight = next_photon_weight;
     ZISC_ASSERT(inverse_direction_pdf == 1.0,
                 "The direction pdf isn't 1: ", inverse_direction_pdf);
-    // Clear memory
-    memory_manager.reset();
   }
   memory_manager.reset();
 }

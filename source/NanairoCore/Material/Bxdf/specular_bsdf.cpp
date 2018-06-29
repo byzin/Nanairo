@@ -18,11 +18,13 @@
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Material/SurfaceModel/Surface/fresnel.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 
 namespace nanairo {
 
@@ -57,6 +59,7 @@ std::tuple<SampledDirection, SampledSpectra> SpecularBsdf::sample(
     const Vector3* vin,
     const WavelengthSamples& wavelengths,
     Sampler& sampler,
+    PathState& path_state,
     const IntersectionInfo* info) const noexcept
 {
   ZISC_ASSERT(info != nullptr, "The info is null.");
@@ -74,7 +77,8 @@ std::tuple<SampledDirection, SampledSpectra> SpecularBsdf::sample(
               "Fresnel reflectance isn't [0, 1].");
 
   // Determine a reflection or a refraction
-  const bool is_reflection = is_perfect_reflection || (sampler.sample() < fresnel);
+  const bool is_reflection = is_perfect_reflection ||
+      (sampler.draw1D(path_state) < fresnel);
   const auto vout = (is_reflection)
       ? Fresnel::calcReflectionDirection(vin_d, info->normal())
       : Fresnel::calcRefractionDirection(vin_d, info->normal(), n_, g);

@@ -32,7 +32,6 @@
 #include "NanairoCore/DataStructure/bvh.hpp"
 #include "NanairoCore/Sampling/russian_roulette.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
-#include "NanairoCore/Sampling/sampler.hpp"
 #include "NanairoCore/Setting/rendering_method_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 

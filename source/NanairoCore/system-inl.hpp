@@ -25,7 +25,7 @@
 // Nanairo
 #include "Color/color_space.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "Sampling/sampler.hpp"
+#include "Sampling/Sampler/sampler.hpp"
 
 namespace nanairo {
 
@@ -76,13 +76,12 @@ auto System::globalMemoryManager() noexcept -> MemoryManager&
 }
 
 /*!
-  \details
-  No detailed.
   */
 inline
 Sampler& System::globalSampler() noexcept
 {
-  return sampler_list_[0];
+  auto& global_sampler = sampler_list_.back();
+  return *global_sampler;
 }
 
 /*!
@@ -116,6 +115,15 @@ uint System::imageWidthResolution() const noexcept
 }
 
 /*!
+  */
+inline
+Sampler& System::localSampler(const uint index) noexcept
+{
+  auto& sampler = sampler_list_[index];
+  return *sampler;
+}
+
+/*!
   \details
   No detailed.
   */
@@ -143,16 +151,6 @@ inline
 auto System::threadMemoryManager(const uint thread_number) noexcept -> MemoryManager&
 {
   return memory_manager_list_[thread_number + 2];
-}
-
-/*!
-  \details
-  No detailed.
-  */
-inline
-Sampler& System::threadSampler(const uint thread_number) noexcept
-{
-  return sampler_list_[thread_number + 1];
 }
 
 // Color
@@ -201,6 +199,22 @@ inline
 bool System::isSpectraMode() const noexcept
 {
   return colorMode() == RenderingColorMode::kSpectra;
+}
+
+/*!
+  */
+inline
+SamplerType System::samplerType() const noexcept
+{
+  return sampler_type_;
+}
+
+/*!
+  */
+inline
+uint32 System::samplerSeed() const noexcept
+{
+  return sampler_seed_;
 }
 
 /*!

@@ -19,11 +19,13 @@
 // Nanairo
 #include "light_source_sampler.hpp"
 #include "NanairoCore/Data/light_source_info.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 
 namespace nanairo {
 
 // Forward declaration
 class IntersectionInfo;
+class PathState;
 class Sampler;
 class System;
 class World;
@@ -66,11 +68,13 @@ class PowerWeightedLightSourceSampler : public LightSourceSampler
   const LightSourceCdf& lightSourceCdf() const noexcept;
 
   //! Sample a light source for a light path tracer
-  LightSourceInfo sample(Sampler& sampler) const noexcept override;
+  LightSourceInfo sample(Sampler& sampler,
+                         const PathState& path_state) const noexcept override;
 
   //! Sample a light source for a eye path tracer
   LightSourceInfo sample(const IntersectionInfo& info,
-                         Sampler& sampler) const noexcept override;
+                         Sampler& sampler,
+                         const PathState& path_state) const noexcept override;
 
  private:
   //! Return the light source info by the light source
@@ -82,7 +86,8 @@ class PowerWeightedLightSourceSampler : public LightSourceSampler
                   zisc::pmr::memory_resource* work_resource) noexcept;
 
   //! Sample a light source
-  const LightSourceInfo& sampleInfo(Sampler& sampler) const noexcept;
+  const LightSourceInfo& sampleInfo(Sampler& sampler,
+                                    const PathState& path_state) const noexcept;
 
 
   zisc::pmr::vector<LightSourceInfo> info_list_;

@@ -9,12 +9,13 @@
 #include "zisc/error.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
-#include "sampler.hpp"
 #include "sampled_wavelengths.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Setting/system_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 #include "NanairoCore/Utility/value.hpp"
+#include "Sampler/sampler.hpp"
 
 namespace nanairo {
 
@@ -63,13 +64,18 @@ void WavelengthSampler::initialize(const World& /* world */,
 
 /*!
   */
-SampledWavelengths WavelengthSampler::sampleRgb(Sampler& sampler) noexcept
+SampledWavelengths WavelengthSampler::sampleRgb(
+    Sampler& sampler,
+    PathState& path_state) noexcept
 {
+  constexpr uint sample_size = SampledWavelengths::size();
+  path_state.setDimension(path_state.dimension() + sample_size);
+
   SampledWavelengths sampled_wavelengths;
   sampled_wavelengths.set(0, CoreConfig::blueWavelength(), 1.0);
   sampled_wavelengths.set(1, CoreConfig::greenWavelength(), 1.0);
   sampled_wavelengths.set(2, CoreConfig::redWavelength(), 1.0);
-  sampled_wavelengths.selectPrimaryWavelength(sampler);
+  sampled_wavelengths.selectPrimaryWavelength(sampler, path_state);
   return sampled_wavelengths;
 
 }
@@ -78,7 +84,9 @@ SampledWavelengths WavelengthSampler::sampleRgb(Sampler& sampler) noexcept
   \details
   No detailed.
   */
-SampledWavelengths WavelengthSampler::sampleRandomly(Sampler& sampler) noexcept
+SampledWavelengths WavelengthSampler::sampleRandomly(
+    Sampler& sampler,
+    PathState& path_state) noexcept
 {
   using zisc::cast;
   constexpr uint sample_size = SampledWavelengths::size();
@@ -87,8 +95,9 @@ SampledWavelengths WavelengthSampler::sampleRandomly(Sampler& sampler) noexcept
 
   std::array<uint16, sample_size> wavelengths;
   for (uint i = 0; i < sample_size; ++i) {
-    const Float position = cast<Float>(CoreConfig::spectraSize()) *
-                           sampler.sample();
+    const Float offset = sampler.draw1D(path_state);
+    path_state.setDimension(path_state.dimension() + 1);
+    const Float position = cast<Float>(CoreConfig::spectraSize()) * offset;
     const uint index = cast<uint>(position);
     const uint16 wavelength = getWavelength(index);
     wavelengths[i] = wavelength;
@@ -98,7 +107,7 @@ SampledWavelengths WavelengthSampler::sampleRandomly(Sampler& sampler) noexcept
   SampledWavelengths sampled_wavelengths;
   for (uint i = 0; i < sample_size; ++i)
     sampled_wavelengths.set(i, wavelengths[i], inverse_probability);
-  sampled_wavelengths.selectPrimaryWavelength(sampler);
+  sampled_wavelengths.selectPrimaryWavelength(sampler, path_state);
   return sampled_wavelengths;
 }
 
@@ -106,7 +115,9 @@ SampledWavelengths WavelengthSampler::sampleRandomly(Sampler& sampler) noexcept
   \details
   No detailed.
   */
-SampledWavelengths WavelengthSampler::sampleRegularly(Sampler& sampler) noexcept
+SampledWavelengths WavelengthSampler::sampleRegularly(
+    Sampler& sampler,
+    PathState& path_state) noexcept
 {
   using zisc::cast;
   constexpr uint sample_size = SampledWavelengths::size();
@@ -115,19 +126,22 @@ SampledWavelengths WavelengthSampler::sampleRegularly(Sampler& sampler) noexcept
   constexpr Float inverse_probability = interval;
 
   SampledWavelengths sampled_wavelengths;
-  const Float offset = sampler.sample();
+  const Float offset = sampler.draw1D(path_state);
   for (uint i = 0; i < sample_size; ++i) {
+    path_state.setDimension(path_state.dimension() + 1);
     const uint index = cast<uint>(interval * (cast<Float>(i) + offset));
     const uint16 wavelength = getWavelength(index);
     sampled_wavelengths.set(i, wavelength, inverse_probability);
   }
-  sampled_wavelengths.selectPrimaryWavelength(sampler);
+  sampled_wavelengths.selectPrimaryWavelength(sampler, path_state);
   return sampled_wavelengths;
 }
 
 /*!
   */
-SampledWavelengths WavelengthSampler::sampleStratified(Sampler& sampler) noexcept
+SampledWavelengths WavelengthSampler::sampleStratified(
+    Sampler& sampler,
+    PathState& path_state) noexcept
 {
   using zisc::cast;
   constexpr uint sample_size = SampledWavelengths::size();
@@ -137,12 +151,14 @@ SampledWavelengths WavelengthSampler::sampleStratified(Sampler& sampler) noexcep
 
   SampledWavelengths sampled_wavelengths;
   for (uint i = 0; i < sample_size; ++i) {
-    const Float position = interval * (cast<Float>(i) + sampler.sample());
+    const Float offset = sampler.draw1D(path_state);
+    path_state.setDimension(path_state.dimension() + 1);
+    const Float position = interval * (cast<Float>(i) + offset);
     const uint index = cast<uint>(position);
     const uint16 wavelength = getWavelength(index);
     sampled_wavelengths.set(i, wavelength, inverse_probability);
   }
-  sampled_wavelengths.selectPrimaryWavelength(sampler);
+  sampled_wavelengths.selectPrimaryWavelength(sampler, path_state);
   return sampled_wavelengths;
 }
 

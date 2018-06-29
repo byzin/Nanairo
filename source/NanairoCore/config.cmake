@@ -9,31 +9,6 @@
 set(__nanairo_core_root__ ${CMAKE_CURRENT_LIST_DIR})
 
 
-# Set the sampler type
-function(getCoreSamplerType sampler_header_path sampler_type)
-  if(NANAIRO_SAMPLER STREQUAL "Xorshift128+")
-    set(header_path "zisc/xorshift_engine.hpp")
-    set(type "zisc::Xorshift128Plus")
-  elseif(NANAIRO_SAMPLER STREQUAL "SplitMix64")
-    set(header_path "zisc/split_mix64_engine.hpp")
-    set(type "zisc::SplitMix64Engine")
-  elseif(NANAIRO_SAMPLER STREQUAL "PCG")
-    set(header_path "zisc/pcg_engine.hpp")
-    set(type "zisc::PcgMcgRxsMXs")
-  elseif(NANAIRO_SAMPLER STREQUAL "Xoroshiro128+")
-    set(header_path "zisc/xoroshiro128_plus_engine.hpp")
-    set(type "zisc::Xoroshiro128PlusEngine")
-  else()
-    message(FATAL_ERROR "${NANAIRO_SAMPLER} is invalid sampler type.")
-  endif()
-
-
-  # Output variables
-  set(${sampler_header_path} ${header_path} PARENT_SCOPE)
-  set(${sampler_type} ${type} PARENT_SCOPE)
-endfunction(getCoreSamplerType)
-
-
 # Configure the spectral transport parameters
 function(configureSpectralTransportParameters config_file_path)
   set(parameter_dir ${__nanairo_core_root__}/Color/SpectralTransportParameters)
@@ -52,8 +27,6 @@ endfunction(configureSpectralTransportParameters)
 
 # Make Nanairo Core config file
 function(makeCoreConfigFile config_file_path config_file_inl_path)
-  # Sampler setting
-  getCoreSamplerType(nanairo_core_sampler_header_path nanairo_core_sampler_type)
   # Path tracing setting
     set(NANAIRO_PATH_TRACING_EXPLICIT_CONNECTION_IS_ENABLED "true")
     set(NANAIRO_PATH_TRACING_IMPLICIT_CONNECTION_IS_ENABLED "true")

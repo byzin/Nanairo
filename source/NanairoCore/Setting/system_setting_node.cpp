@@ -21,6 +21,7 @@
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Color/color_space.hpp"
 #include "NanairoCore/Sampling/wavelength_sampler.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 #include "NanairoCore/ToneMappingOperator/tone_mapping_operator.hpp"
 
 namespace nanairo {
@@ -94,7 +95,8 @@ uint32 SystemSettingNode::imageWidthResolution() const noexcept
 void SystemSettingNode::initialize() noexcept
 {
   setNumOfThreads(1);
-  setRandomSeed(123456789);
+  setSamplerType(SamplerType::kCmj);
+  setSamplerSeed(123456789);
   setTerminationTime(0);
   setTerminationCycle(1024);
   setImageWidthResolution(CoreConfig::imageWidthMin());
@@ -135,9 +137,16 @@ bool SystemSettingNode::power2CycleSaving() const noexcept
 
 /*!
   */
-uint32 SystemSettingNode::randomSeed() const noexcept
+uint32 SystemSettingNode::samplerSeed() const noexcept
 {
-  return random_seed_;
+  return sampler_seed_;
+}
+
+/*!
+  */
+SamplerType SystemSettingNode::samplerType() const noexcept
+{
+  return sampler_type_;
 }
 
 /*!
@@ -146,7 +155,8 @@ void SystemSettingNode::readData(std::istream* data_stream) noexcept
 {
   // Read properties
   zisc::read(&num_of_threads_, data_stream);
-  zisc::read(&random_seed_, data_stream);
+  zisc::read(&sampler_type_, data_stream);
+  zisc::read(&sampler_seed_, data_stream);
   zisc::read(&termination_time_, data_stream);
   zisc::read(&termination_cycle_, data_stream);
   zisc::read(&saving_interval_time_, data_stream);
@@ -248,9 +258,16 @@ void SystemSettingNode::setPower2CycleSaving(const bool power2_cycle_saving) noe
 
 /*!
   */
-void SystemSettingNode::setRandomSeed(const uint32 seed) noexcept
+void SystemSettingNode::setSamplerSeed(const uint32 seed) noexcept
 {
-  random_seed_ = seed;
+  sampler_seed_ = seed;
+}
+
+/*!
+  */
+void SystemSettingNode::setSamplerType(const SamplerType type) noexcept
+{
+  sampler_type_ = type;
 }
 
 /*!
@@ -340,7 +357,8 @@ void SystemSettingNode::writeData(std::ostream* data_stream) const noexcept
 
   // Write properties
   zisc::write(&num_of_threads_, data_stream);
-  zisc::write(&random_seed_, data_stream);
+  zisc::write(&sampler_type_, data_stream);
+  zisc::write(&sampler_seed_, data_stream);
   zisc::write(&termination_time_, data_stream);
   zisc::write(&termination_cycle_, data_stream);
   zisc::write(&saving_interval_time_, data_stream);

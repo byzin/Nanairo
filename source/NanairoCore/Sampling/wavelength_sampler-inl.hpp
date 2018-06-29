@@ -12,30 +12,34 @@
 #include "zisc/error.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
-#include "sampler.hpp"
 #include "sampled_wavelengths.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Utility/value.hpp"
+#include "Sampler/sampler.hpp"
 
 namespace nanairo {
 
 /*!
   */
 inline
-SampledWavelengths WavelengthSampler::operator()(Sampler& sampler) const noexcept
+SampledWavelengths WavelengthSampler::operator()(
+    Sampler& sampler,
+    PathState& path_state) const noexcept
 {
-  return sample(sampler);
+  return sample(sampler, path_state);
 }
 
 /*!
   */
 inline
-SampledWavelengths WavelengthSampler::sample(Sampler& sampler) const noexcept
+SampledWavelengths WavelengthSampler::sample(
+    Sampler& sampler,
+    PathState& path_state) const noexcept
 {
-  return (type_ == SamplerType::kRgb)     ? sampleRgb(sampler) :
-         (type_ == SamplerType::kRegular) ? sampleRegularly(sampler) :
-         (type_ == SamplerType::kRandom)  ? sampleRandomly(sampler)
-                                          : sampleStratified(sampler);
+  return (type_ == SamplerType::kRgb)     ? sampleRgb(sampler, path_state) :
+         (type_ == SamplerType::kRegular) ? sampleRegularly(sampler, path_state) :
+         (type_ == SamplerType::kRandom)  ? sampleRandomly(sampler, path_state)
+                                          : sampleStratified(sampler, path_state);
 }
 
 } // namespace nanairo

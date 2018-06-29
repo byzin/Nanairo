@@ -27,6 +27,7 @@ namespace nanairo {
 // Forward declaration
 class Aabb;
 class IntersectionInfo;
+class PathState;
 class Ray;
 class Sampler;
 
@@ -72,7 +73,8 @@ class FlatTriangle : public Shape
       IntersectionInfo* intersection) const noexcept override;
 
   //! Sample a point randomly on the surface of the triangle
-  ShapePoint samplePoint(Sampler& sampler) const noexcept override;
+  ShapePoint samplePoint(Sampler& sampler,
+                         const PathState& path_state) const noexcept override;
 
   //! Set the UVs of the vertice
   void setUv(const Point2& uv1,

@@ -26,8 +26,9 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/light_source_info.hpp"
 #include "NanairoCore/Data/object.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Material/material.hpp"
-#include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 #include "NanairoCore/Shape/shape.hpp"
 
 namespace nanairo {
@@ -59,9 +60,10 @@ LightSourceInfo PowerWeightedLightSourceSampler::getInfo(
   No detailed.
   */
 LightSourceInfo PowerWeightedLightSourceSampler::sample(
-    Sampler& sampler) const noexcept
+    Sampler& sampler,
+    const PathState& path_state) const noexcept
 {
-  return sampleInfo(sampler);
+  return sampleInfo(sampler, path_state);
 }
 
 /*!
@@ -70,9 +72,10 @@ LightSourceInfo PowerWeightedLightSourceSampler::sample(
   */
 LightSourceInfo PowerWeightedLightSourceSampler::sample(
     const IntersectionInfo& /* info */,
-    Sampler& sampler) const noexcept
+    Sampler& sampler,
+    const PathState& path_state) const noexcept
 {
-  return sampleInfo(sampler);
+  return sampleInfo(sampler, path_state);
 }
 
 /*!
@@ -153,10 +156,11 @@ void PowerWeightedLightSourceSampler::initialize(
   */
 inline
 const LightSourceInfo& PowerWeightedLightSourceSampler::sampleInfo(
-    Sampler& sampler) const noexcept
+    Sampler& sampler,
+    const PathState& path_state) const noexcept
 {
   const auto& light_source_cdf = lightSourceCdf();
-  const Float y = sampler.sample();
+  const Float y = sampler.draw1D(path_state);
   const auto sampled_lihgt_source = light_source_cdf.invert(y);
   return *sampled_lihgt_source;
 }

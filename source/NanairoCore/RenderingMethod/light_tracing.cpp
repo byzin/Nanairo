@@ -32,6 +32,7 @@
 #include "NanairoCore/CameraModel/camera_model.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/light_source_info.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/Data/shape_point.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
@@ -47,7 +48,7 @@
 #include "NanairoCore/Sampling/sampled_point.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
-#include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 #include "NanairoCore/Sampling/LightSourceSampler/light_source_sampler.hpp"
 #include "NanairoCore/Setting/rendering_method_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
@@ -73,9 +74,9 @@ LightTracing::LightTracing(System& system,
 void LightTracing::render(System& system,
                           Scene& scene,
                           const Wavelengths& sampled_wavelengths,
-                          const uint64 /* cycle */) noexcept
+                          const uint32 cycle) noexcept
 {
-  traceLightPath(system, scene, sampled_wavelengths);
+  traceLightPath(system, scene, sampled_wavelengths, cycle);
 }
 
 /*!
@@ -168,14 +169,18 @@ Ray LightTracing::generateRay(const World& world,
                               const Spectra& ray_weight,
                               CameraModel& camera,
                               Sampler& sampler,
+                              PathState& path_state,
                               zisc::pmr::memory_resource* mem_resource) noexcept
 {
   const auto& wavelengths = light_contribution->wavelengths();
   // Sample a light point
   const auto& light_sampler = lightPathLightSampler();
-  const auto light_source_info = light_sampler.sample(sampler);
+  path_state.setDimension(SampleDimension::kLightSourceSelection);
+  const auto light_source_info = light_sampler.sample(sampler, path_state);
   const auto light_source = light_source_info.object();
-  const auto light_point_info = light_source->shape().samplePoint(sampler);
+  path_state.setDimension(SampleDimension::kLightPointSample);
+  const auto light_point_info = light_source->shape().samplePoint(sampler,
+                                                                  path_state);
   ZISC_ASSERT(0.0 < light_point_info.pdf(), "The point pdf is negative.");
 
   // Sample a direction
@@ -191,7 +196,9 @@ Ray LightTracing::generateRay(const World& world,
   evalExplicitConnection(world, nullptr, light, intersection,
                          *light_contribution, ray_weight, camera, mem_resource);
   // Sample a ray direction
-  const auto result = light->sample(nullptr, wavelengths, sampler, &intersection);
+  path_state.setDimension(SampleDimension::kLightSample1);
+  const auto result = light->sample(nullptr, wavelengths,
+                                    sampler, path_state, &intersection);
   const auto& sampled_vout = std::get<0>(result);
   ZISC_ASSERT(0.0 < sampled_vout.pdf(), "The ray direction pdf is negative.");
   // Evaluate the light_contribution
@@ -255,20 +262,23 @@ const LightSourceSampler& LightTracing::lightPathLightSampler() const noexcept
 void LightTracing::traceLightPath(
     System& system,
     Scene& scene,
-    const Wavelengths& sampled_wavelengths) noexcept
+    const Wavelengths& sampled_wavelengths,
+    const uint32 cycle) noexcept
 {
   auto& sampler = system.globalSampler();
 
   // Init camera
   {
+    PathState path_state{cycle};
     auto& camera = scene.camera();
-    camera.sampleLensPoint(sampler);
+    path_state.setDimension(SampleDimension::kCameraLensSample);
+    camera.sampleLensPoint(sampler, path_state);
   }
 
   std::atomic<uint> path_set_index{0};
 
   auto trace_light_path =
-  [this, &system, &scene, &sampled_wavelengths, &path_set_index]
+  [this, &system, &scene, &sampled_wavelengths, cycle, &path_set_index]
   (const int thread_id, const uint)
   {
     const auto& camera = scene.camera();
@@ -284,7 +294,8 @@ void LightTracing::traceLightPath(
           flag = false;
           break;
         }
-        traceLightPath(system, scene, sampled_wavelengths, thread_id);
+        traceLightPath(system, scene, sampled_wavelengths, 
+                       cycle, thread_id, path_index);
       }
     }
   };
@@ -306,26 +317,29 @@ void LightTracing::traceLightPath(
 void LightTracing::traceLightPath(System& system,
                                   Scene& scene,
                                   const Wavelengths& sampled_wavelengths,
-                                  const int thread_id) noexcept
+                                  const uint32 cycle,
+                                  const int thread_id,
+                                  const uint path_index) noexcept
 {
   // System
-  auto& sampler = system.threadSampler(thread_id);
   auto& memory_manager = system.threadMemoryManager(thread_id);
+  auto& sampler = system.localSampler(path_index);
   // Scene
   const auto& world = scene.world();
   auto& camera = scene.camera();
   // Trace info
+  PathState path_state{cycle};
+  path_state.setLength(1);
   const auto& wavelengths = sampled_wavelengths.wavelengths();
   auto light_contribution = makeSampledSpectra(sampled_wavelengths);
   Spectra contribution{wavelengths};
   IntersectionInfo intersection;
-  uint path_length = 1;
   bool wavelength_is_selected = false;
 
   // Generate a light ray
   Spectra ray_weight{wavelengths, 1.0};
   auto ray = generateRay(world, &light_contribution, ray_weight, camera,
-                         sampler, &memory_manager);
+                         sampler, path_state, &memory_manager);
 
   while (true) {
     // Cast the ray
@@ -336,22 +350,21 @@ void LightTracing::traceLightPath(System& system,
     // Get a BxDF of the surface
     const auto& material = intersection.object()->material();
     const auto& surface = material.surface();
-    const auto bxdf = surface.makeBxdf(intersection,
-                                       wavelengths,
-                                       sampler,
-                                       &memory_manager);
+    path_state.setDimension(SampleDimension::kBxdfSample1);
+    const auto bxdf = surface.makeBxdf(intersection, wavelengths,
+                                       sampler, path_state, &memory_manager);
     Method::updateSelectedWavelengthInfo(bxdf,
                                          &light_contribution,
                                          &wavelength_is_selected);
 
     // Sample next ray
     auto next_ray_weight = ray_weight;
-    const auto next_ray = Method::sampleNextRay(path_length, ray, bxdf, intersection,
+    const auto next_ray = Method::sampleNextRay(ray, bxdf, intersection,
                                                 &ray_weight, &next_ray_weight,
-                                                sampler);
+                                                sampler, path_state);
     if (!next_ray.isAlive())
       break;
-    ++path_length;
+    path_state.incrementLength();
 
     evalExplicitConnection(world, &ray.direction(), bxdf, intersection,
                            light_contribution, ray_weight, camera, &memory_manager);
@@ -362,6 +375,7 @@ void LightTracing::traceLightPath(System& system,
     // Clear memory
     memory_manager.reset();
   }
+  // Clear memory
   memory_manager.reset();
 }
 

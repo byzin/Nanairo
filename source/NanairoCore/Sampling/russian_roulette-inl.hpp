@@ -16,32 +16,36 @@
 #include "zisc/utility.hpp"
 // Nanairo
 #include "sampled_spectra.hpp"
-#include "sampler.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/roulette_result.hpp"
+#include "Sampler/sampler.hpp"
 
 namespace nanairo {
 
 /*!
   */
 inline
-RouletteResult RussianRoulette::operator()(const uint path,
-                                           const SampledSpectra& weight,
-                                           Sampler& sampler) const noexcept
+RouletteResult RussianRoulette::operator()(
+    const SampledSpectra& weight,
+    Sampler& sampler,
+    const PathState& path_state) const noexcept
 {
-  return play(path, weight, sampler);
+  return play(weight, sampler, path_state);
 }
 
 /*!
   */
 inline
-RouletteResult RussianRoulette::play(const uint path,
-                                     const SampledSpectra& weight,
-                                     Sampler& sampler) const noexcept
+RouletteResult RussianRoulette::play(
+    const SampledSpectra& weight,
+    Sampler& sampler,
+    const PathState& path_state) const noexcept
 {
-  return (type_ == RouletteType::kMaxWeight)     ? playWithMax(weight, sampler) :
-         (type_ == RouletteType::kAverageWeight) ? playWithAverage(weight, sampler)
-                                                 : playWithPath(path);
+  return (type_ == RouletteType::kMaxWeight)
+      ? playWithMax(weight, sampler, path_state) :
+         (type_ == RouletteType::kAverageWeight)
+      ? playWithAverage(weight, sampler, path_state)
+      : playWithPath(path_state);
 }
 
 } // namespace nanairo

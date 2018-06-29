@@ -27,12 +27,12 @@ namespace nanairo {
 class CameraModel;
 class IntersectionInfo;
 class Material;
+class PathState;
 class Ray;
 class Sampler;
 class Scene;
 class ShaderModel;
 class System;
-template <typename> class UniquePointer;
 
 //! \addtogroup Core
 //! \{
@@ -64,6 +64,7 @@ class PathTracing : public RenderingMethod
   static Ray generateRay(const CameraModel& camera,
                          const Index2d& pixel_index,
                          Sampler& sampler,
+                         PathState& path_state,
                          zisc::pmr::memory_resource* mem_resource,
                          Spectra* ray_weight,
                          Float* inverse_direction_pdf) noexcept;
@@ -72,7 +73,7 @@ class PathTracing : public RenderingMethod
   void render(System& system,
               Scene& scene,
               const Wavelengths& sampled_wavelengths,
-              const uint64 cycle) noexcept override;
+              const uint32 cycle) noexcept override;
 
  private:
   //! Evaluate the explicit connection
@@ -86,6 +87,7 @@ class PathTracing : public RenderingMethod
       const bool emplicit_connection_is_enabled,
       const bool implicit_connection_is_enabled,
       Sampler& sampler,
+      PathState& path_state,
       zisc::pmr::memory_resource* mem_resource,
       Spectra* contribution) const noexcept;
 
@@ -113,12 +115,14 @@ class PathTracing : public RenderingMethod
   //! Parallelize path tracing
   void traceCameraPath(System& system,
                        Scene& scene,
-                       const Wavelengths& sampled_wavelengths) noexcept;
+                       const Wavelengths& sampled_wavelengths,
+                       const uint32 cycle) noexcept;
 
   //! Trace the camera path
   void traceCameraPath(System& system,
                        Scene& scene,
                        const Wavelengths& sampled_wavelengths,
+                       const uint32 cycle,
                        const int thread_id,
                        const Index2d& pixel_index) noexcept;
 

@@ -17,9 +17,10 @@
 #include "fresnel.hpp"
 #include "microfacet.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
-#include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 
 namespace nanairo {
 
@@ -151,12 +152,14 @@ SampledDirection MicrofacetGgx::sampleNormal(const Float roughness_x,
                                              const Float roughness_y,
                                              const Vector3& vin,
                                              Sampler& sampler,
+                                             const PathState& path_state,
                                              const bool calc_pdf) noexcept
 {
   auto m_normal = MicrofacetGgx::sampleMicrofacetNormal(roughness_x,
                                                         roughness_y,
                                                         vin,
-                                                        sampler);
+                                                        sampler,
+                                                        path_state);
 
   // Calculate the pdf of the microfacet normal
   Float inverse_pdf = 0.0;
@@ -180,7 +183,8 @@ Vector3 MicrofacetGgx::SmithGgxMicrosurface::sampleMicrofacetNormal(
     const Float roughness_x,
     const Float roughness_y,
     const Vector3& vin,
-    Sampler& sampler) noexcept
+    Sampler& sampler,
+    const PathState& path_state) noexcept
 {
   // Stretch the incident vector
   const auto v = Vector3{roughness_x * vin[0],
@@ -196,15 +200,14 @@ Vector3 MicrofacetGgx::SmithGgxMicrosurface::sampleMicrofacetNormal(
   ZISC_ASSERT(isUnitVector(t2), "The t2 isn't unit vector.");
 
   // Sample point with polar coordinate
-  const Float u1 = sampler.sample();
-  const Float u2 = sampler.sample();
+  const auto u = sampler.draw2D(path_state);
   const Float a = zisc::invert(1.0 + v[2]);
-  const Float r = zisc::sqrt(u1);
-  const Float phi = (u2 < a)
-      ? (u2 / a) * zisc::kPi<Float>
-      : (1.0 + (u2 - a) / (1.0 - a)) * zisc::kPi<Float>;
+  const Float r = zisc::sqrt(u[0]);
+  const Float phi = (u[1] < a)
+      ? (u[1] / a) * zisc::kPi<Float>
+      : (1.0 + (u[1] - a) / (1.0 - a)) * zisc::kPi<Float>;
   const Float p1 = r * zisc::cos(phi);
-  const Float p2 = r * zisc::sin(phi) * ((u2 < a) ? 1.0 : v[2]);
+  const Float p2 = r * zisc::sin(phi) * ((u[1] < a) ? 1.0 : v[2]);
 
   // Compute normal
   const Float p3 = zisc::sqrt(
@@ -229,10 +232,15 @@ inline
 Vector3 MicrofacetGgx::sampleMicrofacetNormal(const Float roughness_x,
                                               const Float roughness_y,
                                               const Vector3& vin,
-                                              Sampler& sampler) noexcept
+                                              Sampler& sampler,
+                                              const PathState& path_state) noexcept
 {
   using MSurface = GgxMicrosurface<kMicrosurface>;
-  return MSurface::sampleMicrofacetNormal(roughness_x, roughness_y, vin, sampler);
+  return MSurface::sampleMicrofacetNormal(roughness_x,
+                                          roughness_y,
+                                          vin,
+                                          sampler,
+                                          path_state);
 }
 
 } // namespace nanairo

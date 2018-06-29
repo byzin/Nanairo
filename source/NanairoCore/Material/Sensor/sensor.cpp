@@ -16,6 +16,7 @@
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/CameraModel/camera_model.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_point.hpp"
@@ -98,6 +99,7 @@ std::tuple<SampledDirection, SampledSpectra> Sensor::sample(
     const Vector3* /* vin */,
     const WavelengthSamples& wavelengths,
     Sampler& /* sampler */,
+    PathState& /* path_state */,
     const IntersectionInfo* /* info */) const noexcept
 {
   const auto vout = camera().sampleDirection(pixel_index_);

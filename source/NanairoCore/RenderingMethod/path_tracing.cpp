@@ -17,6 +17,7 @@
 // Zisc
 #include "zisc/arith_array.hpp"
 #include "zisc/error.hpp"
+#include "zisc/fnv_1a_hash_engine.hpp"
 #include "zisc/math.hpp"
 #include "zisc/memory_manager.hpp"
 #include "zisc/memory_resource.hpp"
@@ -30,6 +31,7 @@
 #include "NanairoCore/CameraModel/camera_model.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/light_source_info.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
 #include "NanairoCore/DataStructure/bvh.hpp"
@@ -44,8 +46,8 @@
 #include "NanairoCore/Sampling/sampled_point.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
 #include "NanairoCore/Sampling/sampled_wavelengths.hpp"
-#include "NanairoCore/Sampling/sampler.hpp"
 #include "NanairoCore/Sampling/LightSourceSampler/light_source_sampler.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 #include "NanairoCore/Setting/rendering_method_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
 
@@ -70,9 +72,9 @@ PathTracing::PathTracing(System& system,
 void PathTracing::render(System& system,
                          Scene& scene,
                          const Wavelengths& sampled_wavelengths,
-                         const uint64 /* cycle */) noexcept
+                         const uint32 cycle) noexcept
 {
-  traceCameraPath(system, scene, sampled_wavelengths);
+  traceCameraPath(system, scene, sampled_wavelengths, cycle);
 }
 
 /*!
@@ -89,6 +91,7 @@ void PathTracing::evalExplicitConnection(
     const bool explicit_connection_is_enabled,
     const bool implicit_connection_is_enabled,
     Sampler& sampler,
+    PathState& path_state,
     zisc::pmr::memory_resource* mem_resource,
     Spectra* contribution) const noexcept
 {
@@ -97,9 +100,14 @@ void PathTracing::evalExplicitConnection(
 
   // Select a light source and sample a point on the light source
   const auto& light_sampler = eyePathLightSampler();
-  const auto light_source_info = light_sampler.sample(intersection, sampler);
+  path_state.setDimension(SampleDimension::kLightSourceSelection);
+  const auto light_source_info = light_sampler.sample(intersection,
+                                                      sampler,
+                                                      path_state);
   const auto light_source = light_source_info.object();
-  const auto light_point_info = light_source->shape().samplePoint(sampler);
+  path_state.setDimension(SampleDimension::kLightPointSample);
+  const auto light_point_info = light_source->shape().samplePoint(sampler,
+                                                                  path_state);
 
   // Check if the light is in front or back of the surface
   const bool is_in_front = 0.0 < zisc::dot(intersection.normal(),
@@ -237,6 +245,7 @@ const LightSourceSampler& PathTracing::eyePathLightSampler() const noexcept
 Ray PathTracing::generateRay(const CameraModel& camera,
                              const Index2d& pixel_index,
                              Sampler& sampler,
+                             PathState& path_state,
                              zisc::pmr::memory_resource* mem_resource,
                              Spectra* weight,
                              Float* inverse_direction_pdf) noexcept
@@ -246,7 +255,8 @@ Ray PathTracing::generateRay(const CameraModel& camera,
   const auto& lens_point = camera.sampledLensPoint();
   // Sample a ray direction
   const auto sensor = camera.makeSensor(pixel_index, wavelengths, mem_resource);
-  const auto result = sensor->sample(nullptr, wavelengths, sampler);
+  path_state.setDimension(SampleDimension::kSensorSample1);
+  const auto result = sensor->sample(nullptr, wavelengths, sampler, path_state);
   const auto& sampled_vout = std::get<0>(result);
   const auto& w = std::get<1>(result);
   *weight = *weight * w;
@@ -293,21 +303,25 @@ Float PathTracing::calcMisWeight(const Float pdf1, const Float inverse_pdf2) noe
   */
 void PathTracing::traceCameraPath(System& system,
                                   Scene& scene,
-                                  const Wavelengths& sampled_wavelengths) noexcept
+                                  const Wavelengths& sampled_wavelengths,
+                                  const uint32 cycle) noexcept
 {
   auto& sampler = system.globalSampler();
 
   // Init camera
   {
+    PathState path_state{cycle};
     auto& camera = scene.camera();
-    camera.sampleLensPoint(sampler);
-    camera.jitter(sampler);
+    path_state.setDimension(SampleDimension::kCameraJittering);
+    camera.jitter(sampler, path_state);
+    path_state.setDimension(SampleDimension::kCameraLensSample);
+    camera.sampleLensPoint(sampler, path_state);
   }
 
   std::atomic<uint> tile_count{0};
 
   auto trace_camera_path =
-  [this, &system, &scene, &sampled_wavelengths, &tile_count]
+  [this, &system, &scene, &sampled_wavelengths, cycle, &tile_count]
   (const int thread_id, const uint) noexcept
   {
     const auto& camera = scene.camera();
@@ -318,7 +332,8 @@ void PathTracing::traceCameraPath(System& system,
       auto tile = RenderingMethod::getRenderingTile(camera.imageResolution(), index);
       for (uint i = 0; i < tile.numOfPixels(); ++i) {
         const auto& pixel_index = tile.current();
-        traceCameraPath(system, scene, sampled_wavelengths, thread_id, pixel_index);
+        traceCameraPath(system, scene, sampled_wavelengths,
+                        cycle, thread_id, pixel_index);
         tile.next();
       }
     }
@@ -341,21 +356,25 @@ void PathTracing::traceCameraPath(System& system,
 void PathTracing::traceCameraPath(System& system,
                                   Scene& scene,
                                   const Wavelengths& sampled_wavelengths,
+                                  const uint32 cycle,
                                   const int thread_id,
                                   const Index2d& pixel_index) noexcept
 {
   // System
-  auto& sampler = system.threadSampler(thread_id);
   auto& memory_manager = system.threadMemoryManager(thread_id);
+  const uint path_index = pixel_index[0] +
+                          pixel_index[1] * system.imageWidthResolution();
+  auto& sampler = system.localSampler(path_index);
   // Scene
   const auto& world = scene.world();
   auto& camera = scene.camera();
   // Trace info
+  PathState path_state{cycle};
+  path_state.setLength(1);
   const auto& wavelengths = sampled_wavelengths.wavelengths();
   auto camera_contribution = makeSampledSpectra(sampled_wavelengths);
   Spectra contribution{wavelengths};
   IntersectionInfo intersection;
-  uint path_length = 1;
   bool wavelength_is_selected = false;
 
   constexpr bool implicit_connection_is_enabled =
@@ -365,7 +384,7 @@ void PathTracing::traceCameraPath(System& system,
   // Generate a camera ray
   Float inverse_direction_pdf;
   Spectra ray_weight{wavelengths, 1.0};
-  auto ray = generateRay(camera, pixel_index, sampler, &memory_manager,
+  auto ray = generateRay(camera, pixel_index, sampler, path_state, &memory_manager,
                          &camera_contribution, &inverse_direction_pdf);
 
   while (true) {
@@ -383,22 +402,22 @@ void PathTracing::traceCameraPath(System& system,
     // Get a BxDF of the surface
     const auto& material = intersection.object()->material();
     const auto& surface = material.surface();
-    const auto bxdf = surface.makeBxdf(intersection,
-                                       wavelengths,
-                                       sampler,
-                                       &memory_manager);
+    path_state.setDimension(SampleDimension::kBxdfSample1);
+    const auto bxdf = surface.makeBxdf(intersection, wavelengths,
+                                       sampler, path_state, &memory_manager);
     Method::updateSelectedWavelengthInfo(bxdf,
                                          &camera_contribution,
                                          &wavelength_is_selected);
 
     // Sample next ray
     auto next_ray_weight = ray_weight;
-    const auto next_ray = Method::sampleNextRay(path_length, ray, bxdf, intersection,
+    const auto next_ray = Method::sampleNextRay(ray, bxdf, intersection,
                                                 &ray_weight, &next_ray_weight,
-                                                sampler, &inverse_direction_pdf);
+                                                sampler, path_state,
+                                                &inverse_direction_pdf);
     if (!next_ray.isAlive())
       break;
-    ++path_length;
+    path_state.incrementLength();
 
     explicit_connection_is_enabled = (bxdf->type() != ShaderType::Specular) &&
         CoreConfig::pathTracingExplicitConnectionIsEnabled();
@@ -407,7 +426,7 @@ void PathTracing::traceCameraPath(System& system,
                            camera_contribution, ray_weight,
                            explicit_connection_is_enabled,
                            implicit_connection_is_enabled,
-                           sampler, &memory_manager, &contribution);
+                           sampler, path_state, &memory_manager, &contribution);
 
     // Update ray
     ray = next_ray;

@@ -20,11 +20,12 @@
 // Nanairo
 #include "film.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Material/Sensor/sensor.hpp"
 #include "NanairoCore/Sampling/sample_statistics.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_point.hpp"
-#include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 
 namespace nanairo {
 
@@ -100,10 +101,13 @@ uint CameraModel::heightResolution() const noexcept
   No detailed.
   */
 inline
-void CameraModel::jitter(Sampler& sampler) noexcept
+void CameraModel::jitter(Sampler& sampler, const PathState& path_state) noexcept
 {
-  jittering_[0] = (is_jittering_enabled_) ? sampler.sample() : 0.0;
-  jittering_[1] = (is_jittering_enabled_) ? sampler.sample() : 0.0;
+  if (is_jittering_enabled_) {
+    const auto r = sampler.draw2D(path_state);
+    jittering_[0] = r[0];
+    jittering_[1] = r[1];
+  }
 }
 
 /*!

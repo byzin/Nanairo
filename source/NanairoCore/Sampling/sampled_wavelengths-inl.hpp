@@ -17,8 +17,9 @@
 #include "zisc/error.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
-#include "sampler.hpp"
+#include "Sampler/sampler.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
 
 namespace nanairo {
@@ -58,12 +59,13 @@ const IntensitySamples& SampledWavelengths::inverseProbabilities() const noexcep
   No detailed.
   */
 inline
-void SampledWavelengths::selectPrimaryWavelength(Sampler& sampler) noexcept
+void SampledWavelengths::selectPrimaryWavelength(
+    Sampler& sampler,
+    const PathState& path_state) noexcept
 {
-  using zisc::cast;
-
-  constexpr Float n = cast<Float>(size());
-  const uint selected_index = cast<uint>(n * sampler.sample());
+  constexpr Float n = zisc::cast<Float>(size());
+  const Float r = sampler.draw1D(path_state);
+  const uint selected_index = zisc::cast<uint>(n * r);
   ZISC_ASSERT(zisc::isInBounds(selected_index, 0u, size()),
               "The sampled index is out of range.");
   wavelengths_.setPrimaryWavelength(selected_index);

@@ -17,6 +17,7 @@
 namespace nanairo {
 
 // Forward declaration
+class PathState;
 class Sampler;
 
 //! \addtogroup Core 
@@ -50,7 +51,8 @@ class SampledDirection
 
   //! Sample direction on hemisphere following cos(theta)^kN pdf
   template <uint kN>
-  static SampledDirection sampleOnHemisphere(Sampler& sampler) noexcept;
+  static SampledDirection sampleOnHemisphere(Sampler& sampler,
+                                             const PathState& path_state) noexcept;
 
   //! Set direction
   void setDirection(const Vector3& direction) noexcept;

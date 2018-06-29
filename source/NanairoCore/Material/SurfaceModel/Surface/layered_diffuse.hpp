@@ -19,6 +19,10 @@
 
 namespace nanairo {
 
+// Forward declaration
+class PathState;
+class Sampler;
+
 //! \addtogroup Core
 //! \{
 
@@ -45,6 +49,7 @@ class LayeredDiffuse
                                const Float k_d,
                                const Float re,
                                Sampler& sampler,
+                               const PathState& path_state,
                                Float* pdf = nullptr) noexcept;
 
   //! Sample a reflection direction and evaluate the direction weight
@@ -55,7 +60,8 @@ class LayeredDiffuse
       const Float n,
       const Float k_d,
       const Float re,
-      Sampler& sampler) noexcept;
+      Sampler& sampler,
+      PathState& path_state) noexcept;
 
   //! Calculate the internal reflectance
   static Float calcRi(const Float n) noexcept;
@@ -76,6 +82,7 @@ class LayeredDiffuse
                                    const Float k_d,
                                    const Float ri,
                                    Sampler& sampler,
+                                   const PathState& path_state,
                                    Float* pdf = nullptr) noexcept;
 
   //! Calculate pure body reflectance

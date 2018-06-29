@@ -33,7 +33,11 @@ function(getNanairoKeywords nanairo_keyword_list)
       # System
       system "System"
       numOfThreads "NumOfThreads"
-      randomSeed "RandomSeed"
+      samplerType "SamplerType"
+          pcgSampler "PCG"
+          xoshiroSampler "Xoshiro"
+          cmjSampler "Correlated Multi-Jittered"
+      samplerSeed "SamplerSeed"
       terminationCycle "TerminationCycle"
       terminationTime "TerminationTime"
       imageResolution "ImageResolution"

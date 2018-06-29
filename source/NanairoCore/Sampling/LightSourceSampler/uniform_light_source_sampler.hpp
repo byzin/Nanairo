@@ -23,6 +23,7 @@ namespace nanairo {
 // Forward declaration
 class IntersectionInfo;
 class Object;
+class PathState;
 class Sampler;
 class System;
 class World;
@@ -47,12 +48,13 @@ class UniformLightSourceSampler : public LightSourceSampler
       const Object* light_source) const noexcept override;
 
   //! Sample a light source
-  LightSourceInfo sample(Sampler& sampler) const noexcept override;
+  LightSourceInfo sample(Sampler& sampler,
+                         const PathState& path_state) const noexcept override;
 
   //! Sample a light source
-  LightSourceInfo sample(
-      const IntersectionInfo& info,
-      Sampler& sampler) const noexcept override;
+  LightSourceInfo sample(const IntersectionInfo& info,
+                         Sampler& sampler,
+                         const PathState& path_state) const noexcept override;
 
  private:
   //! Return the light source info by the light source
@@ -65,7 +67,8 @@ class UniformLightSourceSampler : public LightSourceSampler
   const zisc::pmr::vector<const Object*>& lightSourceList() const noexcept;
 
   //! Sample a light source
-  LightSourceInfo sampleInfo(Sampler& sampler) const noexcept;
+  LightSourceInfo sampleInfo(Sampler& sampler,
+                             const PathState& path_state) const noexcept;
 
   //! Return the weight per light
   Float weightPerLight() const noexcept;

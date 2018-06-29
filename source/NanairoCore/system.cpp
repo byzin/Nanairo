@@ -22,7 +22,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "RenderingMethod/rendering_method.hpp"
 #include "Sampling/sample_statistics.hpp"
-#include "Sampling/sampler.hpp"
+#include "Sampling/Sampler/sampler.hpp"
 #include "Setting/rendering_method_setting_node.hpp"
 #include "Setting/setting_node_base.hpp"
 #include "Setting/system_setting_node.hpp"
@@ -71,19 +71,21 @@ void System::initialize(const SettingNodeBase* settings,
         num_of_threads,
         &data_resource);
   }
-  // Sampler
-  {
-    const auto num_of_sampler = system_settings->numOfThreads() + 1;
-    sampler_list_.reserve(num_of_sampler);
-    for (uint i = 0; i < num_of_sampler; ++i) {
-      const auto seed = zisc::cast<uint64>(system_settings->randomSeed()) + i;
-      sampler_list_.emplace_back(seed);
-    }
-  }
   // Image resolution
   {
     image_resolution_[0] = system_settings->imageWidthResolution();
     image_resolution_[1] = system_settings->imageHeightResolution();
+  }
+  // Sampler
+  {
+    sampler_type_ = system_settings->samplerType();
+    sampler_seed_ = system_settings->samplerSeed();
+    const uint32 num_of_pixels = imageWidthResolution() * imageHeightResolution();
+    sampler_list_.reserve(num_of_pixels + 1);
+    for (uint32 index = 0; index <= num_of_pixels; ++index) {
+      const uint32 seed = samplerSeed() + zisc::Fnv1aHash32::hash(index);
+      sampler_list_.emplace_back(Sampler::make(samplerType(), seed, &data_resource));
+    }
   }
   // Rendering color mode
   {

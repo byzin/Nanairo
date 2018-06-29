@@ -47,6 +47,7 @@ auto RoughDielectricSurface::makeBxdf(
     const IntersectionInfo& info,
     const WavelengthSamples& wavelengths,
     Sampler& /* sampler */,
+    const PathState& /* path_state */,
     zisc::pmr::memory_resource* mem_resource) const noexcept -> ShaderPointer
 {
   const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];

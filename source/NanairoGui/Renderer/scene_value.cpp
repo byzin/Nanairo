@@ -43,6 +43,7 @@
 #include "NanairoCore/RenderingMethod/rendering_method.hpp"
 #include "NanairoCore/Sampling/russian_roulette.hpp"
 #include "NanairoCore/Sampling/wavelength_sampler.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 #include "NanairoCore/Setting/bvh_setting_node.hpp"
 #include "NanairoCore/Setting/camera_setting_node.hpp"
 #include "NanairoCore/Setting/emitter_setting_node.hpp"
@@ -795,9 +796,20 @@ void SceneValue::toSystemSetting(const QJsonObject& value,
     system_setting->setNumOfThreads(num_of_threads);
   }
   {
-    const auto random_seed = toInt<uint32>(system_value,
-                                           keyword::randomSeed);
-    system_setting->setRandomSeed(random_seed);
+    const auto sampler_type = toString(system_value,
+                                       keyword::samplerType);
+    const SamplerType type =
+        (sampler_type == keyword::pcgSampler)
+            ? SamplerType::kPcg :
+        (sampler_type == keyword::xoshiroSampler)
+            ? SamplerType::kXoshiro
+            : SamplerType::kCmj;
+    system_setting->setSamplerType(type);
+  }
+  {
+    const auto sampler_seed = toInt<uint32>(system_value,
+                                            keyword::samplerSeed);
+    system_setting->setSamplerSeed(sampler_seed);
   }
   {
     const uint32 termination_time = toInt<uint32>(system_value,

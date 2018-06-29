@@ -22,6 +22,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
 #include "NanairoCore/Data/intersection_test_result.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/Data/shape_point.hpp"
 #include "NanairoCore/DataStructure/aabb.hpp"
@@ -29,7 +30,7 @@
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Sampling/sampled_point.hpp"
-#include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 
 namespace nanairo  {
 
@@ -168,12 +169,14 @@ IntersectionTestResult FlatTriangle::testIntersection(
   \details
   No detailed.
   */
-ShapePoint FlatTriangle::samplePoint(Sampler& sampler) const noexcept
+ShapePoint FlatTriangle::samplePoint(Sampler& sampler,
+                                     const PathState& path_state) const noexcept
 {
   const auto& v = vertex0();
   const auto& e = edge();
 
-  Point2 st{sampler.sample(), sampler.sample()};
+  const auto r = sampler.draw2D(path_state);
+  Point2 st{r[0], r[1]};
   if (1.0 < (st[0] + st[1])) {
     st[0] = 1.0 - st[0];
     st[1] = 1.0 - st[1];

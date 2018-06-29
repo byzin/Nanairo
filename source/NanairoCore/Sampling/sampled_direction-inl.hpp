@@ -16,10 +16,11 @@
 #include "zisc/math.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
-#include "sampler.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
+#include "Sampler/sampler.hpp"
 
 namespace nanairo {
 
@@ -91,18 +92,18 @@ Float SampledDirection::pdf() const noexcept
   */
 template <uint kCosineWeight> inline
 SampledDirection SampledDirection::SampledDirection::sampleOnHemisphere(
-    Sampler& sampler) noexcept
+    Sampler& sampler,
+    const PathState& path_state) noexcept
 {
   using zisc::cast;
 
   // Calculate phi and theta using inverse function method
-  const Float u1 = sampler.sample();
-  const Float u2 = sampler.sample();
+  const auto r = sampler.draw2D(path_state);
 
   constexpr Float exponent = zisc::invert(cast<Float>(kCosineWeight + 1));
-  const Float cos_theta = zisc::pow(1.0 - u1, exponent);
+  const Float cos_theta = zisc::pow(1.0 - r[0], exponent);
   const Float sin_theta = zisc::sqrt(1.0 - cos_theta * cos_theta);
-  const Float phi = 2.0 * zisc::kPi<Float> * (u2 - 0.5);
+  const Float phi = 2.0 * zisc::kPi<Float> * (r[1] - 0.5);
 
   const Vector3 direction{sin_theta * zisc::cos(phi),
                           sin_theta * zisc::sin(phi),

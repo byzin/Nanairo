@@ -22,6 +22,7 @@ namespace nanairo {
 
 // Forward declaration
 class IntersectionInfo;
+class PathState;
 class Sampler;
 class WavelengthSamples;
 
@@ -47,6 +48,7 @@ class SpecularBrdf : public SpecularShaderModel
       const Vector3* vin,
       const WavelengthSamples& wavelengths,
       Sampler& sampler,
+      PathState& path_state,
       const IntersectionInfo* info) const noexcept override;
 
   //! Check if wavelength selection occured

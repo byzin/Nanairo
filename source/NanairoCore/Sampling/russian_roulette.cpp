@@ -13,10 +13,11 @@
 #include "zisc/utility.hpp"
 // Nanairo
 #include "sampled_spectra.hpp"
-#include "sampler.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Setting/rendering_method_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
+#include "Sampler/sampler.hpp"
 
 namespace nanairo {
 
@@ -47,11 +48,12 @@ void RussianRoulette::initialize(const SettingNodeBase* settings) noexcept
   */
 RouletteResult RussianRoulette::playWithAverage(
     const SampledSpectra& weight,
-    Sampler& sampler) const noexcept
+    Sampler& sampler,
+    const PathState& path_state) const noexcept
 {
   const Float average = weight.average();
   const Float probability = zisc::min(1.0, average);
-  const bool result = sampler.sample() < probability;
+  const bool result = sampler.draw1D(path_state) < probability;
   return (result) ? RouletteResult{probability} : RouletteResult{};
 }
 
@@ -61,11 +63,12 @@ RouletteResult RussianRoulette::playWithAverage(
   */
 RouletteResult RussianRoulette::playWithMax(
     const SampledSpectra& weight,
-    Sampler& sampler) const noexcept
+    Sampler& sampler,
+    const PathState& path_state) const noexcept
 {
   const Float max = weight.max();
   const Float probability = zisc::min(1.0, max);
-  const bool result = sampler.sample() < probability;
+  const bool result = sampler.draw1D(path_state) < probability;
   return (result) ? RouletteResult{probability} : RouletteResult{};
 }
 
@@ -73,9 +76,10 @@ RouletteResult RussianRoulette::playWithMax(
   \details
   No detailed.
   */
-RouletteResult RussianRoulette::playWithPath(const uint path) const noexcept
+RouletteResult RussianRoulette::playWithPath(
+    const PathState& path_state) const noexcept
 {
-  return (path < max_path_) ? RouletteResult{1.0} : RouletteResult{};
+  return (path_state.length() < max_path_) ? RouletteResult{1.0} : RouletteResult{};
 }
 
 } // namespace nanairo

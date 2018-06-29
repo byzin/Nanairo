@@ -22,6 +22,7 @@
 #include "surface_model.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Material/TextureModel/texture_model.hpp"
 #include "NanairoCore/Material/Bxdf/interfaced_lambertian_brdf.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
@@ -49,6 +50,7 @@ auto LayeredDiffuseSurface::makeBxdf(
     const IntersectionInfo& info,
     const WavelengthSamples& wavelengths,
     Sampler& sampler,
+    const PathState& path_state,
     zisc::pmr::memory_resource* mem_resource) const noexcept -> ShaderPointer
 {
   const auto wavelength = wavelengths[wavelengths.primaryWavelengthIndex()];
@@ -70,7 +72,8 @@ auto LayeredDiffuseSurface::makeBxdf(
 
   // Make a interfaced lambertian BRDF
   using BxdfPointer = zisc::UniqueMemoryPointer<InterfacedLambertianBrdf>;
-  auto ptr = BxdfPointer::make(mem_resource, k_d, roughness_x, roughness_y, n, sampler);
+  auto ptr = BxdfPointer::make(mem_resource, k_d, roughness_x, roughness_y,
+                               n, sampler, path_state);
   return ptr;
 }
 

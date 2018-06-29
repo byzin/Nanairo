@@ -31,6 +31,7 @@ namespace nanairo {
 // Forward declaration
 class Aabb;
 class IntersectionInfo;
+class PathState;
 class Ray;
 class Sampler;
 class System;
@@ -83,7 +84,8 @@ class Shape
       IntersectionInfo* intersection) const noexcept = 0;
 
   //! Sample a point randomly on the surface of the shape
-  virtual ShapePoint samplePoint(Sampler& sampler) const noexcept = 0;
+  virtual ShapePoint samplePoint(Sampler& sampler,
+                                 const PathState& path_state) const noexcept = 0;
 
   //! Set surface area of shape
   void setSurfaceArea(const Float surface_area) noexcept;

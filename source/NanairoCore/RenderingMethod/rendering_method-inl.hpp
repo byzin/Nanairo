@@ -27,13 +27,14 @@
 #include "NanairoCore/world.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Data/ray.hpp"
 #include "NanairoCore/Data/rendering_tile.hpp"
 #include "NanairoCore/DataStructure/bvh.hpp"
 #include "NanairoCore/Sampling/russian_roulette.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
-#include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 
 namespace nanairo {
 
@@ -49,7 +50,7 @@ inline
 void RenderingMethod::operator()(System& system,
                                  Scene& scene,
                                  const Wavelengths& sampled_wavelengths,
-                                 const uint64 cycle) noexcept
+                                 const uint32 cycle) noexcept
 {
   render(system, scene, sampled_wavelengths, cycle);
 }
@@ -141,11 +142,13 @@ Ray RenderingMethod::makeShadowRay(const Point3& source,
   No detailed.
   */
 inline
-RouletteResult RenderingMethod::playRussianRoulette(const uint path,
-                                                    const Spectra& weight,
-                                                    Sampler& sampler) const noexcept
+RouletteResult RenderingMethod::playRussianRoulette(
+    const Spectra& weight,
+    Sampler& sampler,
+    PathState& path_state) const noexcept
 {
-  return russian_roulette_(path, weight, sampler);
+  path_state.setDimension(SampleDimension::kRussianRoulette);
+  return russian_roulette_(weight, sampler, path_state);
 }
 
 /*!
@@ -153,13 +156,13 @@ RouletteResult RenderingMethod::playRussianRoulette(const uint path,
   No detailed.
   */
 inline
-Ray RenderingMethod::sampleNextRay(const uint length,
-                                   const Ray& ray,
+Ray RenderingMethod::sampleNextRay(const Ray& ray,
                                    const ShaderPointer& bxdf,
                                    const IntersectionInfo& intersection,
                                    Spectra* ray_weight,
                                    Spectra* next_ray_weight,
                                    Sampler& sampler,
+                                   PathState& path_state,
                                    Float* inverse_direction_pdf) const noexcept
 {
   ZISC_ASSERT(ray_weight != nullptr, "The ray_weight is null.");
@@ -169,7 +172,9 @@ Ray RenderingMethod::sampleNextRay(const uint length,
   const auto& wavelengths = ray_weight->wavelengths();
   const auto& vin = ray.direction();
 
-  const auto result = bxdf->sample(&vin, wavelengths, sampler, &intersection);
+  path_state.setDimension(SampleDimension::kBxdfSample1);
+  const auto result = bxdf->sample(&vin, wavelengths,
+                                   sampler, path_state, &intersection);
   const auto& sampled_vout = std::get<0>(result);
   const auto& weight = std::get<1>(result);
 
@@ -180,7 +185,9 @@ Ray RenderingMethod::sampleNextRay(const uint length,
 
   // Play russian roulette
   const auto next_weight = *ray_weight * weight;
-  const auto roulette_result = playRussianRoulette(length, next_weight, sampler);
+  const auto roulette_result = playRussianRoulette(next_weight,
+                                                   sampler,
+                                                   path_state);
   if (roulette_result) {
     // Update ray weight
     const Float inverse_probability = zisc::invert(roulette_result.probability());

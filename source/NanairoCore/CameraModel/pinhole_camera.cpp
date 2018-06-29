@@ -24,7 +24,7 @@
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
-#include "NanairoCore/Sampling/sampler.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 #include "NanairoCore/Shape/plane.hpp"
 #include "NanairoCore/Setting/camera_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
@@ -157,7 +157,8 @@ const Point3& PinholeCamera::sampledLensPoint() const noexcept
   \details
   No detailed.
   */
-void PinholeCamera::sampleLensPoint(Sampler& /* sampler */) noexcept
+void PinholeCamera::sampleLensPoint(Sampler& /* sampler */,
+                                    const PathState& /* path_state */) noexcept
 {
 }
 

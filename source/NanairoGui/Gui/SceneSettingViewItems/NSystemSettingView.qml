@@ -18,127 +18,135 @@ NPane {
 
   property bool isEditMode: true
 
-  ColumnLayout {
-    id: column1
+  RowLayout {
+    id: row1
 
-    width: Definitions.defaultSettingItemWidth
-    spacing: Definitions.defaultItemSpace
+    spacing: Definitions.defaultBlockSize
 
-    NLabel {
-      text: "num of threads"
-    }
+    ColumnLayout {
+      id: column1
 
-    NSpinBox {
-      id: numOfThreadsSpinBox
-
-      Layout.fillWidth: true
-      Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      from: 1
-      to: 128
-      value: 1
-    }
-
-    NButton {
-      Layout.preferredHeight: Definitions.defaultBlockSize
-      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-      text: "auto"
-
-      onClicked: numOfThreadsSpinBox.value = nanairoManager.getIdealThreadCount()
-    }
-
-    NLabel {
-      Layout.topMargin: Definitions.defaultBlockSize
-      text: "random seed"
-    }
-
-    NSpinBox {
-      id: randomSeedSpinBox
-
-      Layout.fillWidth: true
-      Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      from: 0
-      to: Definitions.intMax
-      value: 0
-    }
-
-    NButton {
-      Layout.preferredHeight: Definitions.defaultBlockSize
-      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-      text: "random"
-
-      onClicked: randomSeedSpinBox.value = nanairoManager.generateSeedRandomly()
-    }
-
-    NLabel {
-      Layout.topMargin: Definitions.defaultBlockSize
-      text: "image resolution"
-    }
-
-    RowLayout {
-
-      Layout.fillWidth: true
+      Layout.preferredWidth: Definitions.defaultSettingItemWidth
+      spacing: Definitions.defaultItemSpace
 
       NLabel {
-        Layout.preferredWidth: Definitions.defaultBlockSize
-        text: "w"
+        text: "num of threads"
       }
 
       NSpinBox {
-        id: widthResolutionSpinBox
+        id: numOfThreadsSpinBox
 
         Layout.fillWidth: true
         Layout.preferredHeight: Definitions.defaultSettingItemHeight
-        from: 256
-        to: Definitions.intMax
-        value: from
+        from: 1
+        to: 128
+        value: 1
       }
-    }
 
-    RowLayout {
+      NButton {
+        Layout.preferredHeight: Definitions.defaultBlockSize
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+        text: "auto"
 
-      Layout.fillWidth: true
+        onClicked: numOfThreadsSpinBox.value = nanairoManager.getIdealThreadCount()
+      }
 
       NLabel {
-        Layout.preferredWidth: Definitions.defaultBlockSize
-        text: "h"
+        Layout.topMargin: Definitions.defaultBlockSize
+        text: "sampler type"
       }
 
-      NSpinBox {
-        id: heightResolutionSpinBox
+      NComboBox {
+        id: samplerTypeComboBox
 
         Layout.fillWidth: true
         Layout.preferredHeight: Definitions.defaultSettingItemHeight
-        from: 256
+        currentIndex: 2
+        model: [Definitions.pcgSampler,
+                Definitions.xoshiroSampler,
+                Definitions.cmjSampler]
+      }
+
+      NLabel {
+        text: "sampler seed"
+      }
+
+      NSpinBox {
+        id: samplerSeedSpinBox
+
+        Layout.fillWidth: true
+        Layout.preferredHeight: Definitions.defaultSettingItemHeight
+        from: 0
         to: Definitions.intMax
-        value: from
+        value: 0
+      }
+
+      NButton {
+        Layout.preferredHeight: Definitions.defaultBlockSize
+        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+        text: "random"
+
+        onClicked: samplerSeedSpinBox.value = nanairoManager.generateSeedRandomly()
+      }
+
+      NLabel {
+        Layout.topMargin: Definitions.defaultBlockSize
+        text: "image resolution"
+      }
+
+      RowLayout {
+
+        Layout.fillWidth: true
+
+        NLabel {
+          Layout.preferredWidth: Definitions.defaultBlockSize
+          text: "w"
+        }
+
+        NSpinBox {
+          id: widthResolutionSpinBox
+
+          Layout.fillWidth: true
+          Layout.preferredHeight: Definitions.defaultSettingItemHeight
+          from: 256
+          to: Definitions.intMax
+          value: from
+        }
+      }
+
+      RowLayout {
+
+        Layout.fillWidth: true
+
+        NLabel {
+          Layout.preferredWidth: Definitions.defaultBlockSize
+          text: "h"
+        }
+
+        NSpinBox {
+          id: heightResolutionSpinBox
+
+          Layout.fillWidth: true
+          Layout.preferredHeight: Definitions.defaultSettingItemHeight
+          from: 256
+          to: Definitions.intMax
+          value: from
+        }
       }
     }
 
-    NLabel {
-      Layout.topMargin: Definitions.defaultBlockSize
-      text: "terminationCycle"
-    }
+    ColumnLayout {
+      id: column2
 
-    NSpinBox {
-      id: terminationCycleSpinBox
+      Layout.preferredWidth: Definitions.defaultSettingItemWidth
+      spacing: Definitions.defaultItemSpace
 
-      Layout.fillWidth: true
-      Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      from: 0
-      to: Definitions.intMax
-      value: 0
-    }
-
-    NLabel {
-      text: "terminationTime"
-    }
-
-    RowLayout {
-
-      Layout.fillWidth: true
+      NLabel {
+        text: "terminationCycle"
+      }
 
       NSpinBox {
-        id: terminationTimeSpinBox
+        id: terminationCycleSpinBox
 
         Layout.fillWidth: true
         Layout.preferredHeight: Definitions.defaultSettingItemHeight
@@ -148,61 +156,80 @@ NPane {
       }
 
       NLabel {
-        text: "ms"
+        text: "terminationTime"
       }
-    }
 
-    NLabel {
-      Layout.topMargin: Definitions.defaultBlockSize
-      text: "image saving interval"
-    }
-
-    RowLayout {
-
-      Layout.fillWidth: true
-
-      NSpinBox {
-        id: savingIntervalTimeSpinBox
+      RowLayout {
 
         Layout.fillWidth: true
-        Layout.preferredHeight: Definitions.defaultSettingItemHeight
-        from: 0
-        to: Definitions.intMax
-        value: 0
+
+        NSpinBox {
+          id: terminationTimeSpinBox
+
+          Layout.fillWidth: true
+          Layout.preferredHeight: Definitions.defaultSettingItemHeight
+          from: 0
+          to: Definitions.intMax
+          value: 0
+        }
+
+        NLabel {
+          text: "ms"
+        }
       }
 
       NLabel {
-        text: "ms"
+        Layout.topMargin: Definitions.defaultBlockSize
+        text: "image saving interval"
       }
-    }
 
-    RowLayout {
+      RowLayout {
 
-      Layout.fillWidth: true
+        Layout.fillWidth: true
 
-      NSpinBox {
-        id: savingIntervalCycleSpinBox
+        NSpinBox {
+          id: savingIntervalTimeSpinBox
 
-        enabled: false // \todo Implement image saving cycle
+          Layout.fillWidth: true
+          Layout.preferredHeight: Definitions.defaultSettingItemHeight
+          from: 0
+          to: Definitions.intMax
+          value: 0
+        }
+
+        NLabel {
+          text: "ms"
+        }
+      }
+
+      RowLayout {
+
+        Layout.fillWidth: true
+
+        NSpinBox {
+          id: savingIntervalCycleSpinBox
+
+          enabled: false // \todo Implement image saving cycle
+          Layout.fillWidth: true
+          Layout.preferredHeight: Definitions.defaultSettingItemHeight
+          from: 0
+          to: Definitions.intMax
+          value: 0
+        }
+
+        NLabel {
+          text: "cycle"
+        }
+      }
+
+      NCheckBox {
+        id: power2CycleSavingCheckBox
+
         Layout.fillWidth: true
         Layout.preferredHeight: Definitions.defaultSettingItemHeight
-        from: 0
-        to: Definitions.intMax
-        value: 0
+        checked: false
+        text: "2^n cycle saving"
       }
-
-      NLabel {
-        text: "cycle"
-      }
-    }
-
-    NCheckBox {
-      id: power2CycleSavingCheckBox
-
-      Layout.fillWidth: true
-      Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      checked: false
-      text: "2^n cycle saving"
     }
   }
 
@@ -216,7 +243,8 @@ NPane {
     var sceneData = {};
 
     sceneData[Definitions.numOfThreads] = numOfThreadsSpinBox.value;
-    sceneData[Definitions.randomSeed] = randomSeedSpinBox.value;
+    sceneData[Definitions.samplerType] = samplerTypeComboBox.currentText;
+    sceneData[Definitions.samplerSeed] = samplerSeedSpinBox.value;
     var imageResolution = getImageResolution();
     sceneData[Definitions.imageResolution] = imageResolution;
     sceneData[Definitions.terminationCycle] = terminationCycleSpinBox.value;
@@ -231,8 +259,10 @@ NPane {
   function setSceneData(sceneData) {
     numOfThreadsSpinBox.value =
         Definitions.getProperty(sceneData, Definitions.numOfThreads);
-    randomSeedSpinBox.value =
-        Definitions.getProperty(sceneData, Definitions.randomSeed);
+    samplerTypeComboBox.currentIndex = samplerTypeComboBox.find(
+        Definitions.getProperty(sceneData, Definitions.samplerType));
+    samplerSeedSpinBox.value =
+        Definitions.getProperty(sceneData, Definitions.samplerSeed);
     var imageResolution =
         Definitions.getProperty(sceneData, Definitions.imageResolution);
     widthResolutionSpinBox.value = imageResolution[0];

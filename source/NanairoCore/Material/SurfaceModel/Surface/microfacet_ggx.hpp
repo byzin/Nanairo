@@ -21,6 +21,10 @@
 
 namespace nanairo {
 
+// Forward declaration
+class PathState;
+class Sampler;
+
 //! \addtogroup Core
 //! \{
 
@@ -102,6 +106,7 @@ class MicrofacetGgx : public Microfacet
                                        const Float roughness_y,
                                        const Vector3& vin,
                                        Sampler& sampler,
+                                       const PathState& path_state,
                                        const bool calc_pdf = true) noexcept;
 
  private:
@@ -120,7 +125,8 @@ class MicrofacetGgx : public Microfacet
     static Vector3 sampleMicrofacetNormal(const Float roughness_x,
                                           const Float roughness_y,
                                           const Vector3& vin,
-                                          Sampler& sampler) noexcept;
+                                          Sampler& sampler,
+                                          const PathState& path_state) noexcept;
   };
 
   //! Calculate the pdf of the GGX reflection
@@ -143,7 +149,8 @@ class MicrofacetGgx : public Microfacet
   static Vector3 sampleMicrofacetNormal(const Float roughness_x,
                                         const Float roughness_y,
                                         const Vector3& vin,
-                                        Sampler& sampler) noexcept;
+                                        Sampler& sampler,
+                                        const PathState& path_state) noexcept;
 
 
   // Microsurface profile of GGX

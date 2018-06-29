@@ -96,6 +96,9 @@
 !/source/NanairoCore/Sampling/LightSourceSampler/
 !/source/NanairoCore/Sampling/LightSourceSampler/*.hpp
 !/source/NanairoCore/Sampling/LightSourceSampler/*.cpp
+!/source/NanairoCore/Sampling/Sampler/
+!/source/NanairoCore/Sampling/Sampler/*.hpp
+!/source/NanairoCore/Sampling/Sampler/*.cpp
 !/source/NanairoCore/ToneMapping/
 !/source/NanairoCore/ToneMapping/*.hpp
 !/source/NanairoCore/ToneMapping/*.cpp

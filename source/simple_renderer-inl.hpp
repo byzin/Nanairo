@@ -84,7 +84,7 @@ void SimpleRenderer::setRunnable(const bool is_runnable) noexcept
   */
 inline
 std::string SimpleRenderer::makeImagePath(const std::string& output_path,
-                                          const uint64 cycle) const noexcept
+                                          const uint32 cycle) const noexcept
 {
   std::string ldr_path = std::to_string(cycle) + "cycle.png";
   if (!output_path.empty())
@@ -203,7 +203,7 @@ const WavelengthSampler& SimpleRenderer::wavelengthSampler() const noexcept
 /*!
   */
 inline
-uint64 SimpleRenderer::cycleIntervalToSaveImage() const noexcept
+uint32 SimpleRenderer::cycleIntervalToSaveImage() const noexcept
 {
   return cycle_interval_to_save_image_;
 }
@@ -211,7 +211,7 @@ uint64 SimpleRenderer::cycleIntervalToSaveImage() const noexcept
 /*!
   */
 inline
-uint64 SimpleRenderer::cycleToFinish() const noexcept
+uint32 SimpleRenderer::cycleToFinish() const noexcept
 {
   return cycle_to_finish_;
 }
@@ -235,11 +235,11 @@ bool SimpleRenderer::isSavingAtPowerOf2CyclesEnabled() const noexcept
 /*!
   */
 inline
-uint64 SimpleRenderer::getNextCycleToSaveImage(const uint64 cycle) const noexcept
+uint32 SimpleRenderer::getNextCycleToSaveImage(const uint32 cycle) const noexcept
 {
-  const uint64 next_cycle = (isSavingAtPowerOf2CyclesEnabled())
+  const uint32 next_cycle = (isSavingAtPowerOf2CyclesEnabled())
       ? ((cycle == 0) ? 1 : (cycle << 1))
-      : std::numeric_limits<uint64>::max();
+      : std::numeric_limits<uint32>::max();
   return next_cycle;
 }
 
@@ -258,7 +258,7 @@ auto SimpleRenderer::getNextTimeToSaveImage(const Clock::duration& time)
 /*!
   */
 inline
-bool SimpleRenderer::isCycleToFinish(const uint64 cycle) const noexcept
+bool SimpleRenderer::isCycleToFinish(const uint32 cycle) const noexcept
 {
   const bool is_finish_cycle = (cycleToFinish() <= cycle);
   return is_finish_cycle;
@@ -268,8 +268,8 @@ bool SimpleRenderer::isCycleToFinish(const uint64 cycle) const noexcept
   */
 inline
 bool SimpleRenderer::isCycleToSaveImage(
-    const uint64 cycle,
-    const uint64 cycle_to_save_image) const noexcept
+    const uint32 cycle,
+    const uint32 cycle_to_save_image) const noexcept
 {
   const bool is_saving_cycle = (cycle_to_save_image <= cycle);
   return is_saving_cycle;

@@ -30,6 +30,7 @@ namespace nanairo {
 
 // Forward declaration
 class IntersectionInfo;
+class PathState;
 class SampledSpectra;
 class Sampler;
 class Scene;
@@ -71,7 +72,7 @@ class RenderingMethod
   void operator()(System& system,
                   Scene& scene,
                   const Wavelengths& sampled_wavelengths,
-                  const uint64 cycle) noexcept;
+                  const uint32 cycle) noexcept;
 
 
   //! Initialize the method for rendering
@@ -90,7 +91,7 @@ class RenderingMethod
   virtual void render(System& system,
                       Scene& scene,
                       const Wavelengths& sampled_wavelengths,
-                      const uint64 cycle) noexcept = 0;
+                      const uint32 cycle) noexcept = 0;
 
  protected:
   //! Calculate the number of rendering tiles
@@ -120,18 +121,18 @@ class RenderingMethod
                     const bool is_in_front) const noexcept;
 
   //! Play russian roulette
-  RouletteResult playRussianRoulette(const uint path,
-                                     const Spectra& weight,
-                                     Sampler& sampler) const noexcept;
+  RouletteResult playRussianRoulette(const Spectra& weight,
+                                     Sampler& sampler,
+                                     PathState& path_state) const noexcept;
 
   //! Sample next ray
-  Ray sampleNextRay(const uint length,
-                    const Ray& ray,
+  Ray sampleNextRay(const Ray& ray,
                     const ShaderPointer& bxdf,
                     const IntersectionInfo& intersection,
                     Spectra* ray_weight,
                     Spectra* next_ray_weight,
                     Sampler& sampler,
+                    PathState& path_state,
                     Float* inverse_direction_pdf = nullptr) const noexcept;
 
   //! Update the wavelength selection info and the weight of the selected wavelength

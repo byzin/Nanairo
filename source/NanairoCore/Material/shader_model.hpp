@@ -21,6 +21,7 @@ namespace nanairo {
 // Forward declaration
 //class IntersectionInfo;
 class IntersectionInfo;
+class PathState;
 class SampledDirection;
 class SampledSpectra;
 class Sampler;
@@ -91,6 +92,7 @@ class ShaderModel
       const Vector3* vin, 
       const WavelengthSamples& wavelengths,
       Sampler& sampler,
+      PathState& path_state,
       const IntersectionInfo* info = nullptr) const noexcept;
 
   //! Return the shader type

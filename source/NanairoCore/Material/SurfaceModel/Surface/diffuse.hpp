@@ -18,6 +18,7 @@
 namespace nanairo {
 
 // Forward declaration
+class PathState;
 class Sampler;
 class ShapePoint;
 
@@ -36,10 +37,13 @@ class Diffuse
   static SampledSpectra evalRadiance(const SampledSpectra& reflectance) noexcept;
 
   //! Sample a reflection direction on the default basis
-  static SampledDirection sample(Sampler& sampler) noexcept;
+  static SampledDirection sample(Sampler& sampler,
+                                 const PathState& path_state) noexcept;
 
   //! Sample a reflection direction on the point
-  static SampledDirection sample(const ShapePoint& point, Sampler& sampler) noexcept;
+  static SampledDirection sample(const ShapePoint& point,
+                                 Sampler& sampler,
+                                 const PathState& path_state) noexcept;
 };
 
 //! \} Core

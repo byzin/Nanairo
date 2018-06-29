@@ -25,6 +25,7 @@ namespace nanairo {
 
 // Forward declaration
 class IntersectionInfo;
+class PathState;
 class Sampler;
 class System;
 class World;
@@ -64,11 +65,13 @@ class LightSourceSampler
       zisc::pmr::memory_resource* work_resource) noexcept;
 
   //! Sample a light source for a light path tracer
-  virtual LightSourceInfo sample(Sampler& sampler) const noexcept = 0;
+  virtual LightSourceInfo sample(Sampler& sampler,
+                                 const PathState& path_state) const noexcept = 0;
 
   //! Sample a light source for a eye path tracer
   virtual LightSourceInfo sample(const IntersectionInfo& info,
-                                 Sampler& sampler) const noexcept = 0;
+                                 Sampler& sampler,
+                                 const PathState& path_state) const noexcept = 0;
 
  private:
   //! Initialize

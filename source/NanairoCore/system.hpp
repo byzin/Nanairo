@@ -25,7 +25,7 @@
 // Nanairo
 #include "Color/color_space.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
-#include "Sampling/sampler.hpp"
+#include "Sampling/Sampler/sampler.hpp"
 #include "Setting/setting_node_base.hpp"
 
 namespace nanairo {
@@ -91,6 +91,9 @@ class System : public zisc::NonCopyable<System>
   //! Return the image width resolution
   uint imageWidthResolution() const noexcept;
 
+  //! Return a sampler
+  Sampler& localSampler(const uint index) noexcept;
+
   //! Return the thread manager
   zisc::ThreadManager& threadManager() noexcept;
 
@@ -99,9 +102,6 @@ class System : public zisc::NonCopyable<System>
 
   //! Return the thread's memory manager
   MemoryManager& threadMemoryManager(const uint thread_number) noexcept;
-
-  //! Return the thread's sampler
-  Sampler& threadSampler(const uint thread_number) noexcept;
 
   // Color system
   //! Return the color mode
@@ -119,6 +119,12 @@ class System : public zisc::NonCopyable<System>
   //! Check if the renderer is spectra rendering mode
   bool isSpectraMode() const noexcept;
 
+  //! Return the sampler seed
+  uint32 samplerSeed() const noexcept;
+
+  //! Return the sampler type
+  SamplerType samplerType() const noexcept;
+
   //! Return the flag of sample statistics
   SampleStatisticsFlag sampleStatisticsFlag() const noexcept;
 
@@ -132,11 +138,13 @@ class System : public zisc::NonCopyable<System>
 
 
   std::vector<MemoryManager> memory_manager_list_;
-  zisc::pmr::vector<Sampler> sampler_list_;
+  zisc::pmr::vector<zisc::UniqueMemoryPointer<Sampler>> sampler_list_;
   zisc::UniqueMemoryPointer<zisc::ThreadManager> thread_manager_;
   zisc::UniqueMemoryPointer<XyzColorMatchingFunction> xyz_color_matching_function_;
   Float gamma_;
   Index2d image_resolution_;
+  SamplerType sampler_type_;
+  uint32 sampler_seed_;
   RenderingColorMode color_mode_;
   ColorSpaceType color_space_;
   SampleStatisticsFlag statistics_flag_;

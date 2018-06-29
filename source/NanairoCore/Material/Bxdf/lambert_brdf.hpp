@@ -22,6 +22,7 @@ namespace nanairo {
 
 // Forward declaration
 class IntersectionInfo;
+class PathState;
 class Sampler;
 class WavelengthSamples;
 
@@ -68,6 +69,7 @@ class LambertBrdf : public DiffuseShaderModel
       const Vector3* vin,
       const WavelengthSamples& wavelengths,
       Sampler& sampler,
+      PathState& path_state,
       const IntersectionInfo* info) const noexcept override;
 
   //! Check is wavelength selection occured

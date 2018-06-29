@@ -22,6 +22,7 @@
 namespace nanairo {
 
 // Forward declaration
+class PathState;
 class Sampler;
 class WavelengthSamples;
 
@@ -70,6 +71,7 @@ class GgxConductorBrdf : public GlossyShaderModel
       const Vector3* vin,
       const WavelengthSamples& wavelengths,
       Sampler& sampler,
+      PathState& path_state,
       const IntersectionInfo* info) const noexcept override;
 
   //! Check if wavelength selection occured

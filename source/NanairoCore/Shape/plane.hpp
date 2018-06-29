@@ -25,6 +25,7 @@ namespace nanairo {
 // Forward declaration
 class Aabb;
 class IntersectionInfo;
+class PathState;
 class Ray;
 class Sampler;
 
@@ -73,7 +74,8 @@ class Plane : public Shape
                                IntersectionInfo* intersection = nullptr) noexcept;
 
   //! Sample a point randomly on the surface of the plane 
-  ShapePoint samplePoint(Sampler& sampler) const noexcept override;
+  ShapePoint samplePoint(Sampler& sampler,
+                         const PathState& path_state) const noexcept override;
 
   //! Return the vertex of the plane
   const Point3& vertex0() const noexcept;

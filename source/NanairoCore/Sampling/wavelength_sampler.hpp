@@ -16,6 +16,7 @@
 namespace nanairo {
 
 // Forward declaration
+class PathState;
 class Sampler;
 class World;
 
@@ -39,23 +40,29 @@ class WavelengthSampler
   WavelengthSampler(const World& world, const SettingNodeBase* settings) noexcept;
 
   //! Sample wavelengths
-  SampledWavelengths operator()(Sampler& sampler) const noexcept;
+  SampledWavelengths operator()(Sampler& sampler,
+                                PathState& path_state) const noexcept;
 
 
   //! Sample wavelengths
-  SampledWavelengths sample(Sampler& sampler) const noexcept;
+  SampledWavelengths sample(Sampler& sampler,
+                            PathState& path_state) const noexcept;
 
   //! Sample RGB wavelengths
-  static SampledWavelengths sampleRgb(Sampler& sampler) noexcept;
+  static SampledWavelengths sampleRgb(Sampler& sampler,
+                                      PathState& path_state) noexcept;
 
   //! Sample wavelengths regularly
-  static SampledWavelengths sampleRegularly(Sampler& sampler) noexcept;
+  static SampledWavelengths sampleRegularly(Sampler& sampler,
+                                            PathState& path_state) noexcept;
 
   //! Sample wavelengths randomly
-  static SampledWavelengths sampleRandomly(Sampler& sampler) noexcept;
+  static SampledWavelengths sampleRandomly(Sampler& sampler,
+                                           PathState& path_state) noexcept;
 
   //! Sample wavelengths using stratified sampling method
-  static SampledWavelengths sampleStratified(Sampler& sampler) noexcept;
+  static SampledWavelengths sampleStratified(Sampler& sampler,
+                                             PathState& path_state) noexcept;
 
  private:
   enum class SamplerType : int

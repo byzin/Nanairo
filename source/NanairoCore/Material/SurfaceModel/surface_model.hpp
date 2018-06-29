@@ -29,6 +29,7 @@ namespace nanairo {
 
 // Forward declaration
 class IntersectionInfo;
+class PathState;
 class Sampler;
 class ShaderModel;
 class System;
@@ -72,6 +73,7 @@ class SurfaceModel
       const IntersectionInfo& info,
       const WavelengthSamples& wavelengths,
       Sampler& sampler,
+      const PathState& path_state,
       zisc::pmr::memory_resource* mem_resource) const noexcept = 0;
 
   //! Make a surface scattering model

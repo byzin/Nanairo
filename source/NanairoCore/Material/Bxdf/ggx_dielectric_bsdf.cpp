@@ -16,6 +16,7 @@
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Data/shape_point.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
@@ -23,6 +24,7 @@
 #include "NanairoCore/Material/SurfaceModel/Surface/microfacet_ggx.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 
 namespace nanairo {
 
@@ -226,6 +228,7 @@ std::tuple<SampledDirection, SampledSpectra> GgxDielectricBsdf::sample(
     const Vector3* vin,
     const WavelengthSamples& wavelengths,
     Sampler& sampler,
+    PathState& path_state,
     const IntersectionInfo* info) const noexcept
 {
   ZISC_ASSERT(info != nullptr, "The info is null.");
@@ -240,10 +243,8 @@ std::tuple<SampledDirection, SampledSpectra> GgxDielectricBsdf::sample(
   ZISC_ASSERT(isUnitVector(vin_d), "The vin isn't unit vector.");
 
   // Sample a microfacet normal
-  const auto m_normal = MicrofacetGgx::sampleNormal(roughness_x_,
-                                                    roughness_y_,
-                                                    vin_d,
-                                                    sampler);
+  const auto m_normal = MicrofacetGgx::sampleNormal(roughness_x_, roughness_y_,
+                                                    vin_d, sampler, path_state);
 
   // Evaluate the fresnel term
   const Float cos_mi = zisc::dot(m_normal.direction(), vin_d);
@@ -255,7 +256,9 @@ std::tuple<SampledDirection, SampledSpectra> GgxDielectricBsdf::sample(
       : 1.0; // Perfect reflection
 
   // Determine a reflection or a refraction
-  const bool is_reflection = is_perfect_reflection || (sampler.sample() < fresnel);
+  path_state.setDimension(path_state.dimension() + 1);
+  const bool is_reflection = is_perfect_reflection ||
+      (sampler.draw1D(path_state) < fresnel);
   auto vout = (is_reflection)
       ? Microfacet::calcReflectionDirection(vin_d, m_normal)
       : Microfacet::calcRefractionDirection(vin_d, m_normal, n_, g);

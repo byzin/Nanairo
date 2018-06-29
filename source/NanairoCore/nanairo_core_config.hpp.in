@@ -17,7 +17,6 @@
 #include <type_traits>
 // Zisc
 #include "zisc/fnv_1a_hash_engine.hpp"
-#include "@nanairo_core_sampler_header_path@"
 
 // Forward declaration
 namespace zisc {
@@ -57,9 +56,6 @@ using Point3 = zisc::Point<Float, 3>;
 using Point2 = zisc::Point<Float, 2>;
 using Matrix4x4 = zisc::Matrix<Float, 4, 4>;
 using Matrix3x3 = zisc::Matrix<Float, 3, 3>;
-
-// Sampling
-using SamplerType = @nanairo_core_sampler_type@;
 
 /*!
   */

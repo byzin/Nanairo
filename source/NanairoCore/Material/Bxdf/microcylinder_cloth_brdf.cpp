@@ -16,12 +16,14 @@
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/intersection_info.hpp"
+#include "NanairoCore/Data/path_state.hpp"
 #include "NanairoCore/Geometry/vector.hpp"
 #include "NanairoCore/Material/shader_model.hpp"
 #include "NanairoCore/Material/SurfaceModel/cloth_surface.hpp"
 #include "NanairoCore/Material/SurfaceModel/Surface/microcylinder.hpp"
 #include "NanairoCore/Sampling/sampled_direction.hpp"
 #include "NanairoCore/Sampling/sampled_spectra.hpp"
+#include "NanairoCore/Sampling/Sampler/sampler.hpp"
 
 #include "NanairoCore/Material/SurfaceModel/Surface/diffuse.hpp"
 
@@ -120,6 +122,7 @@ std::tuple<SampledDirection, SampledSpectra> MicrocylinderClothBrdf::sample(
     const Vector3* vin,
     const WavelengthSamples& wavelengths,
     Sampler& sampler,
+    PathState& path_state,
     const IntersectionInfo* info) const noexcept
 {
   ZISC_ASSERT(info != nullptr, "The info is null.");
@@ -132,7 +135,7 @@ std::tuple<SampledDirection, SampledSpectra> MicrocylinderClothBrdf::sample(
 //  return Microcylinder::sample(*vin, normal, reflectance_,
 //                               eta, k_d, gamma_r, gamma_v, rho, sampler);
 
-  const auto vout = Diffuse::sample(info->shapePoint(), sampler);
+  const auto vout = Diffuse::sample(info->shapePoint(), sampler, path_state);
   return std::make_tuple(vout, SampledSpectra{wavelengths, 0.8});
 }
 
