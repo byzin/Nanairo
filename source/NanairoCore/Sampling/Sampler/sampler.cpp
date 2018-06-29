@@ -16,6 +16,7 @@
 // Nanairo
 #include "cmj_sampler.hpp"
 #include "pcg_sampler.hpp"
+#include "xoshiro_sampler.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 
 namespace nanairo {
@@ -37,6 +38,10 @@ zisc::UniqueMemoryPointer<Sampler> Sampler::make(
   switch (type) {
    case SamplerType::kPcg: {
     sampler = zisc::UniqueMemoryPointer<PcgSampler>::make(mem_resource, seed);
+    break;
+   }
+   case SamplerType::kXoshiro: {
+    sampler = zisc::UniqueMemoryPointer<XoshiroSampler>::make(mem_resource, seed);
     break;
    }
    case SamplerType::kCmj: {

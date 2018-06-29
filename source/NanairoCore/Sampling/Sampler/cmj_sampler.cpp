@@ -12,6 +12,7 @@
 #include <array>
 #include <tuple>
 // Zisc
+#include "zisc/error.hpp"
 #include "zisc/fnv_1a_hash_engine.hpp"
 #include "zisc/correlated_multi_jittered_engine.hpp"
 #include "zisc/utility.hpp"
@@ -49,10 +50,13 @@ std::array<Float, 2> CmjSampler::draw2D(const PathState& state) noexcept
 std::tuple<uint32, uint32> CmjSampler::calcParameters(const PathState& state)
     const noexcept
 {
-  const uint32 offset = state.sample() / Engine::getPeriod();
-  const uint32 d = (state.length() * zisc::cast<uint32>(SampleDimension::kBounce)) +
-                   state.dimension();
-  const uint32 s = state.sample() - (offset * Engine::getPeriod());
+  constexpr uint32 n = Engine::getPeriod();
+  constexpr uint32 bounce = zisc::cast<uint32>(SampleDimension::kBounce);
+
+  const uint32 offset = state.sample() / n;
+  const uint32 d = (state.length() * bounce) + state.dimension();
+  const uint32 s = state.sample() - (offset * n);
+  ZISC_ASSERT(zisc::isInBounds(s, 0u, n), "The s is wrong: ", s);
   const uint32 p = seed_ + offset + zisc::Fnv1aHash32::hash(d);
   return std::make_tuple(s, p);
 }
