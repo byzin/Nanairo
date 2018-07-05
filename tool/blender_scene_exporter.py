@@ -7,26 +7,57 @@
 # http://opensource.org/licenses/mit-license.php
 #
 
+import argparse
 import bpy
 import copy
 import math
 import json
 import os
 
-# Constant values
-kResourceDir = "resources/scene"
-kSceneName = "Scene"
-kCameraName = "Camera"
+def makeArgParser():
+  parser = argparse.ArgumentParser(
+      description="Export a blender scene setting for Nanairo")
+
+  parser.add_argument(
+      '--scene',
+      action='store',
+      nargs=1,
+      default="Scene",
+      type=str,
+      help="A scene name to be exported.")
+
+  parser.add_argument(
+      '--camera',
+      action='store',
+      nargs=1,
+      default="Camera",
+      type=str,
+      help="An active camera name.")
+
+  parser.add_argument(
+      '--resourcedir',
+      action='store',
+      nargs=1,
+      default="resources/scene",
+      type=str,
+      help="Resource directory")
+
+  parser.add_argument(
+      '--meshincludetransformation',
+      action='store_true',
+      help="Mesh data includes transformation info.")
+
+  return parser 
 
 # We assume that a blend file has only one scene
 
-def getBlenderScene():
-  assert bpy.data.scenes.find(kSceneName) != -1, \
-      "Blender doesn't have '" + kSceneName + "' scene."
-  return bpy.data.scenes[kSceneName]
+def getBlenderScene(args):
+  assert bpy.data.scenes.find(args.scene) != -1, \
+      "Blender doesn't have '{0}' scene.".format(args.scene)
+  return bpy.data.scenes[args.scene]
 
-def checkBlenderHasObject(obj_name):
-  scene = getBlenderScene()
+def checkBlenderHasObject(args, obj_name):
+  scene = getBlenderScene(args)
   assert obj_name in scene.objects, "'" + obj_name + "' object not found."
 
 def toNanaFloat(value, round_digits = 4):
@@ -42,18 +73,19 @@ def getTagSettings():
 
   # Get scene name
   scene_name = getBlendFileName()
-  print("Scene name: " + scene_name)
+  print("Scene name: {0}.".format(scene_name))
   scene_data["SceneName"] = scene_name
 
   return scene_data
 
-def getSystemSettings():
+def getSystemSettings(args):
   scene_data = dict()
 
-  scene = getBlenderScene()
+  scene = getBlenderScene(args)
 
   scene_data["NumOfThreads"] = 4
-  scene_data["RandomSeed"] = scene.cycles.seed
+  scene_data["SamplerType"] = "Correlated Multi-Jittered"
+  scene_data["SamplerSeed"] = scene.cycles.seed
   scene_data["ImageResolution"] = [scene.render.resolution_x,
                                    scene.render.resolution_y]
   scene_data["SavingIntervalCycle"] = 0
@@ -64,10 +96,10 @@ def getSystemSettings():
 
   return scene_data
 
-def getColorSettings():
+def getColorSettings(args):
   scene_data = dict()
 
-  scene = getBlenderScene()
+  scene = getBlenderScene(args)
 
   scene_data["ColorMode"] = "RGB"
   scene_data["ColorSpace"] = "sRGB (D65)"
@@ -121,8 +153,10 @@ def getEmitterModelSettings():
 
   return [emitter_data]
 
-def takeTransformationSettings(obj, is_camera_object = False):
+def takeTransformationSettings(args, obj, is_camera_object = False):
   transformation_list = list()
+  if args.meshincludetransformation and (not is_camera_object):
+    return transformation_list
 
   # Scaling
   scale = [toNanaFloat(obj.scale[0]), toNanaFloat(obj.scale[1]), toNanaFloat(obj.scale[2])]
@@ -168,18 +202,18 @@ def takeTransformationSettings(obj, is_camera_object = False):
 
   return transformation_list
 
-def calcNanairoAngleOfView(angle_of_view):
-  scene = getBlenderScene()
+def calcNanairoAngleOfView(args, angle_of_view):
+  scene = getBlenderScene(args)
 
   tan_phi = scene.render.resolution_y / scene.render.resolution_x
   tan_theta = math.tan(0.5 * angle_of_view) * math.sqrt(1.0 + tan_phi * tan_phi)
   theta = 2.0 * math.atan(tan_theta)
   return theta 
 
-def getCameraSettings():
+def getCameraSettings(args):
   camera_data = dict()
 
-  scene = getBlenderScene()
+  scene = getBlenderScene(args)
   camera_obj = scene.camera
 
   camera_data["GroupLevel"] = 0
@@ -188,9 +222,9 @@ def getCameraSettings():
   camera_data["Name"] = "Camera"
   camera_data["CameraType"] = "PinholeCamera"
   camera_data["AngleOfView"] = \
-      toNanaFloat(math.degrees(calcNanairoAngleOfView(camera_obj.data.angle)))
+      toNanaFloat(math.degrees(calcNanairoAngleOfView(args, camera_obj.data.angle)))
   camera_data["Jittering"] = True
-  camera_data["Transformation"] = takeTransformationSettings(camera_obj, True)
+  camera_data["Transformation"] = takeTransformationSettings(args, camera_obj, True)
 
   return camera_data 
 
@@ -204,6 +238,28 @@ def makeWorldSettings():
   world_data["Transformation"] = list()
 
   return world_data
+
+def calcVolumeOfBoundBox(obj):
+  bound = obj.bound_box
+  min_point = bound[0]
+  max_point = bound[-1]
+  x = math.fabs(max_point[0] - min_point[0])
+  y = math.fabs(max_point[1] - min_point[1])
+  z = math.fabs(max_point[2] - min_point[2])
+  volume = 2.0 * (x * y + x * z + y * z)
+  return volume
+
+def hasBody(args, obj):
+  has_body = (obj.type != 'EMPTY') and (0.0 < calcVolumeOfBoundBox(obj))
+  if has_body:
+    if obj.type == 'MESH':
+      has_body = 0 < len(obj.data.polygons)
+    elif obj.type == 'CURVE': 
+      scene = getBlenderScene(args)
+      mesh = obj.to_mesh(scene, True, 'RENDER')
+      has_body = 0 < len(mesh.polygons)
+
+  return has_body
 
 def exportObject(obj, obj_file_name):
   obj.select = True
@@ -238,22 +294,26 @@ def getMaterialInfo(obj):
   material_index = bpy.data.materials.find(obj.active_material.name)
   return (material_index, 0, False)
 
-def setSceneObjectSettings(object_list, obj, depth = 1):
-  if not (obj.type in {'MESH', 'EMPTY'}):
-    return 
+def setSceneObjectSettings(args, object_list, obj, depth = 1):
+  num_of_objects = 0
+  if not (obj.type in {'MESH', 'CURVE', 'EMPTY'}):
+    return num_of_objects
 
   obj_data = dict()
 
+  has_body = hasBody(args, obj)
   has_child = 0 < len(obj.children)
+  if (not has_body) and (not has_child):
+    return num_of_objects
 
   obj_data["GroupLevel"] = depth
   obj_data["Type"] = "GroupObject" if has_child else "SingleObject"
   obj_data["Enabled"] = not obj.hide_render
   obj_data["Name"] = obj.name
-  obj_data["Transformation"] = takeTransformationSettings(obj)
+  obj_data["Transformation"] = takeTransformationSettings(args, obj)
 
   # Single object settings
-  if obj.type == 'MESH':
+  if has_body:
     if has_child:
       object_list.append(obj_data)
       obj_data = copy.deepcopy(obj_data)
@@ -261,37 +321,44 @@ def setSceneObjectSettings(object_list, obj, depth = 1):
       obj_data["Type"] = "SingleObject"
       obj_data["Transformation"] = list()
 
-    if (0 < len(obj.data.polygons)) and (obj.active_material != None):
-      obj_file_name = obj.name + ".obj"
-      exportObject(obj, obj_file_name)
+    has_material = obj.active_material != None
+    assert has_material, "Error: object '{0}' hasn't material.".format(obj.name)
 
-      obj_data["ShapeType"] = "MeshObject"
-      obj_data["ObjectFilePath"] = kResourceDir + "/" + getBlendFileName() + "/" + obj_file_name
-      obj_data["Smoothing"] = False
-      surface_index, emitter_index, is_emissive_object = getMaterialInfo(obj)
-      obj_data["SurfaceIndex"] = surface_index
-      obj_data["EmitterIndex"] = emitter_index
-      obj_data["IsEmissiveObject"] = is_emissive_object
-    else:
-      obj_data = None
+    obj_file_name = obj.name + ".obj"
+    exportObject(obj, obj_file_name)
 
-  if obj_data != None:
-    object_list.append(obj_data)
+    obj_data["ShapeType"] = "MeshObject"
+    obj_data["ObjectFilePath"] = args.resourcedir + "/" + getBlendFileName() + "/" + obj_file_name
+    obj_data["Smoothing"] = False
+    surface_index, emitter_index, is_emissive_object = getMaterialInfo(obj)
+    obj_data["SurfaceIndex"] = surface_index
+    obj_data["EmitterIndex"] = emitter_index
+    obj_data["IsEmissiveObject"] = is_emissive_object
+    num_of_objects += 1
+
+  object_list.append(obj_data)
 
   for child_obj in obj.children:
-    setSceneObjectSettings(object_list, child_obj, depth + 1)
+    num_of_objects += setSceneObjectSettings(args, object_list, child_obj, depth + 1)
 
-def getObjectSettings():
+  if num_of_objects == 0:
+    del object_list[-1]
+  elif has_child:
+    num_of_objects += 1
+
+  return num_of_objects
+
+def getObjectSettings(args):
   object_list = list()
 
-  object_list.append(getCameraSettings())
+  object_list.append(getCameraSettings(args))
   object_list.append(makeWorldSettings())
 
   # Process a top level objects
-  scene = getBlenderScene()
+  scene = getBlenderScene(args)
   for obj in scene.objects:
     if obj.parent == None:
-      setSceneObjectSettings(object_list, obj)
+      setSceneObjectSettings(args, object_list, obj)
 
   return object_list 
 
@@ -302,17 +369,17 @@ def getBvhSettings():
 
   return scene_data
 
-def getSceneSettings():
+def getSceneSettings(args):
   scene_data = dict()
 
   scene_data["Scene"] = getTagSettings()
-  scene_data["System"] = getSystemSettings()
-  scene_data["Color"] = getColorSettings()
+  scene_data["System"] = getSystemSettings(args)
+  scene_data["Color"] = getColorSettings(args)
   scene_data["RenderingMethod"] = getRenderingMethodSettings()
   scene_data["TextureModel"] = getTextureModelSettings()
   scene_data["SurfaceModel"] = getSurfaceModelSettings()
   scene_data["EmitterModel"] = getEmitterModelSettings()
-  scene_data["Object"] = getObjectSettings()
+  scene_data["Object"] = getObjectSettings(args)
   scene_data["Bvh"] = getBvhSettings()
 
   return scene_data
@@ -323,8 +390,8 @@ def exportSceneSettingsAsNana(scene_data):
   nana_file = open(file_name, 'w')
   json.dump(scene_data, nana_file, allow_nan=False, indent=4)
 
-def exportImages():
-  scene = getBlenderScene()
+def exportImages(args):
+  scene = getBlenderScene(args)
   for image in bpy.data.images:
     if image.type != 'IMAGE':
       continue
@@ -336,14 +403,17 @@ def exportImages():
     elif image.file_format == 'TARGA':
       extension = ".tga"
     else:
-      assert False, image.name + ": unsupported file format '" + image.file_format + "'"
+      assert False, "Error: image '{0}' is unsupported file format '{1}".format(image.name, image.file_format)
     if path[-len(extension):] != extension:
       path = path + extension
     image.filepath_raw = path
     image.save()
 
 if __name__ == "__main__":
+  arg_parser = makeArgParser()
+  args, unknown = arg_parser.parse_known_args()
+
   bpy.ops.object.select_all(action='DESELECT')
-  scene_data = getSceneSettings()
+  scene_data = getSceneSettings(args)
   exportSceneSettingsAsNana(scene_data)
-  exportImages()
+  exportImages(args)
