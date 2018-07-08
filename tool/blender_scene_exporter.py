@@ -43,9 +43,9 @@ def makeArgParser():
       help="Resource directory")
 
   parser.add_argument(
-      '--meshincludetransformation',
+      '--separatetransformation',
       action='store_true',
-      help="Mesh data includes transformation info.")
+      help="Separate transformation info from object data")
 
   return parser 
 
@@ -155,7 +155,7 @@ def getEmitterModelSettings():
 
 def takeTransformationSettings(args, obj, is_camera_object = False):
   transformation_list = list()
-  if args.meshincludetransformation and (not is_camera_object):
+  if (not args.separatetransformation) and (not is_camera_object):
     return transformation_list
 
   # Scaling
