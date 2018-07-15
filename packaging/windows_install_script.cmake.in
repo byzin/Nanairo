@@ -24,7 +24,7 @@ function(installFiles)
                       --release
                       --no-translations
                       --compiler-runtime
-                      --qmldir ${__project_root__}/source/NanairoGui
+                      --qmldir ${__project_root__}/source/NanairoGui/Gui
                       ${__project_name__}.exe
                   WORKING_DIRECTORY ${__install_dir__})
 
@@ -32,21 +32,24 @@ function(installFiles)
   message("Deploying other libraries")
   include(${__project_root__}/packaging/dependencies.cmake)
   set(exe_path ${__install_dir__}/${__project_name__}.exe)
+
+  saveDependencyList(${exe_path} "" "" ${__build_dir__})
   deployUnresolvedDependencies(${exe_path} ${library_dir} "" "")
+
   # Move exe file
   file(RENAME ${__install_dir__}/${__project_name__}.exe
               ${library_dir}/${__project_name__}.exe)
+
   # Install start script
   file(INSTALL ${__build_dir__}/packaging/${__project_name__}.cmd
        DESTINATION ${__install_dir__}
        FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                         GROUP_READ GROUP_EXECUTE
                         WORLD_READ WORLD_EXECUTE)
+
   # Remove vcredist
-  file(GLOB_RECURSE vcredist_files ${__install_dir__}/*/vcredist*)
-  if(NOT vcredist_files STREQUAL "")
-    file(REMOVE ${vcredist_files})
-  endif()
+  file(GLOB_RECURSE vcredist_files ${__install_dir__}/*/vc_redist*)
+  file(REMOVE ${vcredist_files})
 endfunction(installFiles)
 
 # Main

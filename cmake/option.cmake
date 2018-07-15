@@ -44,7 +44,7 @@ endfunction(validateOptions)
 
 
 # Set command options
-function(setCommandOptions)
+function(initCommandOptions)
   # Utility options
   set(option_description "Build documents using Doxygen")
   setBooleanOption(NANAIRO_BUILD_DOCUMENTS OFF ${option_description})
@@ -100,4 +100,4 @@ function(setCommandOptions)
   setStringOption(NANAIRO_MIS_HEURISTIC_BETA 2 ${option_description})
 
   validateOptions()
-endfunction(setCommandOptions)
+endfunction(initCommandOptions)

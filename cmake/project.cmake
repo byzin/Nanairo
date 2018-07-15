@@ -70,9 +70,7 @@ function(getNanairoWarningOption nanairo_warning_flags)
 
   # Suppress warning
   if(NANAIRO_SUPPRESS_EXCESSIVE_WARNING)
-    if(Z_CLANG AND Z_VISUAL_STUDIO)
-      # Nothing
-    elseif(Z_CLANG)
+    if(Z_CLANG)
       list(APPEND warning_flags -Wno-covered-switch-default
                                 -Wno-documentation-unknown-command
                                 -Wno-exit-time-destructors

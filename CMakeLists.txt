@@ -36,11 +36,11 @@ restrictBuildDirectory(${PROJECT_SOURCE_DIR}/build)
 detectEnvironment(environment_definitions)
 # Command option
 include(${PROJECT_SOURCE_DIR}/cmake/option.cmake)
-setCommandOptions()
+initCommandOptions()
 #
 include(${zisc_path}/cmake/compiler.cmake)
 initCompilerOption()
-getCompilerOption(cxx_compiler_flags cxx_linker_flags cxx_definitions)
+getCxxCompilerOption(cxx_compiler_flags cxx_linker_flags cxx_definitions)
 
 # Common libraries
 # Thread

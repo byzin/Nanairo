@@ -6,4 +6,4 @@ rem This software is released under the MIT License.
 rem http://opensource.org/licenses/mit-license.php
 
 set NANAIRO_ROOT=%~dp0
-start %NANAIRO_ROOT%bin\@PROJECT_NAME@.exe -w %NANAIRO_ROOT%
+start %NANAIRO_ROOT%bin\@PROJECT_NAME@.exe -w %NANAIRO_ROOT% -style material

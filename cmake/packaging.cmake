@@ -21,6 +21,7 @@ macro(setNanairoPackProperties)
   # CPACK_PACKAGE_FILE_NAME uses default value
   # CPACK_PAKCAGE_INSTALL_DIRECTORY is not set
   # CPACK_PACKAGE_ICON is not set
+  set(CPACK_PACKAGE_CHECKSUM SHA3_256)
   # CPACK_PROJECT_CONFIG_FILE is not set
   set(CPACK_RESOURCE_FILE_LICENSE ${PROJECT_SOURCE_DIR}/MIT-LICENSE.txt)
   # CPACK_RESOURCE_FILE_README is not set
@@ -64,7 +65,7 @@ function(setNanairoPackInfoForMac)
   set_target_properties(${PROJECT_NAME} PROPERTIES
                             MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}"
                             MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
-                            MACOSX_BUNDLE_COPYRIGHT "© 2016 Sho Ikeda"
+                            MACOSX_BUNDLE_COPYRIGHT "© 2018 Sho Ikeda"
                             MACOSX_BUNDLE_GUI_IDENTIFIER "com.ShoIkeda.${PROJECT_NAME}"
                             MACOSX_BUNDLE_ICON_FILE "${PROJECT_NAME}.icns"
                             MACOSX_BUNDLE_INFO_STRING "${PROJECT_NAME} ${PROJECT_VERSION}"
