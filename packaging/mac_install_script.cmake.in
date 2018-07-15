@@ -19,13 +19,8 @@ function(installFiles)
   set(library_dir ${__app_contents_path__}/Frameworks)
   file(MAKE_DIRECTORY ${library_dir})
 
-  # Deploy Qt libraries
-  message("Deploying Qt libraries")
-  execute_process(COMMAND macdeployqt ${__install_dir__}/${__project_name__}.app
-      -qmldir=${__project_root__}/source/NanairoGui)
-
-  # Deploy other libraries
-  message("Deploying other libraries")
+  # Deploy libraries
+  message("Deploying libraries")
   include(${__project_root__}/packaging/dependencies.cmake)
   set(exe_path ${__app_contents_path__}/MacOS/${__project_name__})
   saveDependencyList(${exe_path}
@@ -36,6 +31,11 @@ function(installFiles)
                                ${library_dir}
                                ${__app_contents_path__}/Frameworks
                                ${__app_contents_path__}/Frameworks)
+
+  # Deploy Qt libraries
+  message("Deploying Qt libraries")
+  execute_process(COMMAND macdeployqt ${__install_dir__}/${__project_name__}.app
+      -qmldir=${__project_root__}/source/NanairoGui/Gui)
 
   # Deploy resources
   # Install icon

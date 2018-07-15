@@ -51,11 +51,13 @@ endmacro(setNanairoPackProperties)
 
 #
 function(setNanairoPackInfoForLinux)
-  message(WARNING "Packaging isn't implemented.")
-#  configure_file(${PROJECT_SOURCE_DIR}/packaging/linux_install_script.cmake.in
-#                 ${PROJECT_BINARY_DIR}/packaging/install_script.cmake
-#                 @ONLY)
-#  install(SCRIPT ${PROJECT_BINARY_DIR}/packaging/install_script.cmake)
+  configure_file(${PROJECT_SOURCE_DIR}/packaging/linux_exec_script.sh.in
+                 ${PROJECT_BINARY_DIR}/packaging/${PROJECT_NAME}
+                 @ONLY)
+  configure_file(${PROJECT_SOURCE_DIR}/packaging/linux_install_script.cmake.in
+                 ${PROJECT_BINARY_DIR}/packaging/install_script.cmake
+                 @ONLY)
+  install(SCRIPT ${PROJECT_BINARY_DIR}/packaging/install_script.cmake)
 endfunction(setNanairoPackInfoForLinux)
 
 

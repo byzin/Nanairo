@@ -1,0 +1,10 @@
+#! /bin/sh
+# author: Sho Ikeda
+# Copyright (c) 2015-2018 Sho Ikeda
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
+
+Z_NANAIRO_ROOT=$(cd $(dirname $0) && pwd)
+export LD_LIBRARY_PATH=${Z_NANAIRO_ROOT}/lib:${LD_LIBRARY_PATH}
+${Z_NANAIRO_ROOT}/bin/@PROJECT_NAME@ -w ${Z_NANAIRO_ROOT} -style material

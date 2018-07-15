@@ -27,18 +27,14 @@ function(deployUnresolvedDependencies target_path dest_dir exepath rpath)
   getDependencies(${target_path} "${exepath}" "${rpath}" dependencies)
   foreach(dependency ${dependencies})
     gp_resolved_file_type(${target_path} ${dependency} "${exepath}" "" type "${rpath}")
-    if(type STREQUAL system)
+    if(type MATCHES "(embedded|system)")
       continue()
     endif()
 
     # Skip Qt files
     gp_resolve_item("${target_path}" "${dependency}" "${exepath}" "" file_path "${rpath}")
-    if(file_path MATCHES .*Qt.*)
-      continue()
-    endif()
-
     # Skip the dependencies of rpath and executable_path
-    if((file_path MATCHES .*rpath.*) OR (file_path MATCHES .*executable_path.*))
+    if(file_path MATCHES ".*(GL|Qt|rpath|executable_path).*")
       continue()
     endif()
 

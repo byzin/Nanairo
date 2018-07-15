@@ -5,9 +5,9 @@
 # http://opensource.org/licenses/mit-license.php
 #
 
-ZCurrentDir=$(cd $(dirname $0) && pwd)
-ZContentsRootPath=${ZCurrentDir}/..
-ZAppPath=${ZContentsRootPath}/../..
-export DYLD_LIBRARY_PATH=${ZContentsRootPath}/Frameworks:${DYLD_LIBRARY_PATH}
-export DYLD_FRAMEWORK_PATH=${ZContentsRootPath}/Frameworks:${DYLD_FRAMEWORK_PATH}
-${ZCurrentDir}/@body_exec_name@ -w ${ZAppPath} -style material
+Z_SCRIPT_DIR=$(cd $(dirname $0) && pwd)
+Z_CONTENTS_ROOT=${Z_SCRIPT_DIR}/..
+Z_NANAIRO_ROOT=${Z_CONTENTS_ROOT}/../..
+export DYLD_LIBRARY_PATH=${Z_CONTENTS_ROOT}/Frameworks:${DYLD_LIBRARY_PATH}
+export DYLD_FRAMEWORK_PATH=${Z_CONTENTS_ROOT}/Frameworks:${DYLD_FRAMEWORK_PATH}
+${Z_SCRIPT_DIR}/@body_exec_name@ -w ${Z_NANAIRO_ROOT} -style material

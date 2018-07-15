@@ -13,8 +13,47 @@ set(__project_name__ @PROJECT_NAME@)
 set(__install_dir__ ${CMAKE_INSTALL_PREFIX})
 
 #
-function(installLibraryDependencies)
-endfunction(installLibraryDependencies)
+function(installFiles)
+  set(bin_dir ${__install_dir__}/bin)
+  file(MAKE_DIRECTORY ${bin_dir})
+  set(library_dir ${__install_dir__}/lib)
+  file(MAKE_DIRECTORY ${library_dir})
+
+  # Deploy libraries
+  message("Deploying libraries")
+  include(${__project_root__}/packaging/dependencies.cmake)
+  set(exe_path ${__install_dir__}/${__project_name__})
+  saveDependencyList(${exe_path} "" "" ${__build_dir__})
+  deployUnresolvedDependencies(${exe_path} ${library_dir} "" "")
+
+  # Deploy Qt libraries
+  message("Download Qt deploy tool")
+  set(qt_deploy_url https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage)
+  set(qt_deploy_tool ${__build_dir__}/packaging/linuxdeployqt)
+  file(DOWNLOAD ${qt_deploy_url} ${qt_deploy_tool})
+  execute_process(COMMAND chmod +x ${qt_deploy_tool}
+                  WORKING_DIRECTORY ${__build_dir__})
+  message("Deploying Qt libraries")
+  execute_process(COMMAND ${qt_deploy_tool}
+                      ${__project_name__}
+                      -no-translations
+                      -qmldir=${__project_root__}/source/NanairoGui/Gui
+                  WORKING_DIRECTORY ${__install_dir__})
+
+  # Move exe file
+  file(RENAME ${__install_dir__}/${__project_name__}
+              ${bin_dir}/${__project_name__})
+
+  # Install start script
+  file(INSTALL ${__build_dir__}/packaging/${__project_name__}
+       DESTINATION ${__install_dir__}
+       FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                        GROUP_READ GROUP_EXECUTE
+                        WORLD_READ WORLD_EXECUTE)
+
+  # Remove files
+  file(REMOVE ${__install_dir__}/AppRun)
+endfunction(installFiles)
 
 # Main
-installLibraryDependencies()
+installFiles()
