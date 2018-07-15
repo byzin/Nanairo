@@ -16,9 +16,10 @@ set(__install_dir__ ${CMAKE_INSTALL_PREFIX})
 #
 function(installFiles)
   set(library_dir ${__install_dir__}/bin)
+  file(MAKE_DIRECTORY ${library_dir})
+
   # Deploy Qt libraries
   message("Deploying Qt libraries")
-  file(MAKE_DIRECTORY ${library_dir})
   execute_process(COMMAND windeployqt.exe
                       --dir bin
                       --release
@@ -32,7 +33,6 @@ function(installFiles)
   message("Deploying other libraries")
   include(${__project_root__}/packaging/dependencies.cmake)
   set(exe_path ${__install_dir__}/${__project_name__}.exe)
-
   saveDependencyList(${exe_path} "" "" ${__build_dir__})
   deployUnresolvedDependencies(${exe_path} ${library_dir} "" "")
 

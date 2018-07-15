@@ -16,16 +16,23 @@ set(__body_exec_name__ @body_exec_name@)
 
 
 function(installFiles)
+  set(library_dir ${__app_contents_path__}/Frameworks)
+  file(MAKE_DIRECTORY ${library_dir})
+
   # Deploy Qt libraries
   message("Deploying Qt libraries")
   execute_process(COMMAND macdeployqt ${__install_dir__}/${__project_name__}.app
-                      -qmldir=${__project_root__}/source/NanairoGui)
+      -qmldir=${__project_root__}/source/NanairoGui)
+
   # Deploy other libraries
   message("Deploying other libraries")
   include(${__project_root__}/packaging/dependencies.cmake)
-  set(library_dir ${__app_contents_path__}/Frameworks)
-  file(MAKE_DIRECTORY ${library_dir})
-  deployUnresolvedDependencies(${__app_contents_path__}/MacOS/${__project_name__}
+  set(exe_path ${__app_contents_path__}/MacOS/${__project_name__})
+  saveDependencyList(${exe_path}
+                     ${__app_contents_path__}/Frameworks
+                     ${__app_contents_path__}/Frameworks
+                     ${__build_dir__})
+  deployUnresolvedDependencies(${exe_path}
                                ${library_dir}
                                ${__app_contents_path__}/Frameworks
                                ${__app_contents_path__}/Frameworks)
@@ -37,9 +44,11 @@ function(installFiles)
   configure_file(${__project_root__}/packaging/icon.icns
                  ${icon_dir}/${__project_name__}.icns
                  COPYONLY)
+
   # Move exe file
   file(RENAME ${__app_contents_path__}/MacOS/${__project_name__}
               ${__app_contents_path__}/MacOS/${__body_exec_name__})
+
   # Install start script
   file(INSTALL ${__build_dir__}/packaging/${__project_name__}
        DESTINATION ${__app_contents_path__}/MacOS

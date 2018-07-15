@@ -10,4 +10,4 @@ ZContentsRootPath=${ZCurrentDir}/..
 ZAppPath=${ZContentsRootPath}/../..
 export DYLD_LIBRARY_PATH=${ZContentsRootPath}/Frameworks:${DYLD_LIBRARY_PATH}
 export DYLD_FRAMEWORK_PATH=${ZContentsRootPath}/Frameworks:${DYLD_FRAMEWORK_PATH}
-${ZCurrentDir}/@body_exec_name@ -w ${ZAppPath}
+${ZCurrentDir}/@body_exec_name@ -w ${ZAppPath} -style material

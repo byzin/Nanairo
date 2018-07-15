@@ -63,14 +63,14 @@ endfunction(setNanairoPackInfoForLinux)
 function(setNanairoPackInfoForMac)
   # Properties
   set_target_properties(${PROJECT_NAME} PROPERTIES
-                            MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}"
-                            MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
-                            MACOSX_BUNDLE_COPYRIGHT "© 2018 Sho Ikeda"
-                            MACOSX_BUNDLE_GUI_IDENTIFIER "com.ShoIkeda.${PROJECT_NAME}"
-                            MACOSX_BUNDLE_ICON_FILE "${PROJECT_NAME}.icns"
-                            MACOSX_BUNDLE_INFO_STRING "${PROJECT_NAME} ${PROJECT_VERSION}"
-                            MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_VERSION}"
-                            MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}")
+      MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_NAME}"
+      MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+      MACOSX_BUNDLE_COPYRIGHT "© 2018 Sho Ikeda"
+      MACOSX_BUNDLE_GUI_IDENTIFIER "com.ShoIkeda.${PROJECT_NAME}"
+      MACOSX_BUNDLE_ICON_FILE "${PROJECT_NAME}.icns"
+      MACOSX_BUNDLE_INFO_STRING "${PROJECT_NAME} ${PROJECT_VERSION}"
+      MACOSX_BUNDLE_LONG_VERSION_STRING "${PROJECT_VERSION}"
+      MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}")
 
   # Execute install script
   set(body_exec_name "NanairoRender")
