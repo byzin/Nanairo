@@ -345,7 +345,7 @@ void PathTracing::traceCameraPath(System& system,
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
     auto result = threads.enqueueLoop(trace_camera_path, start, end, &work_resource);
-    result.get();
+    result.wait();
   }
 }
 
@@ -388,6 +388,8 @@ void PathTracing::traceCameraPath(System& system,
                          &camera_contribution, &inverse_direction_pdf);
 
   while (true) {
+    // Reset memory
+    memory_manager.reset();
     // Cast the ray
     intersection = Method::castRay(world, ray);
     if (!intersection.isIntersected())
@@ -431,11 +433,9 @@ void PathTracing::traceCameraPath(System& system,
     // Update ray
     ray = next_ray;
     ray_weight = next_ray_weight;
-    // Clear memory
-    memory_manager.reset();
   }
   camera.addContribution(pixel_index, contribution);
-  // Clear memory
+  // Reset memory
   memory_manager.reset();
 }
 

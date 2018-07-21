@@ -399,7 +399,7 @@ void ProbabilisticPpm::traceCameraPath(
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
     auto result = threads.enqueueLoop(trace_camera_path, start, end, &work_resource);
-    result.get();
+    result.wait();
   }
 }
 
@@ -445,6 +445,8 @@ void ProbabilisticPpm::traceCameraPath(
   const Float photon_search_radius = calcPhotonSearchRadius(cycle);
 
   while (ray.isAlive()) {
+    // Reset memory
+    memory_manager.reset();
     // Cast the ray
     const auto intersection = Method::castRay(world, ray);
     if (!intersection.isIntersected())
@@ -492,7 +494,7 @@ void ProbabilisticPpm::traceCameraPath(
     ray_weight = next_ray_weight;
   }
   camera.addContribution(pixel_index, contribution);
-  // Clear memory
+  // Reset memory
   memory_manager.reset();
 }
 
@@ -569,6 +571,8 @@ void ProbabilisticPpm::tracePhoton(
                                &light_contribution, &inverse_sampling_pdf);
 
   while(true) {
+    // Reset memory
+    memory_manager.reset();
     // Phton object intersection test
     const auto intersection = Method::castRay(world, photon);
     if (!intersection.isIntersected())
@@ -605,6 +609,7 @@ void ProbabilisticPpm::tracePhoton(
     ZISC_ASSERT(inverse_direction_pdf == 1.0,
                 "The direction pdf isn't 1: ", inverse_direction_pdf);
   }
+  // Reset memory
   memory_manager.reset();
 }
 

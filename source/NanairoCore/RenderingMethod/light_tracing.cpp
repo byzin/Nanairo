@@ -306,7 +306,7 @@ void LightTracing::traceLightPath(
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
     auto result = threads.enqueueLoop(trace_light_path, start, end, &work_resource);
-    result.get();
+    result.wait();
   }
 }
 
@@ -342,6 +342,8 @@ void LightTracing::traceLightPath(System& system,
                          sampler, path_state, &memory_manager);
 
   while (true) {
+    // Reset memory
+    memory_manager.reset();
     // Cast the ray
     intersection = Method::castRay(world, ray);
     if (!intersection.isIntersected())
@@ -372,10 +374,8 @@ void LightTracing::traceLightPath(System& system,
     // Update the ray
     ray = next_ray;
     ray_weight = next_ray_weight;
-    // Clear memory
-    memory_manager.reset();
   }
-  // Clear memory
+  // Reset memory
   memory_manager.reset();
 }
 
