@@ -7,8 +7,8 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-import QtQuick 2.10
-import QtQuick.Controls 2.3
+import QtQuick 2.11
+import QtQuick.Controls 2.4
 import "../definitions.js" as Definitions
 
 Label {

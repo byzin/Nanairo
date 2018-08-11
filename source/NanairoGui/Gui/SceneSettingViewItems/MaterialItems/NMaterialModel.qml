@@ -7,7 +7,7 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-import QtQuick 2.10
+import QtQuick 2.11
 import "../../definitions.js" as Definitions
 
 QtObject {
