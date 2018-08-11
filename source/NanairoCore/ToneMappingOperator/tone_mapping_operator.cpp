@@ -102,7 +102,7 @@ void ToneMappingOperator::map(System& system,
     constexpr uint begin = 0;
     const uint end = threads.numOfThreads();
     auto result = threads.enqueueLoop(map_luminance, begin, end, &work_resource);
-    result.get();
+    result.wait();
   }
 }
 

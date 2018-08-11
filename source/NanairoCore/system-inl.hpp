@@ -174,6 +174,15 @@ ColorSpaceType System::colorSpace() const noexcept
 }
 
 /*!
+  */
+inline
+const Denoiser& System::denoiser() const noexcept
+{
+  ZISC_ASSERT(hasDenoiser(), "The system has no denoiser.");
+  return *denoiser_;
+}
+
+/*!
   \details
   No detailed.
   */
@@ -181,6 +190,14 @@ inline
 Float System::gamma() const noexcept
 {
   return gamma_;
+}
+
+/*!
+  */
+inline
+bool System::hasDenoiser() const noexcept
+{
+  return (denoiser_.get() != nullptr);
 }
 
 /*!
@@ -199,6 +216,14 @@ inline
 bool System::isSpectraMode() const noexcept
 {
   return colorMode() == RenderingColorMode::kSpectra;
+}
+
+/*!
+  */
+inline
+uint32 System::sampleHistogramBins() const noexcept
+{
+  return sample_histogram_bins_;
 }
 
 /*!
@@ -223,6 +248,14 @@ inline
 auto System::sampleStatisticsFlag() const noexcept -> SampleStatisticsFlag
 {
   return statistics_flag_;
+}
+
+/*!
+  */
+inline
+const ToneMappingOperator& System::toneMappingOperator() const noexcept
+{
+  return *tone_mapping_operator_;
 }
 
 /*!

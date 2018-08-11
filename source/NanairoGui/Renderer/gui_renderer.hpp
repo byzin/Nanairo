@@ -80,8 +80,9 @@ class GuiRenderer : public QObject, public CuiRenderer
   void notifyOfRenderingInfo(const std::string_view& info) const noexcept override;
 
   //! Output LDR image
-  void outputLdrImage(const std::string& output_path,
-                      const uint32 cycle) noexcept override;
+  void outputLdrImage(const std::string_view output_path,
+                      const uint32 cycle,
+                      const std::string_view suffix = "") noexcept override;
 
 
   CameraEvent camera_event_;

@@ -19,6 +19,7 @@
 #include "zisc/utility.hpp"
 // Nanairo
 #include "Color/xyz_color_matching_function.hpp"
+#include "Denoiser/denoiser.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "RenderingMethod/rendering_method.hpp"
 #include "Sampling/sample_statistics.hpp"
@@ -26,6 +27,7 @@
 #include "Setting/rendering_method_setting_node.hpp"
 #include "Setting/setting_node_base.hpp"
 #include "Setting/system_setting_node.hpp"
+#include "ToneMappingOperator/tone_mapping_operator.hpp"
 
 namespace nanairo {
 
@@ -50,7 +52,9 @@ System::~System() noexcept
   // Destroy before the memory managers are destroyed
   sampler_list_.clear();
   thread_manager_.reset();
+  tone_mapping_operator_.reset();
   xyz_color_matching_function_.reset();
+  denoiser_.reset();
 }
 
 /*!
@@ -104,6 +108,8 @@ void System::initialize(const SettingNodeBase* settings,
     xyz_color_matching_function_ =
         zisc::UniqueMemoryPointer<XyzColorMatchingFunction>::make(&data_resource);
   }
+  // Tone mapping
+  tone_mapping_operator_ = ToneMappingOperator::makeOperator(*this, system_settings);
 
   // Sample statistics
   {
@@ -116,6 +122,16 @@ void System::initialize(const SettingNodeBase* settings,
       pos = zisc::cast<std::size_t>(SampleStatistics::Type::kVariance);
       statistics_flag_.set(pos, true);
     }
+  }
+  {
+    sample_histogram_bins_ = 20;
+    auto pos = zisc::cast<std::size_t>(SampleStatistics::Type::kDenoisedExpectedValue);
+    statistics_flag_.set(pos, true);
+
+    pos = zisc::cast<std::size_t>(SampleStatistics::Type::kVariance);
+    statistics_flag_.set(pos, true);
+
+    denoiser_ = Denoiser::makeDenoiser(*this);
   }
 
   // Check type properties

@@ -58,7 +58,7 @@ class ToneMappingOperator
   //! Return the inverse gamma value
   Float inverseGamma() const noexcept;
 
-  //! Make tonemapping method
+  //! Make a tonemapping method
   static zisc::UniqueMemoryPointer<ToneMappingOperator> makeOperator(
       System& system,
       const SettingNodeBase* settings) noexcept;
@@ -68,7 +68,6 @@ class ToneMappingOperator
            const HdrImage& hdr_image,
            LdrImage* ldr_image) const noexcept;
 
- protected:
   //! Apply a tonemap curve
   virtual Float tonemap(const Float x) const noexcept = 0;
 

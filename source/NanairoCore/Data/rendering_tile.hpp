@@ -38,6 +38,9 @@ class RenderingTile
   //! Return the end pixel index
   const Index2d& end() const noexcept;
 
+  //! Return the index of the given pixel
+  uint getIndex(const Index2d& pixel) const noexcept;
+
   //! Return the height resolution
   uint heightResolution() const noexcept;
 
@@ -59,30 +62,6 @@ class RenderingTile
  private:
   //! Initialize
   void initialize() noexcept;
-
-  //! Back the pixel to the line start
-  void backToLineStart(Index2d* pixel) noexcept;
-
-  //! Check if the pixel is bottom end
-  bool isBottomEnd(const Index2d& pixel) const noexcept;
-
-  //! Check if the pixel is left end
-  bool isLeftEnd(const Index2d& pixel) const noexcept;
-
-  //! Check if the pixel is right end
-  bool isRightEnd(const Index2d& pixel) const noexcept;
-
-  //! Check if the pixel is top end
-  bool isTopEnd(const Index2d& pixel) const noexcept;
-
-  //! Move the pixel to bottom
-  void moveToBottom(Index2d* pixel) noexcept;
-
-  //! Move the pixel to left bottom
-  void moveToLeftBottom(Index2d* pixel) noexcept;
-
-  //! Move the pixel to right
-  void moveToRight(Index2d* pixel) noexcept;
 
 
   Index2d begin_,

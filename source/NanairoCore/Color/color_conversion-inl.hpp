@@ -23,7 +23,6 @@
 #include "rgba_32.hpp"
 #include "xyz_color.hpp"
 #include "yxy_color.hpp"
-#include "xyz_color_matching_function.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 
 namespace nanairo {

@@ -28,12 +28,12 @@
 #include "NanairoCore/Color/ldr_image.hpp"
 #include "NanairoCore/RenderingMethod/rendering_method.hpp"
 #include "NanairoCore/Sampling/wavelength_sampler.hpp"
-#include "NanairoCore/ToneMappingOperator/tone_mapping_operator.hpp"
 
 namespace nanairo {
 
 //! Forward declaration
 class SettingNodeBase;
+class WavelengthSamples;
 
 /*!
   */
@@ -80,8 +80,9 @@ class SimpleRenderer
   void enableSavingAtEachCycle(const bool flag) noexcept;
 
   //! Make a image path
-  std::string makeImagePath(const std::string& output_path,
-                            const uint32 cycle) const noexcept;
+  std::string makeImagePath(const std::string_view output_path,
+                            const uint32 cycle,
+                            const std::string_view suffix = "") const noexcept;
 
   //! Handle camera event
   virtual void handleCameraEvent(zisc::Stopwatch* stopwatch,
@@ -120,12 +121,6 @@ class SimpleRenderer
   //! Return the system
   const System& system() const noexcept;
 
-  //! Return the tone mapping
-  ToneMappingOperator& toneMappingOperator() noexcept;
-
-  //! Return the tone mapping 
-  const ToneMappingOperator& toneMappingOperator() const noexcept;
-
   //! Return the wavelength sampler
   WavelengthSampler& wavelengthSampler() noexcept;
 
@@ -136,8 +131,9 @@ class SimpleRenderer
   void logMessage(const std::string_view& messsage) noexcept;
 
   //! Output LDR image
-  virtual void outputLdrImage(const std::string& output_path,
-                              const uint32 cycle) noexcept;
+  virtual void outputLdrImage(const std::string_view output_path,
+                              const uint32 cycle,
+                              const std::string_view suffix = "") noexcept;
 
   //! Notify of updating rendering information
   virtual void notifyOfRenderingInfo(const std::string_view& info) const noexcept;
@@ -151,9 +147,6 @@ class SimpleRenderer
 
   //! Clear work memories of system
   void clearWorkMemory() noexcept;
-
-  //! Convert Spectra image to HDR image
-  void convertSpectraToHdr(const uint32 cycle) noexcept;
 
   //! Return the cycle interval to save image
   uint32 cycleIntervalToSaveImage() const noexcept;
@@ -189,6 +182,14 @@ class SimpleRenderer
   //! Check if it is the time to save image
   bool isTimeToSaveImage(const Clock::duration& time,
                          const Clock::duration& time_to_save_image) const noexcept;
+
+  //! Output rendered image
+  void outputDenoisedImage(const std::string& output_path,
+                           const uint32 cycle) noexcept;
+
+  //! Output rendered image
+  void outputRenderedImage(const std::string& output_path,
+                           const uint32 cycle) noexcept;
 
   //! Process elapsed time per frame
   Clock::duration processElapsedTime(
@@ -236,7 +237,6 @@ class SimpleRenderer
   zisc::UniqueMemoryPointer<Scene> scene_;
   zisc::UniqueMemoryPointer<WavelengthSampler> wavelength_sampler_;
   zisc::UniqueMemoryPointer<RenderingMethod> rendering_method_;
-  zisc::UniqueMemoryPointer<ToneMappingOperator> tone_mapping_operator_;
   zisc::UniqueMemoryPointer<HdrImage> hdr_image_;
   zisc::UniqueMemoryPointer<LdrImage> ldr_image_;
   std::array<std::ostream*, 2> log_stream_list_;

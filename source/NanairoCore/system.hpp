@@ -31,6 +31,8 @@
 namespace nanairo {
 
 // Forward declaration
+class Denoiser;
+class ToneMappingOperator;
 class XyzColorMatchingFunction;
 
 //! \addtogroup Core
@@ -110,8 +112,14 @@ class System : public zisc::NonCopyable<System>
   //! Return the color space
   ColorSpaceType colorSpace() const noexcept;
 
+  //! Return the denoiser
+  const Denoiser& denoiser() const noexcept;
+
   //! Return the gamma
   Float gamma() const noexcept;
+
+  //! Check if system has a denoiser
+  bool hasDenoiser() const noexcept;
 
   //! Check if the renderer is RGB rendering mode
   bool isRgbMode() const noexcept;
@@ -122,11 +130,17 @@ class System : public zisc::NonCopyable<System>
   //! Return the sampler seed
   uint32 samplerSeed() const noexcept;
 
+  //! Return the histogram bins of sample statistics
+  uint32 sampleHistogramBins() const noexcept;
+
   //! Return the sampler type
   SamplerType samplerType() const noexcept;
 
   //! Return the flag of sample statistics
   SampleStatisticsFlag sampleStatisticsFlag() const noexcept;
+
+  //! Return the tone mapping
+  const ToneMappingOperator& toneMappingOperator() const noexcept;
 
   //! Return the XYZ color matching function
   const XyzColorMatchingFunction& xyzColorMatchingFunction() const noexcept;
@@ -141,6 +155,8 @@ class System : public zisc::NonCopyable<System>
   zisc::pmr::vector<zisc::UniqueMemoryPointer<Sampler>> sampler_list_;
   zisc::UniqueMemoryPointer<zisc::ThreadManager> thread_manager_;
   zisc::UniqueMemoryPointer<XyzColorMatchingFunction> xyz_color_matching_function_;
+  zisc::UniqueMemoryPointer<ToneMappingOperator> tone_mapping_operator_;
+  zisc::UniqueMemoryPointer<Denoiser> denoiser_;
   Float gamma_;
   Index2d image_resolution_;
   SamplerType sampler_type_;
@@ -148,6 +164,7 @@ class System : public zisc::NonCopyable<System>
   RenderingColorMode color_mode_;
   ColorSpaceType color_space_;
   SampleStatisticsFlag statistics_flag_;
+  uint32 sample_histogram_bins_;
 };
 
 //! \} Core

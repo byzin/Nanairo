@@ -16,6 +16,7 @@
 #include <bitset>
 #include <vector>
 // Zisc
+#include "zisc/compensated_summation.hpp"
 #include "zisc/error.hpp"
 #include "zisc/memory_resource.hpp"
 #include "zisc/unique_memory_pointer.hpp"
@@ -30,6 +31,56 @@ namespace nanairo {
 /*!
   */
 inline
+auto SampleStatistics::covarianceFactorTable() noexcept
+    -> zisc::pmr::vector<zisc::CompensatedSummation<Float>>&
+{
+  ZISC_ASSERT(isEnabled(Type::kDenoisedExpectedValue), "The flag isn't enabled.");
+  return covariance_factor_;
+}
+
+/*!
+  */
+inline
+auto SampleStatistics::covarianceFactorTable() const noexcept
+    -> const zisc::pmr::vector<zisc::CompensatedSummation<Float>>&
+{
+  ZISC_ASSERT(isEnabled(Type::kDenoisedExpectedValue), "The flag isn't enabled.");
+  return covariance_factor_;
+}
+
+/*!
+  */
+inline
+auto SampleStatistics::denoisedSampleTable() noexcept
+    -> zisc::pmr::vector<SpectralDistributionPointer>&
+{
+  ZISC_ASSERT(isEnabled(Type::kDenoisedExpectedValue), "The flag isn't enabled.");
+  return denoised_sample_;
+}
+
+/*!
+  */
+inline
+auto SampleStatistics::denoisedSampleTable() const noexcept
+    -> const zisc::pmr::vector<SpectralDistributionPointer>&
+{
+  ZISC_ASSERT(isEnabled(Type::kDenoisedExpectedValue), "The flag isn't enabled.");
+  return denoised_sample_;
+}
+
+/*!
+  */
+inline
+uint SampleStatistics::getFactorIndex(const uint i) const noexcept
+{
+  const uint size = sampleTable()[0]->size();
+  const uint index = (i * (2 * size - (i + 1))) >> 1;
+  return index;
+}
+
+/*!
+  */
+inline
 uint SampleStatistics::getIndex(const Index2d position) const noexcept
 {
   const uint index = position[1] * resolution()[0] + position[0];
@@ -39,54 +90,59 @@ uint SampleStatistics::getIndex(const Index2d position) const noexcept
 /*!
   */
 inline
-SpectralDistribution& SampleStatistics::getSample(
-    const Index2d position) noexcept
-{
-  auto& table = sampleTable();
-  const uint index = getIndex(position);
-  return *table[index];
-}
-
-/*!
-  */
-inline
-const SpectralDistribution& SampleStatistics::getSample(
-    const Index2d position) const noexcept
-{
-  const auto& table = sampleTable();
-  const uint index = getIndex(position);
-  return *table[index];
-}
-
-/*!
-  */
-inline
-SpectralDistribution& SampleStatistics::getSampleSquared(
-    const Index2d position) noexcept
-{
-  auto& table = sampleSquaredTable();
-  const uint index = getIndex(position);
-  return *table[index];
-}
-
-/*!
-  */
-inline
-const SpectralDistribution& SampleStatistics::getSampleSquared(
-    const Index2d position) const noexcept
-{
-  const auto& table = sampleSquaredTable();
-  const uint index = getIndex(position);
-  return *table[index];
-}
-
-/*!
-  */
-inline
 bool SampleStatistics::isEnabled(const Type type) const noexcept
 {
   const std::size_t index = zisc::cast<std::size_t>(type);
   return flag_[index];
+}
+
+/*!
+  */
+inline
+auto SampleStatistics::histogramTable() noexcept
+    -> zisc::pmr::vector<SpectralDistributionPointer>&
+{
+  ZISC_ASSERT(isEnabled(Type::kDenoisedExpectedValue), "The flag isn't enabled.");
+  return histogram_;
+}
+
+/*!
+  */
+inline
+auto SampleStatistics::histogramTable() const noexcept
+    -> const zisc::pmr::vector<SpectralDistributionPointer>&
+{
+  ZISC_ASSERT(isEnabled(Type::kDenoisedExpectedValue), "The flag isn't enabled.");
+  return histogram_;
+}
+
+/*!
+  */
+inline
+uint SampleStatistics::numOfCovarianceFactors() const noexcept
+{
+  const uint size = sampleTable()[0]->size();
+  return getFactorIndex(size);
+}
+
+/*!
+  */
+inline
+auto SampleStatistics::prevSampleTable() noexcept
+    -> zisc::pmr::vector<SpectralDistributionPointer>&
+{
+  ZISC_ASSERT(isEnabled(Type::kVariance), "The flag isn't enabled.");
+  return prev_sample_;
+}
+
+/*!
+  */
+inline
+auto SampleStatistics::prevSampleTable() const noexcept
+    -> const zisc::pmr::vector<SpectralDistributionPointer>&
+{
+  ZISC_ASSERT(isEnabled(Type::kVariance), "The flag isn't enabled.");
+  return prev_sample_;
 }
 
 /*!

@@ -57,6 +57,17 @@ const Index2d& RenderingTile::end() const noexcept
 /*!
   */
 inline
+uint RenderingTile::getIndex(const Index2d& pixel) const noexcept
+{
+  const uint x = pixel[0] - begin_[0];
+  const uint y = pixel[1] - begin_[1];
+  const uint index = x + widthResolution() * y;
+  return index;
+}
+
+/*!
+  */
+inline
 uint RenderingTile::heightResolution() const noexcept
 {
   const uint h = zisc::cast<uint>(end_[1] - begin_[1]);
@@ -68,20 +79,20 @@ uint RenderingTile::heightResolution() const noexcept
 inline
 const Index2d& RenderingTile::next() noexcept
 {
-  const bool is_last = isRightEnd(current_) && isBottomEnd(current_);
-  if (!is_last) {
-    if (isLeftEnd(current_) || isBottomEnd(current_)) {
-      backToLineStart(&current_);
-      if (isRightEnd(current_))
-        moveToBottom(&current_);
-      else
-        moveToRight(&current_);
-    }
-    else {
-      moveToLeftBottom(&current_);
-    }
+  const uint row = current_[1] - begin_[1];
+  if (zisc::isOdd(row)) {
+    if (current_[0] == begin_[0])
+      ++current_[1];
+    else
+      --current_[0];
   }
-  return current();
+  else {
+    if (current_[0] == (end_[0] - 1))
+      ++current_[1];
+    else
+      ++current_[0];
+  }
+  return current_;
 }
 
 /*!
@@ -130,96 +141,6 @@ void RenderingTile::initialize() noexcept
               "The end pixel index is less than or equal begin.");
   ZISC_ASSERT(begin_[1] < end_[1],
               "The end pixel index is less than or equal begin.");
-}
-
-/*!
-  */
-inline
-void RenderingTile::backToLineStart(Index2d* pixel) noexcept
-{
-  ZISC_ASSERT(pixel != nullptr, "The pixel is null.");
-  const auto& b = begin();
-  const auto& e = end();
-
-  const auto d1 = (e[0] - 1) - (*pixel)[0];
-  const auto d2 = (*pixel)[1] - b[1];
-
-  const auto d = zisc::min(d1, d2);
-
-  (*pixel)[0] = (*pixel)[0] + d;
-  (*pixel)[1] = (*pixel)[1] - d;
-}
-
-/*!
-  */
-inline
-bool RenderingTile::isBottomEnd(const Index2d& pixel) const noexcept
-{
-  const auto& e = end();
-  ZISC_ASSERT(pixel[1] < e[1], "The pixel is out of range.");
-  const bool result = pixel[1] == (e[1] - 1);
-  return result;
-}
-
-/*!
-  */
-inline
-bool RenderingTile::isLeftEnd(const Index2d& pixel) const noexcept
-{
-  const auto& b = begin();
-  ZISC_ASSERT(b[0] <= pixel[0], "The pixel is out of range.");
-  const bool result = pixel[0] == b[0];
-  return result;
-}
-
-/*!
-  */
-inline
-bool RenderingTile::isRightEnd(const Index2d& pixel) const noexcept
-{
-  const auto& e = end();
-  ZISC_ASSERT(pixel[0] < e[0], "The pixel is out of range.");
-  const bool result = pixel[0] == (e[0] - 1);
-  return result;
-}
-
-/*!
-  */
-inline
-bool RenderingTile::isTopEnd(const Index2d& pixel) const noexcept
-{
-  const auto& b = begin();
-  ZISC_ASSERT(b[1] <= pixel[1], "The pixel is out of range.");
-  const bool result = pixel[1] == b[1];
-  return result;
-}
-
-/*!
-  */
-inline
-void RenderingTile::moveToBottom(Index2d* pixel) noexcept
-{
-  ZISC_ASSERT(pixel != nullptr, "The pixel is null.");
-  ++(*pixel)[1];
-}
-
-/*!
-  */
-inline
-void RenderingTile::moveToLeftBottom(Index2d* pixel) noexcept
-{
-  ZISC_ASSERT(pixel != nullptr, "The pixel is null.");
-  --(*pixel)[0];
-  ++(*pixel)[1];
-}
-
-/*!
-  */
-inline
-void RenderingTile::moveToRight(Index2d* pixel) noexcept
-{
-  ZISC_ASSERT(pixel != nullptr, "The pixel is null.");
-  ++(*pixel)[0];
 }
 
 } // namespace nanairo

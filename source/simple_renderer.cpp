@@ -35,6 +35,7 @@
 #include "NanairoCore/Color/ldr_image.hpp"
 #include "NanairoCore/Color/rgba_32.hpp"
 #include "NanairoCore/Data/path_state.hpp"
+#include "NanairoCore/Denoiser/denoiser.hpp"
 #include "NanairoCore/RenderingMethod/rendering_method.hpp"
 #include "NanairoCore/Sampling/sample_statistics.hpp"
 #include "NanairoCore/Sampling/wavelength_sampler.hpp"
@@ -62,7 +63,6 @@ SimpleRenderer::~SimpleRenderer() noexcept
   scene_.reset();
   wavelength_sampler_.reset();
   rendering_method_.reset();
-  tone_mapping_operator_.reset();
   hdr_image_.reset();
   ldr_image_.reset();
 }
@@ -108,10 +108,6 @@ bool SimpleRenderer::loadScene(const SettingNodeBase& settings,
                                                     method_settings,
                                                     scene());
   }
-
-  // Tone mapping
-  tone_mapping_operator_ = ToneMappingOperator::makeOperator(system(),
-                                                             system_settings);
 
   // images
   {
@@ -194,15 +190,25 @@ void SimpleRenderer::render(const std::string& output_path) noexcept
                                              &cycle_to_save_image,
                                              &time_to_save_image);
     saving_image = saving_image || !rendering_flag;
-    if (saving_image) {
-      convertSpectraToHdr(cycle);
-      toneMap();
-      outputLdrImage(output_path, cycle);
+
+    // Update rendered image and time
+    if (saving_image)
+      outputRenderedImage(output_path, cycle);
+    auto current_time = processElapsedTime(stopwatch, previous_time);
+    updateRenderingInfo(cycle, current_time);
+
+    // Update denoised image and time
+    if (saving_image && !rendering_flag) {
+      const auto& statistics = scene().film().sampleStatistics();
+      if (statistics.isEnabled(SampleStatistics::Type::kDenoisedExpectedValue)) {
+        clearWorkMemory();
+        outputDenoisedImage(output_path, cycle);
+        current_time = processElapsedTime(stopwatch, previous_time);
+        updateRenderingInfo(cycle, current_time);
+      }
     }
 
-    // Update time
-    previous_time = processElapsedTime(stopwatch, previous_time);
-    updateRenderingInfo(cycle, previous_time);
+    previous_time = current_time;
   }
 }
 
@@ -260,13 +266,14 @@ void SimpleRenderer::logMessage(const std::string_view& message) noexcept
 
 /*!
   */
-void SimpleRenderer::outputLdrImage(const std::string& output_path,
-                                    const uint32 cycle) noexcept
+void SimpleRenderer::outputLdrImage(const std::string_view output_path,
+                                    const uint32 cycle,
+                                    const std::string_view suffix) noexcept
 {
 #ifdef NANAIRO_HAS_LODEPNG
   processLdrForLodepng();
 
-  const auto ldr_image_path = makeImagePath(output_path, cycle);
+  const auto ldr_image_path = makeImagePath(output_path, cycle, suffix);
   const auto& ldr_image = ldrImage();
   const auto& buffer = ldr_image.data();
   auto error = lodepng::encode(ldr_image_path,
@@ -281,6 +288,7 @@ void SimpleRenderer::outputLdrImage(const std::string& output_path,
 #else // NANAIRO_HAS_LODEPNG
   static_cast<void>(output_path);
   static_cast<void>(cycle);
+  static_cast<void>(suffix);
 #endif // NANAIRO_HAS_LODEPNG
 }
 
@@ -330,20 +338,47 @@ void SimpleRenderer::clearWorkMemory() noexcept
 
 /*!
   */
-inline
-void SimpleRenderer::convertSpectraToHdr(const uint32 cycle) noexcept
+void SimpleRenderer::initialize() noexcept
 {
-  const auto& film = scene().film();
-  const auto& sample_statistics = film.sampleStatistics();
-  auto& hdr_image = hdrImage();
-  hdr_image.toHdr(system(), cycle, sample_statistics.sampleTable());
+  log_stream_list_.fill(nullptr);
 }
 
 /*!
   */
-void SimpleRenderer::initialize() noexcept
+inline
+void SimpleRenderer::outputDenoisedImage(
+    const std::string& output_path,
+    const uint32 cycle) noexcept
 {
-  log_stream_list_.fill(nullptr);
+  auto& sample_statistics = scene().film().sampleStatistics();
+
+  const auto& denoiser = system().denoiser();
+  denoiser.denoise(system(), cycle, &sample_statistics);
+
+  // Convert sampled value to HDR imave
+  auto& hdr_image = hdrImage();
+  hdr_image.toHdr(system(), 1, sample_statistics.denoisedSampleTable());
+
+  toneMap();
+  outputLdrImage(output_path, cycle, "cycle-denoised");
+}
+
+/*!
+  */
+inline
+void SimpleRenderer::outputRenderedImage(
+    const std::string& output_path,
+    const uint32 cycle) noexcept
+{
+  const auto& film = scene().film();
+  const auto& sample_statistics = film.sampleStatistics();
+
+  // Convert sampled value to HDR imave
+  auto& hdr_image = hdrImage();
+  hdr_image.toHdr(system(), cycle, sample_statistics.sampleTable());
+
+  toneMap();
+  outputLdrImage(output_path, cycle, "cycle");
 }
 
 /*!
@@ -389,6 +424,9 @@ void SimpleRenderer::renderScene(const uint32 cycle) noexcept
 
   auto& method = renderingMethod();
   method.render(system(), scene(), sampled_wavelengths, cycle);
+
+  auto& sample_statistics = scene().film().sampleStatistics();
+  sample_statistics.update(system(), sampled_wavelengths.wavelengths(), cycle);
 }
 
 /*!
@@ -439,7 +477,7 @@ void SimpleRenderer::setTimeToFinish(const Clock::duration& time) noexcept
 inline
 void SimpleRenderer::toneMap() noexcept
 {
-  const auto& tone_map = toneMappingOperator();
+  const auto& tone_map = system().toneMappingOperator();
   tone_map.map(system(), hdrImage(), &ldrImage());
 }
 

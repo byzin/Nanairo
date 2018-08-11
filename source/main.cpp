@@ -211,6 +211,8 @@ std::unique_ptr<NanairoParameters> processCommandLine(
     if (!output_dir.isWritable())
       zisc::raiseError("The output dir isn't writable: ", output_path.toStdString());
     parameters->output_path_ = output_dir.canonicalFilePath();
+    if (parameters->output_path_.isEmpty())
+      parameters->output_path_ = ".";
   }
   // Scene binary
   if (parser.isSet(scene_binary_option)) {

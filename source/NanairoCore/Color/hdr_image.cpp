@@ -72,7 +72,7 @@ void HdrImage::toHdr(System& system,
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
     auto result = threads.enqueueLoop(to_hdr, start, end, &work_resource);
-    result.get();
+    result.wait();
   }
 }
 

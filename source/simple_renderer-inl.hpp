@@ -13,6 +13,9 @@
 #include "simple_renderer.hpp"
 // Standard C++ library
 #include <chrono>
+#include <cstdio>
+#include <string>
+#include <string_view>
 // Zisc
 #include "zisc/stopwatch.hpp"
 // Nanairo
@@ -23,7 +26,6 @@
 #include "NanairoCore/Color/ldr_image.hpp"
 #include "NanairoCore/RenderingMethod/rendering_method.hpp"
 #include "NanairoCore/Sampling/wavelength_sampler.hpp"
-#include "NanairoCore/ToneMappingOperator/tone_mapping_operator.hpp"
 
 namespace nanairo {
 
@@ -83,13 +85,25 @@ void SimpleRenderer::setRunnable(const bool is_runnable) noexcept
 /*!
   */
 inline
-std::string SimpleRenderer::makeImagePath(const std::string& output_path,
-                                          const uint32 cycle) const noexcept
+std::string SimpleRenderer::makeImagePath(const std::string_view output_path,
+                                          const uint32 cycle,
+                                          const std::string_view suffix) const noexcept
 {
-  std::string ldr_path = std::to_string(cycle) + "cycle.png";
-  if (!output_path.empty())
-    ldr_path = output_path + "/" + ldr_path;
-  return ldr_path;
+  using namespace std::literals;
+
+  const auto ext = ".png"sv;
+
+  constexpr std::size_t cycle_digits = std::numeric_limits<uint32>::digits10;
+  const std::size_t size = 2 + output_path.size() + cycle_digits + suffix.size() + ext.size();
+
+  std::string image_path;
+  image_path.resize(size);
+  std::sprintf(image_path.data(), "%s/%u%s%s", 
+               output_path.data(),
+               cycle,
+               suffix.data(),
+               ext.data());
+  return image_path;
 }
 
 /*!
@@ -162,24 +176,6 @@ const System& SimpleRenderer::system() const noexcept
 {
   ZISC_ASSERT(system_.get() != nullptr, "The system is null.");
   return *system_;
-}
-
-/*!
-  */
-inline
-ToneMappingOperator& SimpleRenderer::toneMappingOperator() noexcept
-{
-  ZISC_ASSERT(tone_mapping_operator_.get() != nullptr, "The tone maping is null.");
-  return *tone_mapping_operator_;
-}
-
-/*!
-  */
-inline
-const ToneMappingOperator& SimpleRenderer::toneMappingOperator() const noexcept
-{
-  ZISC_ASSERT(tone_mapping_operator_.get() != nullptr, "The tone maping is null.");
-  return *tone_mapping_operator_;
 }
 
 /*!

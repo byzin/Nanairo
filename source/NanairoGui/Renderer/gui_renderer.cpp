@@ -102,8 +102,9 @@ void GuiRenderer::notifyOfRenderingInfo(const std::string_view& info) const noex
 
 /*!
   */
-void GuiRenderer::outputLdrImage(const std::string& output_path,
-                                 const uint32 cycle) noexcept
+void GuiRenderer::outputLdrImage(const std::string_view output_path,
+                                 const uint32 cycle,
+                                 const std::string_view suffix) noexcept
 {
   const auto& ldr_image_helper = ldrImageHelper();
 
@@ -114,7 +115,7 @@ void GuiRenderer::outputLdrImage(const std::string& output_path,
   std::memcpy(data, ldr_image.data().data(), memory_size);
 
   if (mode_ == RenderingMode::kRendering) {
-    const auto ldr_path = makeImagePath(output_path, cycle);
+    const auto ldr_path = makeImagePath(output_path, cycle, suffix);
 
     const bool result = ldr_image_helper.save(QString{ldr_path.c_str()});
     if (!result)

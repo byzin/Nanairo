@@ -11,7 +11,7 @@
 #define NANAIRO_CUI_RENDERER_HPP
 
 // Standard C++ library
-#include <string>
+#include <string_view>
 // Qt
 #include <QImage>
 // Nanairo
@@ -43,8 +43,9 @@ class CuiRenderer : public SimpleRenderer
 
  protected:
   //! Output LDR image
-  void outputLdrImage(const std::string& output_path,
-                      const uint32 cycle) noexcept override;
+  void outputLdrImage(const std::string_view output_path,
+                      const uint32 cycle,
+                      const std::string_view suffix = "") noexcept override;
 
  private:
   //! Initialize the renderer

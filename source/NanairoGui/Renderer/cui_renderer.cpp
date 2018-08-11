@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <cstring>
 #include <string>
+#include <string_view>
 // Qt
 #include <QImage>
 // Zisc
@@ -57,8 +58,9 @@ void CuiRenderer::setImage(QImage* image) noexcept
 
 /*!
   */
-void CuiRenderer::outputLdrImage(const std::string& output_path,
-                                 const uint32 cycle) noexcept
+void CuiRenderer::outputLdrImage(const std::string_view output_path,
+                                 const uint32 cycle,
+                                 const std::string_view suffix) noexcept
 {
   ZISC_ASSERT(ldr_image_helper_ != nullptr, "The image is null.");
 
@@ -68,7 +70,7 @@ void CuiRenderer::outputLdrImage(const std::string& output_path,
   const std::size_t memory_size = sizeof(ldr_image[0]) * ldr_image.size();
   std::memcpy(data, ldr_image.data().data(), memory_size);
 
-  const auto ldr_path = makeImagePath(output_path, cycle);
+  const auto ldr_path = makeImagePath(output_path, cycle, suffix);
 
   const bool result = ldr_image_helper_->save(QString{ldr_path.c_str()});
   if (!result)

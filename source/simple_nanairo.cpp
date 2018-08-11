@@ -111,6 +111,7 @@ std::unique_ptr<NanairoParameters> processCommandLine(int& argc, const char** ar
     }
     if (result.count("outputpath") == 0) {
       parameters->output_path_.clear();
+      parameters->output_path_ = ".";
     }
   }
   catch (const cxxopts::OptionException& error) {

@@ -54,6 +54,9 @@
 !/source/NanairoCore/DataStructure/
 !/source/NanairoCore/DataStructure/*.hpp
 !/source/NanairoCore/DataStructure/*.cpp
+!/source/NanairoCore/Denoiser/
+!/source/NanairoCore/Denoiser/*.hpp
+!/source/NanairoCore/Denoiser/*.cpp
 !/source/NanairoCore/Geometry/
 !/source/NanairoCore/Geometry/*.hpp
 !/source/NanairoCore/Geometry/*.cpp
