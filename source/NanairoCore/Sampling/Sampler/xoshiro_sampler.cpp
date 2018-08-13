@@ -37,7 +37,7 @@ std::array<Float, 2> XoshiroSampler::draw2D(const PathState& /* state */) noexce
 {
   const Float r1 = engine_.generate01Float<Float>();
   const Float r2 = engine_.generate01Float<Float>();
-  return {r1, r2};
+  return {{r1, r2}};
 }
 
 } // namespace nanairo
