@@ -13,26 +13,25 @@ import QtQuick.Layouts 1.11
 import "../../../Items"
 import "../../../definitions.js" as Definitions
 
-NPane {
+NScrollView {
   id: textureItem
 
   // Properties
   property real textureValue
 
   ColumnLayout {
-    id: column1
-
-    width: Definitions.defaultSettingItemWidth
     spacing: Definitions.defaultItemSpace
 
     NLabel {
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "value"
     }
 
     NFloatSpinBox {
       id: valueSpinBox
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: textureItem.width
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       floatFrom: 0.0
       floatTo: realMax

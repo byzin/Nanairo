@@ -34,6 +34,7 @@ NPane {
 
   width: 3 * elementItemSize
   height: 2 * Definitions.defaultBlockSize + 3 * Definitions.defaultItemSpace
+  clip: true
 
   MouseArea {
     anchors.fill: parent
@@ -68,6 +69,7 @@ NPane {
 
       Layout.preferredWidth: 2 * Definitions.defaultBlockSize
       Layout.fillHeight: true
+      font.family: nanairoManager.getSystemFixedFontFamily()
       font.pixelSize: transformationItem.fontSize
       leftPadding: Definitions.defaultItemSpace
       horizontalAlignment: Text.AlignLeft
@@ -100,10 +102,11 @@ NPane {
 
       Layout.preferredWidth: Definitions.defaultBlockSize
       Layout.fillHeight: true
+      font.family: nanairoManager.getSystemFixedFontFamily()
       font.pixelSize: transformationItem.fontSize
       horizontalAlignment: Text.AlignRight
       verticalAlignment: Text.AlignBottom
-      text: transformationItem.isRotationTransformation ? "axs" : "x"
+      text: transformationItem.isRotationTransformation ? "ax" : "x"
     }
 
     Component {
@@ -163,10 +166,11 @@ NPane {
 
       Layout.preferredWidth: Definitions.defaultBlockSize
       Layout.fillHeight: true
+      font.family: nanairoManager.getSystemFixedFontFamily()
       font.pixelSize: transformationItem.fontSize
       horizontalAlignment: Text.AlignRight
       verticalAlignment: Text.AlignBottom
-      text: transformationItem.isRotationTransformation ? "ang" : "y"
+      text: transformationItem.isRotationTransformation ? "an" : "y"
     }
 
     NFloatSpinBox {
@@ -187,10 +191,11 @@ NPane {
 
       Layout.preferredWidth: Definitions.defaultBlockSize
       Layout.fillHeight: true
+      font.family: nanairoManager.getSystemFixedFontFamily()
       font.pixelSize: transformationItem.fontSize
       horizontalAlignment: Text.AlignRight
       verticalAlignment: Text.AlignBottom
-      text: transformationItem.isRotationTransformation ? "unt" : "z"
+      text: transformationItem.isRotationTransformation ? "un" : "z"
     }
 
     Component {

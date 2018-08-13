@@ -81,8 +81,7 @@ bool SimpleRenderer::loadScene(const SettingNodeBase& settings,
   // System
   const auto system_settings = 
       castNode<SystemSettingNode>(scene_settings->systemSettingNode());
-  const auto method_settings = scene_settings->renderingMethodSettingNode();
-  system_ = std::make_unique<System>(system_settings, method_settings);
+  system_ = std::make_unique<System>(system_settings);
 
   std::mutex data_mutex;
   auto& data_resource = system_->dataMemoryManager();
@@ -104,6 +103,7 @@ bool SimpleRenderer::loadScene(const SettingNodeBase& settings,
 
   // Rendering method
   {
+    const auto method_settings = scene_settings->renderingMethodSettingNode();
     rendering_method_ = RenderingMethod::makeMethod(system(),
                                                     method_settings,
                                                     scene());

@@ -16,6 +16,7 @@
 #include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -23,13 +24,23 @@ namespace nanairo {
 class SampleStatistics;
 class System;
 
+//! \addtogroup Core
+//! \{
+
+/*!
+  */
+enum class DenoiserType : uint32
+{
+  kBayesianCollaborative      = zisc::Fnv1aHash32::hash("BayesianCollaborative"),
+};
+
 /*!
   */
 class Denoiser
 {
  public:
   //! Initialize a denoiser
-  Denoiser() noexcept;
+  Denoiser(const SettingNodeBase* settings) noexcept;
 
   //! Finalize the denoiser
   virtual ~Denoiser() noexcept;
@@ -42,10 +53,15 @@ class Denoiser
 
   //! Make a denoiser
   static zisc::UniqueMemoryPointer<Denoiser> makeDenoiser(
-      System& system) noexcept;
+      System& system,
+      const SettingNodeBase* settings) noexcept;
 
  private:
+  //! Initialize the denoiser
+  void initialize(const SettingNodeBase* settings) noexcept;
 };
+
+//! \}
 
 } // namespace nanairo
 

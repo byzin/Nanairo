@@ -56,8 +56,7 @@ class System : public zisc::NonCopyable<System>
 
 
   //! Initialize the renderer system
-  System(const SettingNodeBase* settings,
-         const SettingNodeBase* method_settings) noexcept;
+  System(const SettingNodeBase* settings) noexcept;
 
   //! Finalize the renderer system
   ~System() noexcept;
@@ -130,14 +129,14 @@ class System : public zisc::NonCopyable<System>
   //! Return the sampler seed
   uint32 samplerSeed() const noexcept;
 
-  //! Return the histogram bins of sample statistics
-  uint32 sampleHistogramBins() const noexcept;
-
   //! Return the sampler type
   SamplerType samplerType() const noexcept;
 
   //! Return the flag of sample statistics
-  SampleStatisticsFlag sampleStatisticsFlag() const noexcept;
+  SampleStatisticsFlag& sampleStatisticsFlag() noexcept;
+
+  //! Return the flag of sample statistics
+  const SampleStatisticsFlag& sampleStatisticsFlag() const noexcept;
 
   //! Return the tone mapping
   const ToneMappingOperator& toneMappingOperator() const noexcept;
@@ -147,8 +146,7 @@ class System : public zisc::NonCopyable<System>
 
  private:
   //! Initialize the renderer system
-  void initialize(const SettingNodeBase* settings,
-                  const SettingNodeBase* method_settings) noexcept;
+  void initialize(const SettingNodeBase* settings) noexcept;
 
 
   std::vector<MemoryManager> memory_manager_list_;
@@ -164,7 +162,6 @@ class System : public zisc::NonCopyable<System>
   RenderingColorMode color_mode_;
   ColorSpaceType color_space_;
   SampleStatisticsFlag statistics_flag_;
-  uint32 sample_histogram_bins_;
 };
 
 //! \} Core

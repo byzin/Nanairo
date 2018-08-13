@@ -14,26 +14,25 @@ import Qt.labs.platform 1.0
 import "../../../Items"
 import "../../../definitions.js" as Definitions
 
-NPane {
+NScrollView {
   id: textureItem
 
   property string imageFilePath: ""
 
   ColumnLayout {
-    id: column1
-
-    width: Definitions.defaultSettingItemWidth
     spacing: Definitions.defaultItemSpace
 
     NLabel {
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "image"
     }
 
     NImageButton {
       id: imageButton
 
-      Layout.fillWidth: true
-      Layout.preferredHeight: column1.width
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: textureItem.width
+      Layout.preferredHeight: textureItem.height - y
       imageSource: (textureItem.imageFilePath != "")
           ? nanairoManager.getAbsolutePath(textureItem.imageFilePath)
           : ""

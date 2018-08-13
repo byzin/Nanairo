@@ -13,6 +13,8 @@
 #include <utility>
 // Qt
 #include <QFileInfo>
+#include <QFont>
+#include <QFontDatabase>
 #include <QDir>
 #include <QImage>
 #include <QJsonObject>
@@ -97,6 +99,18 @@ QString GuiRendererManager::getRelativePath(
 {
   const QDir working_dir;
   return QDir::cleanPath(working_dir.relativeFilePath(absolute_path.toLocalFile()));
+}
+
+/*!
+  */
+QString GuiRendererManager::getSystemFixedFontFamily() const noexcept
+{
+  QString family{"Monospace"};
+#ifndef Z_LINUX
+  const auto font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+  family = font.family();
+#endif // Z_LINUX
+  return family;
 }
 
 /*!

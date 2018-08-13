@@ -21,96 +21,123 @@ NPane {
   property var materialItem: null
   property string surfaceType: ""
 
-  ColumnLayout {
-    id: column1
+  GridLayout {
+    columns: 3
+    columnSpacing: Definitions.defaultItemSpace
+    rowSpacing: Definitions.defaultItemSpace
 
-    width: Definitions.defaultSettingItemWidth
-    spacing: Definitions.defaultItemSpace
+    NGroupBox {
+      id: group
+      title: "surface type"
+      color: infoSettingView.background.color
+      Layout.preferredWidth: Definitions.defaultSettingGroupWidth
+      Layout.preferredHeight: Definitions.defaultSettingGroupHeight
 
-    NLabel {
-      text: "type"
+      ColumnLayout {
+        anchors.fill: parent
+
+        NComboBox {
+          id: surfaceTypeComboBox
+
+          Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+          Layout.fillWidth: true
+          Layout.preferredHeight: Definitions.defaultSettingItemHeight
+          currentIndex: find(infoSettingView.surfaceType)
+          model: [Definitions.smoothDiffuseSurface,
+                  Definitions.smoothDielectricSurface,
+                  Definitions.smoothConductorSurface,
+                  Definitions.roughDielectricSurface,
+                  Definitions.roughConductorSurface,
+                  Definitions.layeredDiffuseSurface]
+
+          onCurrentTextChanged: infoSettingView.surfaceType = currentText
+        }
+
+        NPane {
+          Layout.fillWidth: true
+          Layout.fillHeight: true
+          Component.onCompleted: background.color = group.background.color;
+        }
+      }
     }
 
-    NComboBox {
-      id: typeComboBox
+    NGroupBox {
+      title: "surface parameters"
+      color: infoSettingView.background.color
+      Layout.preferredWidth: Definitions.defaultSettingGroupWidth
+      Layout.preferredHeight: Definitions.defaultSettingGroupHeight
 
-      Layout.fillWidth: true
-      Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      currentIndex: find(infoSettingView.surfaceType)
-      model: [Definitions.smoothDiffuseSurface,
-              Definitions.smoothDielectricSurface,
-              Definitions.smoothConductorSurface,
-              Definitions.roughDielectricSurface,
-              Definitions.roughConductorSurface,
-              Definitions.layeredDiffuseSurface]
+      StackLayout {
+        id: surfaceItemLayout
 
-      onCurrentTextChanged: infoSettingView.surfaceType = currentText
-    }
-  }
+        anchors.fill: parent
+        currentIndex: 0
 
-  StackLayout {
-    id: surfaceItemLayout
+        NSmoothDiffuseSurfaceItem {
+          id: smoothDiffuseSurfaceItem
+          textureModelList: infoSettingView.textureModelList
+          onReflectanceIndexChanged: infoSettingView.setProperty(Definitions.reflectanceIndex, reflectanceIndex)
+        }
 
-    anchors.fill: parent
-    anchors.topMargin: (column1.y + column1.height) + Definitions.defaultBlockSize
-    currentIndex: 0
+        NSmoothDielectricSurfaceItem {
+          id: smoothDielectricSurfaceItem
+          textureModelList: infoSettingView.textureModelList
+          onOuterRefractiveIndexChanged: infoSettingView.setProperty(Definitions.outerRefractiveIndex, outerRefractiveIndex)
+          onInnerRefractiveIndexChanged: infoSettingView.setProperty(Definitions.innerRefractiveIndex, innerRefractiveIndex)
+        }
 
-    NSmoothDiffuseSurfaceItem {
-      id: smoothDiffuseSurfaceItem
-      textureModelList: infoSettingView.textureModelList
-      onReflectanceIndexChanged: infoSettingView.setProperty(Definitions.reflectanceIndex, reflectanceIndex)
-    }
+        NSmoothConductorSurfaceItem {
+          id: smoothConductorSurfaceItem
+          textureModelList: infoSettingView.textureModelList
+          onOuterRefractiveIndexChanged: infoSettingView.setProperty(Definitions.outerRefractiveIndex, outerRefractiveIndex)
+          onInnerRefractiveIndexChanged: infoSettingView.setProperty(Definitions.innerRefractiveIndex, innerRefractiveIndex)
+          onInnerExtinctionChanged: infoSettingView.setProperty(Definitions.innerExtinction, innerExtinction)
+        }
 
-    NSmoothDielectricSurfaceItem {
-      id: smoothDielectricSurfaceItem
-      textureModelList: infoSettingView.textureModelList
-      onOuterRefractiveIndexChanged: infoSettingView.setProperty(Definitions.outerRefractiveIndex, outerRefractiveIndex)
-      onInnerRefractiveIndexChanged: infoSettingView.setProperty(Definitions.innerRefractiveIndex, innerRefractiveIndex)
-    }
+        NRoughDielectricSurfaceItem {
+          id: roughDielectricSurfaceItem 
+          textureModelList: infoSettingView.textureModelList
+          onAnisotropicChanged: infoSettingView.setProperty(Definitions.anisotropic, anisotropic);
+          onRoughnessXIndexChanged: infoSettingView.setProperty(Definitions.roughnessXIndex, roughnessXIndex);
+          onRoughnessYIndexChanged: infoSettingView.setProperty(Definitions.roughnessYIndex, roughnessYIndex);
+          onOuterRefractiveIndexChanged: infoSettingView.setProperty(Definitions.outerRefractiveIndex, outerRefractiveIndex)
+          onInnerRefractiveIndexChanged: infoSettingView.setProperty(Definitions.innerRefractiveIndex, innerRefractiveIndex)
+        }
 
-    NSmoothConductorSurfaceItem {
-      id: smoothConductorSurfaceItem
-      textureModelList: infoSettingView.textureModelList
-      onOuterRefractiveIndexChanged: infoSettingView.setProperty(Definitions.outerRefractiveIndex, outerRefractiveIndex)
-      onInnerRefractiveIndexChanged: infoSettingView.setProperty(Definitions.innerRefractiveIndex, innerRefractiveIndex)
-      onInnerExtinctionChanged: infoSettingView.setProperty(Definitions.innerExtinction, innerExtinction)
-    }
+        NRoughConductorSurfaceItem {
+          id: roughConductorSurfaceItem 
+          textureModelList: infoSettingView.textureModelList
+          onAnisotropicChanged: infoSettingView.setProperty(Definitions.anisotropic, anisotropic);
+          onRoughnessXIndexChanged: infoSettingView.setProperty(Definitions.roughnessXIndex, roughnessXIndex);
+          onRoughnessYIndexChanged: infoSettingView.setProperty(Definitions.roughnessYIndex, roughnessYIndex);
+          onOuterRefractiveIndexChanged: infoSettingView.setProperty(Definitions.outerRefractiveIndex, outerRefractiveIndex)
+          onInnerRefractiveIndexChanged: infoSettingView.setProperty(Definitions.innerRefractiveIndex, innerRefractiveIndex)
+          onInnerExtinctionChanged: infoSettingView.setProperty(Definitions.innerExtinction, innerExtinction)
+        }
 
-    NRoughDielectricSurfaceItem {
-      id: roughDielectricSurfaceItem 
-      textureModelList: infoSettingView.textureModelList
-      onAnisotropicChanged: infoSettingView.setProperty(Definitions.anisotropic, anisotropic);
-      onRoughnessXIndexChanged: infoSettingView.setProperty(Definitions.roughnessXIndex, roughnessXIndex);
-      onRoughnessYIndexChanged: infoSettingView.setProperty(Definitions.roughnessYIndex, roughnessYIndex);
-      onOuterRefractiveIndexChanged: infoSettingView.setProperty(Definitions.outerRefractiveIndex, outerRefractiveIndex)
-      onInnerRefractiveIndexChanged: infoSettingView.setProperty(Definitions.innerRefractiveIndex, innerRefractiveIndex)
-    }
+        NLayeredDiffuseSurfaceItem {
+          id: layeredDiffuseSurfaceItem 
+          textureModelList: infoSettingView.textureModelList
+          onReflectanceIndexChanged: infoSettingView.setProperty(Definitions.reflectanceIndex, reflectanceIndex)
+          onAnisotropicChanged: infoSettingView.setProperty(Definitions.anisotropic, anisotropic);
+          onRoughnessXIndexChanged: infoSettingView.setProperty(Definitions.roughnessXIndex, roughnessXIndex);
+          onRoughnessYIndexChanged: infoSettingView.setProperty(Definitions.roughnessYIndex, roughnessYIndex);
+          onOuterRefractiveIndexChanged: infoSettingView.setProperty(Definitions.outerRefractiveIndex, outerRefractiveIndex)
+          onInnerRefractiveIndexChanged: infoSettingView.setProperty(Definitions.innerRefractiveIndex, innerRefractiveIndex)
+        }
+      }
 
-    NRoughConductorSurfaceItem {
-      id: roughConductorSurfaceItem 
-      textureModelList: infoSettingView.textureModelList
-      onAnisotropicChanged: infoSettingView.setProperty(Definitions.anisotropic, anisotropic);
-      onRoughnessXIndexChanged: infoSettingView.setProperty(Definitions.roughnessXIndex, roughnessXIndex);
-      onRoughnessYIndexChanged: infoSettingView.setProperty(Definitions.roughnessYIndex, roughnessYIndex);
-      onOuterRefractiveIndexChanged: infoSettingView.setProperty(Definitions.outerRefractiveIndex, outerRefractiveIndex)
-      onInnerRefractiveIndexChanged: infoSettingView.setProperty(Definitions.innerRefractiveIndex, innerRefractiveIndex)
-      onInnerExtinctionChanged: infoSettingView.setProperty(Definitions.innerExtinction, innerExtinction)
-    }
-
-    NLayeredDiffuseSurfaceItem {
-      id: layeredDiffuseSurfaceItem 
-      textureModelList: infoSettingView.textureModelList
-      onReflectanceIndexChanged: infoSettingView.setProperty(Definitions.reflectanceIndex, reflectanceIndex)
-      onAnisotropicChanged: infoSettingView.setProperty(Definitions.anisotropic, anisotropic);
-      onRoughnessXIndexChanged: infoSettingView.setProperty(Definitions.roughnessXIndex, roughnessXIndex);
-      onRoughnessYIndexChanged: infoSettingView.setProperty(Definitions.roughnessYIndex, roughnessYIndex);
-      onOuterRefractiveIndexChanged: infoSettingView.setProperty(Definitions.outerRefractiveIndex, outerRefractiveIndex)
-      onInnerRefractiveIndexChanged: infoSettingView.setProperty(Definitions.innerRefractiveIndex, innerRefractiveIndex)
+      Component.onCompleted: {
+        for (var i = 0; i < surfaceItemLayout.children.length; ++i) {
+          var surfaceView = surfaceItemLayout.children[i];
+          surfaceView.background.color = background.color;
+        }
+      }
     }
   }
 
   onSurfaceTypeChanged: {
-    var viewIndex = typeComboBox.find(surfaceType);
+    var viewIndex = surfaceTypeComboBox.find(surfaceType);
     if ((materialItem != null) && (viewIndex != -1)) {
       // Set base surface properties
       setProperty(Definitions.type, surfaceType);
@@ -142,7 +169,7 @@ NPane {
       // Set surface type to the view
       surfaceType = Definitions.getProperty(item, Definitions.type);
       // Change the emitter setting view
-      var viewIndex = typeComboBox.find(surfaceType);
+      var viewIndex = surfaceTypeComboBox.find(surfaceType);
       console.assert(viewIndex != -1, "The item has invalid surface type.");
       surfaceItemLayout.currentIndex = viewIndex;
       // Set the item properties to thew 
@@ -155,7 +182,7 @@ NPane {
   function getSceneData(item) {
     var type = Definitions.getProperty(item, Definitions.type);
 
-    var viewIndex = typeComboBox.find(type);
+    var viewIndex = surfaceTypeComboBox.find(type);
     var surfaceView = surfaceItemLayout.children[viewIndex];
 
     var sceneData = surfaceView.getSceneData(item);
@@ -167,7 +194,7 @@ NPane {
   function setSceneData(sceneData, item) {
     var type = Definitions.getProperty(sceneData, Definitions.type);
 
-    var viewIndex = typeComboBox.find(type);
+    var viewIndex = surfaceTypeComboBox.find(type);
     var surfaceView = surfaceItemLayout.children[viewIndex];
 
     item[Definitions.type] = type;

@@ -35,12 +35,11 @@ namespace nanairo {
   \details
   No detailed.
   */
-System::System(const SettingNodeBase* settings,
-               const SettingNodeBase* method_settings) noexcept :
+System::System(const SettingNodeBase* settings) noexcept :
     memory_manager_list_{zisc::cast<std::size_t>(castNode<SystemSettingNode>(settings)->numOfThreads() + 2)},
     sampler_list_{&dataMemoryManager()}
 {
-  initialize(settings, method_settings);
+  initialize(settings);
 }
 
 /*!
@@ -61,8 +60,7 @@ System::~System() noexcept
   \details
   No detailed.
   */
-void System::initialize(const SettingNodeBase* settings,
-                        const SettingNodeBase* method_settings) noexcept
+void System::initialize(const SettingNodeBase* settings) noexcept
 {
   const auto system_settings = castNode<SystemSettingNode>(settings);
 
@@ -113,25 +111,13 @@ void System::initialize(const SettingNodeBase* settings,
 
   // Sample statistics
   {
-    auto pos = zisc::cast<std::size_t>(SampleStatistics::Type::kExpectedValue);
+    const auto pos = zisc::cast<std::size_t>(SampleStatistics::Type::kExpectedValue);
     statistics_flag_.set(pos, true);
-
-    const auto m_settings = castNode<RenderingMethodSettingNode>(method_settings);
-
-    if (m_settings->methodType() == RenderingMethodType::kProbabilisticPpm) {
-      pos = zisc::cast<std::size_t>(SampleStatistics::Type::kVariance);
-      statistics_flag_.set(pos, true);
-    }
   }
+  // Denoiser
   {
-    sample_histogram_bins_ = 20;
-    auto pos = zisc::cast<std::size_t>(SampleStatistics::Type::kDenoisedExpectedValue);
-    statistics_flag_.set(pos, true);
-
-    pos = zisc::cast<std::size_t>(SampleStatistics::Type::kVariance);
-    statistics_flag_.set(pos, true);
-
-    denoiser_ = Denoiser::makeDenoiser(*this);
+    if (system_settings->isDenoisingEnabled())
+      denoiser_ = Denoiser::makeDenoiser(*this, system_settings);
   }
 
   // Check type properties

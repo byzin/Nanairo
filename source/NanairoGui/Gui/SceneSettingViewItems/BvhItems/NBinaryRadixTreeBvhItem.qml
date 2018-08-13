@@ -12,7 +12,7 @@ import QtQuick.Controls 2.4
 import "../../Items"
 import "../../definitions.js" as Definitions
 
-NPane {
+NScrollView {
   id: bvhItem
 
   function getSceneData() {

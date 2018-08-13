@@ -13,23 +13,22 @@ import QtQuick.Layouts 1.11
 import "../../Items"
 import "../../definitions.js" as Definitions
 
-NPane {
+NScrollView {
   id: bvhItem
 
   ColumnLayout {
-    id: column1
-
-    width: Definitions.defaultSettingItemWidth
     spacing: Definitions.defaultItemSpace
 
     NLabel {
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "treelet size"
     }
 
     NSpinBox {
       id: treeletSizeSpinBox
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: bvhItem.width
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       from: 4
       to: Definitions.intMax
@@ -37,13 +36,15 @@ NPane {
 
     NLabel {
       Layout.topMargin: Definitions.defaultBlockSize
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "optimization loop"
     }
 
     NSpinBox {
       id: optimizationLoopSpinBox
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: bvhItem.width
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       from: 1
       to: Definitions.intMax

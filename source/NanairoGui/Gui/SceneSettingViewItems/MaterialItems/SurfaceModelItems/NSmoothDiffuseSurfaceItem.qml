@@ -13,7 +13,7 @@ import QtQuick.Layouts 1.11
 import "../../../Items"
 import "../../../definitions.js" as Definitions
 
-NPane {
+NScrollView {
   id: surfaceItem
 
   property var textureModelList: null
@@ -21,19 +21,18 @@ NPane {
   property int reflectanceIndex
 
   ColumnLayout {
-    id: column1
-
-    width: Definitions.defaultSettingItemWidth
     spacing: Definitions.defaultItemSpace
 
     NLabel {
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "reflectance"
     }
 
     NComboBox {
       id: reflectanceComboBox
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: surfaceItem.width
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       currentIndex: surfaceItem.reflectanceIndex
       model: surfaceItem.textureModelList

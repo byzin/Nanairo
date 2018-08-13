@@ -35,6 +35,10 @@ QtObject {
     return absolutePath.toString();
   }
 
+  function getSystemFixedFontFamily() {
+    return "Courier";
+  }
+
   function isDebugMode() {
     return true;
   }

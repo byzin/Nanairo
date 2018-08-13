@@ -27,17 +27,18 @@
 #include "NanairoCore/Color/SpectralDistribution/spectral_distribution.hpp"
 #include "NanairoCore/Data/rendering_tile.hpp"
 #include "NanairoCore/Sampling/sample_statistics.hpp"
+#include "NanairoCore/Setting/system_setting_node.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
 /*!
   */
-BayesianCollaborativeDenoiser::BayesianCollaborativeDenoiser() noexcept :
-    histogram_distance_threshold_{0.5},
-    patch_radius_{1},
-    search_radius_{6},
-    scale_{2}
+BayesianCollaborativeDenoiser::BayesianCollaborativeDenoiser(
+    const SettingNodeBase* settings) noexcept :
+        Denoiser(settings)
 {
+  initialize(settings);
 }
 
 /*!
@@ -180,11 +181,12 @@ template <uint kDimension>
 void BayesianCollaborativeDenoiser::Parameters<kDimension>::init(
     System& system,
     const uint32 cycle,
+    const uint histogram_bins,
     const SampleStatistics& statistics) noexcept
 {
   resolution_ = system.imageResolution();
   num_of_samples_ = cycle;
-  histogram_bins_ = system.sampleHistogramBins();
+  histogram_bins_ = histogram_bins;
 
   sample_value_table_.resize(resolution_[0] * resolution_[1]);
   histogram_table_.resize(histogram_bins_ * resolution_[0] * resolution_[1]);
@@ -582,12 +584,12 @@ void BayesianCollaborativeDenoiser::denoiseMultiscale(
 {
   zisc::pmr::vector<Parameters<kDimension>> multiscale_parameters{
       &system.globalMemoryManager()};
-  multiscale_parameters.reserve(scale_);
-  for (uint s = 0; s < scale_; ++s)
+  multiscale_parameters.reserve(num_of_scales_);
+  for (uint scale = 0; scale < num_of_scales_; ++scale)
     multiscale_parameters.emplace_back(system);
-  multiscale_parameters[0].init(system, cycle, *statistics);
-  for (uint s = 1; s < scale_; ++s)
-    multiscale_parameters[s].downscaleOf(system, multiscale_parameters[s - 1]);
+  multiscale_parameters[0].init(system, cycle, histogramBins(), *statistics);
+  for (uint scale = 1; scale < num_of_scales_; ++scale)
+    multiscale_parameters[scale].downscaleOf(system, multiscale_parameters[scale - 1]);
 
   zisc::pmr::vector<SpectraArray<kDimension>> staging_value_table{
       &system.globalMemoryManager()};
@@ -599,13 +601,13 @@ void BayesianCollaborativeDenoiser::denoiseMultiscale(
   PixelMarker pixel_marker{system};
 
   Parameters<kDimension>* parameters = nullptr;
-  for (uint iteration = 0; iteration < scale_; ++iteration) {
+  for (uint iteration = 0; iteration < num_of_scales_; ++iteration) {
     // Clear buffers
     std::fill(estimates_counter.begin(), estimates_counter.end(), 0);
     pixel_marker.clear();
 
-    const uint scale_level = scale_ - (iteration + 1);
-    parameters = &multiscale_parameters[scale_level];
+    const uint scale = num_of_scales_ - (iteration + 1);
+    parameters = &multiscale_parameters[scale];
 
     const Index2d chunk_resolution = getChunkResolution(parameters->resolution_);
     constexpr auto tile_order = getChunkTileOrder();
@@ -613,7 +615,7 @@ void BayesianCollaborativeDenoiser::denoiseMultiscale(
       const auto tile_position = tile_order[tile_number];
       denoiseChunk(system, chunk_resolution, tile_position, parameters,
                    &staging_value_table, &estimates_counter, &pixel_marker);
-      std::cout << "scale: " << scale_level << ", tile[" << tile_number << "]" << std::endl;
+      std::cout << "scale: " << scale << ", tile[" << tile_number << "]" << std::endl;
     }
     aggregate(system, estimates_counter, parameters);
 //    if (0 < iteration) {
@@ -803,6 +805,24 @@ uint BayesianCollaborativeDenoiser::getPatchDimension() const noexcept
 {
   const uint dimension = kDimension * getNumOfPatchPixels();
   return dimension;
+}
+
+/*!
+  */
+void BayesianCollaborativeDenoiser::initialize(const SettingNodeBase* settings) noexcept
+{
+  const auto system_settings = castNode<SystemSettingNode>(settings);
+  const auto& parameters = system_settings->bayesianCollaborativeDenoiserParameters();
+  histogram_bins_ =
+      zisc::cast<uint>(parameters.histogram_bins_);
+  histogram_distance_threshold_ = 
+      zisc::cast<Float>(parameters.histogram_distance_threshold_);
+  patch_radius_ =
+      zisc::cast<uint>(parameters.patch_radius_);
+  search_radius_ =
+      zisc::cast<uint>(parameters.search_window_radius_);
+  num_of_scales_ =
+      zisc::cast<uint>(parameters.number_of_scales_);
 }
 
 /*!

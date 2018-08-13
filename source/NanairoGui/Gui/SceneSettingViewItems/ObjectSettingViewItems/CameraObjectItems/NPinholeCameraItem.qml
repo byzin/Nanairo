@@ -13,32 +13,31 @@ import QtQuick.Layouts 1.11
 import "../../../Items"
 import "../../../definitions.js" as Definitions
 
-NPane {
-  id: pinholeCameraItem
+NScrollView {
+  id: cameraItem
 
   // Properties
   property real angleOfView: 45.0
 
   ColumnLayout {
-    id: column1
-
-    width: Definitions.defaultSettingItemWidth
     spacing: Definitions.defaultItemSpace
 
     NLabel {
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "angle of view (degree)"
     }
 
     NFloatSpinBox {
       id: angleSpinBox
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: cameraItem.width
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       floatFrom: 0.0001
       floatTo: 89.9999
-      floatValue: pinholeCameraItem.angleOfView
+      floatValue: cameraItem.angleOfView
 
-      onFloatValueChanged: pinholeCameraItem.angleOfView = floatValue
+      onFloatValueChanged: cameraItem.angleOfView = floatValue
     }
   }
 

@@ -14,7 +14,7 @@ import Qt.labs.platform 1.0
 import "../../Items"
 import "../../definitions.js" as Definitions
 
-NPane {
+NScrollView {
   id: objectSettingView
 
   property var objectItem: null
@@ -28,106 +28,158 @@ NPane {
   property bool isEmissiveObject: false
   property int emitterIndex: 0
 
-  ColumnLayout {
-    id: column1
+  GridLayout {
+    columns: 2
+    columnSpacing: Definitions.defaultItemSpace
+    rowSpacing: Definitions.defaultItemSpace
 
-    width: Definitions.defaultSettingItemWidth
-    spacing: Definitions.defaultItemSpace
+    NGroupBox {
+      id: group
+      title: "shape type" 
+      color: objectSettingView.background.color
+      Layout.preferredWidth: Definitions.defaultSettingGroupWidth
+      Layout.preferredHeight: Definitions.defaultSettingGroupHeight
 
-    NLabel {
-      text: "type"
+      ColumnLayout {
+        anchors.fill: parent
+
+        NComboBox {
+          id: shapeTypeComboBox
+
+          Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+          Layout.fillWidth: true
+          Layout.preferredHeight: Definitions.defaultSettingItemHeight
+          currentIndex: find(objectSettingView.shapeType)
+          model: [Definitions.planeObject,
+                  Definitions.meshObject]
+
+          onCurrentTextChanged: objectSettingView.shapeType = currentText
+        }
+
+        NPane {
+          Layout.fillWidth: true
+          Layout.fillHeight: true
+          Component.onCompleted: background.color = group.background.color;
+        }
+      }
     }
 
-    NComboBox {
-      id: typeComboBox
-
-      Layout.fillWidth: true
-      Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      currentIndex: find(objectSettingView.shapeType)
-      model: [Definitions.planeObject,
-              Definitions.meshObject]
-
-      onCurrentTextChanged: objectSettingView.shapeType = currentText
-    }
-
-    NLabel {
-      Layout.topMargin: Definitions.defaultBlockSize
+    NGroupBox {
       enabled: objectSettingView.isMeshObject
-      text: "mesh"
+      title: "mesh data" 
+      color: objectSettingView.background.color
+      Layout.preferredWidth: Definitions.defaultSettingGroupWidth
+      Layout.preferredHeight: Definitions.defaultSettingGroupHeight
+
+      ColumnLayout {
+        anchors.fill: parent
+
+        NButton {
+          id: objectFileButton
+
+          Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+          Layout.fillWidth: true
+          Layout.preferredHeight: Definitions.defaultSettingItemHeight
+          font.weight: Font.Light
+          font.pixelSize: 10
+          text: (objectSettingView.objectFilePath != "")
+              ? nanairoManager.getFileName(objectSettingView.objectFilePath)
+              : "object file"
+
+          onClicked: objectFileDialog.open()
+        }
+
+        NCheckBox {
+          id: smoothingCheckBox
+
+          Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+          Layout.preferredHeight: Definitions.defaultSettingItemHeight
+    //      enabled: objectSettingView.isMeshObject
+          enabled: false // \todo Implement smoothing
+          checked: objectSettingView.smoothing
+          text: "smoothing"
+
+          onCheckedChanged: objectSettingView.smoothing = checked
+        }
+
+        NPane {
+          Layout.fillWidth: true
+          Layout.fillHeight: true
+          Component.onCompleted: background.color = group.background.color;
+        }
+      }
     }
 
-    NButton {
-      id: objectFileButton
+    NGroupBox {
+      title: "surface" 
+      color: objectSettingView.background.color
+      Layout.preferredWidth: Definitions.defaultSettingGroupWidth
+      Layout.preferredHeight: Definitions.defaultSettingGroupHeight
 
-      Layout.fillWidth: true
-      Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      enabled: objectSettingView.isMeshObject
-      font.weight: Font.Light
-      font.pixelSize: 10
-      text: (objectSettingView.objectFilePath != "")
-          ? nanairoManager.getFileName(objectSettingView.objectFilePath)
-          : "object file"
+      ColumnLayout {
+        anchors.fill: parent
 
-      onClicked: objectFileDialog.open()
+        NComboBox {
+          id: surfaceIndexComboBox
+
+          Layout.alignment: Qt.AlignHcenter | Qt.AlignTop
+          Layout.fillWidth: true
+          Layout.preferredHeight: Definitions.defaultSettingItemHeight
+          currentIndex: objectSettingView.surfaceIndex
+          model: objectSettingView.surfaceModelList
+          textRole: Definitions.modelNameKey
+
+          onCurrentIndexChanged: objectSettingView.surfaceIndex = currentIndex
+        }
+
+        NPane {
+          Layout.fillWidth: true
+          Layout.fillHeight: true
+          Component.onCompleted: background.color = group.background.color;
+        }
+      }
     }
 
-    NCheckBox {
-      id: smoothingCheckBox
+    NGroupBox {
+      title: "emitter" 
+      color: objectSettingView.background.color
+      Layout.preferredWidth: Definitions.defaultSettingGroupWidth
+      Layout.preferredHeight: Definitions.defaultSettingGroupHeight
 
-      Layout.fillWidth: true
-      Layout.preferredHeight: Definitions.defaultSettingItemHeight
-//      enabled: objectSettingView.isMeshObject
-      enabled: false // \todo Implement smoothing
-      checked: objectSettingView.smoothing
-      text: "smoothing"
+      ColumnLayout {
+        anchors.fill: parent
 
-      onCheckedChanged: objectSettingView.smoothing = checked
-    }
+        NCheckBox {
+          id: emitterCheckBox
 
-    NLabel {
-      Layout.topMargin: Definitions.defaultBlockSize
-      text: "surface"
-    }
+          Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+          Layout.preferredHeight: Definitions.defaultSettingItemHeight
+          checked: objectSettingView.isEmissiveObject
+          text: "is emissive"
 
-    NComboBox {
-      id: surfaceIndexComboBox
+          onCheckedChanged: objectSettingView.isEmissiveObject = checked
+        }
 
-      Layout.fillWidth: true
-      Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      currentIndex: objectSettingView.surfaceIndex
-      model: objectSettingView.surfaceModelList
-      textRole: Definitions.modelNameKey
+        NComboBox {
+          id: emitterIndexComboBox
 
-      onCurrentIndexChanged: objectSettingView.surfaceIndex = currentIndex
-    }
+          enabled: emitterCheckBox.checked
+          Layout.alignment: Qt.AlignHcenter | Qt.AlignTop
+          Layout.fillWidth: true
+          Layout.preferredHeight: Definitions.defaultSettingItemHeight
+          currentIndex: objectSettingView.emitterIndex
+          model: objectSettingView.emitterModelList
+          textRole: Definitions.modelNameKey
 
-    NLabel {
-      Layout.topMargin: Definitions.defaultBlockSize
-      text: "emitter"
-    }
+          onCurrentIndexChanged: objectSettingView.emitterIndex = currentIndex
+        }
 
-    NCheckBox {
-      id: emitterCheckBox
-
-      Layout.fillWidth: true
-      Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      checked: objectSettingView.isEmissiveObject
-      text: "is emissive"
-
-      onCheckedChanged: objectSettingView.isEmissiveObject = checked
-    }
-
-    NComboBox {
-      id: emitterIndexComboBox
-
-      enabled: emitterCheckBox.checked
-      Layout.fillWidth: true
-      Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      currentIndex: objectSettingView.emitterIndex
-      model: objectSettingView.emitterModelList
-      textRole: Definitions.modelNameKey
-
-      onCurrentIndexChanged: objectSettingView.emitterIndex = currentIndex
+        NPane {
+          Layout.fillWidth: true
+          Layout.fillHeight: true
+          Component.onCompleted: background.color = group.background.color;
+        }
+      }
     }
   }
 

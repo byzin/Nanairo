@@ -13,7 +13,7 @@ import QtQuick.Layouts 1.11
 import "../../../Items"
 import "../../../definitions.js" as Definitions
 
-NPane {
+NScrollView {
   id: emitterItem
 
   property var textureModelList: null
@@ -22,19 +22,18 @@ NPane {
   property real radiantExitance
 
   ColumnLayout {
-    id: column1
-
-    width: Definitions.defaultSettingItemWidth
     spacing: Definitions.defaultItemSpace
 
     NLabel {
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "color"
     }
 
     NComboBox {
       id: colorIndexComboBox
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: emitterItem.width
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       currentIndex: emitterItem.colorIndex
       model: emitterItem.textureModelList
@@ -45,13 +44,15 @@ NPane {
 
     NLabel {
       Layout.topMargin: Definitions.defaultBlockSize
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "radiant exitance"
     }
 
     NFloatSpinBox {
       id: radiantExitanceSpinBox
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: emitterItem.width
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       floatFrom: 0.0
       floatTo: realMax

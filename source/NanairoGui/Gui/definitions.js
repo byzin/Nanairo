@@ -69,6 +69,15 @@ var toneMapping = "@toneMapping@";
     var reinhard = "@reinhard@";
     var filmic = "@filmic@";
     var uncharted2Filmic = "@uncharted2Filmic@";
+var enableDenoising = "@enableDenoising@";
+var denoiserType = "@denoiserType@";
+    var bayesianCollaborativeDenoiser = "@bayesianCollaborativeDenoiser@";
+// Bayesian collaborative denoiser
+var histogramBins = "@histogramBins@";
+var histogramDistanceThreshold = "@histogramDistanceThreshold@";
+var patchRadius = "@patchRadius@";
+var searchWindowRadius = "@searchWindowRadius@";
+var numberOfScales = "@numberOfScales@";
 
 // Rendering method
 var renderingMethod = "@renderingMethod@";
@@ -175,8 +184,11 @@ var defaultButtonHeight = 32;
 var defaultImageButtonSize = 24;
 var defaultDarkerScale = 1.2;
 var defaultTextFontSize = 12;
+var defaultScrollBarSize = 8;
 var defaultSettingItemWidth = 128;
 var defaultSettingItemHeight = 24;
+var defaultSettingGroupWidth = 200;
+var defaultSettingGroupHeight = 150;
 var defaultSettingItemColumnInterval = 64;
 
 // Window

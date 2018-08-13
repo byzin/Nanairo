@@ -13,7 +13,7 @@ import QtQuick.Layouts 1.11
 import "../../../Items"
 import "../../../definitions.js" as Definitions
 
-NPane {
+NScrollView {
   id: textureItem
 
   readonly property alias color1PalettePrefixKey: color1Palette.prefixKey
@@ -28,23 +28,21 @@ NPane {
   property int checkerHeight: 1
 
   ColumnLayout {
-    id: column1
-
-    width: Definitions.defaultSettingItemWidth
     spacing: Definitions.defaultItemSpace
 
     NLabel {
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "resolution"
     }
 
     RowLayout {
-      id: row1
-      Layout.fillWidth: true
-      Layout.preferredHeight: 20
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: textureItem.width
+      Layout.preferredHeight: Definitions.defaultSettingItemHeight
 
       NLabel {
-        Layout.preferredWidth: Definitions.defaultBlockSize
-        text: "w"
+        font.family: nanairoManager.getSystemFixedFontFamily()
+        text: "W"
       }
 
       NSpinBox {
@@ -60,13 +58,13 @@ NPane {
     }
 
     RowLayout {
-      id: row2
-      Layout.fillWidth: true
-      Layout.preferredHeight: 20
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: textureItem.width
+      Layout.preferredHeight: Definitions.defaultSettingItemHeight
 
       NLabel {
-        Layout.preferredWidth: Definitions.defaultBlockSize
-        text: "h"
+        text: "H"
+        font.family: nanairoManager.getSystemFixedFontFamily()
       }
 
       NSpinBox {
@@ -83,26 +81,29 @@ NPane {
 
     NLabel {
       Layout.topMargin: Definitions.defaultBlockSize
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "color1"
     }
 
     NColorPalette {
       id: color1Palette
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: textureItem.width
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       prefixKey: Definitions.color1
     }
 
     NLabel {
-      Layout.topMargin: Definitions.defaultBlockSize
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "color2"
     }
 
     NColorPalette {
       id: color2Palette
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: textureItem.width
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       prefixKey: Definitions.color2
     }

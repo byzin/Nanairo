@@ -13,7 +13,7 @@ import QtQuick.Layouts 1.11
 import "../../../Items"
 import "../../../definitions.js" as Definitions
 
-NPane {
+NScrollView {
   id: surfaceItem
 
   property var textureModelList: null
@@ -26,19 +26,18 @@ NPane {
   property int innerRefractiveIndex
 
   ColumnLayout {
-    id: column1
-
-    width: Definitions.defaultSettingItemWidth
     spacing: Definitions.defaultItemSpace
 
     NLabel {
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "reflectance"
     }
 
     NComboBox {
       id: reflectanceComboBox
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: surfaceItem.width
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       currentIndex: surfaceItem.reflectanceIndex
       model: surfaceItem.textureModelList
@@ -49,13 +48,14 @@ NPane {
 
     NLabel {
       Layout.topMargin: Definitions.defaultBlockSize
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "roughness"
     }
 
     NCheckBox {
       id: anisotropicCheckBox
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       text: "anisotropic"
       checked: surfaceItem.anisotropic
@@ -66,7 +66,8 @@ NPane {
     NComboBox {
       id: roughnessXComboBox
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: surfaceItem.width
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       currentIndex: surfaceItem.roughnessXIndex
       model: surfaceItem.textureModelList
@@ -79,7 +80,8 @@ NPane {
       id: roughnessYComboBox
 
       enabled: anisotropicCheckBox.checked
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: surfaceItem.width
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       currentIndex: surfaceItem.roughnessYIndex
       model: surfaceItem.textureModelList
@@ -90,13 +92,15 @@ NPane {
 
     NLabel {
       Layout.topMargin: Definitions.defaultBlockSize
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "outer refractive index"
     }
 
     NComboBox {
       id: outerRefractiveIndexComboBox
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: surfaceItem.width
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       currentIndex: surfaceItem.outerRefractiveIndex
       model: surfaceItem.textureModelList
@@ -107,13 +111,15 @@ NPane {
 
     NLabel {
       Layout.topMargin: Definitions.defaultBlockSize
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "inner refractive index"
     }
 
     NComboBox {
       id: innerRefractiveIndexComboBox
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: surfaceItem.width
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       currentIndex: surfaceItem.innerRefractiveIndex
       model: surfaceItem.textureModelList

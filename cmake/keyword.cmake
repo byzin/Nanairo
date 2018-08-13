@@ -69,6 +69,15 @@ function(getNanairoKeywords nanairo_keyword_list)
           reinhard "Reinhard"
           filmic "Filmic"
           uncharted2Filmic "Uncharted2 filmic"
+      enableDenoising "EnableDenoising"
+      denoiserType "DenoiserType"
+          bayesianCollaborativeDenoiser "BayesianCollaborativeDenoiser"
+      # Bayesian collaborative denoiser
+      histogramBins "HistogramBins"
+      histogramDistanceThreshold "HistogramDistanceThreshold"
+      patchRadius "PatchRadius"
+      searchWindowRadius "SearchWindowRadius"
+      numberOfScales "NumberOfScales"
 
       # Rendering
       renderingMethod "RenderingMethod"

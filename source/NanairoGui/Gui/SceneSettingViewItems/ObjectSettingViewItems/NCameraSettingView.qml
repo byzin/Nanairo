@@ -14,78 +14,106 @@ import "CameraObjectItems"
 import "../../Items"
 import "../../definitions.js" as Definitions
 
-NPane {
+NScrollView {
   id: cameraSettingView
 
   property var objectItem: null
   property string cameraType: ""
   property bool jittering: false
 
-  RowLayout {
-    id: row1
+  GridLayout {
+    columns: 2
+    columnSpacing: Definitions.defaultItemSpace
+    rowSpacing: Definitions.defaultItemSpace
 
-    spacing: Definitions.defaultSettingItemColumnInterval
+    NGroupBox {
+      id: group
+      title: "camera type"
+      color: cameraSettingView.background.color
+      Layout.preferredWidth: Definitions.defaultSettingGroupWidth
+      Layout.preferredHeight: Definitions.defaultSettingGroupHeight
 
-    ColumnLayout {
-      id: column1
+      ColumnLayout {
+        anchors.fill: parent
 
-      Layout.preferredWidth: Definitions.defaultSettingItemWidth
-      spacing: Definitions.defaultItemSpace
+        NComboBox {
+          id: cameraTypeComboBox
 
-      NLabel {
-        text: "type"
+          Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+          Layout.fillWidth: true
+          Layout.preferredHeight: Definitions.defaultSettingItemHeight
+          currentIndex: find(cameraSettingView.cameraType)
+          model: [Definitions.pinholeCamera]
+
+          onCurrentTextChanged: cameraSettingView.cameraType = currentText
+        }
+
+        NPane {
+          Layout.fillWidth: true
+          Layout.fillHeight: true
+          Component.onCompleted: background.color = group.background.color
+        }
+      }
+    }
+
+    NGroupBox {
+      title: "camera parameters"
+      color: cameraSettingView.background.color
+      Layout.preferredWidth: Definitions.defaultSettingGroupWidth
+      Layout.preferredHeight: Definitions.defaultSettingGroupHeight
+
+      StackLayout {
+        id: cameraItemLayout
+
+        anchors.fill: parent
+        currentIndex: -1
+
+        NPinholeCameraItem {
+          id: pinholeCameraItem
+          onAngleOfViewChanged: cameraSettingView.setProperty(Definitions.angleOfView, angleOfView)
+        }
       }
 
-      NComboBox {
-        id: typeComboBox
-
-        Layout.fillWidth: true
-        Layout.preferredHeight: Definitions.defaultSettingItemHeight
-        currentIndex: find(cameraSettingView.cameraType)
-        model: [Definitions.pinholeCamera]
-
-        onCurrentTextChanged: cameraSettingView.cameraType = currentText
+      Component.onCompleted: {
+        for (var i = 0; i < cameraItemLayout.children.length; ++i) {
+          var cameraView = cameraItemLayout.children[i];
+          cameraView.background.color = background.color;
+        }
       }
     }
 
-    ColumnLayout {
-      id: column2
+    NGroupBox {
+      title: "jittering"
+      color: cameraSettingView.background.color
+      Layout.preferredWidth: Definitions.defaultSettingGroupWidth
+      Layout.preferredHeight: Definitions.defaultSettingGroupHeight
 
-      Layout.preferredWidth: Definitions.defaultSettingItemWidth
-      spacing: Definitions.defaultItemSpace
+      ColumnLayout {
+        anchors.fill: parent
 
-      NLabel {
-        text: "jittering"
+        NCheckBox {
+          id: jitteringCheckBox
+
+          Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+          Layout.fillWidth: true
+          Layout.preferredHeight: Definitions.defaultSettingItemHeight
+          checked: cameraSettingView.jittering
+          text: "jittering"
+
+          onCheckedChanged: cameraSettingView.jittering = checked
+        }
+
+        NPane {
+          Layout.fillWidth: true
+          Layout.fillHeight: true
+          Component.onCompleted: background.color = group.background.color
+        }
       }
-
-      NCheckBox {
-        id: jitteringCheckBox
-
-        Layout.fillWidth: true
-        Layout.preferredHeight: Definitions.defaultSettingItemHeight
-        checked: cameraSettingView.jittering
-        text: "jittering"
-
-        onCheckedChanged: cameraSettingView.jittering = checked
-      }
-    }
-  }
-
-  StackLayout {
-    id: cameraItemLayout
-
-    anchors.fill: parent
-    anchors.topMargin: (row1.y + row1.height) + Definitions.defaultBlockSize
-    currentIndex: -1
-
-    NPinholeCameraItem {
-      id: pinholeCameraItem
-      onAngleOfViewChanged: cameraSettingView.setProperty(Definitions.angleOfView, angleOfView)
     }
   }
 
   onCameraTypeChanged: {
-    var viewIndex = typeComboBox.find(cameraType);
+    var viewIndex = cameraTypeComboBox.find(cameraType);
     if ((objectItem != null) && (viewIndex != -1)) {
       // Set base camera properties
       setProperty(Definitions.cameraType, cameraType);
@@ -122,7 +150,7 @@ NPane {
       cameraType = Definitions.getProperty(item, Definitions.cameraType);
       jittering = Definitions.getProperty(item, Definitions.jittering);
       // Change the camera setting view
-      var viewIndex = typeComboBox.find(cameraType);
+      var viewIndex = cameraTypeComboBox.find(cameraType);
       console.assert(viewIndex != -1, "The item has invalid camera type.");
       cameraItemLayout.currentIndex = viewIndex;
       // Set the item properties to the view
@@ -135,7 +163,7 @@ NPane {
   function getSceneData(item) {
     var cameraType = Definitions.getProperty(item, Definitions.cameraType);
 
-    var viewIndex = typeComboBox.find(cameraType);
+    var viewIndex = cameraTypeComboBox.find(cameraType);
     var cameraView = cameraItemLayout.children[viewIndex];
 
     var sceneData = cameraView.getSceneData(item);
@@ -152,7 +180,7 @@ NPane {
     item[Definitions.jittering] =
         Definitions.getProperty(sceneData, Definitions.jittering);
 
-    var viewIndex = typeComboBox.find(cameraType);
+    var viewIndex = cameraTypeComboBox.find(cameraType);
     var cameraView = cameraItemLayout.children[viewIndex];
     cameraView.setSceneData(sceneData, item);
   }

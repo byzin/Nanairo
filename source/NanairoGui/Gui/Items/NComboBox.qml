@@ -15,6 +15,8 @@ import "../definitions.js" as Definitions
 ComboBox {
   id: comboBox
 
+  property int popupWidthScale: 2
+
   Material.elevation: 0
 
   padding: 0
@@ -24,10 +26,18 @@ ComboBox {
   bottomPadding: 0
   font.weight: Font.Light
   font.pixelSize: Definitions.defaultTextFontSize
+  background.anchors.fill: comboBox
+
+  onPressedChanged: {
+    initComboBox();
+  }
 
   Component.onCompleted: {
-    background.anchors.fill = comboBox;
-    popup.width = 2 * width;
+    initComboBox();
+  }
+
+  function initComboBox() {
+    popup.width = width * popupWidthScale;
     popup.font.weight = Font.Light;
     popup.font.pixelSize = Definitions.defaultTextFontSize;
   }

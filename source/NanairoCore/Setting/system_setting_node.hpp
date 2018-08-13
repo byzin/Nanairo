@@ -14,11 +14,15 @@
 #include <array>
 #include <istream>
 #include <ostream>
+// Zisc
+#include "zisc/memory_resource.hpp"
+#include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "setting_node_base.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Color/color_space.hpp"
+#include "NanairoCore/Denoiser/denoiser.hpp"
 #include "NanairoCore/Sampling/wavelength_sampler.hpp"
 #include "NanairoCore/Sampling/Sampler/sampler.hpp"
 #include "NanairoCore/ToneMappingOperator/tone_mapping_operator.hpp"
@@ -27,6 +31,22 @@ namespace nanairo {
 
 //! \addtogroup Core
 //! \{
+
+// Bayesian collaborative denoiser
+struct BayesianCollaborativeDenoiserParameters : public NodeParameterBase
+{
+  //! Read the parameters from the streamm
+  void readData(std::istream* data_stream) noexcept override;
+
+  //! Write the parameters to the stream
+  void writeData(std::ostream* data_stream) const noexcept override;
+
+  uint32 histogram_bins_ = 20;
+  double histogram_distance_threshold_ = 0.5;
+  uint32 patch_radius_ = 1;
+  uint32 search_window_radius_ = 6;
+  uint32 number_of_scales_ = 3;
+};
 
 /*!
   */
@@ -37,11 +57,25 @@ class SystemSettingNode : public SettingNodeBase
   SystemSettingNode(const SettingNodeBase* parent) noexcept;
 
 
+  //! Return the BayesianCollaborativeDenoiser parameters
+  BayesianCollaborativeDenoiserParameters&
+  bayesianCollaborativeDenoiserParameters() noexcept;
+
+  //! Return the BayesianCollaborativeDenoiser parameters
+  const BayesianCollaborativeDenoiserParameters&
+  bayesianCollaborativeDenoiserParameters() const noexcept;
+
   // Return the rendering color mode
   RenderingColorMode colorMode() const noexcept;
 
   //! Return the color space
   ColorSpaceType colorSpace() const noexcept;
+
+  //! Return the denoiser type
+  DenoiserType denoiserType() const noexcept;
+
+  //! Enable denoising
+  void enableDenoising(const bool flag) noexcept;
 
   //! Return the exposure time in seconds
   double exposure() const noexcept;
@@ -60,6 +94,9 @@ class SystemSettingNode : public SettingNodeBase
 
   //! Initialize a systemm node
   void initialize() noexcept override;
+
+  //! Check if denoising is enabled
+  bool isDenoisingEnabled() const noexcept;
 
   //! Return the node type
   static SettingNodeType nodeType() noexcept;
@@ -90,6 +127,9 @@ class SystemSettingNode : public SettingNodeBase
 
   //! Set the color space
   void setColorSpace(const ColorSpaceType color_space) noexcept;
+
+  //! Set the denoiser type
+  void setDenoiserType(const DenoiserType denoiser_type) noexcept;
 
   //! Set the exposure time in seconds
   void setExposure(const double exposure) noexcept;
@@ -171,6 +211,10 @@ class SystemSettingNode : public SettingNodeBase
   double gamma_correction_;
   ToneMappingType tone_mapping_type_;
   double exposure_;
+  // Denoiser
+  zisc::UniqueMemoryPointer<NodeParameterBase> denoiser_parameters_;
+  DenoiserType denoiser_type_;
+  uint8 is_denoising_enabled_;
 };
 
 //! \} Core

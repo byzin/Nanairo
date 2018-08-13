@@ -23,6 +23,14 @@ namespace nanairo {
 /*!
   */
 inline
+uint BayesianCollaborativeDenoiser::histogramBins() const noexcept
+{
+  return histogram_bins_;
+}
+
+/*!
+  */
+inline
 constexpr std::array<Index2d, 9> BayesianCollaborativeDenoiser::getChunkTileOrder()
     noexcept
 {

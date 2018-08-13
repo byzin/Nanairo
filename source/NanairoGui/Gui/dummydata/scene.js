@@ -21,7 +21,14 @@ function getCornellBoxScene() {
         "@exposure@": 2,
         "@gamma@": 2.4,
         "@toneMapping@": "@filmic@",
-        "@wavelengthSampling@": "@randomSampling@"
+        "@wavelengthSampling@": "@randomSampling@",
+        "@enableDenoising@": true,
+        "@denoiserType@": "@bayesianCollaborativeDenoiser@",
+        "@histogramBins@": 10,
+        "@histogramDistanceThreshold@": 2.0,
+        "@patchRadius@": 3,
+        "@searchWindowRadius@": 13,
+        "@numberOfScales@":5 
     },
     "@emitterModel@": [
         {

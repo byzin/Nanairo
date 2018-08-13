@@ -36,6 +36,7 @@
 #include "NanairoCore/Color/SpectralDistribution/spectral_distribution.hpp"
 #include "NanairoCore/CameraModel/camera_model.hpp"
 #include "NanairoCore/DataStructure/bvh.hpp"
+#include "NanairoCore/Denoiser/denoiser.hpp"
 #include "NanairoCore/Geometry/transformation.hpp"
 #include "NanairoCore/Material/EmitterModel/emitter_model.hpp"
 #include "NanairoCore/Material/SurfaceModel/surface_model.hpp"
@@ -894,6 +895,39 @@ void SceneValue::toSystemSetting(const QJsonObject& value,
   {
     const auto exposure = toFloat<double>(color_value, keyword::exposure);
     system_setting->setExposure(exposure);
+  }
+  // Denoiser
+  {
+    const auto is_denoising_enabled = toBool(color_value, keyword::enableDenoising);
+    system_setting->enableDenoising(is_denoising_enabled);
+  }
+  {
+    const auto denoiser_type = toString(color_value, keyword::denoiserType);
+    const auto type =
+        (denoiser_type == keyword::bayesianCollaborativeDenoiser)
+            ? DenoiserType::kBayesianCollaborative
+            : DenoiserType::kBayesianCollaborative;
+    system_setting->setDenoiserType(type);
+  }
+  switch (system_setting->denoiserType()) {
+   case DenoiserType::kBayesianCollaborative: {
+    auto& parameters = system_setting->bayesianCollaborativeDenoiserParameters();
+    {
+      parameters.histogram_bins_ =
+          toInt<uint32>(color_value, keyword::histogramBins);
+      parameters.histogram_distance_threshold_ = 
+          toFloat<double>(color_value, keyword::histogramDistanceThreshold);
+      parameters.patch_radius_ = 
+          toInt<uint32>(color_value, keyword::patchRadius);
+      parameters.search_window_radius_ =
+          toInt<uint32>(color_value, keyword::searchWindowRadius);
+      parameters.number_of_scales_ =
+          toInt<uint32>(color_value, keyword::numberOfScales);
+    }
+    break;
+   }
+   default:
+    break;
   }
 }
 

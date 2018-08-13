@@ -42,6 +42,7 @@ class SampleStatistics
   {
     kExpectedValue = 0,
     kVariance,
+    kBayesianCollaborativeValues,
     kDenoisedExpectedValue,
   };
 

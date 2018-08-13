@@ -16,12 +16,15 @@
 #include "zisc/math.hpp"
 #include "zisc/memory_resource.hpp"
 #include "zisc/unique_memory_pointer.hpp"
+#include "zisc/utility.hpp"
 // Nanairo
 #include "sampled_spectra.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Color/SpectralDistribution/spectral_distribution.hpp"
 #include "NanairoCore/Data/wavelength_samples.hpp"
+#include "NanairoCore/Denoiser/bayesian_collaborative_denoiser.hpp"
+#include "NanairoCore/Denoiser/denoiser.hpp"
 #include "NanairoCore/Geometry/point.hpp"
 #include "NanairoCore/ToneMappingOperator/tone_mapping_operator.hpp"
 
@@ -82,7 +85,7 @@ void SampleStatistics::clear() noexcept
       sample_p->fill(0.0);
   }
 
-  if (isEnabled(Type::kDenoisedExpectedValue)) {
+  if (isEnabled(Type::kBayesianCollaborativeValues)) {
     // Histogram
     for (auto& sample_p : histogramTable())
       sample_p->fill(0.0);
@@ -90,7 +93,9 @@ void SampleStatistics::clear() noexcept
     // Covariance matrix factor
     for (auto& factor : covarianceFactorTable())
       factor.set(0.0);
+  }
 
+  if (isEnabled(Type::kDenoisedExpectedValue)) {
     // Denoised sample
     for (auto& sample_p : denoisedSampleTable())
       sample_p->fill(0.0);
@@ -112,7 +117,7 @@ void SampleStatistics::update(
       if (isEnabled(Type::kVariance))
         updateSampleSquared(wavelengths, pixel_index);
 
-      if (isEnabled(Type::kDenoisedExpectedValue)) {
+      if (isEnabled(Type::kBayesianCollaborativeValues)) {
         updateHistogram(system, wavelengths, pixel_index);
         updateCovarianceFactor(wavelengths, pixel_index);
       }
@@ -163,13 +168,17 @@ void SampleStatistics::initialize(System& system) noexcept
     init_distribution_table(size, true, sample_squared_);
   }
 
-  if (isEnabled(Type::kDenoisedExpectedValue)) {
-    const std::size_t s = size * system.sampleHistogramBins();
+  if (isEnabled(Type::kBayesianCollaborativeValues)) {
+    const auto denoiser = zisc::cast<const BayesianCollaborativeDenoiser*>(
+        &system.denoiser());
+    const uint32 bins = denoiser->histogramBins();
+
+    const std::size_t s = size * bins;
     histogram_.reserve(s);
     init_distribution_table(s, false, histogram_);
   }
 
-  if (isEnabled(Type::kDenoisedExpectedValue)) {
+  if (isEnabled(Type::kBayesianCollaborativeValues)) {
     const std::size_t s = size * numOfCovarianceFactors();
     covariance_factor_.resize(s);
   }
@@ -217,7 +226,10 @@ void SampleStatistics::updateHistogram(
   const auto& sample_p = sampleTable()[pixel_index];
   const auto& prev_sample_p = prevSampleTable()[pixel_index];
 
-  const uint bins = system.sampleHistogramBins();
+  const auto denoiser = zisc::cast<const BayesianCollaborativeDenoiser*>(
+      &system.denoiser());
+  const uint bins = denoiser->histogramBins();
+
   for (uint i = 0; i < wavelengths.size(); ++i) {
     const auto w = wavelengths[i];
     const uint si = sample_p->getIndex(w);

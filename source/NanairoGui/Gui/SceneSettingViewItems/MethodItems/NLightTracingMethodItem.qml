@@ -13,23 +13,23 @@ import QtQuick.Layouts 1.11
 import "../../Items"
 import "../../definitions.js" as Definitions
 
-NPane {
+NScrollView {
   id: methodItem
 
   ColumnLayout {
-    id: column1
-
-    width: Definitions.defaultSettingItemWidth
     spacing: Definitions.defaultItemSpace
 
     NLabel {
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "light path light sampler"
     }
 
     NLightSampler {
       id: lightSampler
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: methodItem.width
+      Layout.preferredHeight: Definitions.defaultSettingItemHeight
       isEyePathSampler: false
     }
   }

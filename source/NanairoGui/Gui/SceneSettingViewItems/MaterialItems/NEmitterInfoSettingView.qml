@@ -14,52 +14,79 @@ import "../../Items"
 import "EmitterModelItems"
 import "../../definitions.js" as Definitions
 
-NPane {
+NScrollView {
   id: infoSettingView
 
   property var textureModelList: null
   property var materialItem: null
   property string emitterType: ""
 
-  ColumnLayout {
-    id: column1
+  GridLayout {
+    columns: 3
+    columnSpacing: Definitions.defaultItemSpace
+    rowSpacing: Definitions.defaultItemSpace
 
-    width: Definitions.defaultSettingItemWidth
-    spacing: Definitions.defaultItemSpace
+    NGroupBox {
+      id: group
+      title: "emitter type"
+      color: infoSettingView.background.color
+      Layout.preferredWidth: Definitions.defaultSettingGroupWidth
+      Layout.preferredHeight: Definitions.defaultSettingGroupHeight
 
-    NLabel {
-      text: "type"
+      ColumnLayout {
+        anchors.fill: parent
+
+        NComboBox {
+          id: emitterTypeComboBox
+
+          Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+          Layout.fillWidth: true
+          Layout.preferredHeight: Definitions.defaultSettingItemHeight
+          currentIndex: find(infoSettingView.emitterType)
+          model: [Definitions.nonDirectionalEmitter]
+
+          onCurrentTextChanged: infoSettingView.emitterType = currentText
+        }
+
+        NPane {
+          Layout.fillWidth: true
+          Layout.fillHeight: true
+          Component.onCompleted: background.color = group.background.color;
+        }
+      }
     }
 
-    NComboBox {
-      id: typeComboBox
+    NGroupBox {
+      title: "emitter type"
+      color: infoSettingView.background.color
+      Layout.preferredWidth: Definitions.defaultSettingGroupWidth
+      Layout.preferredHeight: Definitions.defaultSettingGroupHeight
 
-      Layout.fillWidth: true
-      Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      currentIndex: find(infoSettingView.emitterType)
-      model: [Definitions.nonDirectionalEmitter]
+      StackLayout {
+        id: emitterItemLayout
 
-      onCurrentTextChanged: infoSettingView.emitterType = currentText
-    }
-  }
+        anchors.fill: parent
+        currentIndex: 0
 
-  StackLayout {
-    id: emitterItemLayout
+        NNonDirectionalEmitterItem {
+          id: nonDirectionalEmitterItem
+          textureModelList: infoSettingView.textureModelList
+          onColorIndexChanged: infoSettingView.setProperty(Definitions.emissiveColorIndex, colorIndex)
+          onRadiantExitanceChanged: infoSettingView.setProperty(Definitions.radiantExitance, radiantExitance)
+        }
+      }
 
-    anchors.fill: parent
-    anchors.topMargin: (column1.y + column1.height) + Definitions.defaultBlockSize
-    currentIndex: 0
-
-    NNonDirectionalEmitterItem {
-      id: nonDirectionalEmitterItem
-      textureModelList: infoSettingView.textureModelList
-      onColorIndexChanged: infoSettingView.setProperty(Definitions.emissiveColorIndex, colorIndex)
-      onRadiantExitanceChanged: infoSettingView.setProperty(Definitions.radiantExitance, radiantExitance)
+      Component.onCompleted: {
+        for (var i = 0; i < emitterItemLayout.children.length; ++i) {
+          var emitterView = emitterItemLayout.children[i];
+          emitterView.background.color = background.color;
+        }
+      }
     }
   }
 
   onEmitterTypeChanged: {
-    var viewIndex = typeComboBox.find(emitterType);
+    var viewIndex = emitterTypeComboBox.find(emitterType);
     if ((materialItem != null) && (viewIndex != -1)) {
       // Set base emitter properties
       setProperty(Definitions.type, emitterType);
@@ -91,7 +118,7 @@ NPane {
       // Set emitter type to the view
       emitterType = Definitions.getProperty(item, Definitions.type);
       // Change the emitter setting view
-      var viewIndex = typeComboBox.find(emitterType);
+      var viewIndex = emitterTypeComboBox.find(emitterType);
       console.assert(viewIndex != -1, "The item has invalid emitter type.");
       emitterItemLayout.currentIndex = viewIndex;
       // Set the item properties to the view
@@ -104,7 +131,7 @@ NPane {
   function getSceneData(item) {
     var type = Definitions.getProperty(item, Definitions.type);
 
-    var viewIndex = typeComboBox.find(type);
+    var viewIndex = emitterTypeComboBox.find(type);
     var emitterView = emitterItemLayout.children[viewIndex];
 
     var sceneData = emitterView.getSceneData(item);
@@ -116,7 +143,7 @@ NPane {
   function setSceneData(sceneData, item) {
     var type = Definitions.getProperty(sceneData, Definitions.type);
 
-    var viewIndex = typeComboBox.find(type);
+    var viewIndex = emitterTypeComboBox.find(type);
     var emitterView = emitterItemLayout.children[viewIndex];
 
     item[Definitions.type] = type;

@@ -123,6 +123,8 @@
 !/source/NanairoGui/Gui/SceneSettingViewItems/*.qml
 !/source/NanairoGui/Gui/SceneSettingViewItems/BvhItems/
 !/source/NanairoGui/Gui/SceneSettingViewItems/BvhItems/*.qml
+!/source/NanairoGui/Gui/SceneSettingViewItems/DenoiserItems/
+!/source/NanairoGui/Gui/SceneSettingViewItems/DenoiserItems/*.qml
 !/source/NanairoGui/Gui/SceneSettingViewItems/MaterialItems/
 !/source/NanairoGui/Gui/SceneSettingViewItems/MaterialItems/*.qml
 !/source/NanairoGui/Gui/SceneSettingViewItems/MaterialItems/EmitterModelItems/

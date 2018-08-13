@@ -23,6 +23,7 @@
 #include "denoiser.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Data/rendering_tile.hpp"
+#include "NanairoCore/Setting/setting_node_base.hpp"
 
 namespace nanairo {
 
@@ -37,13 +38,16 @@ class BayesianCollaborativeDenoiser : public Denoiser
 {
  public:
   //! Initialize a denoiser
-  BayesianCollaborativeDenoiser() noexcept;
+  BayesianCollaborativeDenoiser(const SettingNodeBase* settings) noexcept;
 
 
   //! Denoise input value
   void denoise(System& system,
                const uint32 cycle,
                SampleStatistics* statistics) const noexcept override;
+
+  //! Return the histogram bins
+  uint histogramBins() const noexcept;
 
  private:
   //! Return the order of chunk tiles
@@ -89,6 +93,7 @@ class BayesianCollaborativeDenoiser : public Denoiser
     //! Initialize parameters
     void init(System& system,
               const uint32 cycle,
+              const uint histogram_bins,
               const SampleStatistics& statistics) noexcept;
 
     zisc::pmr::vector<SpectraArray<kDimension>> sample_value_table_;
@@ -238,6 +243,9 @@ class BayesianCollaborativeDenoiser : public Denoiser
   template <uint kDimension>
   uint getPatchDimension() const noexcept;
 
+  //! Initialize the denoiser
+  void initialize(const SettingNodeBase* settings) noexcept;
+
   //! Make a patch
   RenderingTile makePatch(const Index2d& center_pixel) const noexcept;
 
@@ -271,9 +279,10 @@ class BayesianCollaborativeDenoiser : public Denoiser
 
 
   Float histogram_distance_threshold_;
+  uint histogram_bins_;
   uint patch_radius_;
   uint search_radius_;
-  uint scale_;
+  uint num_of_scales_;
 };
 
 } // namespace nanairo

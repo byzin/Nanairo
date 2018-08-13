@@ -14,69 +14,96 @@ import "../Items"
 import "BvhItems"
 import "../definitions.js" as Definitions
 
-NPane {
+NScrollView {
   id: settingView
 
   property bool isEditMode: true
 
-  ColumnLayout {
-    id: column1
+  GridLayout {
+    columns: 4
+    columnSpacing: Definitions.defaultItemSpace
+    rowSpacing: Definitions.defaultItemSpace
 
-    width: Definitions.defaultSettingItemWidth
-    spacing: Definitions.defaultItemSpace
+    NGroupBox {
+      id: group
+      title: "bvh type"
+      color: settingView.background.color
+      Layout.preferredWidth: Definitions.defaultSettingGroupWidth
+      Layout.preferredHeight: Definitions.defaultSettingGroupHeight
 
-    NLabel {
-      text: "type"
+      ColumnLayout {
+        anchors.fill: parent
+
+        NComboBox {
+          id: bvhTypeComboBox
+
+          Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+          Layout.fillWidth: true
+          Layout.preferredHeight: Definitions.defaultSettingItemHeight
+          currentIndex: 0
+          model: [Definitions.binaryRadixTreeBvh,
+                  Definitions.agglomerativeTreeletRestructuringBvh]
+
+          onCurrentIndexChanged: {
+            if (settingView.isEditMode) {
+              var bvhView = bvhItemLayout.children[currentIndex];
+              bvhView.initSceneData();
+            }
+          }
+        }
+
+        NPane {
+          Layout.fillWidth: true
+          Layout.fillHeight: true
+          Component.onCompleted: background.color = group.background.color;
+        }
+      }
     }
 
-    NComboBox {
-      id: typeComboBox
+    NGroupBox {
+      title: "bvh parameters"
+      color: settingView.background.color
+      Layout.preferredWidth: Definitions.defaultSettingGroupWidth
+      Layout.preferredHeight: Definitions.defaultSettingGroupHeight
 
-      Layout.fillWidth: true
-      Layout.preferredHeight: Definitions.defaultSettingItemHeight
-      currentIndex: 0
-      model: [Definitions.binaryRadixTreeBvh,
-              Definitions.agglomerativeTreeletRestructuringBvh]
+      StackLayout {
+        id: bvhItemLayout
 
-      onCurrentIndexChanged: {
-        if (settingView.isEditMode) {
-          var bvhView = bvhItemLayout.children[currentIndex];
-          bvhView.initSceneData();
+        anchors.fill: parent
+        currentIndex: bvhTypeComboBox.currentIndex
+
+        NBinaryRadixTreeBvhItem {
+          id: binaryRadixTreeBvhItem
+        }
+
+        NAgglomerativeTreeletRestructuringBvhItem {
+          id: agglomerativeTreeletRestructuringBvh
+        }
+      }
+
+      Component.onCompleted: {
+        for (var i = 0; i < bvhItemLayout.children.length; ++i) {
+          var bvhView = bvhItemLayout.children[i];
+          bvhView.background.color = background.color;
         }
       }
     }
   }
 
-  StackLayout {
-    id: bvhItemLayout
-
-    anchors.fill: parent
-    anchors.topMargin: (column1.y + column1.height) + Definitions.defaultBlockSize
-    currentIndex: typeComboBox.currentIndex
-
-    NBinaryRadixTreeBvhItem {
-      id: binaryRadixTreeBvhItem
-    }
-
-    NAgglomerativeTreeletRestructuringBvhItem {
-      id: agglomerativeTreeletRestructuringBvh
-    }
-  }
-
   function getSceneData() {
-    var bvhView = bvhItemLayout.children[typeComboBox.currentIndex];
+    var bvhView = bvhItemLayout.children[bvhTypeComboBox.currentIndex];
     var sceneData = bvhView.getSceneData();
 
-    sceneData[Definitions.type] = typeComboBox.currentText;
+    sceneData[Definitions.type] = bvhTypeComboBox.currentText;
 
     return sceneData;
   }
 
   function setSceneData(sceneData) {
-    typeComboBox.currentIndex = typeComboBox.find(
+    bvhTypeComboBox.currentIndex = bvhTypeComboBox.find(
         Definitions.getProperty(sceneData, Definitions.type));
 
-    var bvhView = bvhItemLayout.children[typeComboBox.currentIndex];
+    var bvhView = bvhItemLayout.children[bvhTypeComboBox.currentIndex];
     bvhView.setSceneData(sceneData);
   }
 }

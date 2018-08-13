@@ -13,222 +13,287 @@ import QtQuick.Layouts 1.11
 import "../Items"
 import "../definitions.js" as Definitions
 
-NPane {
+NScrollView {
   id: settingView
 
   property bool isEditMode: true
 
-  RowLayout {
-    id: row1
+  GridLayout {
+    columns: 4
+    columnSpacing: Definitions.defaultItemSpace
+    rowSpacing: Definitions.defaultItemSpace
 
-    spacing: Definitions.defaultBlockSize
+    NGroupBox {
+      id: group
+      title: "threads"
+      color: settingView.background.color
 
-    ColumnLayout {
-      id: column1
+      Layout.preferredWidth: Definitions.defaultSettingGroupWidth
+      Layout.preferredHeight: Definitions.defaultSettingGroupHeight
 
-      Layout.preferredWidth: Definitions.defaultSettingItemWidth
-      spacing: Definitions.defaultItemSpace
-
-      NLabel {
-        text: "num of threads"
-      }
-
-      NSpinBox {
-        id: numOfThreadsSpinBox
-
-        Layout.fillWidth: true
-        Layout.preferredHeight: Definitions.defaultSettingItemHeight
-        from: 1
-        to: 128
-        value: 1
-      }
-
-      NButton {
-        Layout.preferredHeight: Definitions.defaultBlockSize
-        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-        text: "auto"
-
-        onClicked: numOfThreadsSpinBox.value = nanairoManager.getIdealThreadCount()
-      }
-
-      NLabel {
-        Layout.topMargin: Definitions.defaultBlockSize
-        text: "sampler type"
-      }
-
-      NComboBox {
-        id: samplerTypeComboBox
-
-        Layout.fillWidth: true
-        Layout.preferredHeight: Definitions.defaultSettingItemHeight
-        currentIndex: 2
-        model: [Definitions.pcgSampler,
-                Definitions.xoshiroSampler,
-                Definitions.cmjSampler]
-      }
-
-      NLabel {
-        text: "sampler seed"
-      }
-
-      NSpinBox {
-        id: samplerSeedSpinBox
-
-        Layout.fillWidth: true
-        Layout.preferredHeight: Definitions.defaultSettingItemHeight
-        from: 0
-        to: Definitions.intMax
-        value: 0
-      }
-
-      NButton {
-        Layout.preferredHeight: Definitions.defaultBlockSize
-        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-        text: "random"
-
-        onClicked: samplerSeedSpinBox.value = nanairoManager.generateSeedRandomly()
-      }
-
-      NLabel {
-        Layout.topMargin: Definitions.defaultBlockSize
-        text: "image resolution"
-      }
-
-      RowLayout {
-
-        Layout.fillWidth: true
-
-        NLabel {
-          Layout.preferredWidth: Definitions.defaultBlockSize
-          text: "w"
-        }
+      ColumnLayout {
+        anchors.fill: parent
 
         NSpinBox {
-          id: widthResolutionSpinBox
+          id: numOfThreadsSpinBox
 
+          Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
           Layout.fillWidth: true
           Layout.preferredHeight: Definitions.defaultSettingItemHeight
-          from: 256
-          to: Definitions.intMax
-          value: from
-        }
-      }
-
-      RowLayout {
-
-        Layout.fillWidth: true
-
-        NLabel {
-          Layout.preferredWidth: Definitions.defaultBlockSize
-          text: "h"
+          from: 1
+          to: 128
+          value: 1
         }
 
-        NSpinBox {
-          id: heightResolutionSpinBox
+        NButton {
+          Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+          Layout.preferredHeight: Definitions.defaultBlockSize
+          text: "auto"
 
+          onClicked: numOfThreadsSpinBox.value = nanairoManager.getIdealThreadCount()
+        }
+
+        NPane {
           Layout.fillWidth: true
-          Layout.preferredHeight: Definitions.defaultSettingItemHeight
-          from: 256
-          to: Definitions.intMax
-          value: from
+          Layout.fillHeight: true
+          Component.onCompleted: background.color = group.background.color;
         }
       }
     }
 
-    ColumnLayout {
-      id: column2
+    NGroupBox {
+      title: "sampler"
+      color: settingView.background.color
 
-      Layout.preferredWidth: Definitions.defaultSettingItemWidth
-      spacing: Definitions.defaultItemSpace
+      Layout.preferredWidth: Definitions.defaultSettingGroupWidth
+      Layout.preferredHeight: Definitions.defaultSettingGroupHeight
 
-      NLabel {
-        text: "terminationCycle"
-      }
+      ColumnLayout {
+        anchors.fill: parent
 
-      NSpinBox {
-        id: terminationCycleSpinBox
+        NComboBox {
+          id: samplerTypeComboBox
 
-        Layout.fillWidth: true
-        Layout.preferredHeight: Definitions.defaultSettingItemHeight
-        from: 0
-        to: Definitions.intMax
-        value: 0
-      }
-
-      NLabel {
-        text: "terminationTime"
-      }
-
-      RowLayout {
-
-        Layout.fillWidth: true
-
-        NSpinBox {
-          id: terminationTimeSpinBox
-
+          Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
           Layout.fillWidth: true
           Layout.preferredHeight: Definitions.defaultSettingItemHeight
-          from: 0
-          to: Definitions.intMax
-          value: 0
+          currentIndex: 2
+          model: [Definitions.pcgSampler,
+                  Definitions.xoshiroSampler,
+                  Definitions.cmjSampler]
         }
 
-        NLabel {
-          text: "ms"
+        RowLayout {
+          Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+
+          NLabel {
+            font.family: nanairoManager.getSystemFixedFontFamily()
+            text: "seed"
+          }
+
+          NSpinBox {
+            id: samplerSeedSpinBox
+
+            Layout.fillWidth: true
+            Layout.preferredHeight: Definitions.defaultSettingItemHeight
+            from: 0
+            to: Definitions.intMax
+            value: 0
+          }
+        }
+
+        NButton {
+          Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+          Layout.preferredHeight: Definitions.defaultBlockSize
+          text: "random"
+
+          onClicked: samplerSeedSpinBox.value = nanairoManager.generateSeedRandomly()
+        }
+
+        NPane {
+          Layout.fillWidth: true
+          Layout.fillHeight: true
+          Component.onCompleted: background.color = group.background.color;
         }
       }
+    }
 
-      NLabel {
-        Layout.topMargin: Definitions.defaultBlockSize
-        text: "image saving interval"
+    NGroupBox {
+      title: "image resolution"
+      color: settingView.background.color
+
+      Layout.preferredWidth: Definitions.defaultSettingGroupWidth
+      Layout.preferredHeight: Definitions.defaultSettingGroupHeight
+
+      ColumnLayout {
+        anchors.fill: parent
+
+        RowLayout {
+          Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+
+          NLabel {
+            font.family: nanairoManager.getSystemFixedFontFamily()
+            text: "w"
+          }
+
+          NSpinBox {
+            id: widthResolutionSpinBox
+
+            Layout.fillWidth: true
+            Layout.preferredHeight: Definitions.defaultSettingItemHeight
+            from: 256
+            to: Definitions.intMax
+            value: from
+          }
+        }
+
+        RowLayout {
+          Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+
+          NLabel {
+            font.family: nanairoManager.getSystemFixedFontFamily()
+            text: "h"
+          }
+
+          NSpinBox {
+            id: heightResolutionSpinBox
+
+            Layout.fillWidth: true
+            Layout.preferredHeight: Definitions.defaultSettingItemHeight
+            from: 256
+            to: Definitions.intMax
+            value: from
+          }
+        }
+
+        NPane {
+          Layout.fillWidth: true
+          Layout.fillHeight: true
+          Component.onCompleted: background.color = group.background.color;
+        }
       }
+    }
 
-      RowLayout {
+    NGroupBox {
+      title: "image saving interval"
+      color: settingView.background.color
 
-        Layout.fillWidth: true
+      Layout.preferredWidth: Definitions.defaultSettingGroupWidth
+      Layout.preferredHeight: Definitions.defaultSettingGroupHeight
 
-        NSpinBox {
-          id: savingIntervalTimeSpinBox
+      ColumnLayout {
+        anchors.fill: parent
 
+        RowLayout {
+          Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+
+          NSpinBox {
+            id: savingIntervalCycleSpinBox
+
+            enabled: false // \todo Implement image saving cycle
+            Layout.fillWidth: true
+            Layout.preferredHeight: Definitions.defaultSettingItemHeight
+            from: 0
+            to: Definitions.intMax
+            value: 0
+          }
+
+          NLabel {
+            font.family: nanairoManager.getSystemFixedFontFamily()
+            text: "cycle"
+          }
+        }
+
+        RowLayout {
+          Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+
+          NSpinBox {
+            id: savingIntervalTimeSpinBox
+
+            Layout.fillWidth: true
+            Layout.preferredHeight: Definitions.defaultSettingItemHeight
+            from: 0
+            to: Definitions.intMax
+            value: 0
+          }
+
+          NLabel {
+            font.family: nanairoManager.getSystemFixedFontFamily()
+            text: "ms   "
+          }
+        }
+
+        NCheckBox {
+          id: power2CycleSavingCheckBox
+
+          Layout.alignment: Qt.AlignLeft | Qt.AlignTop
           Layout.fillWidth: true
           Layout.preferredHeight: Definitions.defaultSettingItemHeight
-          from: 0
-          to: Definitions.intMax
-          value: 0
+          checked: false
+          text: "2^n cycle"
         }
 
-        NLabel {
-          text: "ms"
-        }
-      }
-
-      RowLayout {
-
-        Layout.fillWidth: true
-
-        NSpinBox {
-          id: savingIntervalCycleSpinBox
-
-          enabled: false // \todo Implement image saving cycle
+        NPane {
           Layout.fillWidth: true
-          Layout.preferredHeight: Definitions.defaultSettingItemHeight
-          from: 0
-          to: Definitions.intMax
-          value: 0
-        }
-
-        NLabel {
-          text: "cycle"
+          Layout.fillHeight: true
+          Component.onCompleted: background.color = group.background.color;
         }
       }
+    }
 
-      NCheckBox {
-        id: power2CycleSavingCheckBox
+    NGroupBox {
+      title: "termination condition"
+      color: settingView.background.color
 
-        Layout.fillWidth: true
-        Layout.preferredHeight: Definitions.defaultSettingItemHeight
-        checked: false
-        text: "2^n cycle saving"
+      Layout.preferredWidth: Definitions.defaultSettingGroupWidth
+      Layout.preferredHeight: Definitions.defaultSettingGroupHeight
+
+      ColumnLayout {
+        anchors.fill: parent
+
+        RowLayout {
+          Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+
+          NSpinBox {
+            id: terminationCycleSpinBox
+
+            Layout.fillWidth: true
+            Layout.preferredHeight: Definitions.defaultSettingItemHeight
+            from: 0
+            to: Definitions.intMax
+            value: 0
+          }
+
+          NLabel {
+            font.family: nanairoManager.getSystemFixedFontFamily()
+            text: "cycle"
+          }
+        }
+
+        RowLayout {
+          Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+
+          NSpinBox {
+            id: terminationTimeSpinBox
+
+            Layout.fillWidth: true
+            Layout.preferredHeight: Definitions.defaultSettingItemHeight
+            from: 0
+            to: Definitions.intMax
+            value: 0
+          }
+
+          NLabel {
+            font.family: nanairoManager.getSystemFixedFontFamily()
+            text: "ms   "
+          }
+        }
+
+        NPane {
+          Layout.fillWidth: true
+          Layout.fillHeight: true
+          Component.onCompleted: background.color = group.background.color;
+        }
       }
     }
   }

@@ -13,7 +13,7 @@ import QtQuick.Layouts 1.11
 import "../../../Items"
 import "../../../definitions.js" as Definitions
 
-NPane {
+NScrollView {
   id: surfaceItem
 
   property var textureModelList: null
@@ -23,19 +23,18 @@ NPane {
   property int innerExtinction
 
   ColumnLayout {
-    id: column1
-
-    width: Definitions.defaultSettingItemWidth
     spacing: Definitions.defaultItemSpace
 
     NLabel {
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "outer refractive index"
     }
 
     NComboBox {
       id: outerRefractiveIndexComboBox
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: surfaceItem.width
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       currentIndex: surfaceItem.outerRefractiveIndex
       model: surfaceItem.textureModelList
@@ -46,13 +45,15 @@ NPane {
 
     NLabel {
       Layout.topMargin: Definitions.defaultBlockSize
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "inner refractive index"
     }
 
     NComboBox {
       id: innerRefractiveIndexComboBox
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: surfaceItem.width
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       currentIndex: surfaceItem.innerRefractiveIndex
       model: surfaceItem.textureModelList
@@ -62,13 +63,15 @@ NPane {
     }
 
     NLabel {
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "inner extinction"
     }
 
     NComboBox {
       id: innerExtinctionComboBox
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: surfaceItem.width
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       currentIndex: surfaceItem.innerExtinction
       model: surfaceItem.textureModelList

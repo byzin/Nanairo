@@ -13,7 +13,7 @@ import QtQuick.Layouts 1.11
 import "../../../Items"
 import "../../../definitions.js" as Definitions
 
-NPane {
+NScrollView {
   id: textureItem
 
   readonly property alias palettePrefixKey: colorPalette.prefixKey
@@ -22,19 +22,18 @@ NPane {
   readonly property alias spectraFilePath: colorPalette.spectraFilePath
 
   ColumnLayout {
-    id: column1
-
-    width: Definitions.defaultSettingItemWidth
     spacing: Definitions.defaultItemSpace
 
     NLabel {
+      Layout.alignment: Qt.AlignLeft | Qt.AlignTop
       text: "color"
     }
 
     NColorPalette {
       id: colorPalette
 
-      Layout.fillWidth: true
+      Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+      Layout.preferredWidth: textureItem.width
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
       prefixKey: Definitions.color
     }

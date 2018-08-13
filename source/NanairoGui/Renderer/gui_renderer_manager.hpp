@@ -66,6 +66,9 @@ class GuiRendererManager : public QObject, public CuiRendererManager
   //! Convert a url of absolute path to a relative path
   Q_INVOKABLE QString getRelativePath(const QUrl& absolute_path) const noexcept;
 
+  //! Return the fixed font that the system recommends
+  Q_INVOKABLE QString getSystemFixedFontFamily() const noexcept;
+
   //! Check if the GUI is debug mode
   Q_INVOKABLE bool isDebugMode() const noexcept;
 

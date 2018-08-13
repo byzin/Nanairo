@@ -20,6 +20,7 @@
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/system.hpp"
 #include "NanairoCore/Color/color_space.hpp"
+#include "NanairoCore/Denoiser/denoiser.hpp"
 #include "NanairoCore/Sampling/wavelength_sampler.hpp"
 #include "NanairoCore/Sampling/Sampler/sampler.hpp"
 #include "NanairoCore/ToneMappingOperator/tone_mapping_operator.hpp"
@@ -28,9 +29,57 @@ namespace nanairo {
 
 /*!
   */
+void BayesianCollaborativeDenoiserParameters::readData(std::istream* data_stream)
+    noexcept
+{
+  zisc::read(&histogram_bins_, data_stream);
+  zisc::read(&histogram_distance_threshold_, data_stream);
+  zisc::read(&patch_radius_, data_stream);
+  zisc::read(&search_window_radius_, data_stream);
+  zisc::read(&number_of_scales_, data_stream);
+}
+
+/*!
+  */
+void BayesianCollaborativeDenoiserParameters::writeData(std::ostream* data_stream)
+    const noexcept
+{
+  zisc::write(&histogram_bins_, data_stream);
+  zisc::write(&histogram_distance_threshold_, data_stream);
+  zisc::write(&patch_radius_, data_stream);
+  zisc::write(&search_window_radius_, data_stream);
+  zisc::write(&number_of_scales_, data_stream);
+}
+
+/*!
+  */
 SystemSettingNode::SystemSettingNode(const SettingNodeBase* parent) noexcept :
     SettingNodeBase(parent)
 {
+}
+
+/*!
+  */
+BayesianCollaborativeDenoiserParameters&
+SystemSettingNode::bayesianCollaborativeDenoiserParameters() noexcept
+{
+  ZISC_ASSERT(denoiserType() == DenoiserType::kBayesianCollaborative,
+              "Invalid denoiser type is specified.");
+  auto parameters = zisc::cast<BayesianCollaborativeDenoiserParameters*>(
+      denoiser_parameters_.get());
+  return *parameters;
+}
+
+/*!
+  */
+const BayesianCollaborativeDenoiserParameters&
+SystemSettingNode::bayesianCollaborativeDenoiserParameters() const noexcept
+{
+  ZISC_ASSERT(denoiserType() == DenoiserType::kBayesianCollaborative,
+              "Invalid denoiser type is specified.");
+  auto parameters = zisc::cast<const BayesianCollaborativeDenoiserParameters*>(
+      denoiser_parameters_.get());
+  return *parameters;
 }
 
 /*!
@@ -45,6 +94,20 @@ RenderingColorMode SystemSettingNode::colorMode() const noexcept
 ColorSpaceType SystemSettingNode::colorSpace() const noexcept
 {
   return color_space_;
+}
+
+/*!
+  */
+DenoiserType SystemSettingNode::denoiserType() const noexcept
+{
+  return denoiser_type_;
+}
+
+/*!
+  */
+void SystemSettingNode::enableDenoising(const bool flag) noexcept
+{
+  is_denoising_enabled_ = flag ? kTrue : kFalse;
 }
 
 /*!
@@ -111,6 +174,16 @@ void SystemSettingNode::initialize() noexcept
   setGammaCorrection(2.2);
   setToneMappingType(ToneMappingType::kReinhard);
   setExposure(1.0);
+  // Denoiser
+  setDenoiserType(DenoiserType::kBayesianCollaborative);
+  enableDenoising(false);
+}
+
+/*!
+  */
+bool SystemSettingNode::isDenoisingEnabled() const noexcept
+{
+  return is_denoising_enabled_ == kTrue;
 }
 
 /*!
@@ -170,6 +243,14 @@ void SystemSettingNode::readData(std::istream* data_stream) noexcept
   zisc::read(&gamma_correction_, data_stream);
   zisc::read(&tone_mapping_type_, data_stream);
   zisc::read(&exposure_, data_stream);
+  // Denoiser
+  {
+    zisc::read(&denoiser_type_, data_stream);
+    setDenoiserType(denoiser_type_);
+  }
+  zisc::read(&is_denoising_enabled_, data_stream);
+  if (denoiser_parameters_)
+    denoiser_parameters_->readData(data_stream);
 }
 
 /*!
@@ -198,6 +279,25 @@ void SystemSettingNode::setColorMode(const RenderingColorMode mode) noexcept
 void SystemSettingNode::setColorSpace(const ColorSpaceType color_space) noexcept
 {
   color_space_ = color_space;
+}
+
+/*!
+  */
+void SystemSettingNode::setDenoiserType(const DenoiserType denoiser_type) noexcept
+{
+  denoiser_type_ = denoiser_type;
+  // Initialize parameters
+  denoiser_parameters_.reset();
+  switch (denoiser_type_) {
+   case DenoiserType::kBayesianCollaborative: {
+    denoiser_parameters_ =
+      zisc::UniqueMemoryPointer<BayesianCollaborativeDenoiserParameters>::make(
+          dataResource());
+    break;
+   }
+   default:
+    break;
+  }
 }
 
 /*!
@@ -372,6 +472,11 @@ void SystemSettingNode::writeData(std::ostream* data_stream) const noexcept
   zisc::write(&gamma_correction_, data_stream);
   zisc::write(&tone_mapping_type_, data_stream);
   zisc::write(&exposure_, data_stream);
+  // Denoiser
+  zisc::write(&denoiser_type_, data_stream);
+  zisc::write(&is_denoising_enabled_, data_stream);
+  if (denoiser_parameters_)
+    denoiser_parameters_->writeData(data_stream);
 }
 
 } // namespace nanairo

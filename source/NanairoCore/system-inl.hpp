@@ -221,14 +221,6 @@ bool System::isSpectraMode() const noexcept
 /*!
   */
 inline
-uint32 System::sampleHistogramBins() const noexcept
-{
-  return sample_histogram_bins_;
-}
-
-/*!
-  */
-inline
 SamplerType System::samplerType() const noexcept
 {
   return sampler_type_;
@@ -245,7 +237,15 @@ uint32 System::samplerSeed() const noexcept
 /*!
   */
 inline
-auto System::sampleStatisticsFlag() const noexcept -> SampleStatisticsFlag
+auto System::sampleStatisticsFlag() noexcept -> SampleStatisticsFlag&
+{
+  return statistics_flag_;
+}
+
+/*!
+  */
+inline
+auto System::sampleStatisticsFlag() const noexcept -> const SampleStatisticsFlag&
 {
   return statistics_flag_;
 }
