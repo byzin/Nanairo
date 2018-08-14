@@ -35,6 +35,7 @@
 #include "gui_renderer.hpp"
 #include "scene_document.hpp"
 #include "NanairoGui/keyword.hpp"
+#include "NanairoGui/nanairo_gui_config.hpp"
 #include "NanairoGui/rendered_image_provider.hpp"
 
 namespace nanairo {
@@ -94,23 +95,27 @@ QUrl GuiRendererManager::getAbsolutePath(
 
 /*!
   */
+QString GuiRendererManager::getDefaultFixedFontFamily() const noexcept
+{
+  const auto name = GuiConfig::getDefaultFixedFontFamily();
+  return QString{name.data()};
+}
+
+/*!
+  */
+QString GuiRendererManager::getDefaultFontFamily() const noexcept
+{
+  const auto name = GuiConfig::getDefaultFontFamily();
+  return QString{name.data()};
+}
+
+/*!
+  */
 QString GuiRendererManager::getRelativePath(
     const QUrl& absolute_path) const noexcept
 {
   const QDir working_dir;
   return QDir::cleanPath(working_dir.relativeFilePath(absolute_path.toLocalFile()));
-}
-
-/*!
-  */
-QString GuiRendererManager::getSystemFixedFontFamily() const noexcept
-{
-  QString family{"Monospace"};
-#ifndef Z_LINUX
-  const auto font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-  family = font.family();
-#endif // Z_LINUX
-  return family;
 }
 
 /*!

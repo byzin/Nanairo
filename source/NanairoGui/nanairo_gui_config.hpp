@@ -26,11 +26,11 @@ class GuiConfig
   //! Return the GUI application name
   static std::string applicationName() noexcept;
 
-  //! Return the max FPS
-  static constexpr int maxFps() noexcept;
+  //! Get the default fixed font family
+  static std::string getDefaultFixedFontFamily() noexcept;
 
-  //! Return the seed key
-  static std::string randomSeedKey() noexcept;
+  //! Get the default font family
+  static std::string getDefaultFontFamily() noexcept;
 };
 
 //! \} Gui

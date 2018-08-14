@@ -41,7 +41,7 @@ NScrollView {
       Layout.preferredHeight: Definitions.defaultSettingItemHeight
 
       NLabel {
-        font.family: nanairoManager.getSystemFixedFontFamily()
+        font.family: nanairoManager.getDefaultFixedFontFamily()
         text: "W"
       }
 
@@ -64,7 +64,7 @@ NScrollView {
 
       NLabel {
         text: "H"
-        font.family: nanairoManager.getSystemFixedFontFamily()
+        font.family: nanairoManager.getDefaultFixedFontFamily()
       }
 
       NSpinBox {

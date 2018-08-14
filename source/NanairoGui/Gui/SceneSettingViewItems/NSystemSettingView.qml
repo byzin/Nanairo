@@ -87,7 +87,7 @@ NScrollView {
           Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
           NLabel {
-            font.family: nanairoManager.getSystemFixedFontFamily()
+            font.family: nanairoManager.getDefaultFixedFontFamily()
             text: "seed"
           }
 
@@ -132,7 +132,7 @@ NScrollView {
           Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
           NLabel {
-            font.family: nanairoManager.getSystemFixedFontFamily()
+            font.family: nanairoManager.getDefaultFixedFontFamily()
             text: "w"
           }
 
@@ -151,7 +151,7 @@ NScrollView {
           Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
           NLabel {
-            font.family: nanairoManager.getSystemFixedFontFamily()
+            font.family: nanairoManager.getDefaultFixedFontFamily()
             text: "h"
           }
 
@@ -199,7 +199,7 @@ NScrollView {
           }
 
           NLabel {
-            font.family: nanairoManager.getSystemFixedFontFamily()
+            font.family: nanairoManager.getDefaultFixedFontFamily()
             text: "cycle"
           }
         }
@@ -218,7 +218,7 @@ NScrollView {
           }
 
           NLabel {
-            font.family: nanairoManager.getSystemFixedFontFamily()
+            font.family: nanairoManager.getDefaultFixedFontFamily()
             text: "ms   "
           }
         }
@@ -265,7 +265,7 @@ NScrollView {
           }
 
           NLabel {
-            font.family: nanairoManager.getSystemFixedFontFamily()
+            font.family: nanairoManager.getDefaultFixedFontFamily()
             text: "cycle"
           }
         }
@@ -284,7 +284,7 @@ NScrollView {
           }
 
           NLabel {
-            font.family: nanairoManager.getSystemFixedFontFamily()
+            font.family: nanairoManager.getDefaultFixedFontFamily()
             text: "ms   "
           }
         }

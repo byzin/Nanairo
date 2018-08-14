@@ -17,3 +17,8 @@ Nanairo includes the following 3d models and spectrum files.  I thank the author
 ## Textures ##
 
 - UV checker <https://github.com/Arahnoid/UVChecker-map>
+
+## Fonts ##
+
+- Inconsolata <https://fonts.google.com/specimen/Inconsolata>
+- Open Sans <https://fonts.google.com/specimen/Open+Sans>

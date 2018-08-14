@@ -12,6 +12,7 @@
 
 #include "NanairoGui/nanairo_gui_config.hpp"
 // Standard C++ library
+#include <cstddef>
 #include <string>
 
 namespace nanairo {
@@ -21,25 +22,29 @@ namespace nanairo {
 inline
 std::string GuiConfig::applicationName() noexcept
 {
-  return std::string{"@PROJECT_NAME@"};
+  using namespace std::string_literals;
+  const auto name = "@PROJECT_NAME@"s;
+  return name;
 }
 
 /*!
   */
 inline
-constexpr int GuiConfig::maxFps() noexcept
+std::string GuiConfig::getDefaultFixedFontFamily() noexcept
 {
-  constexpr int max_fps = @NANAIRO_MAX_FPS@;
-  static_assert(0 < max_fps, "Max FPS is minus.");
-  return max_fps;
+  using namespace std::string_literals;
+  const auto name = "Inconsolata"s;
+  return name;
 }
 
 /*!
   */
 inline
-std::string GuiConfig::randomSeedKey() noexcept
+std::string GuiConfig::getDefaultFontFamily() noexcept
 {
-  return std::string{"@NANAIRO_RANDOM_SEED_KEY@"};
+  using namespace std::string_literals;
+  const auto name = "Open Sans"s;
+  return name;
 }
 
 } // namespace nanairo

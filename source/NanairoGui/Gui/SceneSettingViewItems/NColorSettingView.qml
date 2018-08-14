@@ -139,7 +139,7 @@ NScrollView {
           Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
           NLabel {
-            font.family: nanairoManager.getSystemFixedFontFamily()
+            font.family: nanairoManager.getDefaultFixedFontFamily()
             text: "gamma   "
           }
 
@@ -159,7 +159,7 @@ NScrollView {
           Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
           NLabel {
-            font.family: nanairoManager.getSystemFixedFontFamily()
+            font.family: nanairoManager.getDefaultFixedFontFamily()
             text: "exposure"
           }
 

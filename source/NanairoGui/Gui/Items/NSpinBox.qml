@@ -18,6 +18,7 @@ SpinBox {
   topPadding: 0
   bottomPadding: 0
   editable: true
+  font.family: nanairoManager.getDefaultFixedFontFamily()
   font.weight: Font.Light
   font.pixelSize: Definitions.defaultTextFontSize
 }

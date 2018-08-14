@@ -24,7 +24,7 @@ ComboBox {
   rightPadding: 0
   topPadding: 0
   bottomPadding: 0
-  font.weight: Font.Light
+  font.weight: Font.Normal
   font.pixelSize: Definitions.defaultTextFontSize
   background.anchors.fill: comboBox
 
@@ -38,7 +38,7 @@ ComboBox {
 
   function initComboBox() {
     popup.width = width * popupWidthScale;
-    popup.font.weight = Font.Light;
+    popup.font.weight = Font.Normal;
     popup.font.pixelSize = Definitions.defaultTextFontSize;
   }
 }

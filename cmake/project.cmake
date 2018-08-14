@@ -207,6 +207,49 @@ endfunction(buildSimpleNanairoApp)
 
 
 #
+function(makeFontResource resource_dir font_resources)
+  set(font_resource_dir ${resource_dir}/font)
+  file(MAKE_DIRECTORY ${font_resource_dir})
+  set(resource_code_path ${font_resource_dir}/font_resource.qrc)
+
+  set(open_sans_font_path ${PROJECT_SOURCE_DIR}/resources/font/Open_Sans.tar.xz)
+  set(inconsolata_font_path ${PROJECT_SOURCE_DIR}/resources/font/Inconsolata.tar.xz)
+  # Extract font archives
+  message(STATUS "Extract font: ${open_sans_font_path}")
+  execute_process(COMMAND ${CMAKE_COMMAND} -E tar Jxvf ${open_sans_font_path}
+                  WORKING_DIRECTORY ${font_resource_dir}
+                  OUTPUT_QUIET)
+  message(STATUS "Extract font: ${inconsolata_font_path}")
+  execute_process(COMMAND ${CMAKE_COMMAND} -E tar Jxvf ${inconsolata_font_path}
+                  WORKING_DIRECTORY ${font_resource_dir}
+                  OUTPUT_QUIET)
+
+  # Make font resource file
+  file(GLOB_RECURSE font_file_list
+       RELATIVE ${font_resource_dir}
+       ${font_resource_dir}/*.ttf)
+  set(font_resource_code "")
+  # Header
+  list(APPEND font_resource_code "<RCC>\n")
+  list(APPEND font_resource_code "  <qresource prefix=\"/resources/font\">\n")
+  # Font files
+  foreach(font_file IN LISTS font_file_list)
+    list(APPEND font_resource_code
+                "    <file alias=\"${font_file}\">${font_resource_dir}/${font_file}</file>\n")
+  endforeach(font_file)
+  # Footer
+  list(APPEND font_resource_code "  </qresource>\n")
+  list(APPEND font_resource_code "</RCC>\n")
+  # Write the code to file
+  file(WRITE ${resource_code_path} ${font_resource_code})
+  source_group(NanairoGui FILES ${resource_code_path})
+
+  # Output variable
+  set(${font_resources} ${resource_code_path} PARENT_SCOPE)
+endfunction(makeFontResource)
+
+
+#
 function(buildNanairoApp)
   ## Load Nanairo modules
   include(${PROJECT_SOURCE_DIR}/cmake/keyword.cmake)
@@ -214,6 +257,7 @@ function(buildNanairoApp)
   # NanairoGUI
   include(${PROJECT_SOURCE_DIR}/source/NanairoGui/config.cmake)
   getNanairoGui(gui_source_files gui_definitions)
+  makeFontResource(${PROJECT_BINARY_DIR}/resources font_resources)
   # Build Nanairo
   set(nanairo_source_files ${PROJECT_SOURCE_DIR}/source/main.cpp
                            ${PROJECT_SOURCE_DIR}/source/simple_renderer.cpp 
@@ -229,6 +273,7 @@ function(buildNanairoApp)
   add_executable(${app_name} ${executable_options} ${nanairo_source_files}
                                                    ${core_source_files}
                                                    ${gui_source_files}
+                                                   ${font_resources}
                                                    ${zisc_header_files})
   # Set Nanairo properties
   set_target_properties(${app_name} PROPERTIES CXX_STANDARD 17

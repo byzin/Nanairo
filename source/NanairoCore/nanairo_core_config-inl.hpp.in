@@ -196,7 +196,9 @@ constexpr bool CoreConfig::pathTracingImplicitConnectionIsEnabled() noexcept
 inline
 std::string CoreConfig::versionString() noexcept
 {
-  return std::string{"@nanairo_version@"};
+  using namespace std::string_literals;
+  const auto version = "@nanairo_version@"s;
+  return version;
 }
 
 /*!

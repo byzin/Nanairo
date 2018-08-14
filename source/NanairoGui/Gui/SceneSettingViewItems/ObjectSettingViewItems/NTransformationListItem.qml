@@ -17,7 +17,7 @@ import "../../definitions.js" as Definitions
 NPane {
   id: transformationItem
 
-  readonly property int fontSize: 10
+  readonly property int fontSize: 11
   readonly property int elementItemSize: 80
   readonly property bool isRotationTransformation: itemTransformationType == Definitions.rotation
   property color backgroundColor: Qt.White
@@ -69,7 +69,7 @@ NPane {
 
       Layout.preferredWidth: 2 * Definitions.defaultBlockSize
       Layout.fillHeight: true
-      font.family: nanairoManager.getSystemFixedFontFamily()
+      font.family: nanairoManager.getDefaultFixedFontFamily()
       font.pixelSize: transformationItem.fontSize
       leftPadding: Definitions.defaultItemSpace
       horizontalAlignment: Text.AlignLeft
@@ -102,7 +102,7 @@ NPane {
 
       Layout.preferredWidth: Definitions.defaultBlockSize
       Layout.fillHeight: true
-      font.family: nanairoManager.getSystemFixedFontFamily()
+      font.family: nanairoManager.getDefaultFixedFontFamily()
       font.pixelSize: transformationItem.fontSize
       horizontalAlignment: Text.AlignRight
       verticalAlignment: Text.AlignBottom
@@ -166,7 +166,7 @@ NPane {
 
       Layout.preferredWidth: Definitions.defaultBlockSize
       Layout.fillHeight: true
-      font.family: nanairoManager.getSystemFixedFontFamily()
+      font.family: nanairoManager.getDefaultFixedFontFamily()
       font.pixelSize: transformationItem.fontSize
       horizontalAlignment: Text.AlignRight
       verticalAlignment: Text.AlignBottom
@@ -191,7 +191,7 @@ NPane {
 
       Layout.preferredWidth: Definitions.defaultBlockSize
       Layout.fillHeight: true
-      font.family: nanairoManager.getSystemFixedFontFamily()
+      font.family: nanairoManager.getDefaultFixedFontFamily()
       font.pixelSize: transformationItem.fontSize
       horizontalAlignment: Text.AlignRight
       verticalAlignment: Text.AlignBottom

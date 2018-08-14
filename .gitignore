@@ -209,6 +209,8 @@
 !resources/scene/*.nana
 !resources/image/
 !resources/image/*.png
+!resources/font/
+!resources/font/*.tar.xz
 
 # Packaging
 !packaging/

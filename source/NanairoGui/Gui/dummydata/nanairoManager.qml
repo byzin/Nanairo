@@ -31,12 +31,16 @@ QtObject {
     return Qt.resolvedUrl(relativePath);
   }
 
-  function getRelativePath(absolutePath) {
-    return absolutePath.toString();
+  function getDefaultFixedFontFamily() {
+    return "Inconsolata";
   }
 
-  function getSystemFixedFontFamily() {
-    return "Courier";
+  function getDefaultFontFamily() {
+    return "Open Sans";
+  }
+
+  function getRelativePath(absolutePath) {
+    return absolutePath.toString();
   }
 
   function isDebugMode() {

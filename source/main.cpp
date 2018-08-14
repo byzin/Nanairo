@@ -21,8 +21,10 @@
 #include <QCommandLineOption>
 #include <QDateTime>
 #include <QDir>
+#include <QDirIterator>
 #include <QFileInfo>
 #include <QFont>
+#include <QFontDatabase>
 #include <QGuiApplication>
 #include <QScopedPointer>
 #include <QString>
@@ -60,7 +62,7 @@ struct NanairoParameters
 };
 
 //! Initialize Qt settings
-void initQt() noexcept;
+void initQt(QGuiApplication* application) noexcept;
 
 //! Process command-line parameters
 std::unique_ptr<NanairoParameters> processCommandLine(
@@ -87,7 +89,7 @@ int main(int argc, char** argv)
     new QGuiApplication{argc, argv}
 #endif // QT_WIDGETS_LIB
     };
-  initQt();
+  initQt(application.get());
 
   // Parse command line arguments
   const auto parameters = processCommandLine(*application);
@@ -101,16 +103,34 @@ namespace {
 
 /*!
   */
-void initQt() noexcept
+void initQt(QGuiApplication* application) noexcept
 {
   // Application info
   QGuiApplication::setApplicationName(
-      nanairo::GuiConfig::applicationName().c_str());
+      nanairo::GuiConfig::applicationName().data());
   QGuiApplication::setApplicationVersion(
-      nanairo::CoreConfig::versionString().c_str());
+      nanairo::CoreConfig::versionString().data());
 
   // Qt properties
   QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
+  // Font
+  {
+    QDirIterator font_file_ite{":/resources/font", QDirIterator::Subdirectories};
+    for (; font_file_ite.hasNext(); font_file_ite.next()) {
+      const auto info = font_file_ite.fileInfo();
+      if (info.isFile()) {
+        const auto font_path = info.canonicalFilePath();
+        const auto id = QFontDatabase::addApplicationFont(font_path);
+        ZISC_ASSERT(id != -1, "Font(\"", font_path.toStdString(), "\") not found.");
+        static_cast<void>(id);
+      }
+    }
+
+    // Set OpenSans as default font
+    const QFont font{nanairo::GuiConfig::getDefaultFontFamily().data()};
+    application->setFont(font);
+  }
 
   // Random seed
   {
