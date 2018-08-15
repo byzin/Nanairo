@@ -20,6 +20,7 @@
 #include "zisc/non_copyable.hpp"
 #include "zisc/point.hpp"
 #include "zisc/fnv_1a_hash_engine.hpp"
+#include "zisc/simple_memory_resource.hpp"
 #include "zisc/stopwatch.hpp"
 #include "zisc/thread_manager.hpp"
 #include "zisc/unique_memory_pointer.hpp"
@@ -52,7 +53,11 @@ enum class RenderingColorMode : uint32
 class System : public zisc::NonCopyable<System>
 {
  public:
+#ifdef NANAIRO_USE_EFFICIENT_MEMORY_MANAGER
   using MemoryManager = zisc::DynamicMemoryManager<CoreConfig::memoryPoolSize()>;
+#else // NANAIRO_USE_EFFICIENT_MEMORY_MANAGER
+  using MemoryManager = zisc::SimpleMemoryResource;
+#endif
   using SampleStatisticsFlag = std::bitset<32>;
 
 

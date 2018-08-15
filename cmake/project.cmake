@@ -132,7 +132,7 @@ endfunction(loadLodepng)
 function(buildNanairoCore core_library core_definitions)
   # Load Nanairo core
   include(${PROJECT_SOURCE_DIR}/source/NanairoCore/config.cmake)
-  getNanairoCore(core_source_files core_definitions)
+  getNanairoCore(core_source_files core_defs)
   # Build Core
   set(core_name NanairoCore)
   add_library(${core_name} STATIC ${core_source_files})
@@ -152,7 +152,7 @@ function(buildNanairoCore core_library core_definitions)
                                      ${cxx_linker_flags}
                                      ${zisc_linker_flags})
   target_compile_definitions(${core_name} PRIVATE ${cxx_definitions}
-                                                  ${core_definitions}
+                                                  ${core_defs}
                                                   ${zisc_definitions}
                                                   ${environment_definitions})
   setStaticAnalyzer(${core_name})
@@ -160,6 +160,7 @@ function(buildNanairoCore core_library core_definitions)
 
   # Output variables
   set(${core_library} ${core_name} PARENT_SCOPE)
+  set(${core_definitions} ${core_defs} PARENT_SCOPE)
 endfunction(buildNanairoCore)
 
 

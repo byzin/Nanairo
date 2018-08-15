@@ -66,6 +66,9 @@ function(getNanairoCore core_source_files core_definitions)
   makeCoreConfigFile(${config_file_path} ${config_file_inl_path})
   list(APPEND source_files ${config_file_path})
 
+  if(NANAIRO_USE_EFFICIENT_MEMORY_MANAGER)
+    list(APPEND definitions "NANAIRO_USE_EFFICIENT_MEMORY_MANAGER")
+  endif()
 
   # Output variables
   set(${core_source_files} ${source_files} PARENT_SCOPE)
