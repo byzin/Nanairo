@@ -163,16 +163,26 @@ function(buildNanairoCore core_library core_definitions)
 endfunction(buildNanairoCore)
 
 
+function(getSimpleRenderer renderer_source_files renderer_include_dir renderer_definitions)
+  set(renderer_dir ${PROJECT_SOURCE_DIR}/source/SimpleRenderer)
+  findNanairoSourceFiles(${renderer_dir} source_files)
+
+
+  # Output variables
+  set(${renderer_source_files} ${source_files} PARENT_SCOPE)
+  set(${renderer_include_dir} ${renderer_dir} PARENT_SCOPE)
+endfunction(getSimpleRenderer)
+
+
 #
 function(buildSimpleNanairoApp)
   ## Load Nanairo modules
   include(${PROJECT_SOURCE_DIR}/cmake/keyword.cmake)
   getNanairoKeywords(nanairo_keyword_list)
+  getSimpleRenderer(renderer_source_files renderer_include_dir renderer_definitions)
   ## Build SimpleNanairo
   set(nanairo_source_files ${PROJECT_SOURCE_DIR}/source/simple_nanairo.cpp
-                           ${PROJECT_SOURCE_DIR}/source/simple_renderer.cpp
-                           ${PROJECT_SOURCE_DIR}/source/simple_renderer.hpp
-                           ${PROJECT_SOURCE_DIR}/source/simple_renderer-inl.hpp)
+                           ${renderer_source_files})
   set(app_name "SimpleNanairo")
   add_executable(${app_name} ${nanairo_source_files}
                              ${core_source_files}
@@ -186,7 +196,8 @@ function(buildSimpleNanairoApp)
                                              ${zisc_compile_flags}
                                              ${cxx_warning_flags}
                                              ${nanairo_warning_flags})
-  target_include_directories(${app_name} PRIVATE ${PROJECT_SOURCE_DIR}/source
+  target_include_directories(${app_name} PRIVATE ${renderer_include_dir}
+                                                 ${PROJECT_SOURCE_DIR}/source
                                                  ${PROJECT_BINARY_DIR}/include)
   includeZisc(${app_name})
   target_include_directories(${app_name} SYSTEM PRIVATE
@@ -199,6 +210,7 @@ function(buildSimpleNanairoApp)
                                     ${core_library})
   target_compile_definitions(${app_name} PRIVATE ${cxx_definitions}
                                                  ${core_definitions}
+                                                 ${renderer_definitions}
                                                  ${zisc_definitions}
                                                  ${environment_definitions}
                                                  NANAIRO_HAS_LODEPNG)
@@ -254,15 +266,14 @@ function(buildNanairoApp)
   ## Load Nanairo modules
   include(${PROJECT_SOURCE_DIR}/cmake/keyword.cmake)
   getNanairoKeywords(nanairo_keyword_list)
+  getSimpleRenderer(renderer_source_files renderer_include_dir renderer_definitions)
   # NanairoGUI
   include(${PROJECT_SOURCE_DIR}/source/NanairoGui/config.cmake)
   getNanairoGui(gui_source_files gui_definitions)
   makeFontResource(${PROJECT_BINARY_DIR}/resources font_resources)
   # Build Nanairo
-  set(nanairo_source_files ${PROJECT_SOURCE_DIR}/source/main.cpp
-                           ${PROJECT_SOURCE_DIR}/source/simple_renderer.cpp 
-                           ${PROJECT_SOURCE_DIR}/source/simple_renderer.hpp 
-                           ${PROJECT_SOURCE_DIR}/source/simple_renderer-inl.hpp)
+  set(nanairo_source_files ${PROJECT_SOURCE_DIR}/source/nanairo.cpp
+                           ${renderer_source_files})
   if(Z_WINDOWS)
     set(executable_options WIN32)
     list(APPEND nanairo_source_files ${PROJECT_SOURCE_DIR}/packaging/icon.rc)
@@ -287,7 +298,8 @@ function(buildNanairoApp)
                                              ${zisc_compile_flags}
                                              ${cxx_warning_flags}
                                              ${nanairo_warning_flags})
-  target_include_directories(${app_name} PRIVATE ${PROJECT_SOURCE_DIR}/source
+  target_include_directories(${app_name} PRIVATE ${renderer_include_dir}
+                                                 ${PROJECT_SOURCE_DIR}/source
                                                  ${PROJECT_BINARY_DIR}/include)
   includeZisc(${app_name})
   target_include_directories(${app_name} SYSTEM PRIVATE ${qt5_include_dirs})
@@ -298,6 +310,7 @@ function(buildNanairoApp)
                                     ${core_library})
   target_compile_definitions(${app_name} PRIVATE ${cxx_definitions}
                                                  ${core_definitions}
+                                                 ${renderer_definitions}
                                                  ${gui_definitions}
                                                  ${qt5_definitions}
                                                  ${zisc_definitions}

@@ -10,6 +10,8 @@
 #include "cui_renderer_manager.hpp"
 // Standard C++ library
 #include <fstream>
+#include <iostream>
+#include <memory>
 #include <string>
 // Qt
 #include <QDate>
@@ -25,6 +27,7 @@
 #include "cui_renderer.hpp"
 #include "scene_document.hpp"
 #include "scene_value.hpp"
+#include "simple_progress_bar.hpp"
 #include "simple_renderer.hpp"
 #include "NanairoCore/Setting/scene_setting_node.hpp"
 #include "NanairoCore/Setting/setting_node_base.hpp"
@@ -55,6 +58,7 @@ void CuiRendererManager::invokeRendering(const QString& scene_file_path)
     const noexcept
 {
   CuiRenderer renderer;
+  std::unique_ptr<std::ofstream> log_stream;
   QImage image;
   QString output_dir;
   QString error_message;
@@ -62,10 +66,41 @@ void CuiRendererManager::invokeRendering(const QString& scene_file_path)
   // Prepare for rendering
   {
     QJsonObject scene_value;
-    if (SceneDocument::loadDocument(scene_file_path, scene_value, error_message))
-      prepareForRendering(scene_value, &renderer, &output_dir, &error_message);
+    if (SceneDocument::loadDocument(scene_file_path, scene_value, error_message)) {
+      // Make a setting file
+      const auto scene_settings = SceneValue::toSetting(scene_value);
+
+      // Make a output directory
+      output_dir = makeOutputDir(*scene_settings);
+      if (!output_dir.isEmpty()) {
+        backupSceneFiles(scene_value, *scene_settings, output_dir, &error_message);
+
+        // Init log streams
+        log_stream = makeTextLogStream(output_dir.toStdString());
+        renderer.setLogStream(log_stream.get());
+
+        // Init a scene
+        prepareForRendering(*scene_settings, &renderer, &error_message);
+      }
+      else {
+        error_message = "making output dir failed.";
+      }
+    }
   }
 
+  if (!error_message.isEmpty())
+    QTextStream{stderr} << "Error: " << error_message;
+
+  // Make a progress bar
+  SimpleProgressBar progress_bar;
+  auto notify_of_progress =
+  [&progress_bar](const double progress, const std::string_view status)
+  {
+    progress_bar.update(progress, status);
+  };
+  renderer.setProgressCallback(notify_of_progress);
+
+  // Start rendering
   if (renderer.isRunnable()) {
     {
       const auto& ldr_image = renderer.ldrImage();
@@ -75,9 +110,6 @@ void CuiRendererManager::invokeRendering(const QString& scene_file_path)
       renderer.setImage(&image);
     }
     renderer.render(output_dir.toStdString());
-  }
-  else {
-    QTextStream{stderr} << "Error: " << error_message;
   }
 }
 
@@ -104,47 +136,60 @@ void CuiRendererManager::setOutputPath(const QString& output_path) noexcept
 
 /*!
   */
-bool CuiRendererManager::prepareForRendering(const QJsonObject& scene_value,
-                                             CuiRenderer* renderer,
-                                             QString* output_dir,
-                                             QString* error_message) const noexcept
+void CuiRendererManager::backupSceneFiles(const QJsonObject& scene_value,
+                                          const SettingNodeBase& scene_settings,
+                                          const QString& output_dir,
+                                          QString* error_message) const noexcept
 {
-  ZISC_ASSERT(renderer != nullptr, "The renderer is null.");
-  ZISC_ASSERT(output_dir != nullptr, "The output dir var is null.");
-  ZISC_ASSERT(error_message != nullptr, "The error message var is null.");
-
-  // Make a setting file
-  const auto scene_settings = SceneValue::toSetting(scene_value);
-
-  // Make a output directory
-  *output_dir = makeOutputDir(scene_settings.get());
-  if (output_dir->isEmpty()) {
-    *error_message = "Error: making output dir failed.";
-    return false;
-  }
+  QString dummy_message;
+  QString* err_message = (error_message != nullptr) ? error_message : &dummy_message;
 
   // Backup scene settings
   {
-    const auto backup_path = (*output_dir) + "/" + keyword::sceneBackupFileName;
-    if (!SceneDocument::saveDocument(backup_path, scene_value, *error_message))
-      return false;
+    const auto backup_path = output_dir + "/" + keyword::sceneBackupFileName;
+    if (!SceneDocument::saveDocument(backup_path, scene_value, *err_message))
+      return;
   }
 
   // Backup scene binary
   if (isSavingSceneBinaryEnabled()) {
-    const auto backup_path = (*output_dir) + "/" + keyword::sceneBinaryFileName;
+    const auto backup_path = output_dir + "/" + keyword::sceneBinaryFileName;
     std::ofstream scene_binary{backup_path.toStdString(), std::ios::binary};
     if (!scene_binary.is_open()) {
-      *error_message = "Error: making scene binary file failed.";
-      return false;
+      *err_message = "making scene binary failed.";
+      return;
     }
-    scene_settings->writeData(&scene_binary);
+    scene_settings.writeData(&scene_binary);
   }
+}
+
+/*!
+  */
+QString CuiRendererManager::makeOutputDir(const SettingNodeBase& scene_settings)
+    const noexcept
+{
+  const auto settings = castNode<SceneSettingNode>(&scene_settings);
+  const auto scene_name = QString{settings->sceneName().data()};
+
+  QString dir_name = outputPath() + "/" + scene_name + "_" + getCurrentTime();
+  const bool result = QDir::current().mkpath(dir_name);
+  if (!result)
+    dir_name.clear();
+  return dir_name;
+}
+
+/*!
+  */
+bool CuiRendererManager::prepareForRendering(const SettingNodeBase& scene_settings,
+                                             CuiRenderer* renderer,
+                                             QString* error_message) const noexcept
+{
+  ZISC_ASSERT(renderer != nullptr, "The renderer is null.");
 
   {
     std::string message;
-    const bool result = renderer->loadScene(*scene_settings, &message);
-    if (!result)
+    const bool result = renderer->loadScene(scene_settings, &message);
+    if ((error_message != nullptr) && !result)
       *error_message = message.c_str();
   }
 
@@ -164,21 +209,6 @@ QString CuiRendererManager::getCurrentTime() const noexcept
 
 void CuiRendererManager::initialize() noexcept
 {
-}
-
-/*!
-  */
-QString CuiRendererManager::makeOutputDir(const SettingNodeBase* settings)
-    const noexcept
-{
-  const auto scene_settings = castNode<SceneSettingNode>(settings);
-  const auto scene_name = QString{scene_settings->sceneName().data()};
-
-  QString dir_name = outputPath() + "/" + scene_name + "_" + getCurrentTime();
-  const bool result = QDir::current().mkpath(dir_name);
-  if (!result)
-    dir_name.clear();
-  return dir_name;
 }
 
 } // namespace nanairo

@@ -11,8 +11,6 @@
 #define NANAIRO_GUI_RENDERER_HPP
 
 // Standard C++ library
-#include <fstream>
-#include <ostream>
 #include <string>
 #include <string_view>
 // Qt
@@ -58,26 +56,13 @@ class GuiRenderer : public QObject, public CuiRenderer
   //! Return the camera event of the renderer
   const CameraEvent& cameraEvent() const noexcept;
 
- signals:
-  // Notify of updating rendering infomation
-  void notifiedOfRenderingInfo(const QString& info) const;
-
  private:
   //! Handle camera event
-  void handleCameraEvent(zisc::Stopwatch* stopwatch,
-                         uint32* cycle,
+  void handleCameraEvent(uint32* cycle,
                          Clock::duration* time) noexcept override;
 
   //! Initialize the renderer
   void initialize() noexcept;
-
-  //! Initialize logger
-  void initLogger(const std::string& output_path,
-                  std::ostream* console_log_stream,
-                  std::ofstream* text_log_stream) noexcept override;
-
-  //! Notify of updating rendering information
-  void notifyOfRenderingInfo(const std::string_view& info) const noexcept override;
 
   //! Output LDR image
   void outputLdrImage(const std::string_view output_path,

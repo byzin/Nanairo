@@ -62,6 +62,7 @@ System::~System() noexcept
   */
 void System::initialize(const SettingNodeBase* settings) noexcept
 {
+  stopwatch_.start();
   const auto system_settings = castNode<SystemSettingNode>(settings);
 
   auto& data_resource = dataMemoryManager();

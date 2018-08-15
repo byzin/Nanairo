@@ -10,13 +10,16 @@
 // Standard C++ library
 #include <fstream>
 #include <initializer_list>
+#include <iostream>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 // cxxopts
 #include "cxxopts.hpp"
 // Nanairo
 #include "simple_renderer.hpp"
+#include "simple_progress_bar.hpp"
 #include "NanairoCore/Setting/scene_setting_node.hpp"
 
 namespace {
@@ -40,6 +43,7 @@ std::ifstream loadSceneBinary(const std::string& nanabin_file_path);
 int main(int argc, const char** argv)
 {
   std::string output_path;
+  std::unique_ptr<std::ofstream> log_stream;
   std::unique_ptr<nanairo::SimpleRenderer> renderer;
   {
     // Process command line
@@ -51,6 +55,8 @@ int main(int argc, const char** argv)
     settings.readData(&nanabin);
     // Initialize renderer
     renderer = std::make_unique<nanairo::SimpleRenderer>();
+    log_stream = nanairo::makeTextLogStream(parameters->output_path_);
+    renderer->setLogStream(log_stream.get());
     std::string error_message;
     const bool is_runnable = renderer->loadScene(settings, &error_message);
     if (!is_runnable) {
@@ -59,6 +65,16 @@ int main(int argc, const char** argv)
     }
     output_path = std::move(parameters->output_path_);
   }
+
+  // Make a progress bar 
+  nanairo::SimpleProgressBar progress_bar;
+  auto notify_of_progress =
+  [&progress_bar](const double progress, const std::string_view status)
+  {
+    progress_bar.update(progress, status);
+  };
+  renderer->setProgressCallback(notify_of_progress);
+
   // Start rendering
   renderer->render(output_path);
 

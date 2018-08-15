@@ -20,6 +20,7 @@
 #include "zisc/error.hpp"
 #include "zisc/memory_manager.hpp"
 #include "zisc/memory_resource.hpp"
+#include "zisc/stopwatch.hpp"
 #include "zisc/thread_manager.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -248,6 +249,22 @@ inline
 auto System::sampleStatisticsFlag() const noexcept -> const SampleStatisticsFlag&
 {
   return statistics_flag_;
+}
+
+/*!
+  */
+inline
+zisc::Stopwatch& System::stopwatch() noexcept
+{
+  return stopwatch_;
+}
+
+/*!
+  */
+inline
+const zisc::Stopwatch& System::stopwatch() const noexcept
+{
+  return stopwatch_;
 }
 
 /*!

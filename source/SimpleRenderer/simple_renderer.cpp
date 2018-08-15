@@ -24,6 +24,7 @@
 #endif // NANAIRO_HAS_LODEPNG
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/function_reference.hpp"
 #include "zisc/stopwatch.hpp"
 #include "zisc/utility.hpp"
 // Nanairo
@@ -49,6 +50,7 @@ namespace nanairo {
 /*!
   */
 SimpleRenderer::SimpleRenderer() noexcept : 
+  log_stream_{nullptr},
   is_saving_each_cycle_enabled_{false},
   is_runnable_{false}
 {
@@ -72,11 +74,17 @@ SimpleRenderer::~SimpleRenderer() noexcept
 bool SimpleRenderer::loadScene(const SettingNodeBase& settings,
                                std::string* /* error_message */) noexcept
 {
+  using namespace std::string_literals;
   using zisc::cast;
 
   setRunnable(true);
 
   const auto scene_settings = castNode<SceneSettingNode>(&settings);
+  {
+    const auto message = "Construct a scene \""s +
+                         scene_settings->sceneName().data() + "\".";
+    logMessage(message);
+  }
 
   // System
   const auto system_settings = 
@@ -158,20 +166,14 @@ void SimpleRenderer::render(const std::string& output_path) noexcept
 {
   uint32 cycle = 0;
   uint32 cycle_to_save_image = getNextCycleToSaveImage(cycle);
-  auto previous_time = Clock::duration::zero();
+  auto previous_time = system().stopwatch().elapsedTime();
   auto time_to_save_image = getNextTimeToSaveImage(previous_time);
   bool rendering_flag = true;
 
-  std::ofstream text_log_stream;
-  initLogger(output_path, &std::cout, &text_log_stream);
-
   initForRendering();
-  updateRenderingInfo(cycle, previous_time);
+  updateRenderingProgress(cycle, previous_time);
 
   // Main render loop
-  logMessage("Start rendering.");
-  zisc::Stopwatch stopwatch;
-  stopwatch.start();
   while (rendering_flag) {
     ++cycle;
 
@@ -179,7 +181,7 @@ void SimpleRenderer::render(const std::string& output_path) noexcept
                      !isCycleToFinish(cycle) && !isTimeToFinish(previous_time);
 
     clearWorkMemory();
-    handleCameraEvent(&stopwatch, &cycle, &previous_time);
+    handleCameraEvent(&cycle, &previous_time);
 
     // Render
     renderScene(cycle);
@@ -191,25 +193,41 @@ void SimpleRenderer::render(const std::string& output_path) noexcept
                                              &time_to_save_image);
     saving_image = saving_image || !rendering_flag;
 
-    // Update rendered image and time
+    // Update rendered image and and rendering progress
     if (saving_image)
       outputRenderedImage(output_path, cycle);
-    auto current_time = processElapsedTime(stopwatch, previous_time);
-    updateRenderingInfo(cycle, current_time);
+    auto current_time = processElapsedTime(previous_time);
+    updateRenderingProgress(cycle, current_time);
 
-    // Update denoised image and time
+    // Compute denoised image and update rendering progress
     if (saving_image && !rendering_flag) {
       const auto& statistics = scene().film().sampleStatistics();
       if (statistics.isEnabled(SampleStatistics::Type::kDenoisedExpectedValue)) {
         clearWorkMemory();
         outputDenoisedImage(output_path, cycle);
-        current_time = processElapsedTime(stopwatch, previous_time);
-        updateRenderingInfo(cycle, current_time);
+        current_time = processElapsedTime(previous_time);
+        updateRenderingProgress(cycle, current_time);
       }
     }
 
     previous_time = current_time;
   }
+}
+
+/*!
+  */
+void SimpleRenderer::setLogStream(std::ostream* log_stream) noexcept
+{
+  log_stream_ = log_stream;
+}
+
+/*!
+  */
+void SimpleRenderer::setProgressCallback(
+    const zisc::FunctionReference<void (double, std::string_view)>& callback)
+        noexcept
+{
+  progress_callback_ = callback;
 }
 
 /*!
@@ -221,8 +239,7 @@ void SimpleRenderer::enableSavingAtEachCycle(const bool flag) noexcept
 
 /*!
   */
-void SimpleRenderer::handleCameraEvent(zisc::Stopwatch*,
-                                       uint32*,
+void SimpleRenderer::handleCameraEvent(uint32*,
                                        Clock::duration*) noexcept
 {
 }
@@ -239,29 +256,10 @@ void SimpleRenderer::initForRendering() noexcept
 
 /*!
   */
-void SimpleRenderer::initLogger(const std::string& output_path,
-                                std::ostream* console_log_stream,
-                                std::ofstream* text_log_stream) noexcept
-{
-  // Console log stream
-  log_stream_list_[0] = console_log_stream;
-
-  // Text log stream
-  std::string text_log_path{"log.txt"};
-  if (!output_path.empty())
-    text_log_path = output_path + "/" + text_log_path;
-  text_log_stream->open(text_log_path);
-  log_stream_list_[1] = text_log_stream;
-}
-
-/*!
-  */
 void SimpleRenderer::logMessage(const std::string_view& message) noexcept
 {
-  for (auto log_stream : log_stream_list_) {
-    if (log_stream != nullptr)
-      (*log_stream) << message << std::endl;
-  }
+  if (log_stream_ != nullptr)
+    (*log_stream_) << message << std::endl;
 }
 
 /*!
@@ -290,12 +288,6 @@ void SimpleRenderer::outputLdrImage(const std::string_view output_path,
   static_cast<void>(cycle);
   static_cast<void>(suffix);
 #endif // NANAIRO_HAS_LODEPNG
-}
-
-/*!
-  */
-void SimpleRenderer::notifyOfRenderingInfo(const std::string_view&) const noexcept
-{
 }
 
 /*!
@@ -340,7 +332,27 @@ void SimpleRenderer::clearWorkMemory() noexcept
   */
 void SimpleRenderer::initialize() noexcept
 {
-  log_stream_list_.fill(nullptr);
+}
+
+/*!
+  */
+void SimpleRenderer::notifyOfRenderingProgress(
+    const uint32 cycle,
+    const Clock::duration& time,
+    const std::string_view& status) const noexcept
+{
+  if (progress_callback_) {
+    const double cycle_progress = (0 < cycleToFinish())
+        ? zisc::cast<double>(cycle) / zisc::cast<double>(cycleToFinish())
+        : 0.0;
+    const auto time_to_finish = timeToFinish().count();
+    const double time_progress = (0 < time_to_finish)
+        ? zisc::cast<double>(time.count()) / zisc::cast<double>(time_to_finish)
+        : 0.0;
+    double progress = zisc::max(cycle_progress, time_progress);
+    progress = zisc::clamp(progress, 0.0, 1.0);
+    progress_callback_(progress, status);
+  }
 }
 
 /*!
@@ -385,14 +397,13 @@ void SimpleRenderer::outputRenderedImage(
   */
 inline
 auto SimpleRenderer::processElapsedTime(
-    const zisc::Stopwatch& stopwatch,
     const Clock::duration& previous_time) const noexcept -> Clock::duration
 {
-  auto elapsed_time = stopwatch.elapsedTime();
+  auto elapsed_time = system().stopwatch().elapsedTime();
   const auto elapsed_frame_time = elapsed_time - previous_time;
   if (elapsed_frame_time < minTimePerFrame()) {
     waitForNextFrame(minTimePerFrame() - elapsed_frame_time);
-    elapsed_time = stopwatch.elapsedTime();
+    elapsed_time = system().stopwatch().elapsedTime();
   }
   return elapsed_time;
 }
@@ -483,8 +494,8 @@ void SimpleRenderer::toneMap() noexcept
 
 /*!
   */
-void SimpleRenderer::updateRenderingInfo(const uint32 cycle,
-                                         const Clock::duration& time) noexcept
+void SimpleRenderer::updateRenderingProgress(const uint32 cycle,
+                                             const Clock::duration& time) noexcept
 {
   using namespace std::string_literals;
   using zisc::cast;
@@ -517,17 +528,17 @@ void SimpleRenderer::updateRenderingInfo(const uint32 cycle,
     millis = cast<int>(mi.count());
   }
 
-  char info_string[64];
-  std::sprintf(info_string,
-               "%06.2lf fps,  %010u cycles,  %02d h %02d m %02d.%03d s",
+  auto status = "000.00 fps,  0000000000 cycles,  0000 h 00 m 00.000 s"s;
+  std::sprintf(status.data(),
+               "%06.2lf fps,  %010u cycles,  %04d h %02d m %02d.%03d s",
                fps,
                cycle,
                hours,
                minutes,
                seconds,
                millis);
-  logMessage(info_string);
-  notifyOfRenderingInfo(info_string);
+  logMessage(status);
+  notifyOfRenderingProgress(cycle, time, status);
 }
 
 /*!
@@ -538,6 +549,25 @@ void SimpleRenderer::waitForNextFrame(const Clock::duration& wait_time) const no
   ZISC_ASSERT(Clock::duration::zero() < wait_time,
               "The wait time is less or equal than zero.");
   std::this_thread::sleep_for(wait_time);
+}
+
+/*!
+  */
+std::unique_ptr<std::ofstream> makeTextLogStream(const std::string& output_path)
+{
+  using namespace std::string_literals;
+  auto log_stream = std::make_unique<std::ofstream>();
+  const auto log_file_name = "log.txt"s;
+  const auto log_file_path = (output_path.empty())
+      ? log_file_name
+      : output_path + "/" + log_file_name;
+  log_stream->open(log_file_path);
+  if (!log_stream->is_open()) {
+    std::cerr << "Error: Log file (\"" << log_file_path << "\") open failed."
+              << std::endl;
+    log_stream.reset();
+  }
+  return log_stream;
 }
 
 } // namespace nanairo

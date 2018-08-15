@@ -11,8 +11,6 @@
 // Standard C++ library
 #include <cstddef>
 #include <cstring>
-#include <fstream>
-#include <ostream>
 #include <string>
 #include <string_view>
 // Qt
@@ -27,6 +25,7 @@
 #include "simple_renderer.hpp"
 #include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/scene.hpp"
+#include "NanairoCore/system.hpp"
 #include "NanairoCore/CameraModel/camera_model.hpp"
 #include "NanairoCore/CameraModel/film.hpp"
 #include "NanairoCore/Color/ldr_image.hpp"
@@ -43,8 +42,7 @@ GuiRenderer::GuiRenderer(const RenderingMode mode) noexcept :
 
 /*!
   */
-void GuiRenderer::handleCameraEvent(zisc::Stopwatch* stopwatch,
-                                    uint32* cycle,
+void GuiRenderer::handleCameraEvent(uint32* cycle,
                                     Clock::duration* time) noexcept
 {
   auto& camera_event = cameraEvent();
@@ -65,11 +63,11 @@ void GuiRenderer::handleCameraEvent(zisc::Stopwatch* stopwatch,
     }
     // Reset rendering info
     initForRendering();
-    ZISC_ASSERT(stopwatch != nullptr, "The stopwatch is null.");
     ZISC_ASSERT(cycle != nullptr, "The cycle is null.");
     ZISC_ASSERT(time != nullptr, "The time is null.");
-    stopwatch->stop();
-    stopwatch->start();
+    auto& stopwatch = system().stopwatch();
+    stopwatch.stop();
+    stopwatch.start();
     *cycle = 0;
     *time = Clock::duration::zero();
   }
@@ -81,23 +79,6 @@ void GuiRenderer::initialize() noexcept
 {
   if (mode_ == RenderingMode::kPreviewing)
     enableSavingAtEachCycle(true);
-}
-
-/*!
-  */
-void GuiRenderer::initLogger(const std::string& output_path,
-                             std::ostream*,
-                             std::ofstream* text_log_stream) noexcept
-{
-  CuiRenderer::initLogger(output_path, nullptr, text_log_stream);
-}
-
-/*!
-  */
-void GuiRenderer::notifyOfRenderingInfo(const std::string_view& info) const noexcept
-{
-  QString information{info.data()};
-  notifiedOfRenderingInfo(information);
 }
 
 /*!

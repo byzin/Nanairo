@@ -19,49 +19,62 @@ Window {
 
   property bool isPreviewMode: false
 
-  NLabel {
-    id: infoLabel
-    x: 0
-    y: 0
-    font.pixelSize: 10
-    text: "000.00 fps,  00000000 cycles,  00 h 00 m 00.000 s"
-  }
+  ColumnLayout {
+    anchors.fill: parent
+    enabled: renderWindow.visible
+    spacing: 0
 
-  NPane {
-    id: renderFrame
-    y: infoLabel.y + infoLabel.height
-    width: renderWindow.width
-    height: renderWindow.height - infoLabel.height
+    NLabel {
+      id: infoLabel
+      Layout.fillWidth: true
+      font.family: nanairoManager.getDefaultFixedFontFamily()
+      font.pixelSize: 11
+      text: "000.00 fps,  0000000000 cycles,  0000 h 00 m 00.000 s"
+    }
 
-    Image {
-      id: renderImage
+    NProgressBar {
+      id: progress_bar
+      Layout.fillWidth: true
+      value: 0.0
+    }
 
-      property int imageNumber
+    NPane {
+      id: renderFrame
+      Layout.fillWidth: true
+      Layout.fillHeight: true
 
-      anchors.fill: parent
-      cache: false
-      fillMode: Image.PreserveAspectFit
-      horizontalAlignment: Image.AlignHCenter
-      verticalAlignment: Image.AlignVCenter
-      smooth: false
+      Image {
+        id: renderImage
 
-      NPreviewEventArea {
-        id: eventArea
-        enabled: renderWindow.isPreviewMode
+        property int imageNumber
+
         anchors.fill: parent
-      }
+        cache: false
+        fillMode: Image.PreserveAspectFit
+        horizontalAlignment: Image.AlignHCenter
+        verticalAlignment: Image.AlignVCenter
+        smooth: false
 
-      function updateRenderImage() {
-        imageNumber = imageNumber + 1;
-        source = "image://renderedImage/preview?" + imageNumber;
+        NPreviewEventArea {
+          id: eventArea
+          enabled: renderWindow.isPreviewMode
+          anchors.fill: parent
+        }
+
+        function updateRenderImage() {
+          imageNumber = imageNumber + 1;
+          source = "image://renderedImage/preview?" + imageNumber;
+        }
       }
     }
   }
 
   Connections {
     target: nanairoManager
-    onNotifyOfRenderingInfo: {
-      infoLabel.text = info;
+    onNotifyOfRenderingProgress: {
+      progress_bar.indeterminate = false;
+      progress_bar.value = progress;
+      infoLabel.text = status;
       renderImage.updateRenderImage();
     }
   }
@@ -70,7 +83,8 @@ Window {
 
   function initForRendering(imageResolution, isPreviewing) {
     width = imageResolution[0];
-    height = imageResolution[1] + infoLabel.height;
+    height = imageResolution[1] + infoLabel.height + progress_bar.height;
+    progress_bar.indeterminate = true;
     renderWindow.isPreviewMode = isPreviewing;
     renderImage.imageNumber = 0;
   }

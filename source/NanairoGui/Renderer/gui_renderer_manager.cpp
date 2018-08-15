@@ -10,8 +10,11 @@
 #include "gui_renderer_manager.hpp"
 // Standard C++ library
 #include <cstdint>
+#include <fstream>
+#include <memory>
 #include <utility>
 // Qt
+#include <QColor>
 #include <QFileInfo>
 #include <QFont>
 #include <QFontDatabase>
@@ -34,6 +37,8 @@
 // Nanairo
 #include "gui_renderer.hpp"
 #include "scene_document.hpp"
+#include "scene_value.hpp"
+#include "simple_renderer.hpp"
 #include "NanairoGui/keyword.hpp"
 #include "NanairoGui/nanairo_gui_config.hpp"
 #include "NanairoGui/rendered_image_provider.hpp"
@@ -138,37 +143,72 @@ void GuiRendererManager::invokeRendering(const QVariant& scene_data,
 {
   auto scene_value = QSharedPointer<QJsonObject>::create(
       QJsonObject::fromVariantMap(scene_data.toMap()));
-  auto render = [this, scene_value, is_previewing]()
+  auto render = [this, scene_value, is_previewing]() mutable
   {
     const GuiRenderer::RenderingMode mode = (is_previewing)
         ? GuiRenderer::RenderingMode::kPreviewing
         : GuiRenderer::RenderingMode::kRendering;
     QScopedPointer<GuiRenderer> renderer{new GuiRenderer{mode}};
+    std::unique_ptr<std::ofstream> log_stream;
     QString output_dir;
     QString error_message;
+
     // Prepare for rendering
-    prepareForRendering(*scene_value, renderer.data(), &output_dir, &error_message);
+    {
+      // Make a setting file
+      const auto scene_settings = SceneValue::toSetting(*scene_value);
+
+      // Make a output directory
+      output_dir = makeOutputDir(*scene_settings);
+      if (!output_dir.isEmpty()) {
+        backupSceneFiles(*scene_value, *scene_settings, output_dir, &error_message);
+
+        // Init log stream
+        log_stream = makeTextLogStream(output_dir.toStdString());
+        renderer->setLogStream(log_stream.get());
+
+        // Init a scene
+        emit started();
+        prepareForRendering(*scene_settings, renderer.get(), &error_message);
+      }
+      else {
+        error_message = "making output dir failed.";
+      }
+    }
+    scene_value.reset();
+
+    if (!error_message.isEmpty())
+      QTextStream{stderr} << "Error: " << error_message;
+
+    // Start rendering 
     if (renderer->isRunnable()) {
       // Init image
       {
         const auto& ldr_image = renderer->ldrImage();
         auto image_provider = renderedImageProvider();
         auto& image = image_provider->image();
-        image =QImage{static_cast<int>(ldr_image.widthResolution()),
-                      static_cast<int>(ldr_image.heightResolution()),
-                      QImage::Format_RGB32};
+        image = QImage{static_cast<int>(ldr_image.widthResolution()),
+                       static_cast<int>(ldr_image.heightResolution()),
+                       QImage::Format_RGB32};
+        image.fill(QColor::fromRgb(0, 0, 0));
         renderer->setImage(&image);
       }
+
+      // Connect a renderer with this manager
+      auto notify_of_progress =
+      [this](const double progress, const std::string_view status)
+      {
+        emit notifyOfRenderingProgress(progress, QString{status.data()});
+      };
+      renderer->setProgressCallback(notify_of_progress);
+      connectWithRenderer(renderer.get());
+
       // Start rendering
-      connectWithRenderer(renderer.data());
-      emit started();
       renderer->render(output_dir.toStdString());
+
       // Finish rendering
       disconnectFromRenderer();
       emit finished();
-    }
-    else {
-      QTextStream{stderr} << "Error: " << error_message;
     }
   };
   rendering_thread_.enqueue<void>(std::move(render));
@@ -214,13 +254,6 @@ void GuiRendererManager::setRenderedImageProvider(
 void GuiRendererManager::connectWithRenderer(GuiRenderer* renderer) noexcept
 {
   ZISC_ASSERT(renderer != nullptr, "The renderer is nulll.");
-  {
-    auto notify_of_info = [this](const QString& info)
-    {
-      emit notifyOfRenderingInfo(info);
-    };
-    connect(renderer, &GuiRenderer::notifiedOfRenderingInfo, notify_of_info);
-  }
   {
     auto stop_rendering = [renderer]()
     {

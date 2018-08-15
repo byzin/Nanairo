@@ -10,6 +10,9 @@
 #ifndef NANAIRO_CUI_RENDERER_MANAGER_HPP
 #define NANAIRO_CUI_RENDERER_MANAGER_HPP
 
+// Standard C++ library
+#include <fstream>
+#include <memory>
 // Qt
 #include <QString>
 // Nanairo
@@ -53,10 +56,18 @@ class CuiRendererManager
   void setOutputPath(const QString& output_path) noexcept;
 
  protected:
+  //! Backup scene files
+  void backupSceneFiles(const QJsonObject& scene_value,
+                        const SettingNodeBase& scene_settings,
+                        const QString& output_dir,
+                        QString* error_message) const noexcept;
+
+  //! Make a directory for saving images
+  QString makeOutputDir(const SettingNodeBase& scene_settings) const noexcept;
+
   //! Prepare renderer with the scene for rendering
-  bool prepareForRendering(const QJsonObject& scene_value,
+  bool prepareForRendering(const SettingNodeBase& scene_settings,
                            CuiRenderer* renderer,
-                           QString* output_dir,
                            QString* error_message) const noexcept;
 
  private:
@@ -65,9 +76,6 @@ class CuiRendererManager
 
   //! Initialize the renderer manager
   void initialize() noexcept;
-
-  //! Make a directory for saving images
-  QString makeOutputDir(const SettingNodeBase* settings) const noexcept;
 
 
   QString output_path_;

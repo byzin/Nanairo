@@ -70,5 +70,5 @@ QtObject {
 
   signal stopRendering()
 
-  signal notifyOfRenderingInfo(string info)
+  signal notifyOfRenderingProgress(double progress, string status)
 }

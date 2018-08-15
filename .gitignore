@@ -29,6 +29,10 @@
 !/source/*.hpp
 !/source/*.cpp
 !/source/*.dox
+## SimpleRenderer
+!/source/SimpleRenderer/
+!/source/SimpleRenderer/*.hpp
+!/source/SimpleRenderer/*.cpp
 ## ReflectCore
 !/source/NanairoCore/
 !/source/NanairoCore/config.cmake

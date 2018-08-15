@@ -20,6 +20,7 @@
 #include "zisc/non_copyable.hpp"
 #include "zisc/point.hpp"
 #include "zisc/fnv_1a_hash_engine.hpp"
+#include "zisc/stopwatch.hpp"
 #include "zisc/thread_manager.hpp"
 #include "zisc/unique_memory_pointer.hpp"
 // Nanairo
@@ -138,6 +139,12 @@ class System : public zisc::NonCopyable<System>
   //! Return the flag of sample statistics
   const SampleStatisticsFlag& sampleStatisticsFlag() const noexcept;
 
+  //! Return the system stopwatch
+  zisc::Stopwatch& stopwatch() noexcept;
+
+  //! Return the system stopwatch
+  const zisc::Stopwatch& stopwatch() const noexcept;
+
   //! Return the tone mapping
   const ToneMappingOperator& toneMappingOperator() const noexcept;
 
@@ -155,6 +162,7 @@ class System : public zisc::NonCopyable<System>
   zisc::UniqueMemoryPointer<XyzColorMatchingFunction> xyz_color_matching_function_;
   zisc::UniqueMemoryPointer<ToneMappingOperator> tone_mapping_operator_;
   zisc::UniqueMemoryPointer<Denoiser> denoiser_;
+  zisc::Stopwatch stopwatch_;
   Float gamma_;
   Index2d image_resolution_;
   SamplerType sampler_type_;

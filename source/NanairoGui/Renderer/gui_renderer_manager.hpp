@@ -104,8 +104,9 @@ class GuiRendererManager : public QObject, public CuiRendererManager
                     const int axis_event_type,
                     const int value) const;
 
-  //! Notify of updating rendering info
-  void notifyOfRenderingInfo(const QString& info) const;
+  //! Notify of updating rendering progress
+  void notifyOfRenderingProgress(const double progress,
+                                 const QString& status) const;
 
  private:
   //! Connect with renderer

@@ -1,5 +1,5 @@
 /*!
-  \file main.cpp
+  \file nanairo.cpp
   \author Sho Ikeda
 
   Copyright (c) 2015-2018 Sho Ikeda
