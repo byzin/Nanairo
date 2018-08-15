@@ -107,8 +107,11 @@ void BayesianCollaborativeDenoiser::Parameters<kDimension>::downscaleAverage(
     const zisc::pmr::vector<zisc::ArithArray<Float, kN>>& high_res_table,
     const Index2d& low_res,
     zisc::pmr::vector<zisc::ArithArray<Float, kN>>* low_res_table,
-    const Index2d& range) noexcept
+    const Index2d& range,
+    const uint table_offset) noexcept
 {
+  const uint high_offset = table_offset * high_res[0] * high_res[1];
+  const uint low_offset = table_offset * low_res[0] * low_res[1];
   for (uint low_index = range[0]; low_index < range[1]; ++low_index) {
     const Index2d low_pixel{low_index % low_res[0], low_index / low_res[0]};
     zisc::ArithArray<Float, kN> sum;
@@ -118,10 +121,10 @@ void BayesianCollaborativeDenoiser::Parameters<kDimension>::downscaleAverage(
             zisc::min(2 * low_pixel[0] + offset_x, high_res[0] - 1),
             zisc::min(2 * low_pixel[1] + offset_y, high_res[1] - 1)};
         const uint high_index = high_pixel[0] + high_res[0] * high_pixel[1];
-        sum += high_res_table[high_index];
+        sum += high_res_table[high_offset + high_index];
       }
     }
-    (*low_res_table)[low_index] = 0.25 * sum;
+    (*low_res_table)[low_offset + low_index] = 0.25 * sum;
   }
 }
 
@@ -152,10 +155,9 @@ void BayesianCollaborativeDenoiser::Parameters<kDimension>::downscaleOf(
                      resolution_, &sample_value_table_,
                      Index2d{range[0], range[1]});
     for (uint b = 0; b < histogram_bins_; ++b) {
-      const uint offset = b * (resolution_[0] * resolution_[1]);
       downscaleAverage(high_res_p.resolution_, high_res_p.histogram_table_,
                        resolution_, &histogram_table_,
-                       Index2d{offset + range[0], offset + range[1]});
+                       Index2d{range[0], range[1]}, b);
     }
     downscaleAverage(high_res_p.resolution_, high_res_p.covariance_factor_table_,
                      resolution_, &covariance_factor_table_,
@@ -618,11 +620,10 @@ void BayesianCollaborativeDenoiser::denoiseMultiscale(
       std::cout << "scale: " << scale << ", tile[" << tile_number << "]" << std::endl;
     }
     aggregate(system, estimates_counter, parameters);
-//    if (0 < iteration) {
-//      auto& low_res_p = multiscale_parameters[scale_level + 1];
-//      merge(system, &low_res_p, &parameters, &staging_value_table);
-//    }
-    break;
+    if (0 < iteration) {
+      auto& low_res_p = multiscale_parameters[scale + 1];
+      merge(system, &low_res_p, parameters, &staging_value_table);
+    }
   }
   aggregateFinal(system, *parameters, statistics);
 }
@@ -899,7 +900,7 @@ void BayesianCollaborativeDenoiser::merge(
     // Set the calculation range
     auto range = system.calcThreadRange(
         low_res_p->resolution_[0] * low_res_p->resolution_[1], thread_id);
-    Parameters<kDimension>::template downscaleAverage<kDimension>(
+    Parameters<kDimension>::template downscaleAverage(
         high_res_p->resolution_, *staging_value_table,
         low_res_p->resolution_, &low_res_p->sample_value_table_,
         Index2d{range[0], range[1]});
@@ -907,7 +908,7 @@ void BayesianCollaborativeDenoiser::merge(
     // Set the calculation range
     range = system.calcThreadRange(
         high_res_p->resolution_[0] * high_res_p->resolution_[1], thread_id);
-    Parameters<kDimension>::template upscaleAdd<kDimension>(
+    Parameters<kDimension>::template upscaleAdd(
         low_res_p->resolution_, low_res_p->denoised_value_table_,
         high_res_p->resolution_, &high_res_p->denoised_value_table_,
         Index2d{range[0], range[1]});
@@ -927,7 +928,7 @@ void BayesianCollaborativeDenoiser::merge(
     // Set the calculation range
     const auto range = system.calcThreadRange(
         high_res_p->resolution_[0] * high_res_p->resolution_[1], thread_id);
-    Parameters<kDimension>::template upscaleAdd<kDimension>(
+    Parameters<kDimension>::template upscaleAdd(
         low_res_p->resolution_, low_res_p->sample_value_table_,
         high_res_p->resolution_, &high_res_p->denoised_value_table_,
         Index2d{range[0], range[1]});

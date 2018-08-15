@@ -86,7 +86,8 @@ class BayesianCollaborativeDenoiser : public Denoiser
         const zisc::pmr::vector<zisc::ArithArray<Float, kN>>& high_res_table,
         const Index2d& low_res,
         zisc::pmr::vector<zisc::ArithArray<Float, kN>>* low_res_table,
-        const Index2d& range) noexcept;
+        const Index2d& range,
+        const uint table_offset = 0) noexcept;
     //! Downscale the resolutions of parameters
     void downscaleOf(System& system,
                      const Parameters& high_res_p) noexcept;
