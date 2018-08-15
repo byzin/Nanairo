@@ -54,9 +54,9 @@ void BinaryRadixTreeBvh::constructBinaryRadixTreeBvh(
 
   auto work_resource = tree.get_allocator().resource();
   // Make a morton code list
+  zisc::pmr::vector<BvhBuildingNode> leaf_node_list{work_resource};
   zisc::pmr::vector<MortonCode> morton_code_list{work_resource};
   {
-    zisc::pmr::vector<BvhBuildingNode> leaf_node_list{work_resource};
     leaf_node_list.reserve(object_list.size());
     for (const auto& object : object_list)
       leaf_node_list.emplace_back(&object);
