@@ -67,7 +67,7 @@ void ToneMappingOperator::map(System& system,
               "The image width is difference between HDR and LDR images.");
   ZISC_ASSERT(hdr_image.heightResolution() == ldr_image->heightResolution(),
               "The image height is difference between HDR and LDR images.");
-  auto map_luminance = [this, &system, &hdr_image, ldr_image](const int thread_id)
+  auto map_luminance = [this, &system, &hdr_image, ldr_image](const uint thread_id)
   {
     // Set the calculation range
     const auto range = system.calcThreadRange(hdr_image.numOfPixels(), thread_id);

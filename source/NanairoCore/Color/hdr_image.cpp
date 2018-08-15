@@ -55,7 +55,8 @@ void HdrImage::toHdr(System& system,
 {
   using zisc::cast;
   const Float inv_n = zisc::invert(cast<Float>(num_of_samples));
-  auto to_hdr = [this, &system, inv_n, &sample_table](const int thread_id)
+  auto to_hdr = [this, &system, inv_n, &sample_table]
+  (const uint thread_id, const uint)
   {
     // Set the calculation range
     const auto range = system.calcThreadRange(numOfPixels(), thread_id);

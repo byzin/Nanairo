@@ -278,8 +278,8 @@ void PhotonMap::splitAtMedian(System& system,
       auto work_resource = &system.globalMemoryManager();
       auto left_result = threads.enqueue<void>(split_left_group, work_resource);
       auto right_result = threads.enqueue<void>(split_right_group, work_resource);
-      left_result.get();
-      right_result.get();
+      left_result.wait();
+      right_result.wait();
     }
     // Sequence
     else {

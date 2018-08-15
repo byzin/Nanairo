@@ -145,8 +145,8 @@ void BayesianCollaborativeDenoiser::Parameters<kDimension>::downscaleOf(
   covariance_factor_table_.resize(resolution_[0] * resolution_[1]);
   denoised_value_table_.resize(resolution_[0] * resolution_[1]);
 
-  auto downscale_parameters = [this, &system, &high_res_p]
-  (const int thread_id, const uint)
+  auto downscale_params = [this, &system, &high_res_p]
+  (const uint thread_id, const uint)
   {
     // Set the calculation range
     const auto range = system.calcThreadRange(resolution_[0] * resolution_[1],
@@ -169,11 +169,8 @@ void BayesianCollaborativeDenoiser::Parameters<kDimension>::downscaleOf(
     auto& work_resource = system.globalMemoryManager();
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
-//    auto result = threads.enqueueLoop(init_parameters, start, end, &work_resource);
-//    result.wait();
-#pragma omp parallel for
-    for (uint thread_id = start; thread_id < end; ++thread_id)
-      downscale_parameters(zisc::cast<int>(thread_id), 0);
+    auto result = threads.enqueueLoop(downscale_params, start, end, &work_resource);
+    result.wait();
   }
 }
 
@@ -195,8 +192,8 @@ void BayesianCollaborativeDenoiser::Parameters<kDimension>::init(
   covariance_factor_table_.resize(resolution_[0] * resolution_[1]);
   denoised_value_table_.resize(resolution_[0] * resolution_[1]);
 
-  auto init_parameters = [this, &system, &statistics]
-  (const int thread_id, const uint)
+  auto init_params = [this, &system, &statistics]
+  (const uint thread_id, const uint)
   {
     // Set the calculation range
     const auto range = system.calcThreadRange(resolution_[0] * resolution_[1],
@@ -248,11 +245,8 @@ void BayesianCollaborativeDenoiser::Parameters<kDimension>::init(
     auto& work_resource = system.globalMemoryManager();
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
-//    auto result = threads.enqueueLoop(init_parameters, start, end, &work_resource);
-//    result.wait();
-#pragma omp parallel for
-    for (uint thread_id = start; thread_id < end; ++thread_id)
-      init_parameters(zisc::cast<int>(thread_id), 0);
+    auto result = threads.enqueueLoop(init_params, start, end, &work_resource);
+    result.wait();
   }
 }
 
@@ -306,7 +300,7 @@ void BayesianCollaborativeDenoiser::aggregate(
     Parameters<kDimension>* parameters) const noexcept
 {
   auto aggregate_values = [&system, &estimates_counter, parameters]
-  (const int thread_id, const uint)
+  (const uint thread_id, const uint)
   {
     // Set the calculation range
     const auto& resolution = parameters->resolution_;
@@ -325,11 +319,8 @@ void BayesianCollaborativeDenoiser::aggregate(
     auto& work_resource = system.globalMemoryManager();
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
-//    auto result = threads.enqueueLoop(aggregate_values, start, end, &work_resource);
-//    result.wait();
-#pragma omp parallel for
-    for (uint thread_id = start; thread_id < end; ++thread_id)
-      aggregate_values(zisc::cast<int>(thread_id), 0);
+    auto result = threads.enqueueLoop(aggregate_values, start, end, &work_resource);
+    result.wait();
   }
 }
 
@@ -342,7 +333,7 @@ void BayesianCollaborativeDenoiser::aggregateFinal(
     SampleStatistics* statistics) const noexcept
 {
   auto aggregate_values = [&system, &parameters, statistics]
-  (const int thread_id, const uint)
+  (const uint thread_id, const uint)
   {
     // Set the calculation range
     const auto& resolution = parameters.resolution_;
@@ -365,11 +356,8 @@ void BayesianCollaborativeDenoiser::aggregateFinal(
     auto& work_resource = system.globalMemoryManager();
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
-//    auto result = threads.enqueueLoop(aggregate_values, start, end, &work_resource);
-//    result.wait();
-#pragma omp parallel for
-    for (uint thread_id = start; thread_id < end; ++thread_id)
-      aggregate_values(zisc::cast<int>(thread_id), 0);
+    auto result = threads.enqueueLoop(aggregate_values, start, end, &work_resource);
+    result.wait();
   }
 }
 
@@ -568,11 +556,8 @@ void BayesianCollaborativeDenoiser::denoiseChunk(
     auto& work_resource = system.globalMemoryManager();
     constexpr uint start = 0;
     const uint end = chunk_resolution[0] * chunk_resolution[1];
-//    auto result = threads.enqueueLoop(denoise_chunk, start, end, &work_resource);
-//    result.wait();
-#pragma omp parallel for
-    for (uint thread_id = start; thread_id < end; ++thread_id)
-      denoise_chunk(thread_id);
+    auto result = threads.enqueueLoop(denoise_chunk, start, end, &work_resource);
+    result.wait();
   }
 }
 
@@ -894,52 +879,44 @@ void BayesianCollaborativeDenoiser::merge(
   for (uint i = 0; i < high_res_p->denoised_value_table_.size(); ++i)
     (*staging_value_table)[i] = -(high_res_p->denoised_value_table_[i]);
 
-  auto merge1 = [&system, low_res_p, high_res_p, staging_value_table]
-  (const int thread_id, const uint)
   {
-    // Set the calculation range
-    auto range = system.calcThreadRange(
-        low_res_p->resolution_[0] * low_res_p->resolution_[1], thread_id);
-    Parameters<kDimension>::template downscaleAverage(
-        high_res_p->resolution_, *staging_value_table,
-        low_res_p->resolution_, &low_res_p->sample_value_table_,
-        Index2d{range[0], range[1]});
+    auto merge1 = [&system, low_res_p, high_res_p, staging_value_table]
+    (const uint thread_id, const uint)
+    {
+      // Set the calculation range
+      auto range = system.calcThreadRange(
+          low_res_p->resolution_[0] * low_res_p->resolution_[1], thread_id);
+      Parameters<kDimension>::template downscaleAverage(
+          high_res_p->resolution_, *staging_value_table,
+          low_res_p->resolution_, &low_res_p->sample_value_table_,
+          Index2d{range[0], range[1]});
 
-    // Set the calculation range
-    range = system.calcThreadRange(
-        high_res_p->resolution_[0] * high_res_p->resolution_[1], thread_id);
-    Parameters<kDimension>::template upscaleAdd(
-        low_res_p->resolution_, low_res_p->denoised_value_table_,
-        high_res_p->resolution_, &high_res_p->denoised_value_table_,
-        Index2d{range[0], range[1]});
-  };
-
-  {
-//    auto result = threads.enqueueLoop(init_parameters, start, end, &work_resource);
-//    result.wait();
-#pragma omp parallel for
-    for (uint thread_id = start; thread_id < end; ++thread_id)
-      merge1(zisc::cast<int>(thread_id), 0);
+      // Set the calculation range
+      range = system.calcThreadRange(
+          high_res_p->resolution_[0] * high_res_p->resolution_[1], thread_id);
+      Parameters<kDimension>::template upscaleAdd(
+          low_res_p->resolution_, low_res_p->denoised_value_table_,
+          high_res_p->resolution_, &high_res_p->denoised_value_table_,
+          Index2d{range[0], range[1]});
+    };
+    auto result = threads.enqueueLoop(merge1, start, end, &work_resource);
+    result.wait();
   }
 
-  auto merge2 = [&system, low_res_p, high_res_p]
-  (const int thread_id, const uint)
   {
-    // Set the calculation range
-    const auto range = system.calcThreadRange(
-        high_res_p->resolution_[0] * high_res_p->resolution_[1], thread_id);
-    Parameters<kDimension>::template upscaleAdd(
-        low_res_p->resolution_, low_res_p->sample_value_table_,
-        high_res_p->resolution_, &high_res_p->denoised_value_table_,
-        Index2d{range[0], range[1]});
-  };
-
-  {
-//    auto result = threads.enqueueLoop(init_parameters, start, end, &work_resource);
-//    result.wait();
-#pragma omp parallel for
-    for (uint thread_id = start; thread_id < end; ++thread_id)
-      merge2(zisc::cast<int>(thread_id), 0);
+    auto merge2 = [&system, low_res_p, high_res_p]
+    (const uint thread_id, const uint)
+    {
+      // Set the calculation range
+      const auto range = system.calcThreadRange(
+          high_res_p->resolution_[0] * high_res_p->resolution_[1], thread_id);
+      Parameters<kDimension>::template upscaleAdd(
+          low_res_p->resolution_, low_res_p->sample_value_table_,
+          high_res_p->resolution_, &high_res_p->denoised_value_table_,
+          Index2d{range[0], range[1]});
+    };
+    auto result = threads.enqueueLoop(merge2, start, end, &work_resource);
+    result.wait();
   }
 }
 

@@ -109,7 +109,8 @@ void SampleStatistics::update(
     const WavelengthSamples& wavelengths,
     const uint32 /* cycle */) noexcept
 {
-  auto update_info = [this, &system, &wavelengths](const int thread_id)
+  auto update_info = [this, &system, &wavelengths]
+  (const uint thread_id, const uint)
   {
     // Set the calculation range
     const auto range = system.calcThreadRange(sampleTable().size(), thread_id);

@@ -142,8 +142,8 @@ void BinaryRadixTreeBvh::split(System& system,
       auto& threads = system.threadManager();
       auto left_result = threads.enqueue<void>(split_left_range, work_resource);
       auto right_result = threads.enqueue<void>(split_right_range, work_resource);
-      left_result.get();
-      right_result.get();
+      left_result.wait();
+      right_result.wait();
     }
     else {
       const auto key = (0 < bit) ? bit - 1 : bit;

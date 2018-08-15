@@ -132,7 +132,7 @@ class ProbabilisticPpm : public RenderingMethod
                        Scene& scene,
                        const Wavelengths& wavelengths,
                        const uint32 cycle,
-                       const int thread_id,
+                       const uint thread_id,
                        const Index2d& pixel_index) noexcept;
 
   //! Trace photons
@@ -146,7 +146,7 @@ class ProbabilisticPpm : public RenderingMethod
                    Scene& scene,
                    const Wavelengths& sampled_wavelengths,
                    const uint32 cycle,
-                   const int thread_id,
+                   const uint thread_id,
                    const uint photon_index) noexcept;
 
 

@@ -279,7 +279,7 @@ void LightTracing::traceLightPath(
 
   auto trace_light_path =
   [this, &system, &scene, &sampled_wavelengths, cycle, &path_set_index]
-  (const int thread_id, const uint)
+  (const uint thread_id, const uint)
   {
     const auto& camera = scene.camera();
     const uint num_of_pixels = camera.widthResolution() * camera.heightResolution();
@@ -318,7 +318,7 @@ void LightTracing::traceLightPath(System& system,
                                   Scene& scene,
                                   const Wavelengths& sampled_wavelengths,
                                   const uint32 cycle,
-                                  const int thread_id,
+                                  const uint thread_id,
                                   const uint path_index) noexcept
 {
   // System

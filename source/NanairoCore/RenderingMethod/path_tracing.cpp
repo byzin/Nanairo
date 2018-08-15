@@ -322,7 +322,7 @@ void PathTracing::traceCameraPath(System& system,
 
   auto trace_camera_path =
   [this, &system, &scene, &sampled_wavelengths, cycle, &tile_count]
-  (const int thread_id, const uint) noexcept
+  (const uint thread_id, const uint) noexcept
   {
     const auto& camera = scene.camera();
     const uint num_of_tiles =
@@ -357,7 +357,7 @@ void PathTracing::traceCameraPath(System& system,
                                   Scene& scene,
                                   const Wavelengths& sampled_wavelengths,
                                   const uint32 cycle,
-                                  const int thread_id,
+                                  const uint thread_id,
                                   const Index2d& pixel_index) noexcept
 {
   // System

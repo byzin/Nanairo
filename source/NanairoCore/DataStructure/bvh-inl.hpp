@@ -83,8 +83,8 @@ void Bvh::setupBoundingBoxes(System& system,
           threads.enqueue<void>(set_left_bounding_box, work_resource);
       auto right_result =
           threads.enqueue<void>(set_right_bounding_box, work_resource);
-      left_result.get();
-      right_result.get();
+      left_result.wait();
+      right_result.wait();
     }
     // Sequence
     else {

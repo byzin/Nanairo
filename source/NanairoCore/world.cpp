@@ -153,7 +153,7 @@ void World::initializeEmitter(System& system,
                                       start,
                                       num_of_emitters,
                                       work_resource);
-    result.get();
+    result.wait();
   }
   ZISC_ASSERT(0 < emitter_list_.size(), "The scene has no emitter.");
 }
@@ -232,7 +232,7 @@ void World::initializeSurface(System& system,
                                       start,
                                       num_of_surfaces,
                                       work_resource);
-    result.get();
+    result.wait();
   }
   ZISC_ASSERT(0 < surface_list_.size(), "The scene has no surface.");
 }
@@ -267,7 +267,7 @@ void World::initializeTexture(System& system,
                                       start,
                                       num_of_textures,
                                       work_resource);
-    result.get();
+    result.wait();
   }
   ZISC_ASSERT(0 < texture_list_.size(), "The scene has no texture");
 }

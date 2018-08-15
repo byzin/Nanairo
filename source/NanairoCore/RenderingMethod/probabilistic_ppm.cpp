@@ -376,7 +376,7 @@ void ProbabilisticPpm::traceCameraPath(
 
   auto trace_camera_path =
   [this, &system, &scene, &sampled_wavelengths, cycle, &tile_count]
-  (const int thread_id, const uint)
+  (const uint thread_id, const uint)
   {
     const auto& camera = scene.camera();
     const uint num_of_tiles = 
@@ -412,7 +412,7 @@ void ProbabilisticPpm::traceCameraPath(
     Scene& scene,
     const Wavelengths& sampled_wavelengths,
     const uint32 cycle,
-    const int thread_id,
+    const uint thread_id,
     const Index2d& pixel_index) noexcept
 {
   // System
@@ -512,7 +512,7 @@ void ProbabilisticPpm::tracePhoton(
 
   auto trace_photon =
   [this, &system, &scene, &sampled_wavelengths, cycle, &photon_set_index]
-  (const int thread_id, const uint)
+  (const uint thread_id, const uint)
   {
     bool flag = true;
     for (uint index = photon_set_index++; flag; index = photon_set_index++) {
@@ -549,7 +549,7 @@ void ProbabilisticPpm::tracePhoton(
     Scene& scene,
     const Wavelengths& sampled_wavelengths,
     const uint32 cycle,
-    const int thread_id,
+    const uint thread_id,
     const uint photon_index) noexcept
 {
   // System

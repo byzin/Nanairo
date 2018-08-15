@@ -75,7 +75,7 @@ function(initCommandOptions)
   setBooleanOption(NANAIRO_SUPPRESS_EXCESSIVE_WARNING ON ${option_description})
 
   set(option_description "Use an efficient memory manager for NanairoCore.")
-  setBooleanOption(NANAIRO_USE_EFFICIENT_MEMORY_MANAGER ON ${option_description})
+  setBooleanOption(NANAIRO_USES_EFFICIENT_MEMORY_MANAGER ON ${option_description})
 
   set(option_description "The size of a memory pool per thread.")
   math(EXPR __memory_size__ "1 * 1024 * 1024")

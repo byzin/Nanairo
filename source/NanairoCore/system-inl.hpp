@@ -34,26 +34,15 @@ namespace nanairo {
 template <typename Integer> inline
 std::array<Integer, 2> System::calcThreadRange(const Integer range,
                                                const uint num_of_threads,
-                                               const int thread_id) noexcept
+                                               const uint thread_id) noexcept
 {
-  static_assert(std::is_integral<Integer>::value, "The Integer isn't integer type.");
-  // Set the calculation range 
-  const Integer threads = zisc::cast<Integer>(num_of_threads);
-  const Integer id = zisc::cast<Integer>(thread_id);
-  ZISC_ASSERT(0 < range, "The range is minus.");
-  ZISC_ASSERT(threads < range, "The num of threads is more than the range.");
-  const Integer range_per_thread = range / threads;
-  const Integer begin = id * range_per_thread;
-  const Integer end = (begin + range_per_thread) + ((id + 1 == threads)
-      ? (range % threads)
-      : 0);
-  return std::array<Integer, 2>{{begin, end}};
+  return zisc::ThreadManager::calcThreadRange(range, num_of_threads, thread_id);
 }
 
 //! Calculate the range of indices
 template <typename Integer> inline
 std::array<Integer, 2> System::calcThreadRange(const Integer range,
-                                               const int thread_id) const noexcept
+                                               const uint thread_id) const noexcept
 {
   return calcThreadRange(range, threadManager().numOfThreads(), thread_id);
 }

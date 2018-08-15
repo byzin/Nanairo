@@ -53,11 +53,11 @@ enum class RenderingColorMode : uint32
 class System : public zisc::NonCopyable<System>
 {
  public:
-#ifdef NANAIRO_USE_EFFICIENT_MEMORY_MANAGER
+#ifdef NANAIRO_USES_EFFICIENT_MEMORY_MANAGER
   using MemoryManager = zisc::DynamicMemoryManager<CoreConfig::memoryPoolSize()>;
-#else // NANAIRO_USE_EFFICIENT_MEMORY_MANAGER
+#else // NANAIRO_USES_EFFICIENT_MEMORY_MANAGER
   using MemoryManager = zisc::SimpleMemoryResource;
-#endif
+#endif // NANAIRO_USES_EFFICIENT_MEMORY_MANAGER
   using SampleStatisticsFlag = std::bitset<32>;
 
 
@@ -73,12 +73,12 @@ class System : public zisc::NonCopyable<System>
   template <typename Integer>
   static std::array<Integer, 2> calcThreadRange(const Integer range,
                                                 const uint num_of_threads,
-                                                const int thread_id) noexcept;
+                                                const uint thread_id) noexcept;
 
   //! Calculate the range of indices
   template <typename Integer>
   std::array<Integer, 2> calcThreadRange(const Integer range,
-                                         const int thread_id) const noexcept;
+                                         const uint thread_id) const noexcept;
 
   //! Return the memory manager for data allocation
   MemoryManager& dataMemoryManager() noexcept;

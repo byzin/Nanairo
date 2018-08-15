@@ -108,7 +108,7 @@ class LightTracing : public RenderingMethod
                       Scene& scene,
                       const Wavelengths& sampled_wavelengths,
                       const uint32 cycle,
-                      const int thread_id,
+                      const uint thread_id,
                       const uint path_index) noexcept;
 
 
