@@ -32,19 +32,19 @@ namespace nanairo {
 
 //! Calculate the range of indices
 template <typename Integer> inline
-std::array<Integer, 2> System::calcThreadRange(const Integer range,
-                                               const uint num_of_threads,
-                                               const uint thread_id) noexcept
+std::array<Integer, 2> System::calcTaskRange(const Integer range,
+                                             const uint num_of_tasks,
+                                             const uint task_id) noexcept
 {
-  return zisc::ThreadManager::calcThreadRange(range, num_of_threads, thread_id);
+  return zisc::ThreadManager::calcThreadRange(range, num_of_tasks, task_id);
 }
 
 //! Calculate the range of indices
 template <typename Integer> inline
-std::array<Integer, 2> System::calcThreadRange(const Integer range,
-                                               const uint thread_id) const noexcept
+std::array<Integer, 2> System::calcTaskRange(const Integer range,
+                                             const uint task_id) const noexcept
 {
-  return calcThreadRange(range, threadManager().numOfThreads(), thread_id);
+  return calcTaskRange(range, threadManager().numOfThreads(), task_id);
 }
 
 /*!

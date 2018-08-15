@@ -67,10 +67,10 @@ void ToneMappingOperator::map(System& system,
               "The image width is difference between HDR and LDR images.");
   ZISC_ASSERT(hdr_image.heightResolution() == ldr_image->heightResolution(),
               "The image height is difference between HDR and LDR images.");
-  auto map_luminance = [this, &system, &hdr_image, ldr_image](const uint thread_id)
+  auto map_luminance = [this, &system, &hdr_image, ldr_image](const uint task_id)
   {
     // Set the calculation range
-    const auto range = system.calcThreadRange(hdr_image.numOfPixels(), thread_id);
+    const auto range = system.calcTaskRange(hdr_image.numOfPixels(), task_id);
     // Apply tonemap to each pixel
     for (uint index = range[0]; index < range[1]; ++index) {
       auto rgba32 = Rgba32{};

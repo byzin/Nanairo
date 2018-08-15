@@ -109,11 +109,10 @@ void SampleStatistics::update(
     const WavelengthSamples& wavelengths,
     const uint32 /* cycle */) noexcept
 {
-  auto update_info = [this, &system, &wavelengths]
-  (const uint thread_id, const uint)
+  auto update_info = [this, &system, &wavelengths](const uint task_id)
   {
     // Set the calculation range
-    const auto range = system.calcThreadRange(sampleTable().size(), thread_id);
+    const auto range = system.calcTaskRange(sampleTable().size(), task_id);
     for (auto pixel_index = range[0]; pixel_index < range[1]; ++pixel_index) {
       if (isEnabled(Type::kVariance))
         updateSampleSquared(wavelengths, pixel_index);

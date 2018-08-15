@@ -69,16 +69,16 @@ class System : public zisc::NonCopyable<System>
 
 
   // System
-  //! Calculate the range of indices
+  //! Calculate the range of the task id
   template <typename Integer>
-  static std::array<Integer, 2> calcThreadRange(const Integer range,
-                                                const uint num_of_threads,
-                                                const uint thread_id) noexcept;
+  static std::array<Integer, 2> calcTaskRange(const Integer range,
+                                              const uint num_of_tasks,
+                                              const uint task_id) noexcept;
 
-  //! Calculate the range of indices
+  //! Calculate the range of the task id
   template <typename Integer>
-  std::array<Integer, 2> calcThreadRange(const Integer range,
-                                         const uint thread_id) const noexcept;
+  std::array<Integer, 2> calcTaskRange(const Integer range,
+                                       const uint task_id) const noexcept;
 
   //! Return the memory manager for data allocation
   MemoryManager& dataMemoryManager() noexcept;

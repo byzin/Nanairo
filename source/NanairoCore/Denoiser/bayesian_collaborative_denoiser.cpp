@@ -145,12 +145,10 @@ void BayesianCollaborativeDenoiser::Parameters<kDimension>::downscaleOf(
   covariance_factor_table_.resize(resolution_[0] * resolution_[1]);
   denoised_value_table_.resize(resolution_[0] * resolution_[1]);
 
-  auto downscale_params = [this, &system, &high_res_p]
-  (const uint thread_id, const uint)
+  auto downscale_params = [this, &system, &high_res_p](const uint task_id)
   {
     // Set the calculation range
-    const auto range = system.calcThreadRange(resolution_[0] * resolution_[1],
-                                              thread_id);
+    const auto range = system.calcTaskRange(resolution_[0] * resolution_[1], task_id);
     downscaleAverage(high_res_p.resolution_, high_res_p.sample_value_table_,
                      resolution_, &sample_value_table_,
                      Index2d{range[0], range[1]});
@@ -192,12 +190,10 @@ void BayesianCollaborativeDenoiser::Parameters<kDimension>::init(
   covariance_factor_table_.resize(resolution_[0] * resolution_[1]);
   denoised_value_table_.resize(resolution_[0] * resolution_[1]);
 
-  auto init_params = [this, &system, &statistics]
-  (const uint thread_id, const uint)
+  auto init_params = [this, &system, &statistics](const uint task_id)
   {
     // Set the calculation range
-    const auto range = system.calcThreadRange(resolution_[0] * resolution_[1],
-                                              thread_id);
+    const auto range = system.calcTaskRange(resolution_[0] * resolution_[1], task_id);
 
     const Float k = zisc::invert(zisc::cast<Float>(num_of_samples_));
     const Float k1 = zisc::invert(zisc::cast<Float>(num_of_samples_ - 1));
@@ -300,12 +296,11 @@ void BayesianCollaborativeDenoiser::aggregate(
     Parameters<kDimension>* parameters) const noexcept
 {
   auto aggregate_values = [&system, &estimates_counter, parameters]
-  (const uint thread_id, const uint)
+  (const uint task_id)
   {
     // Set the calculation range
     const auto& resolution = parameters->resolution_;
-    const auto range = system.calcThreadRange(resolution[0] * resolution[1],
-                                              thread_id);
+    const auto range = system.calcTaskRange(resolution[0] * resolution[1], task_id);
 
     for (uint pixel_index = range[0]; pixel_index < range[1]; ++pixel_index) {
       ZISC_ASSERT(0 < estimates_counter[pixel_index], "The estimate count is zero.");
@@ -332,13 +327,11 @@ void BayesianCollaborativeDenoiser::aggregateFinal(
     const Parameters<kDimension>& parameters,
     SampleStatistics* statistics) const noexcept
 {
-  auto aggregate_values = [&system, &parameters, statistics]
-  (const uint thread_id, const uint)
+  auto aggregate_values = [&system, &parameters, statistics](const uint task_id)
   {
     // Set the calculation range
     const auto& resolution = parameters.resolution_;
-    const auto range = system.calcThreadRange(resolution[0] * resolution[1],
-                                              thread_id);
+    const auto range = system.calcTaskRange(resolution[0] * resolution[1], task_id);
 
     for (uint pixel_index = range[0]; pixel_index < range[1]; ++pixel_index) {
       const Index2d p{pixel_index % resolution[0],
@@ -881,19 +874,19 @@ void BayesianCollaborativeDenoiser::merge(
 
   {
     auto merge1 = [&system, low_res_p, high_res_p, staging_value_table]
-    (const uint thread_id, const uint)
+    (const uint task_id)
     {
       // Set the calculation range
-      auto range = system.calcThreadRange(
-          low_res_p->resolution_[0] * low_res_p->resolution_[1], thread_id);
+      auto range = system.calcTaskRange(
+          low_res_p->resolution_[0] * low_res_p->resolution_[1], task_id);
       Parameters<kDimension>::template downscaleAverage(
           high_res_p->resolution_, *staging_value_table,
           low_res_p->resolution_, &low_res_p->sample_value_table_,
           Index2d{range[0], range[1]});
 
       // Set the calculation range
-      range = system.calcThreadRange(
-          high_res_p->resolution_[0] * high_res_p->resolution_[1], thread_id);
+      range = system.calcTaskRange(
+          high_res_p->resolution_[0] * high_res_p->resolution_[1], task_id);
       Parameters<kDimension>::template upscaleAdd(
           low_res_p->resolution_, low_res_p->denoised_value_table_,
           high_res_p->resolution_, &high_res_p->denoised_value_table_,
@@ -905,11 +898,11 @@ void BayesianCollaborativeDenoiser::merge(
 
   {
     auto merge2 = [&system, low_res_p, high_res_p]
-    (const uint thread_id, const uint)
+    (const uint task_id)
     {
       // Set the calculation range
-      const auto range = system.calcThreadRange(
-          high_res_p->resolution_[0] * high_res_p->resolution_[1], thread_id);
+      const auto range = system.calcTaskRange(
+          high_res_p->resolution_[0] * high_res_p->resolution_[1], task_id);
       Parameters<kDimension>::template upscaleAdd(
           low_res_p->resolution_, low_res_p->sample_value_table_,
           high_res_p->resolution_, &high_res_p->denoised_value_table_,
