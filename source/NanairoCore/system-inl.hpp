@@ -166,6 +166,15 @@ ColorSpaceType System::colorSpace() const noexcept
 /*!
   */
 inline
+Denoiser& System::denoiser() noexcept
+{
+  ZISC_ASSERT(hasDenoiser(), "The system has no denoiser.");
+  return *denoiser_;
+}
+
+/*!
+  */
+inline
 const Denoiser& System::denoiser() const noexcept
 {
   ZISC_ASSERT(hasDenoiser(), "The system has no denoiser.");

@@ -12,11 +12,11 @@
         "ToneMapping": "Filmic",
         "EnableDenoising": false,
         "DenoiserType": "BayesianCollaborativeDenoiser",
-        "HistogramBins": 20,
-        "HistogramDistanceThreshold": 0.5,
+        "HistogramBins": 16,
+        "HistogramDistanceThreshold": 0.75,
         "PatchRadius": 1,
         "SearchWindowRadius": 6,
-        "NumberOfScales": 3,
+        "NumberOfScales": 2,
         "WavelengthSampling": "Regular sampling"
     },
     "EmitterModel": [

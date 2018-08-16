@@ -112,11 +112,11 @@ NScrollView {
   }
 
   function initSceneData() {
-    histogramBinsSpinBox.value = 20;
-    histogramDistanceThresholdSpinBox.floatValue = 1.0;
+    histogramBinsSpinBox.value = 16;
+    histogramDistanceThresholdSpinBox.floatValue = 0.75;
     patchRadiusSpinBox.value = 1;
     searchWindowRadiusSpinBox.value = 6;
-    numberOfScalesSpinBox.value = 3;
+    numberOfScalesSpinBox.value = 2;
   }
 
   function setSceneData(sceneData) {

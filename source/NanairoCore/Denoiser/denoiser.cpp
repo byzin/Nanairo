@@ -10,6 +10,7 @@
 #include "denoiser.hpp"
 // Zisc
 #include "zisc/error.hpp"
+#include "zisc/function_reference.hpp"
 #include "zisc/memory_resource.hpp"
 #include "zisc/unique_memory_pointer.hpp"
 #include "zisc/utility.hpp"
@@ -71,6 +72,14 @@ zisc::UniqueMemoryPointer<Denoiser> Denoiser::makeDenoiser(
    }
   }
   return denoiser;
+}
+
+/*!
+  */
+void Denoiser::setProgressCallback(
+    const zisc::FunctionReference<void (double)>& callback) noexcept
+{
+  progress_callback_ = callback;
 }
 
 } // namespace nanairo

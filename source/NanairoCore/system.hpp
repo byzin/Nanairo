@@ -118,6 +118,9 @@ class System : public zisc::NonCopyable<System>
   ColorSpaceType colorSpace() const noexcept;
 
   //! Return the denoiser
+  Denoiser& denoiser() noexcept;
+
+  //! Return the denoiser
   const Denoiser& denoiser() const noexcept;
 
   //! Return the gamma

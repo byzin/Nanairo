@@ -243,6 +243,8 @@ void SampleStatistics::updateHistogram(
 
     const uint h_low = zisc::cast<uint>(s);
     const Float a = s - zisc::cast<Float>(h_low);
+    ZISC_ASSERT(zisc::isInBounds(h_low, 0u, bins - 1), "The low is out of bounds.");
+    ZISC_ASSERT(zisc::isInBounds(a, 0.0, 1.0), "The a is out of bounds.");
     // Histogram low
     {
       auto& histogram = histogramTable()[pixel_index * bins + h_low];

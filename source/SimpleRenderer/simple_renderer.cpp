@@ -9,6 +9,7 @@
 
 #include "simple_renderer.hpp"
 // Standard C++ library
+#include <array>
 #include <chrono>
 #include <cstdio>
 #include <fstream>
@@ -16,6 +17,7 @@
 #include <memory>
 #include <mutex>
 #include <ostream>
+#include <ratio>
 #include <string>
 #include <string_view>
 // LodePNG
@@ -330,8 +332,75 @@ void SimpleRenderer::clearWorkMemory() noexcept
 
 /*!
   */
+double SimpleRenderer::getCurrentFps(const uint32 cycle,
+                                     const Clock::duration& time) const noexcept
+{
+  static_assert(std::milli::den <= Clock::period::den, 
+                "The tick period should be smaller or equal than milli.");
+
+  using zisc::cast;
+
+  constexpr uint64 k = cast<uint64>(Clock::period::den);
+  const auto time_count = time.count();
+  const double fps = cast<double>(k * cycle) /
+                     cast<double>((time_count == 0) ? 1 : time_count);
+
+  return fps;
+}
+
+/*!
+  */
+std::array<int, 4> SimpleRenderer::getCurrentTime(const Clock::duration& time)
+    const noexcept
+{
+  static_assert(std::milli::den <= Clock::period::den, 
+                "The tick period should be smaller or equal than milli.");
+
+  using zisc::cast;
+  using std::chrono::duration_cast;
+
+  const auto h = duration_cast<std::chrono::hours>(time);
+  auto rest_time = time - h;
+  const int hours = cast<int>(h.count());
+
+  const auto m = duration_cast<std::chrono::minutes>(rest_time);
+  rest_time = time - m;
+  const int minutes = cast<int>(m.count());
+
+  const auto s = duration_cast<std::chrono::seconds>(rest_time);
+  rest_time = time - s;
+  const int seconds = cast<int>(s.count());
+
+  const auto mi = duration_cast<std::chrono::milliseconds>(rest_time);
+  const int millis = cast<int>(mi.count());
+
+  return {{hours, minutes, seconds, millis}};
+}
+
+/*!
+  */
 void SimpleRenderer::initialize() noexcept
 {
+}
+
+/*!
+  */
+void SimpleRenderer::notifyOfDenoisingProgress(const double progress) const noexcept 
+{
+  using namespace std::string_literals;
+  if (progress_callback_) {
+    const auto elapsed_time = system().stopwatch().elapsedTime();
+    const auto times = getCurrentTime(elapsed_time);
+
+    auto status = "Denoising...                     0000 h 00 m 00.000 s"s;
+    std::sprintf(status.data(),
+                 "Denoising...                     %04d h %02d m %02d.%03d s",
+                 times[0],
+                 times[1],
+                 times[2],
+                 times[3]);
+    progress_callback_(progress, status);
+  }
 }
 
 /*!
@@ -363,8 +432,16 @@ void SimpleRenderer::outputDenoisedImage(
     const uint32 cycle) noexcept
 {
   auto& sample_statistics = scene().film().sampleStatistics();
+  auto& denoiser = system().denoiser();
 
-  const auto& denoiser = system().denoiser();
+  // Set progress callback
+  auto notify_progress = [this](const double progress)
+  {
+    notifyOfDenoisingProgress(progress);
+  };
+  denoiser.setProgressCallback(notify_progress);
+
+  // Start denoising
   denoiser.denoise(system(), cycle, &sample_statistics);
 
   // Convert sampled value to HDR imave
@@ -498,45 +575,20 @@ void SimpleRenderer::updateRenderingProgress(const uint32 cycle,
                                              const Clock::duration& time) noexcept
 {
   using namespace std::string_literals;
-  using zisc::cast;
 
-  // FPS
-  double fps = 0.0;
-  {
-    constexpr uint64 k = cast<uint64>(Clock::period::den);
-    const auto time_count = time.count();
-    fps = cast<double>(k * cycle) / cast<double>((time_count == 0) ? 1 : time_count);
-  }
-
-  // Time
-  int hours = 0,
-      minutes = 0,
-      seconds = 0,
-      millis = 0;
-  {
-    using std::chrono::duration_cast;
-    const auto h = duration_cast<std::chrono::hours>(time);
-    auto rest_time = time - h;
-    hours = cast<int>(h.count());
-    const auto m = duration_cast<std::chrono::minutes>(rest_time);
-    rest_time = time - m;
-    minutes = cast<int>(m.count());
-    const auto s = duration_cast<std::chrono::seconds>(rest_time);
-    rest_time = time - s;
-    const auto mi = duration_cast<std::chrono::milliseconds>(rest_time);
-    seconds = cast<int>(s.count());
-    millis = cast<int>(mi.count());
-  }
+  const double fps = getCurrentFps(cycle, time);
+  const auto times = getCurrentTime(time);
 
   auto status = "000.00 fps,  0000000000 cycles,  0000 h 00 m 00.000 s"s;
   std::sprintf(status.data(),
                "%06.2lf fps,  %010u cycles,  %04d h %02d m %02d.%03d s",
                fps,
                cycle,
-               hours,
-               minutes,
-               seconds,
-               millis);
+               times[0],
+               times[1],
+               times[2],
+               times[3]);
+
   logMessage(status);
   notifyOfRenderingProgress(cycle, time, status);
 }

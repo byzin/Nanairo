@@ -71,6 +71,7 @@ class BayesianCollaborativeDenoiser : public Denoiser
   {
     //! Set resource
     Parameters(System& system) noexcept;
+
     //! Calculate a upscaed parameter
     template <uint kN>
     static void upscaleAdd(
@@ -79,18 +80,21 @@ class BayesianCollaborativeDenoiser : public Denoiser
         const Index2d& high_res,
         zisc::pmr::vector<zisc::ArithArray<Float, kN>>* high_res_table,
         const Index2d& range) noexcept;
+
     //! Calculate a downscaled parameter
     template <uint kN>
-    static void downscaleAverage(
+    static void downscaleSum(
         const Index2d& high_res,
         const zisc::pmr::vector<zisc::ArithArray<Float, kN>>& high_res_table,
         const Index2d& low_res,
         zisc::pmr::vector<zisc::ArithArray<Float, kN>>* low_res_table,
         const Index2d& range,
         const uint table_offset = 0) noexcept;
+
     //! Downscale the resolutions of parameters
     void downscaleOf(System& system,
                      const Parameters& high_res_p) noexcept;
+
     //! Initialize parameters
     void init(System& system,
               const uint32 cycle,
@@ -129,13 +133,13 @@ class BayesianCollaborativeDenoiser : public Denoiser
   void aggregate(
       System& system,
       const zisc::pmr::vector<int>& estimates_counter,
-      Parameters<kDimension>* parameters) const noexcept;
+      Parameters<kDimension>* parameter) const noexcept;
 
   //! Aggregate denoised values
   template <uint kDimension>
   void aggregateFinal(
       System& system,
-      const Parameters<kDimension>& parameters,
+      const Parameters<kDimension>& parameter,
       SampleStatistics* statistics) const noexcept;
 
   //! Calculate an enpirical mean
@@ -180,17 +184,17 @@ class BayesianCollaborativeDenoiser : public Denoiser
   //! Calculate a histogram patch distance of 2 patches
   template <uint kDimension>
   Float calcHistogramPatchDistance(
-      const Parameters<kDimension>& parameters,
+      const Parameters<kDimension>& parameter,
       const Index2d& center_pixel_lhs,
       const Index2d& center_pixel_rhs) const noexcept;
 
   //! Denoise a chunk
   template <uint kDimension>
-  void denoiseChunk(
+  void denoiseChunks(
       System& system,
       const Index2d& chunk_resolution,
       const Index2d& tile_position,
-      Parameters<kDimension>* parameters,
+      Parameters<kDimension>* parameter,
       zisc::pmr::vector<SpectraArray<kDimension>>* staging_value_table,
       zisc::pmr::vector<int>* estimates_counter,
       PixelMarker* pixel_marker) const noexcept;
@@ -206,7 +210,7 @@ class BayesianCollaborativeDenoiser : public Denoiser
   template <uint kDimension>
   void denoisePixels(
       const Index2d& main_pixel,
-      Parameters<kDimension>* parameters,
+      Parameters<kDimension>* parameter,
       zisc::pmr::vector<SpectraArray<kDimension>>* staging_value_table,
       zisc::pmr::vector<int>* estimates_counter,
       PixelMarker* pixel_marker) const noexcept;
@@ -216,14 +220,14 @@ class BayesianCollaborativeDenoiser : public Denoiser
   void denoiseOnlyMainPatch(
       const Index2d& main_pixel,
       const SimilarPatchMask& similar_mask,
-      Parameters<kDimension>* parameters,
+      Parameters<kDimension>* parameter,
       zisc::pmr::vector<int>* estimates_counter) const noexcept;
 
   template <uint kDimension>
   void denoiseSelectedPatches(
       const Index2d& main_pixel,
       const SimilarPatchMask& similar_mask,
-      Parameters<kDimension>* parameters,
+      Parameters<kDimension>* parameter,
       zisc::pmr::vector<SpectraArray<kDimension>>* staging_value_table,
       zisc::pmr::vector<int>* estimates_counter,
       PixelMarker* pixel_marker) const noexcept;
@@ -267,10 +271,22 @@ class BayesianCollaborativeDenoiser : public Denoiser
       Parameters<kDimension>* high_res_p,
       zisc::pmr::vector<SpectraArray<kDimension>>* staging_value_table) const noexcept;
 
+  //! Notify the denoising progress
+  void notifyProgress(const double progress) const noexcept;
+
+  //! Notify the denoising progress
+  void notifyProgress(const uint iteration, const uint tile_number) const noexcept;
+
+  //! Compute parameters for denoising
+  template <uint kDimension>
+  void prepare(
+      System& system,
+      zisc::pmr::vector<Parameters<kDimension>>* parameters) const noexcept;
+
   //! Select similar patches
   template <uint kDimension>
   SimilarPatchMask selectSimilarPatches(
-      const Parameters<kDimension>& parameters,
+      const Parameters<kDimension>& parameter,
       const Index2d& main_pixel) const noexcept;
 
   //! Convert to a matrix
@@ -279,11 +295,11 @@ class BayesianCollaborativeDenoiser : public Denoiser
       const noexcept;
 
 
-  Float histogram_distance_threshold_;
-  uint histogram_bins_;
-  uint patch_radius_;
-  uint search_radius_;
-  uint num_of_scales_;
+  Float histogram_distance_threshold_ = 0.75;
+  uint histogram_bins_ = 16;
+  uint patch_radius_ = 1;
+  uint search_radius_ = 3;
+  uint num_of_scales_ = 2;
 };
 
 } // namespace nanairo

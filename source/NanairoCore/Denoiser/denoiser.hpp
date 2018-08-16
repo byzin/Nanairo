@@ -13,6 +13,7 @@
 // Zisc
 #include "zisc/memory_resource.hpp"
 #include "zisc/fnv_1a_hash_engine.hpp"
+#include "zisc/function_reference.hpp"
 #include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "NanairoCore/nanairo_core_config.hpp"
@@ -56,13 +57,26 @@ class Denoiser
       System& system,
       const SettingNodeBase* settings) noexcept;
 
+  //! Set a progress callback
+  void setProgressCallback(const zisc::FunctionReference<void (double)>& callback)
+      noexcept;
+
+ protected:
+  //! Return a progress callback
+  const zisc::FunctionReference<void (double)>& progressCallback() const noexcept;
+
  private:
   //! Initialize the denoiser
   void initialize(const SettingNodeBase* settings) noexcept;
+
+
+  zisc::FunctionReference<void (double)> progress_callback_;
 };
 
 //! \}
 
 } // namespace nanairo
+
+#include "denoiser-inl.hpp"
 
 #endif // NANAIRO_DENOISER_HPP

@@ -41,11 +41,11 @@ struct BayesianCollaborativeDenoiserParameters : public NodeParameterBase
   //! Write the parameters to the stream
   void writeData(std::ostream* data_stream) const noexcept override;
 
-  uint32 histogram_bins_ = 20;
-  double histogram_distance_threshold_ = 0.5;
+  uint32 histogram_bins_ = 16;
+  double histogram_distance_threshold_ = 0.75;
   uint32 patch_radius_ = 1;
   uint32 search_window_radius_ = 6;
-  uint32 number_of_scales_ = 3;
+  uint32 number_of_scales_ = 2;
 };
 
 /*!

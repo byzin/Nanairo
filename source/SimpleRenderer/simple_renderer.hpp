@@ -11,6 +11,7 @@
 #define NANAIRO_SIMPLE_RENDERER_HPP
 
 // Standard C++ library
+#include <array>
 #include <fstream>
 #include <memory>
 #include <ostream>
@@ -153,11 +154,12 @@ class SimpleRenderer
   //! Return the cycle to finish rendering
   uint32 cycleToFinish() const noexcept;
 
-  //! Check if the LDR image is saved at each cycle
-  bool isSavingAtEachCycleEnabled() const noexcept;
+  //! Compute the current fps
+  double getCurrentFps(const uint32 cycle,
+                       const Clock::duration& time) const noexcept;
 
-  //! Check if the LDR image is saved at power of 2 cycles
-  bool isSavingAtPowerOf2CyclesEnabled() const noexcept;
+  //! Compute the current time [hours, minutes, seconds, milliseconds]
+  std::array<int, 4> getCurrentTime(const Clock::duration& time) const noexcept;
 
   //! Return the next cycle to save image
   uint32 getNextCycleToSaveImage(const uint32 cycle) const noexcept;
@@ -175,12 +177,21 @@ class SimpleRenderer
   bool isCycleToSaveImage(const uint32 cycle,
                           const uint32 cycle_to_save_image) const noexcept;
 
+  //! Check if the LDR image is saved at each cycle
+  bool isSavingAtEachCycleEnabled() const noexcept;
+
+  //! Check if the LDR image is saved at power of 2 cycles
+  bool isSavingAtPowerOf2CyclesEnabled() const noexcept;
+
   //! Check if it is the time to finish rendering
   bool isTimeToFinish(const Clock::duration& time) const noexcept;
 
   //! Check if it is the time to save image
   bool isTimeToSaveImage(const Clock::duration& time,
                          const Clock::duration& time_to_save_image) const noexcept;
+
+  //! Notify of denoising progress
+  void notifyOfDenoisingProgress(const double progress) const noexcept;
 
   //! Notify of rendering progress
   void notifyOfRenderingProgress(const uint32 cycle,
