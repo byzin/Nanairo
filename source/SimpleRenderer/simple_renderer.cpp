@@ -179,8 +179,9 @@ void SimpleRenderer::render(const std::string& output_path) noexcept
   while (rendering_flag) {
     ++cycle;
 
-    rendering_flag = isRunnable() &&
-                     !isCycleToFinish(cycle) && !isTimeToFinish(previous_time);
+    const bool is_last_cycle = isCycleToFinish(cycle) ||
+                               isTimeToFinish(previous_time);
+    rendering_flag = isRunnable() && !is_last_cycle;
 
     clearWorkMemory();
     handleCameraEvent(&cycle, &previous_time);
@@ -202,7 +203,7 @@ void SimpleRenderer::render(const std::string& output_path) noexcept
     updateRenderingProgress(cycle, current_time);
 
     // Compute denoised image and update rendering progress
-    if (saving_image && !rendering_flag) {
+    if (saving_image && is_last_cycle) {
       const auto& statistics = scene().film().sampleStatistics();
       if (statistics.isEnabled(SampleStatistics::Type::kDenoisedExpectedValue)) {
         clearWorkMemory();
