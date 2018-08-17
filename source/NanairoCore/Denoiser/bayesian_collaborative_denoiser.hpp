@@ -34,12 +34,16 @@ class System;
 
 /*!
   */
+template <uint kDimension>
 class BayesianCollaborativeDenoiser : public Denoiser
 {
  public:
   //! Initialize a denoiser
   BayesianCollaborativeDenoiser(const SettingNodeBase* settings) noexcept;
 
+
+  //! Return the dimension of denoised color
+  static constexpr uint dimension() noexcept;
 
   //! Denoise input value
   void denoise(System& system,
@@ -50,23 +54,16 @@ class BayesianCollaborativeDenoiser : public Denoiser
   uint histogramBins() const noexcept;
 
  private:
-  //! Return the order of chunk tiles
-  static constexpr std::array<Index2d, 9> getChunkTileOrder() noexcept;
-
   //! Return the size of covariance matrix
   static constexpr uint getCovarianceMatrixSize(const uint dimension) noexcept;
 
 
   using SimilarPatchMask = std::bitset<2048>;
-  template <uint kDimension>
   using SpectraArray = zisc::ArithArray<Float, kDimension>;
-  template <uint kDimension>
-  using Matrix = zisc::Matrix<Float, kDimension, kDimension>;
-  template <uint kDimension>
   using CovarianceFactors = zisc::ArithArray<Float,
                                              getCovarianceMatrixSize(kDimension)>;
+  using CovarianceMatrix = zisc::Matrix<Float, kDimension, kDimension>;
 
-  template <uint kDimension>
   struct Parameters
   {
     //! Set resource
@@ -101,10 +98,10 @@ class BayesianCollaborativeDenoiser : public Denoiser
               const uint histogram_bins,
               const SampleStatistics& statistics) noexcept;
 
-    zisc::pmr::vector<SpectraArray<kDimension>> sample_value_table_;
-    zisc::pmr::vector<SpectraArray<kDimension>> histogram_table_;
-    zisc::pmr::vector<CovarianceFactors<kDimension>> covariance_factor_table_;
-    zisc::pmr::vector<SpectraArray<kDimension>> denoised_value_table_;
+    zisc::pmr::vector<SpectraArray> sample_value_table_;
+    zisc::pmr::vector<SpectraArray> histogram_table_;
+    zisc::pmr::vector<CovarianceFactors> covariance_factor_table_;
+    zisc::pmr::vector<SpectraArray> denoised_value_table_;
     Index2d resolution_;
     uint num_of_samples_;
     uint histogram_bins_;
@@ -129,18 +126,14 @@ class BayesianCollaborativeDenoiser : public Denoiser
 
 
   //! Aggregate denoised values
-  template <uint kDimension>
-  void aggregate(
-      System& system,
-      const zisc::pmr::vector<int>& estimates_counter,
-      Parameters<kDimension>* parameter) const noexcept;
+  void aggregate(System& system,
+                 const zisc::pmr::vector<int>& estimates_counter,
+                 Parameters* parameter) const noexcept;
 
   //! Aggregate denoised values
-  template <uint kDimension>
-  void aggregateFinal(
-      System& system,
-      const Parameters<kDimension>& parameter,
-      SampleStatistics* statistics) const noexcept;
+  void aggregateFinal(System& system,
+                      const Parameters& parameter,
+                      SampleStatistics* statistics) const noexcept;
 
   //! Calculate an enpirical mean
   template <uint kN>
@@ -152,83 +145,71 @@ class BayesianCollaborativeDenoiser : public Denoiser
       const zisc::ArithArray<Float, kN>* table) const noexcept;
 
   //! Calculate an enpirical covariance matrix
-  template <uint kDimension>
-  CovarianceFactors<kDimension> calcEmpiricalCovarianceMatrix(
+  CovarianceFactors calcEmpiricalCovarianceMatrix(
       const Index2d& resolution,
       RenderingTile& search_window,
       const Index2d& patch_offset,
       const SimilarPatchMask& similar_mask,
-      const zisc::pmr::vector<SpectraArray<kDimension>>& value_table,
-      const SpectraArray<kDimension>& value_mean) const noexcept;
+      const zisc::pmr::vector<SpectraArray>& value_table,
+      const SpectraArray& value_mean) const noexcept;
 
   //! Calculate staging denoised values
-  template <uint kDimension>
   void calcStagingDenoisedValue(
       const Index2d& resolution,
       RenderingTile& search_window,
       const Index2d& patch_offset,
       const SimilarPatchMask& similar_mask,
-      const SpectraArray<kDimension>& expected_mean,
-      const Matrix<kDimension>& covariance_mean,
-      const Matrix<kDimension>& expected_covariance,
-      const zisc::pmr::vector<SpectraArray<kDimension>>& value_table,
-      zisc::pmr::vector<SpectraArray<kDimension>>* staging_value_table) const noexcept;
+      const SpectraArray& expected_mean,
+      const CovarianceMatrix& covariance_mean,
+      const CovarianceMatrix& expected_covariance,
+      const zisc::pmr::vector<SpectraArray>& value_table,
+      zisc::pmr::vector<SpectraArray>* staging_value_table) const noexcept;
 
   //! Calculate a distance of 2 histograms
-  template <uint kDimension>
   Float calcHistogramDistance(
-      const SpectraArray<kDimension>& histogram_lhs,
-      const SpectraArray<kDimension>& histogram_rhs,
+      const SpectraArray& histogram_lhs,
+      const SpectraArray& histogram_rhs,
       uint* num_of_non_both0) const noexcept;
 
   //! Calculate a histogram patch distance of 2 patches
-  template <uint kDimension>
   Float calcHistogramPatchDistance(
-      const Parameters<kDimension>& parameter,
+      const Parameters& parameter,
       const Index2d& center_pixel_lhs,
       const Index2d& center_pixel_rhs) const noexcept;
 
   //! Denoise a chunk
-  template <uint kDimension>
-  void denoiseChunks(
-      System& system,
-      const Index2d& chunk_resolution,
-      const Index2d& tile_position,
-      Parameters<kDimension>* parameter,
-      zisc::pmr::vector<SpectraArray<kDimension>>* staging_value_table,
-      zisc::pmr::vector<int>* estimates_counter,
-      PixelMarker* pixel_marker) const noexcept;
+  void denoiseChunks(System& system,
+                     const Index2d& chunk_resolution,
+                     const Index2d& tile_position,
+                     Parameters* parameter,
+                     zisc::pmr::vector<SpectraArray>* staging_value_table,
+                     zisc::pmr::vector<int>* estimates_counter,
+                     PixelMarker* pixel_marker) const noexcept;
 
   //! Denoise input value
-  template <uint kDimension>
-  void denoiseMultiscale(
-      System& system,
-      const uint32 cycle,
-      SampleStatistics* statistics) const noexcept;
+  void denoiseMultiscale(System& system,
+                         const uint32 cycle,
+                         SampleStatistics* statistics) const noexcept;
 
   //! Denoise input value
-  template <uint kDimension>
-  void denoisePixels(
-      const Index2d& main_pixel,
-      Parameters<kDimension>* parameter,
-      zisc::pmr::vector<SpectraArray<kDimension>>* staging_value_table,
-      zisc::pmr::vector<int>* estimates_counter,
-      PixelMarker* pixel_marker) const noexcept;
+  void denoisePixels(const Index2d& main_pixel,
+                     Parameters* parameter,
+                     zisc::pmr::vector<SpectraArray>* staging_value_table,
+                     zisc::pmr::vector<int>* estimates_counter,
+                     PixelMarker* pixel_marker) const noexcept;
 
   //! Denoise only main patch
-  template <uint kDimension>
   void denoiseOnlyMainPatch(
       const Index2d& main_pixel,
       const SimilarPatchMask& similar_mask,
-      Parameters<kDimension>* parameter,
+      Parameters* parameter,
       zisc::pmr::vector<int>* estimates_counter) const noexcept;
 
-  template <uint kDimension>
   void denoiseSelectedPatches(
       const Index2d& main_pixel,
       const SimilarPatchMask& similar_mask,
-      Parameters<kDimension>* parameter,
-      zisc::pmr::vector<SpectraArray<kDimension>>* staging_value_table,
+      Parameters* parameter,
+      zisc::pmr::vector<SpectraArray>* staging_value_table,
       zisc::pmr::vector<int>* estimates_counter,
       PixelMarker* pixel_marker) const noexcept;
 
@@ -245,8 +226,10 @@ class BayesianCollaborativeDenoiser : public Denoiser
   uint getNumOfSearchWindowPixels() const noexcept;
 
   //! Return the color patch dimension
-  template <uint kDimension>
   uint getPatchDimension() const noexcept;
+
+  //! Return the order of chunk tiles
+  static constexpr std::array<Index2d, 9> getChunkTileOrder() noexcept;
 
   //! Initialize the denoiser
   void initialize(const SettingNodeBase* settings) noexcept;
@@ -264,12 +247,11 @@ class BayesianCollaborativeDenoiser : public Denoiser
                               const Index2d& tile_position) const noexcept;
 
   //! Merge a low and a high resolution buffers
-  template <uint kDimension>
   void merge(
       System& system,
-      Parameters<kDimension>* low_res_p,
-      Parameters<kDimension>* high_res_p,
-      zisc::pmr::vector<SpectraArray<kDimension>>* staging_value_table) const noexcept;
+      Parameters* low_res_p,
+      Parameters* high_res_p,
+      zisc::pmr::vector<SpectraArray>* staging_value_table) const noexcept;
 
   //! Notify the denoising progress
   void notifyProgress(const double progress) const noexcept;
@@ -278,21 +260,16 @@ class BayesianCollaborativeDenoiser : public Denoiser
   void notifyProgress(const uint iteration, const uint tile_number) const noexcept;
 
   //! Compute parameters for denoising
-  template <uint kDimension>
-  void prepare(
-      System& system,
-      zisc::pmr::vector<Parameters<kDimension>>* parameters) const noexcept;
+  void prepare(System& system,
+               zisc::pmr::vector<Parameters>* parameters) const noexcept;
 
   //! Select similar patches
-  template <uint kDimension>
   SimilarPatchMask selectSimilarPatches(
-      const Parameters<kDimension>& parameter,
+      const Parameters& parameter,
       const Index2d& main_pixel) const noexcept;
 
   //! Convert to a matrix
-  template <uint kDimension>
-  Matrix<kDimension> toMatrix(const CovarianceFactors<kDimension>& factors)
-      const noexcept;
+  CovarianceMatrix toMatrix(const CovarianceFactors& factors)const noexcept;
 
 
   Float histogram_distance_threshold_ = 0.75;
@@ -301,6 +278,10 @@ class BayesianCollaborativeDenoiser : public Denoiser
   uint search_radius_ = 3;
   uint num_of_scales_ = 2;
 };
+
+// Type aliases
+using RgbBcDenoiser = BayesianCollaborativeDenoiser<3>;
+using SpectraBcDenoiser = BayesianCollaborativeDenoiser<CoreConfig::spectraSize()>;
 
 } // namespace nanairo
 

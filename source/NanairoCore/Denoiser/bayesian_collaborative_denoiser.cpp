@@ -36,7 +36,8 @@ namespace nanairo {
 
 /*!
   */
-BayesianCollaborativeDenoiser::BayesianCollaborativeDenoiser(
+template <uint kDimension>
+BayesianCollaborativeDenoiser<kDimension>::BayesianCollaborativeDenoiser(
     const SettingNodeBase* settings) noexcept :
         Denoiser(settings)
 {
@@ -45,22 +46,20 @@ BayesianCollaborativeDenoiser::BayesianCollaborativeDenoiser(
 
 /*!
   */
-void BayesianCollaborativeDenoiser::denoise(
+template <uint kDimension>
+void BayesianCollaborativeDenoiser<kDimension>::denoise(
     System& system,
     const uint32 cycle,
     SampleStatistics* statistics) const noexcept
 {
   notifyProgress(0.0);
-  if (system.colorMode() == RenderingColorMode::kRgb)
-     denoiseMultiscale<3>(system, cycle, statistics);
-  else
-     denoiseMultiscale<CoreConfig::spectraSize()>(system, cycle, statistics);
+  denoiseMultiscale(system, cycle, statistics);
 }
 
 /*!
   */
 template <uint kDimension>
-BayesianCollaborativeDenoiser::Parameters<kDimension>::Parameters(System& system)
+BayesianCollaborativeDenoiser<kDimension>::Parameters::Parameters(System& system)
     noexcept :
         sample_value_table_{&system.globalMemoryManager()},
         histogram_table_{&system.globalMemoryManager()},
@@ -72,7 +71,7 @@ BayesianCollaborativeDenoiser::Parameters<kDimension>::Parameters(System& system
 /*!
   */
 template <uint kDimension> template <uint kN>
-void BayesianCollaborativeDenoiser::Parameters<kDimension>::upscaleAdd(
+void BayesianCollaborativeDenoiser<kDimension>::Parameters::upscaleAdd(
     const Index2d& low_res,
     const zisc::pmr::vector<zisc::ArithArray<Float, kN>>& low_res_table,
     const Index2d& high_res,
@@ -105,7 +104,7 @@ void BayesianCollaborativeDenoiser::Parameters<kDimension>::upscaleAdd(
 /*!
   */
 template <uint kDimension> template <uint kN>
-void BayesianCollaborativeDenoiser::Parameters<kDimension>::downscaleSum(
+void BayesianCollaborativeDenoiser<kDimension>::Parameters::downscaleSum(
     const Index2d& high_res,
     const zisc::pmr::vector<zisc::ArithArray<Float, kN>>& high_res_table,
     const Index2d& low_res,
@@ -134,7 +133,7 @@ void BayesianCollaborativeDenoiser::Parameters<kDimension>::downscaleSum(
 /*!
   */
 template <uint kDimension>
-void BayesianCollaborativeDenoiser::Parameters<kDimension>::downscaleOf(
+void BayesianCollaborativeDenoiser<kDimension>::Parameters::downscaleOf(
     System& system,
     const Parameters& high_res_p) noexcept
 {
@@ -179,7 +178,7 @@ void BayesianCollaborativeDenoiser::Parameters<kDimension>::downscaleOf(
 /*!
   */
 template <uint kDimension>
-void BayesianCollaborativeDenoiser::Parameters<kDimension>::init(
+void BayesianCollaborativeDenoiser<kDimension>::Parameters::init(
     System& system,
     const uint32 cycle,
     const uint histogram_bins,
@@ -207,7 +206,7 @@ void BayesianCollaborativeDenoiser::Parameters<kDimension>::init(
       {
         const auto& sample_p = statistics.sampleTable()[pixel_index];
         auto& sample_value = sample_value_table_[pixel_index];
-        for (uint si = 0; si < kDimension; ++si)
+        for (uint si = 0; si < dimension(); ++si)
           sample_value[si] = sample_p->get(si);
       }
 
@@ -217,8 +216,8 @@ void BayesianCollaborativeDenoiser::Parameters<kDimension>::init(
         const uint factor_index = statistics.numOfCovarianceFactors() * pixel_index;
         const auto factor_p = &statistics.covarianceFactorTable()[factor_index];
         auto& covariance_factors = covariance_factor_table_[pixel_index];
-        for (uint offset = 0, si_a = 0; si_a < kDimension; ++si_a) {
-          for (uint si_b = si_a; si_b < kDimension; ++offset, ++si_b) {
+        for (uint offset = 0, si_a = 0; si_a < dimension(); ++si_a) {
+          for (uint si_b = si_a; si_b < dimension(); ++offset, ++si_b) {
             covariance_factors[offset] = (si_a == si_b)
                 ? sample_squared_p->get(si_a)
                 : factor_p[statistics.getFactorIndex(si_a) + ((si_b - si_a) - 1)].get();
@@ -235,7 +234,7 @@ void BayesianCollaborativeDenoiser::Parameters<kDimension>::init(
         const auto& src = statistics.histogramTable()[src_index];
         const uint dst_index = histogram_offset + pixel_index;
         auto& dst = histogram_table_[dst_index];
-        for (uint si = 0; si < kDimension; ++si)
+        for (uint si = 0; si < dimension(); ++si)
           dst[si] = src->get(si);
       }
     }
@@ -253,8 +252,10 @@ void BayesianCollaborativeDenoiser::Parameters<kDimension>::init(
 
 /*!
   */
-BayesianCollaborativeDenoiser::PixelMarker::PixelMarker(System& system) noexcept :
-    marker_table_{&system.globalMemoryManager()}
+template <uint kDimension>
+BayesianCollaborativeDenoiser<kDimension>::PixelMarker::PixelMarker(
+    System& system) noexcept :
+        marker_table_{&system.globalMemoryManager()}
 {
   constexpr uint marker_bytes = zisc::power<kMarkerRepBits>(2) / 8;
   static_assert(sizeof(Marker) == marker_bytes, "The size of marker is wrong.");
@@ -265,7 +266,8 @@ BayesianCollaborativeDenoiser::PixelMarker::PixelMarker(System& system) noexcept
 
 /*!
   */
-void BayesianCollaborativeDenoiser::PixelMarker::clear() noexcept
+template <uint kDimension>
+void BayesianCollaborativeDenoiser<kDimension>::PixelMarker::clear() noexcept
 {
   for (auto& marker : marker_table_)
     marker.reset();
@@ -273,8 +275,9 @@ void BayesianCollaborativeDenoiser::PixelMarker::clear() noexcept
 
 /*!
   */
-bool BayesianCollaborativeDenoiser::PixelMarker::isMarked(const uint index)
-    const noexcept
+template <uint kDimension>
+bool BayesianCollaborativeDenoiser<kDimension>::PixelMarker::isMarked(
+    const uint index) const noexcept
 {
   constexpr uint mask = sizeof(Marker) * 8 - 1;
   const uint marker_index = index >> kMarkerRepBits;
@@ -284,7 +287,9 @@ bool BayesianCollaborativeDenoiser::PixelMarker::isMarked(const uint index)
 
 /*!
   */
-void BayesianCollaborativeDenoiser::PixelMarker::mark(const uint index) noexcept
+template <uint kDimension>
+void BayesianCollaborativeDenoiser<kDimension>::PixelMarker::mark(
+    const uint index) noexcept
 {
   constexpr uint mask = sizeof(Marker) * 8 - 1;
   const uint marker_index = index >> kMarkerRepBits;
@@ -295,10 +300,10 @@ void BayesianCollaborativeDenoiser::PixelMarker::mark(const uint index) noexcept
 /*!
   */
 template <uint kDimension>
-void BayesianCollaborativeDenoiser::aggregate(
+void BayesianCollaborativeDenoiser<kDimension>::aggregate(
     System& system,
     const zisc::pmr::vector<int>& estimates_counter,
-    Parameters<kDimension>* parameter) const noexcept
+    Parameters* parameter) const noexcept
 {
   auto aggregate_values = [&system, &estimates_counter, parameter]
   (const uint task_id)
@@ -328,9 +333,9 @@ void BayesianCollaborativeDenoiser::aggregate(
 /*!
   */
 template <uint kDimension>
-void BayesianCollaborativeDenoiser::aggregateFinal(
+void BayesianCollaborativeDenoiser<kDimension>::aggregateFinal(
     System& system,
-    const Parameters<kDimension>& parameter,
+    const Parameters& parameter,
     SampleStatistics* statistics) const noexcept
 {
   auto aggregate_values = [&system, &parameter, statistics](const uint task_id)
@@ -346,7 +351,7 @@ void BayesianCollaborativeDenoiser::aggregateFinal(
       const auto& src = parameter.denoised_value_table_[pixel_index];
       const uint dst_index = p[0] + statistics->resolution()[0] * p[1];
       auto& dst = statistics->denoisedSampleTable()[dst_index];
-      for (uint si = 0; si < kDimension; ++si)
+      for (uint si = 0; si < dimension(); ++si)
         dst->set(si, zisc::max(0.0, src[si]));
     }
   };
@@ -363,13 +368,14 @@ void BayesianCollaborativeDenoiser::aggregateFinal(
 
 /*!
   */
-template <uint kN>
-zisc::ArithArray<Float, kN> BayesianCollaborativeDenoiser::calcEmpiricalMean(
-    const Index2d& resolution,
-    RenderingTile& search_window,
-    const Index2d& patch_offset,
-    const SimilarPatchMask& similar_mask,
-    const zisc::ArithArray<Float, kN>* table) const noexcept
+template <uint kDimension> template <uint kN>
+zisc::ArithArray<Float, kN> BayesianCollaborativeDenoiser<kDimension>::
+    calcEmpiricalMean(
+        const Index2d& resolution,
+        RenderingTile& search_window,
+        const Index2d& patch_offset,
+        const SimilarPatchMask& similar_mask,
+        const zisc::ArithArray<Float, kN>* table) const noexcept
 {
   search_window.reset();
   zisc::ArithArray<Float, kN> mean;
@@ -390,17 +396,17 @@ zisc::ArithArray<Float, kN> BayesianCollaborativeDenoiser::calcEmpiricalMean(
 /*!
   */
 template <uint kDimension>
-auto BayesianCollaborativeDenoiser::calcEmpiricalCovarianceMatrix(
+auto BayesianCollaborativeDenoiser<kDimension>::calcEmpiricalCovarianceMatrix(
     const Index2d& resolution,
     RenderingTile& search_window,
     const Index2d& patch_offset,
     const SimilarPatchMask& similar_mask,
-    const zisc::pmr::vector<SpectraArray<kDimension>>& value_table,
-    const SpectraArray<kDimension>& value_mean) const noexcept
-        -> CovarianceFactors<kDimension>
+    const zisc::pmr::vector<SpectraArray>& value_table,
+    const SpectraArray& value_mean) const noexcept
+        -> CovarianceFactors
 {
   search_window.reset();
-  CovarianceFactors<kDimension> mean;
+  CovarianceFactors mean;
   for (uint p = 0; p < search_window.numOfPixels(); ++p) {
     const auto& neighbor_pixel = search_window.current();
     if (similar_mask[search_window.getIndex(neighbor_pixel)]) {
@@ -423,16 +429,16 @@ auto BayesianCollaborativeDenoiser::calcEmpiricalCovarianceMatrix(
 /*!
   */
 template <uint kDimension>
-void BayesianCollaborativeDenoiser::calcStagingDenoisedValue(
+void BayesianCollaborativeDenoiser<kDimension>::calcStagingDenoisedValue(
     const Index2d& resolution,
     RenderingTile& search_window,
     const Index2d& patch_offset,
     const SimilarPatchMask& similar_mask,
-    const SpectraArray<kDimension>& expected_mean,
-    const Matrix<kDimension>& covariance_mean,
-    const Matrix<kDimension>& expected_covariance,
-    const zisc::pmr::vector<SpectraArray<kDimension>>& value_table,
-    zisc::pmr::vector<SpectraArray<kDimension>>* staging_value_table) const noexcept
+    const SpectraArray& expected_mean,
+    const CovarianceMatrix& covariance_mean,
+    const CovarianceMatrix& expected_covariance,
+    const zisc::pmr::vector<SpectraArray>& value_table,
+    zisc::pmr::vector<SpectraArray>* staging_value_table) const noexcept
 {
   const auto inv_expected_covariance = expected_covariance.inverseMatrix();
   search_window.reset();
@@ -456,14 +462,14 @@ void BayesianCollaborativeDenoiser::calcStagingDenoisedValue(
 /*!
   */
 template <uint kDimension>
-Float BayesianCollaborativeDenoiser::calcHistogramDistance(
-    const SpectraArray<kDimension>& histogram_lhs,
-    const SpectraArray<kDimension>& histogram_rhs,
+Float BayesianCollaborativeDenoiser<kDimension>::calcHistogramDistance(
+    const SpectraArray& histogram_lhs,
+    const SpectraArray& histogram_rhs,
     uint* num_of_non_both0) const noexcept
 {
   ZISC_ASSERT(num_of_non_both0 != nullptr, "The num_of_non_both0 is null.");
   Float distance_sum = 0.0;
-  for (uint si = 0; si < kDimension; ++si) {
+  for (uint si = 0; si < dimension(); ++si) {
     const Float lhs = histogram_lhs[si];
     const Float rhs = histogram_rhs[si];
     if (1.0 < (lhs + rhs)) {
@@ -478,8 +484,8 @@ Float BayesianCollaborativeDenoiser::calcHistogramDistance(
 /*!
   */
 template <uint kDimension>
-Float BayesianCollaborativeDenoiser::calcHistogramPatchDistance(
-    const Parameters<kDimension>& parameter,
+Float BayesianCollaborativeDenoiser<kDimension>::calcHistogramPatchDistance(
+    const Parameters& parameter,
     const Index2d& center_pixel_lhs,
     const Index2d& center_pixel_rhs) const noexcept
 {
@@ -521,12 +527,12 @@ Float BayesianCollaborativeDenoiser::calcHistogramPatchDistance(
 /*!
   */
 template <uint kDimension>
-void BayesianCollaborativeDenoiser::denoiseChunks(
+void BayesianCollaborativeDenoiser<kDimension>::denoiseChunks(
     System& system,
     const Index2d& chunk_resolution,
     const Index2d& tile_position,
-    Parameters<kDimension>* parameter,
-    zisc::pmr::vector<SpectraArray<kDimension>>* staging_value_table,
+    Parameters* parameter,
+    zisc::pmr::vector<SpectraArray>* staging_value_table,
     zisc::pmr::vector<int>* estimates_counter,
     PixelMarker* pixel_marker) const noexcept
 {
@@ -569,14 +575,14 @@ void BayesianCollaborativeDenoiser::denoiseChunks(
 /*!
   */
 template <uint kDimension>
-void BayesianCollaborativeDenoiser::denoiseMultiscale(
+void BayesianCollaborativeDenoiser<kDimension>::denoiseMultiscale(
     System& system,
     const uint32 cycle,
     SampleStatistics* statistics) const noexcept
 {
   auto* memory_manager = &system.globalMemoryManager();
   // Initialize parameters
-  zisc::pmr::vector<Parameters<kDimension>> parameters{memory_manager};
+  zisc::pmr::vector<Parameters> parameters{memory_manager};
   parameters.reserve(num_of_scales_);
   for (uint scale = 0; scale < num_of_scales_; ++scale) {
     parameters.emplace_back(system);
@@ -588,7 +594,7 @@ void BayesianCollaborativeDenoiser::denoiseMultiscale(
   prepare(system, &parameters);
 
   // Create staging variables
-  zisc::pmr::vector<SpectraArray<kDimension>> staging_value_table{memory_manager};
+  zisc::pmr::vector<SpectraArray> staging_value_table{memory_manager};
   staging_value_table.resize(parameters[0].sample_value_table_.size());
 
   zisc::pmr::vector<int> estimates_counter{memory_manager};
@@ -597,7 +603,7 @@ void BayesianCollaborativeDenoiser::denoiseMultiscale(
   PixelMarker pixel_marker{system};
 
   // Denoise iteratively
-  Parameters<kDimension>* parameter = nullptr;
+  Parameters* parameter = nullptr;
   for (uint iteration = 0; iteration < num_of_scales_; ++iteration) {
     // Clear buffers
     std::fill(estimates_counter.begin(), estimates_counter.end(), 0);
@@ -625,31 +631,31 @@ void BayesianCollaborativeDenoiser::denoiseMultiscale(
 /*!
   */
 template <uint kDimension>
-void BayesianCollaborativeDenoiser::denoisePixels(
+void BayesianCollaborativeDenoiser<kDimension>::denoisePixels(
     const Index2d& main_pixel,
-    Parameters<kDimension>* parameter,
-    zisc::pmr::vector<SpectraArray<kDimension>>* staging_value_table,
+    Parameters* parameter,
+    zisc::pmr::vector<SpectraArray>* staging_value_table,
     zisc::pmr::vector<int>* estimates_counter,
     PixelMarker* pixel_marker) const noexcept
 {
   const auto similar_mask = selectSimilarPatches(*parameter, main_pixel);
   const uint num_of_similar_patches = zisc::cast<uint>(similar_mask.count());
-  if (num_of_similar_patches <= getPatchDimension<kDimension>()) {
-    denoiseOnlyMainPatch(main_pixel, similar_mask, parameter, estimates_counter);
-  }
-  else {
+  if (getPatchDimension() < num_of_similar_patches) {
     denoiseSelectedPatches(main_pixel, similar_mask, parameter,
                            staging_value_table, estimates_counter, pixel_marker);
+  }
+  else {
+    denoiseOnlyMainPatch(main_pixel, similar_mask, parameter, estimates_counter);
   }
 }
 
 /*!
   */
 template <uint kDimension>
-void BayesianCollaborativeDenoiser::denoiseOnlyMainPatch(
+void BayesianCollaborativeDenoiser<kDimension>::denoiseOnlyMainPatch(
     const Index2d& main_pixel,
     const SimilarPatchMask& similar_mask,
-    Parameters<kDimension>* parameter,
+    Parameters* parameter,
     zisc::pmr::vector<int>* estimates_counter) const noexcept
 {
   const auto& resolution = parameter->resolution_;
@@ -659,7 +665,7 @@ void BayesianCollaborativeDenoiser::denoiseOnlyMainPatch(
     const Index2d patch_offset{patch_number % (2 * patch_radius_ + 1),
                                patch_number / (2 * patch_radius_ + 1)};
     // Sum up sample values of similar pixels
-    SpectraArray<kDimension> estimated_value;
+    SpectraArray estimated_value;
     search_window.reset();
     for (uint p = 0; p < search_window.numOfPixels(); ++p) {
       const auto& neighbor_pixel = search_window.current();
@@ -688,11 +694,11 @@ void BayesianCollaborativeDenoiser::denoiseOnlyMainPatch(
 /*!
   */
 template <uint kDimension>
-void BayesianCollaborativeDenoiser::denoiseSelectedPatches(
+void BayesianCollaborativeDenoiser<kDimension>::denoiseSelectedPatches(
     const Index2d& main_pixel,
     const SimilarPatchMask& similar_mask,
-    Parameters<kDimension>* parameter,
-    zisc::pmr::vector<SpectraArray<kDimension>>* staging_value_table,
+    Parameters* parameter,
+    zisc::pmr::vector<SpectraArray>* staging_value_table,
     zisc::pmr::vector<int>* estimates_counter,
     PixelMarker* pixel_marker) const noexcept
 {
@@ -704,13 +710,13 @@ void BayesianCollaborativeDenoiser::denoiseSelectedPatches(
                                patch_number / (2 * patch_radius_ + 1)};
 
     // Step1
-    const auto covariance_mean = toMatrix<kDimension>(calcEmpiricalMean(
+    const auto covariance_mean = toMatrix(calcEmpiricalMean(
         resolution, search_window, patch_offset, similar_mask,
         parameter->covariance_factor_table_.data()));
     auto expected_mean = calcEmpiricalMean(
         resolution, search_window, patch_offset, similar_mask,
         parameter->sample_value_table_.data());
-    auto expected_covariance = toMatrix<kDimension>(calcEmpiricalCovarianceMatrix(
+    auto expected_covariance = toMatrix(calcEmpiricalCovarianceMatrix(
         resolution, search_window, patch_offset, similar_mask,
         parameter->sample_value_table_, expected_mean));
     //! \todo Clamping
@@ -723,7 +729,7 @@ void BayesianCollaborativeDenoiser::denoiseSelectedPatches(
     expected_mean = calcEmpiricalMean(
         resolution, search_window, patch_offset, similar_mask,
         staging_value_table->data());
-    expected_covariance = toMatrix<kDimension>(calcEmpiricalCovarianceMatrix(
+    expected_covariance = toMatrix(calcEmpiricalCovarianceMatrix(
         resolution, search_window, patch_offset, similar_mask,
         *staging_value_table, expected_mean));
     calcStagingDenoisedValue(
@@ -754,8 +760,9 @@ void BayesianCollaborativeDenoiser::denoiseSelectedPatches(
 
 /*!
   */
-Index2d BayesianCollaborativeDenoiser::getChunkResolution(Index2d resolution)
-    const noexcept
+template <uint kDimension>
+Index2d BayesianCollaborativeDenoiser<kDimension>::getChunkResolution(
+    Index2d resolution) const noexcept
 {
   resolution[0] = resolution[0] - 2 * patch_radius_;
   resolution[1] = resolution[1] - 2 * patch_radius_;
@@ -771,7 +778,8 @@ Index2d BayesianCollaborativeDenoiser::getChunkResolution(Index2d resolution)
 
 /*!
   */
-uint BayesianCollaborativeDenoiser::getChunkSize() const noexcept
+template <uint kDimension>
+uint BayesianCollaborativeDenoiser<kDimension>::getChunkSize() const noexcept
 {
   const uint size = 3 * search_radius_;
   return size;
@@ -779,7 +787,8 @@ uint BayesianCollaborativeDenoiser::getChunkSize() const noexcept
 
 /*!
   */
-uint BayesianCollaborativeDenoiser::getNumOfPatchPixels() const noexcept
+template <uint kDimension>
+uint BayesianCollaborativeDenoiser<kDimension>::getNumOfPatchPixels() const noexcept
 {
   const uint size = zisc::power<2>(2 * patch_radius_ + 1);
   return size;
@@ -787,7 +796,8 @@ uint BayesianCollaborativeDenoiser::getNumOfPatchPixels() const noexcept
 
 /*!
   */
-uint BayesianCollaborativeDenoiser::getNumOfSearchWindowPixels() const noexcept
+template <uint kDimension>
+uint BayesianCollaborativeDenoiser<kDimension>::getNumOfSearchWindowPixels() const noexcept
 {
   const uint max_num_of_patches = zisc::power<2>(2 * search_radius_ + 1);
   return max_num_of_patches;
@@ -796,15 +806,17 @@ uint BayesianCollaborativeDenoiser::getNumOfSearchWindowPixels() const noexcept
 /*!
   */
 template <uint kDimension>
-uint BayesianCollaborativeDenoiser::getPatchDimension() const noexcept
+uint BayesianCollaborativeDenoiser<kDimension>::getPatchDimension() const noexcept
 {
-  const uint dimension = kDimension * getNumOfPatchPixels();
-  return dimension;
+  const uint d = dimension() * getNumOfPatchPixels();
+  return d;
 }
 
 /*!
   */
-void BayesianCollaborativeDenoiser::initialize(const SettingNodeBase* settings) noexcept
+template <uint kDimension>
+void BayesianCollaborativeDenoiser<kDimension>::initialize(
+    const SettingNodeBase* settings) noexcept
 {
   const auto system_settings = castNode<SystemSettingNode>(settings);
   const auto& parameters = system_settings->bayesianCollaborativeDenoiserParameters();
@@ -822,8 +834,9 @@ void BayesianCollaborativeDenoiser::initialize(const SettingNodeBase* settings) 
 
 /*!
   */
-RenderingTile BayesianCollaborativeDenoiser::makePatch(const Index2d& center_pixel)
-    const noexcept
+template <uint kDimension>
+RenderingTile BayesianCollaborativeDenoiser<kDimension>::makePatch(
+    const Index2d& center_pixel) const noexcept
 {
   Index2d begin{center_pixel[0] - patch_radius_,
                 center_pixel[1] - patch_radius_};
@@ -834,7 +847,8 @@ RenderingTile BayesianCollaborativeDenoiser::makePatch(const Index2d& center_pix
 
 /*!
   */
-RenderingTile BayesianCollaborativeDenoiser::makeSearchWindow(
+template <uint kDimension>
+RenderingTile BayesianCollaborativeDenoiser<kDimension>::makeSearchWindow(
     const Index2d& resolution,
     const Index2d& center_pixel) const noexcept
 {
@@ -849,7 +863,8 @@ RenderingTile BayesianCollaborativeDenoiser::makeSearchWindow(
 
 /*!
   */
-RenderingTile BayesianCollaborativeDenoiser::makeChunkTile(
+template <uint kDimension>
+RenderingTile BayesianCollaborativeDenoiser<kDimension>::makeChunkTile(
     const Index2d& resolution,
     const Index2d& chunk_position,
     const Index2d& tile_position) const noexcept
@@ -873,11 +888,11 @@ RenderingTile BayesianCollaborativeDenoiser::makeChunkTile(
 /*!
   */
 template <uint kDimension>
-void BayesianCollaborativeDenoiser::merge(
+void BayesianCollaborativeDenoiser<kDimension>::merge(
     System& system,
-    Parameters<kDimension>* low_res_p,
-    Parameters<kDimension>* high_res_p,
-    zisc::pmr::vector<SpectraArray<kDimension>>* staging_value_table) const noexcept
+    Parameters* low_res_p,
+    Parameters* high_res_p,
+    zisc::pmr::vector<SpectraArray>* staging_value_table) const noexcept
 {
   auto& threads = system.threadManager();
   auto& work_resource = system.globalMemoryManager();
@@ -895,7 +910,7 @@ void BayesianCollaborativeDenoiser::merge(
       // Set the calculation range
       auto range = system.calcTaskRange(
           low_res_p->resolution_[0] * low_res_p->resolution_[1], task_id);
-      Parameters<kDimension>::template downscaleSum(
+      Parameters::downscaleSum(
           high_res_p->resolution_, *staging_value_table,
           low_res_p->resolution_, &low_res_p->sample_value_table_,
           Index2d{range[0], range[1]});
@@ -906,7 +921,7 @@ void BayesianCollaborativeDenoiser::merge(
       // Set the calculation range
       range = system.calcTaskRange(
           high_res_p->resolution_[0] * high_res_p->resolution_[1], task_id);
-      Parameters<kDimension>::template upscaleAdd(
+      Parameters::upscaleAdd(
           low_res_p->resolution_, low_res_p->denoised_value_table_,
           high_res_p->resolution_, &high_res_p->denoised_value_table_,
           Index2d{range[0], range[1]});
@@ -922,7 +937,7 @@ void BayesianCollaborativeDenoiser::merge(
       // Set the calculation range
       const auto range = system.calcTaskRange(
           high_res_p->resolution_[0] * high_res_p->resolution_[1], task_id);
-      Parameters<kDimension>::template upscaleAdd(
+      Parameters::upscaleAdd(
           low_res_p->resolution_, low_res_p->sample_value_table_,
           high_res_p->resolution_, &high_res_p->denoised_value_table_,
           Index2d{range[0], range[1]});
@@ -934,8 +949,9 @@ void BayesianCollaborativeDenoiser::merge(
 
 /*!
   */
-void BayesianCollaborativeDenoiser::notifyProgress(const double progress)
-    const noexcept
+template <uint kDimension>
+void BayesianCollaborativeDenoiser<kDimension>::notifyProgress(
+    const double progress) const noexcept
 {
   const auto& progress_callback = progressCallback();
   if (progress_callback)
@@ -944,9 +960,10 @@ void BayesianCollaborativeDenoiser::notifyProgress(const double progress)
 
 /*!
   */
-void BayesianCollaborativeDenoiser::notifyProgress(const uint iteration,
-                                                   const uint tile_number)
-    const noexcept
+template <uint kDimension>
+void BayesianCollaborativeDenoiser<kDimension>::notifyProgress(
+    const uint iteration,
+    const uint tile_number) const noexcept
 {
   const auto& progress_callback = progressCallback();
   if (progress_callback) {
@@ -965,9 +982,9 @@ void BayesianCollaborativeDenoiser::notifyProgress(const uint iteration,
 /*!
   */
 template <uint kDimension>
-void BayesianCollaborativeDenoiser::prepare(
+void BayesianCollaborativeDenoiser<kDimension>::prepare(
     System& system,
-    zisc::pmr::vector<Parameters<kDimension>>* parameters) const noexcept
+    zisc::pmr::vector<Parameters>* parameters) const noexcept
 {
   using zisc::cast;
 
@@ -985,8 +1002,8 @@ void BayesianCollaborativeDenoiser::prepare(
         // Calculate covariance factors
         {
           auto& covariance_factors = parameter->covariance_factor_table_[pixel_index];
-          for (uint offset = 0, si_a = 0; si_a < kDimension; ++si_a) {
-            for (uint si_b = si_a; si_b < kDimension; ++offset, ++si_b) {
+          for (uint offset = 0, si_a = 0; si_a < dimension(); ++si_a) {
+            for (uint si_b = si_a; si_b < dimension(); ++offset, ++si_b) {
               covariance_factors[offset] -=
                   k * sample_value[si_a] * sample_value[si_b];
             }
@@ -1014,8 +1031,8 @@ void BayesianCollaborativeDenoiser::prepare(
 /*!
   */
 template <uint kDimension>
-auto BayesianCollaborativeDenoiser::selectSimilarPatches(
-    const Parameters<kDimension>& parameter,
+auto BayesianCollaborativeDenoiser<kDimension>::selectSimilarPatches(
+    const Parameters& parameter,
     const Index2d& main_pixel) const noexcept -> SimilarPatchMask
 {
   SimilarPatchMask similar_mask;
@@ -1038,18 +1055,21 @@ auto BayesianCollaborativeDenoiser::selectSimilarPatches(
 /*!
   */
 template <uint kDimension>
-auto BayesianCollaborativeDenoiser::toMatrix(
-    const CovarianceFactors<kDimension>& factors) const noexcept
-        -> Matrix<kDimension>
+auto BayesianCollaborativeDenoiser<kDimension>::toMatrix(
+    const CovarianceFactors& factors) const noexcept -> CovarianceMatrix
 {
-  Matrix<kDimension> matrix;
-  for (uint offset = 0, si_a = 0; si_a < kDimension; ++si_a) {
-    for (uint si_b = si_a; si_b < kDimension; ++si_b, ++offset) {
+  CovarianceMatrix matrix;
+  for (uint offset = 0, si_a = 0; si_a < dimension(); ++si_a) {
+    for (uint si_b = si_a; si_b < dimension(); ++si_b, ++offset) {
       matrix(si_a, si_b) = factors[offset];
       matrix(si_b, si_a) = factors[offset];
     }
   }
   return matrix;
 }
+
+// Instantiation
+template class BayesianCollaborativeDenoiser<3>;
+template class BayesianCollaborativeDenoiser<CoreConfig::spectraSize()>;
 
 } // namespace nanairo

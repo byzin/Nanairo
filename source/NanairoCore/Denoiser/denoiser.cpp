@@ -58,9 +58,14 @@ zisc::UniqueMemoryPointer<Denoiser> Denoiser::makeDenoiser(
   auto data_resource = &system.dataMemoryManager();
   switch (system_settings->denoiserType()) {
    case DenoiserType::kBayesianCollaborative: {
-    denoiser = zisc::UniqueMemoryPointer<BayesianCollaborativeDenoiser>::make(
-      data_resource,
-      settings);
+    if (system.colorMode() == RenderingColorMode::kRgb) {
+      denoiser = zisc::UniqueMemoryPointer<RgbBcDenoiser>::make(data_resource,
+                                                                settings);
+    }
+    else {
+      denoiser = zisc::UniqueMemoryPointer<SpectraBcDenoiser>::make(data_resource,
+                                                                    settings);
+    }
     pos = zisc::cast<std::size_t>(SampleStatistics::Type::kVariance);
     statistics_flag.set(pos, true);
     pos = zisc::cast<std::size_t>(SampleStatistics::Type::kBayesianCollaborativeValues);

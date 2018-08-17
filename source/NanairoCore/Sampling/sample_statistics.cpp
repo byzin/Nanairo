@@ -169,9 +169,9 @@ void SampleStatistics::initialize(System& system) noexcept
   }
 
   if (isEnabled(Type::kBayesianCollaborativeValues)) {
-    const auto denoiser = zisc::cast<const BayesianCollaborativeDenoiser*>(
-        &system.denoiser());
-    const uint32 bins = denoiser->histogramBins();
+    const uint32 bins = (system.colorMode() == RenderingColorMode::kRgb)
+        ? zisc::cast<const RgbBcDenoiser*>(&system.denoiser())->histogramBins()
+        : zisc::cast<const SpectraBcDenoiser*>(&system.denoiser())->histogramBins();
 
     const std::size_t s = size * bins;
     histogram_.reserve(s);
@@ -226,9 +226,9 @@ void SampleStatistics::updateHistogram(
   const auto& sample_p = sampleTable()[pixel_index];
   const auto& prev_sample_p = prevSampleTable()[pixel_index];
 
-  const auto denoiser = zisc::cast<const BayesianCollaborativeDenoiser*>(
-      &system.denoiser());
-  const uint bins = denoiser->histogramBins();
+  const uint32 bins = (system.colorMode() == RenderingColorMode::kRgb)
+      ? zisc::cast<const RgbBcDenoiser*>(&system.denoiser())->histogramBins()
+      : zisc::cast<const SpectraBcDenoiser*>(&system.denoiser())->histogramBins();
 
   for (uint i = 0; i < wavelengths.size(); ++i) {
     const auto w = wavelengths[i];

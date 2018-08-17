@@ -22,19 +22,27 @@ namespace nanairo {
 
 /*!
   */
-inline
-uint BayesianCollaborativeDenoiser::histogramBins() const noexcept
+template <uint kDimension> inline
+constexpr uint BayesianCollaborativeDenoiser<kDimension>::dimension() noexcept
+{
+  return kDimension;
+}
+
+/*!
+  */
+template <uint kDimension> inline
+uint BayesianCollaborativeDenoiser<kDimension>::histogramBins() const noexcept
 {
   return histogram_bins_;
 }
 
 /*!
   */
-inline
-constexpr std::array<Index2d, 9> BayesianCollaborativeDenoiser::getChunkTileOrder()
-    noexcept
+template <uint kDimension> inline
+constexpr std::array<Index2d, 9> BayesianCollaborativeDenoiser<kDimension>::
+    getChunkTileOrder() noexcept
 {
-  std::array<Index2d, 9> order{{
+  const std::array<Index2d, 9> order{{
       Index2d{1, 1},
       Index2d{0, 1},
       Index2d{0, 0},
@@ -49,8 +57,8 @@ constexpr std::array<Index2d, 9> BayesianCollaborativeDenoiser::getChunkTileOrde
 
 /*!
   */
-inline
-constexpr uint BayesianCollaborativeDenoiser::getCovarianceMatrixSize(
+template <uint kDimension> inline
+constexpr uint BayesianCollaborativeDenoiser<kDimension>::getCovarianceMatrixSize(
     const uint dimension) noexcept
 {
   const uint size = ((dimension + 1) * dimension) >> 1;
