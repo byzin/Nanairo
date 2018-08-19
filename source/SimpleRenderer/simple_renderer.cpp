@@ -361,16 +361,16 @@ std::array<int, 4> SimpleRenderer::getCurrentTime(const Clock::duration& time)
   using std::chrono::duration_cast;
 
   const auto h = duration_cast<std::chrono::hours>(time);
-  auto rest_time = time - h;
   const int hours = cast<int>(h.count());
+  auto rest_time = time - h;
 
   const auto m = duration_cast<std::chrono::minutes>(rest_time);
-  rest_time = time - m;
   const int minutes = cast<int>(m.count());
+  rest_time = rest_time - m;
 
   const auto s = duration_cast<std::chrono::seconds>(rest_time);
-  rest_time = time - s;
   const int seconds = cast<int>(s.count());
+  rest_time = rest_time - s;
 
   const auto mi = duration_cast<std::chrono::milliseconds>(rest_time);
   const int millis = cast<int>(mi.count());
