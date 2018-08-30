@@ -98,7 +98,7 @@ std::string SimpleRenderer::makeImagePath(const std::string_view output_path,
 
   std::string image_path;
   image_path.resize(size);
-  std::sprintf(image_path.data(), "%s/%u%s%s", 
+  std::sprintf(image_path.data(), "%s/%03u%s%s", 
                output_path.data(),
                cycle,
                suffix.data(),
