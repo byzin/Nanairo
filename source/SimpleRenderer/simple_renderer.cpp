@@ -49,6 +49,8 @@
 
 namespace nanairo {
 
+static uint cycle_count = 0;
+
 /*!
   */
 SimpleRenderer::SimpleRenderer() noexcept : 
@@ -450,7 +452,7 @@ void SimpleRenderer::outputDenoisedImage(
   hdr_image.toHdr(system(), 1, sample_statistics.denoisedSampleTable());
 
   toneMap();
-  outputLdrImage(output_path, cycle, "cycle-denoised");
+  outputLdrImage(output_path, cycle_count++, "");
 }
 
 /*!
@@ -468,7 +470,7 @@ void SimpleRenderer::outputRenderedImage(
   hdr_image.toHdr(system(), cycle, sample_statistics.sampleTable());
 
   toneMap();
-  outputLdrImage(output_path, cycle, "cycle");
+  outputLdrImage(output_path, cycle_count++, "");
 }
 
 /*!
