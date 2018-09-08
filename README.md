@@ -50,6 +50,10 @@ Version: 0.0.4
 * ~~Nagata patch (normal interpolation)~~ [[paper](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.129.9689)], ray intersection [[paper](https://www.osapublishing.org/ao/abstract.cfm?uri=ao-49-18-3442)]
 * Orthonormal basis [[paper](http://jcgt.org/published/0006/01/01/)]
 
+**Denoising**
+
+* Bayesian Collaborative Denoising for Monte Carlo Rendering [[paper](https://dl.acm.org/citation.cfm?id=3128464)]
+
 **Tone mappling**
 
 * Reinhard [[paper](https://www.cs.utah.edu/~reinhard/cdrom/)]
@@ -75,12 +79,13 @@ Please see [wiki](https://github.com/byzin/Nanairo/wiki/Home "NanairoWiki").
 ### Test environments ###
 Building step is tested in the following environments  
 
-* macOS High Sierra + Apple Clang 9.1 + Qt 5.11.1 + CMake 3.11.4
-* macOS High Sierra + GCC 8.1 + Qt 5.11.1 + CMake 3.11.4
-* Ubuntu 16.04 + GCC 7.3 + Qt 5.11.1 + CMake 3.11.4
-* Ubuntu 16.04 + Clang 6.0 + Qt 5.11.1 + CMake 3.11.4
-* Windows 10 (64bit) + MinGW GCC 7.3 + Qt 5.11.1 + CMake 3.11.4
-* Windows 10 (64bit) + MSVC (Visual Studio 2017) + Qt 5.11.1 + CMake 3.11
+* macOS High Sierra + Apple Clang 9.1 + Qt 5.11.1 + CMake 3.12.1
+* macOS High Sierra + GCC 8.1 + Qt 5.11.1 + CMake 3.12.1
+* Ubuntu 16.04 + GCC 7.3 + Qt 5.11.1 + CMake 3.12.1
+* Ubuntu 16.04 + Clang 6.1 + Qt 5.11.1 + CMake 3.12.1
+* Windows 10 (64bit) + MinGW GCC 7.3 + Qt 5.11.1 + CMake 3.12.1
+* Windows 10 (64bit) + MSVC (Visual Studio 2017) + Qt 5.11.1 + CMake 3.12.1
+* Windows 10 (64bit) + Clang 6.1 (Visual Studio 2017) + Qt 5.11.1 + CMake 3.12.1
 
 ### Download source code ###
 
