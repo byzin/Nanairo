@@ -154,7 +154,7 @@ After release building,
 ```
 
 ## License ##
-[MIT-LICENSE.txt](./MIT-LICENSE.txt)
+[LICENSE](./LICENSE)
 except for *3d model* (resources/model) and *spectrum* (resources/spectrum) files.
 
 ## Acknowledgement ##
