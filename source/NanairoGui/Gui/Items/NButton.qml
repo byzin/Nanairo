@@ -7,9 +7,9 @@
   http://opensource.org/licenses/mit-license.php
   */
 
-import QtQuick 2.11
-import QtQuick.Controls 2.4
-import QtQuick.Controls.Material 2.4
+import QtQuick 2.12
+import QtQuick.Controls 2.12
+import QtQuick.Controls.Material 2.12
 import "../definitions.js" as Definitions
 
 Button {
@@ -26,12 +26,8 @@ Button {
 
   Component.onCompleted: {
     // Initialize the button background
-    background.x = 0;
-    background.y = 0;
+    background.anchors.fill = button;
     background.border.width = 1;
     background.border.color = Material.color(Material.Grey);
   }
-
-  onWidthChanged: background.width = width
-  onHeightChanged: background.height = height
 }
