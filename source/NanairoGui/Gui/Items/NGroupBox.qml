@@ -27,8 +27,8 @@ GroupBox {
 
   background: Rectangle {
     y: groupBox.topPadding - groupBox.bottomPadding
-    width: parent.width
-    height: parent.height - groupBox.topPadding + groupBox.bottomPadding
+    anchors.fill: groupBox
+    anchors.topMargin: parent.topPadding - parent.bottomPadding
     color: Qt.darker(groupBox.color, 1.05)
     radius: 2
     border.color: Material.color(Material.BlueGrey)
