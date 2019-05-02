@@ -33,12 +33,14 @@ NSpinBox {
   }
 
   textFromValue: function(value, locale) {
-    var v = Number(spinBox.floatValue).toLocaleString(locale, 'f', spinBox.decimals);
+    var f = value / spinBox.toIntScale;
+    var v = Number(f).toLocaleString(locale, 'f', spinBox.decimals);
     return v;
   }
 
   valueFromText: function(text, locale) {
-    var v = spinBox.toIntScale * Number.fromLocaleString(locale, text);
+    var f = Number.fromLocaleString(locale, text);
+    var v = spinBox.toIntScale * f;
     return v;
   }
 
