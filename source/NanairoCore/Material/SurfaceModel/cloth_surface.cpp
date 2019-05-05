@@ -2,7 +2,7 @@
   \file cloth_surface.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015-2018 Sho Ikeda
+  Copyright (c) 2015-2019 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -56,7 +56,7 @@ auto ClothSurface::makeBxdf(
   // Make a microcylinder cloth BRDF
   using BxdfPointer = zisc::UniqueMemoryPointer<MicrocylinderClothBrdf>;
   auto ptr = BxdfPointer::make(mem_resourcce, this, k_d);
-  return ptr;
+  return std::move(ptr);
 }
 
 /*!

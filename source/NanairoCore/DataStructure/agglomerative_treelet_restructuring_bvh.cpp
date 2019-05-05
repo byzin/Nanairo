@@ -2,7 +2,7 @@
   \file agglomerative_treelet_restructuring_bvh.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015-2018 Sho Ikeda
+  Copyright (c) 2015-2019 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -109,7 +109,7 @@ void AgglomerativeTreeletRestructuringBvh::constructBvh(
   BinaryRadixTreeBvh::constructBinaryRadixTreeBvh(system, object_list, tree);
 
   auto work_resource = tree.get_allocator().resource();
-  RestructuringData data{treeletSize(), work_resource};;
+  RestructuringData data{treeletSize(), work_resource};
   for (uint i = 0; i < optimizationLoopCount(); ++i) {
     constexpr bool threading = threadingIsEnabled();
     restructureTreelet<threading>(system, 0, data, tree);
@@ -323,8 +323,8 @@ uint AgglomerativeTreeletRestructuringBvh::restructureTreelet(
                                                work_resource);
       auto right_result = threads.enqueue<uint>(restructure_right_treelet,
                                                 work_resource);
-      num_of_subtree_nodes += left_result.get();
-      num_of_subtree_nodes += right_result.get();
+      num_of_subtree_nodes += left_result->get();
+      num_of_subtree_nodes += right_result->get();
     }
     else {
       num_of_subtree_nodes +=

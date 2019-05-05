@@ -2,7 +2,7 @@
   \file sample_statistics.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015-2018 Sho Ikeda
+  Copyright (c) 2015-2019 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -133,7 +133,7 @@ void SampleStatistics::update(
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
     auto result = threads.enqueueLoop(update_info, start, end, &work_resource);
-    result.wait();
+    result->wait();
   }
 }
 

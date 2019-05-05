@@ -2,7 +2,7 @@
   \file rough_conductor_surface.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015-2018 Sho Ikeda
+  Copyright (c) 2015-2019 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -69,7 +69,7 @@ auto RoughConductorSurface::makeBxdf(
   // Make GGX BRDF
   using BxdfPointer = zisc::UniqueMemoryPointer<GgxConductorBrdf>;
   auto ptr = BxdfPointer::make(mem_resource, roughness_x, roughness_y, n, eta);
-  return ptr;
+  return std::move(ptr);
 }
 
 /*!

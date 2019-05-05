@@ -2,7 +2,7 @@
   \file non_directional_emitter.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015-2018 Sho Ikeda
+  Copyright (c) 2015-2019 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -10,6 +10,7 @@
 #include "non_directional_emitter.hpp"
 // Standard C++ library
 #include <vector>
+#include <utility>
 // Zisc
 #include "zisc/error.hpp"
 #include "zisc/memory_resource.hpp"
@@ -52,7 +53,7 @@ auto NonDirectionalEmitter::makeLight(
 
   using LightPointer = zisc::UniqueMemoryPointer<NonDirectionalLight>;
   auto ptr = LightPointer::make(mem_resource, radiant_exitance);
-  return ptr;
+  return std::move(ptr);
 }
 
 /*!

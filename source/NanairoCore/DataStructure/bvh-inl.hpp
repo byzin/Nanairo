@@ -2,7 +2,7 @@
   \file bvh-inl.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015-2018 Sho Ikeda
+  Copyright (c) 2015-2019 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -83,8 +83,8 @@ void Bvh::setupBoundingBoxes(System& system,
           threads.enqueue<void>(set_left_bounding_box, work_resource);
       auto right_result =
           threads.enqueue<void>(set_right_bounding_box, work_resource);
-      left_result.wait();
-      right_result.wait();
+      left_result->wait();
+      right_result->wait();
     }
     // Sequence
     else {

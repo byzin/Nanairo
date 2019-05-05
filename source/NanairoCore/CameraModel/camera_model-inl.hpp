@@ -2,7 +2,7 @@
   \file camera_model-inl.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015-2018 Sho Ikeda
+  Copyright (c) 2015-2019 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -83,7 +83,7 @@ auto CameraModel::makeSensor(
 {
   using SensorPointer = zisc::UniqueMemoryPointer<Sensor>;
   auto ptr = SensorPointer::make(mem_resource, this, index);
-  return ptr;
+  return std::move(ptr);
 }
 
 /*!

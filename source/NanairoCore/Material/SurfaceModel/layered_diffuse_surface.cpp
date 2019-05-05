@@ -2,7 +2,7 @@
   \file layered_diffuse_surface.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015-2018 Sho Ikeda
+  Copyright (c) 2015-2019 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -74,7 +74,7 @@ auto LayeredDiffuseSurface::makeBxdf(
   using BxdfPointer = zisc::UniqueMemoryPointer<InterfacedLambertianBrdf>;
   auto ptr = BxdfPointer::make(mem_resource, k_d, roughness_x, roughness_y,
                                n, sampler, path_state);
-  return ptr;
+  return std::move(ptr);
 }
 
 /*!

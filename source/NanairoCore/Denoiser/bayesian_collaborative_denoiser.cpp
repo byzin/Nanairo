@@ -2,7 +2,7 @@
   \file bayesian_collaborative_denoiser.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015-2018 Sho Ikeda
+  Copyright (c) 2015-2019 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -171,7 +171,7 @@ void BayesianCollaborativeDenoiser<kDimension>::Parameters::downscaleOf(
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
     auto result = threads.enqueueLoop(downscale_params, start, end, &work_resource);
-    result.wait();
+    result->wait();
   }
 }
 
@@ -246,7 +246,7 @@ void BayesianCollaborativeDenoiser<kDimension>::Parameters::init(
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
     auto result = threads.enqueueLoop(init_params, start, end, &work_resource);
-    result.wait();
+    result->wait();
   }
 }
 
@@ -326,7 +326,7 @@ void BayesianCollaborativeDenoiser<kDimension>::aggregate(
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
     auto result = threads.enqueueLoop(aggregate_values, start, end, &work_resource);
-    result.wait();
+    result->wait();
   }
 }
 
@@ -362,7 +362,7 @@ void BayesianCollaborativeDenoiser<kDimension>::aggregateFinal(
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
     auto result = threads.enqueueLoop(aggregate_values, start, end, &work_resource);
-    result.wait();
+    result->wait();
   }
 }
 
@@ -568,7 +568,7 @@ void BayesianCollaborativeDenoiser<kDimension>::denoiseChunks(
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
     auto result = threads.enqueueLoop(denoise_chunk, start, end, &work_resource);
-    result.wait();
+    result->wait();
   }
 }
 
@@ -927,7 +927,7 @@ void BayesianCollaborativeDenoiser<kDimension>::merge(
           Index2d{range[0], range[1]});
     };
     auto result = threads.enqueueLoop(merge1, start, end, &work_resource);
-    result.wait();
+    result->wait();
   }
 
   {
@@ -943,7 +943,7 @@ void BayesianCollaborativeDenoiser<kDimension>::merge(
           Index2d{range[0], range[1]});
     };
     auto result = threads.enqueueLoop(merge2, start, end, &work_resource);
-    result.wait();
+    result->wait();
   }
 }
 
@@ -1024,7 +1024,7 @@ void BayesianCollaborativeDenoiser<kDimension>::prepare(
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
     auto result = threads.enqueueLoop(prepare_params, start, end, &work_resource);
-    result.wait();
+    result->wait();
   }
 }
 

@@ -4,7 +4,7 @@
 
 **Nanairo** is a physically plausible spectral renderer.
 
-Version: 0.0.4
+Version: 0.0.5
 
 ## Description ##
 
@@ -65,11 +65,11 @@ Version: 0.0.4
 ### Build tools ###
 
 * C++17 support compiler
-* CMake (version 3.10 or later) [[page](http://www.cmake.org/)]
+* CMake (version 3.14 or later) [[page](http://www.cmake.org/)]
 
 ### Dependency Library ###
 
-* Qt (version 5.11.0 or later) [[page](http://qt-project.org/)]
+* Qt (version 5.12.0 or later) [[page](http://qt-project.org/)]
 
 ## Usage ##
 Please see [wiki](https://github.com/byzin/Nanairo/wiki/Home "NanairoWiki").
@@ -81,8 +81,8 @@ Building step is tested in the following environments
 
 * macOS High Sierra + Apple Clang 9.1 + Qt 5.11.1 + CMake 3.12.1
 * macOS High Sierra + GCC 8.1 + Qt 5.11.1 + CMake 3.12.1
-* Ubuntu 16.04 + GCC 7.3 + Qt 5.11.1 + CMake 3.12.1
-* Ubuntu 16.04 + Clang 6.1 + Qt 5.11.1 + CMake 3.12.1
+* Ubuntu 16.04 + GCC 8.2 + Qt 5.12.3 + CMake 3.14.3
+* Ubuntu 16.04 + Clang 8.0 + Qt 5.12.3 + CMake 3.14.3
 * Windows 10 (64bit) + MinGW GCC 7.3 + Qt 5.11.1 + CMake 3.12.1
 * Windows 10 (64bit) + MSVC (Visual Studio 2017) + Qt 5.11.1 + CMake 3.12.1
 * Windows 10 (64bit) + Clang 6.1 (Visual Studio 2017) + Qt 5.11.1 + CMake 3.12.1
@@ -139,7 +139,7 @@ Clang
 
 Visual Studio 2017 64bit
 ```
-% cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release ..
+% cmake -G"Visual Studio 15 2017" -Ax64 -DCMAKE_BUILD_TYPE=Release ..
 % cmake --build . --config Release
 % Release\Nanairo -style material
 ```

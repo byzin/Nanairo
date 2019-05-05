@@ -2,7 +2,7 @@
   \file tone_mapping_operator.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015-2018 Sho Ikeda
+  Copyright (c) 2015-2019 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -102,7 +102,7 @@ void ToneMappingOperator::map(System& system,
     constexpr uint begin = 0;
     const uint end = threads.numOfThreads();
     auto result = threads.enqueueLoop(map_luminance, begin, end, &work_resource);
-    result.wait();
+    result->wait();
   }
 }
 

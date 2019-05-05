@@ -2,7 +2,7 @@
   \file rough_dielectric_surface.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015-2018 Sho Ikeda
+  Copyright (c) 2015-2019 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -67,7 +67,7 @@ auto RoughDielectricSurface::makeBxdf(
   // Make GGX BSDF
   using BxdfPointer = zisc::UniqueMemoryPointer<GgxDielectricBsdf>;
   auto ptr = BxdfPointer::make(mem_resource, roughness_x, roughness_y, n);
-  return ptr;
+  return std::move(ptr);
 }
 
 /*!

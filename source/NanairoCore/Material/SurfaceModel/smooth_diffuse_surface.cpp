@@ -2,7 +2,7 @@
   \file smooth_diffuse_surface.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015-2018 Sho Ikeda
+  Copyright (c) 2015-2019 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -55,7 +55,7 @@ auto SmoothDiffuseSurface::makeBxdf(
 
   using BxdfPointer = zisc::UniqueMemoryPointer<LambertBrdf>;
   auto ptr = BxdfPointer::make(mem_resource, k_d);
-  return ptr;
+  return std::move(ptr);
 }
 
 /*!

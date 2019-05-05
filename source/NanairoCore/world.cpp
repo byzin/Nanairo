@@ -2,7 +2,7 @@
   \file world.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015-2018 Sho Ikeda
+  Copyright (c) 2015-2019 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -153,7 +153,7 @@ void World::initializeEmitter(System& system,
                                       start,
                                       num_of_emitters,
                                       work_resource);
-    result.wait();
+    result->wait();
   }
   ZISC_ASSERT(0 < emitter_list_.size(), "The scene has no emitter.");
 }
@@ -232,7 +232,7 @@ void World::initializeSurface(System& system,
                                       start,
                                       num_of_surfaces,
                                       work_resource);
-    result.wait();
+    result->wait();
   }
   ZISC_ASSERT(0 < surface_list_.size(), "The scene has no surface.");
 }
@@ -267,7 +267,7 @@ void World::initializeTexture(System& system,
                                       start,
                                       num_of_textures,
                                       work_resource);
-    result.wait();
+    result->wait();
   }
   ZISC_ASSERT(0 < texture_list_.size(), "The scene has no texture");
 }
@@ -301,7 +301,7 @@ auto World::makeObjects(System& system,
     -> zisc::pmr::vector<ObjectSet>
 {
   auto work_resource = settings->workResource();
-  zisc::pmr::list<std::future<ObjectSet>> results{work_resource};
+  zisc::pmr::list<ObjectSetResult> results{work_resource};
   {
     const auto transformation = Transformation::makeIdentity();
     makeObjects(system, settings, transformation, results);
@@ -310,7 +310,7 @@ auto World::makeObjects(System& system,
   {
     object_list.reserve(results.size());
     for (auto& result : results)
-      object_list.emplace_back(result.get());
+      object_list.emplace_back(result->get());
   }
   return object_list;
 }
@@ -321,7 +321,7 @@ void World::makeObjects(
     System& system,
     const SettingNodeBase* settings,
     Matrix4x4 transformation,
-    zisc::pmr::list<std::future<ObjectSet>>& results) const noexcept
+    zisc::pmr::list<ObjectSetResult>& results) const noexcept
 {
   const auto object_model_settings = castNode<ObjectModelSettingNode>(settings);
   if (object_model_settings->visibility()) {
@@ -348,7 +348,7 @@ void World::makeSingleObject(
     System& system,
     const SettingNodeBase* settings,
     const Matrix4x4& transformation,
-    zisc::pmr::list<std::future<ObjectSet>>& results) const noexcept
+    zisc::pmr::list<ObjectSetResult>& results) const noexcept
 {
   auto work_resource = settings->workResource();
   auto make_object =
@@ -402,7 +402,7 @@ void World::makeGroupObject(
     System& system,
     const SettingNodeBase* settings,
     const Matrix4x4& transformation,
-    zisc::pmr::list<std::future<ObjectSet>>& results) const noexcept
+    zisc::pmr::list<ObjectSetResult>& results) const noexcept
 {
   const auto model_settings = castNode<ObjectModelSettingNode>(settings);
   const auto group_settings =

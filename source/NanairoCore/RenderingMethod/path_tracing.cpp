@@ -2,7 +2,7 @@
   \file path_tracing.cpp
   \author Sho Ikeda
 
-  Copyright (c) 2015-2018 Sho Ikeda
+  Copyright (c) 2015-2019 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -345,7 +345,7 @@ void PathTracing::traceCameraPath(System& system,
     constexpr uint start = 0;
     const uint end = threads.numOfThreads();
     auto result = threads.enqueueLoop(trace_camera_path, start, end, &work_resource);
-    result.wait();
+    result->wait();
   }
 }
 

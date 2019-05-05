@@ -2,7 +2,7 @@
   \file world.hpp
   \author Sho Ikeda
 
-  Copyright (c) 2015-2018 Sho Ikeda
+  Copyright (c) 2015-2019 Sho Ikeda
   This software is released under the MIT License.
   http://opensource.org/licenses/mit-license.php
   */
@@ -20,6 +20,7 @@
 // Zisc
 #include "zisc/memory_resource.hpp"
 #include "zisc/non_copyable.hpp"
+#include "zisc/thread_manager.hpp"
 #include "zisc/unique_memory_pointer.hpp"
 // Nanairo
 #include "Data/object.hpp"
@@ -79,6 +80,7 @@ class World : public zisc::NonCopyable<World>
  private:
   using ObjectSet = std::tuple<zisc::pmr::vector<Object>,
                                zisc::UniqueMemoryPointer<Material>>;
+  using ObjectSetResult = zisc::ThreadManager::UniqueResult<ObjectSet>;
 
 
   //! Initialize world
@@ -111,20 +113,20 @@ class World : public zisc::NonCopyable<World>
       System& system,
       const SettingNodeBase* settings,
       Matrix4x4 transformation,
-      zisc::pmr::list<std::future<ObjectSet>>& results) const noexcept;
+      zisc::pmr::list<ObjectSetResult>& result) const noexcept;
 
   //! Make a single object
   void makeSingleObject(
       System& system,
       const SettingNodeBase* settings,
       const Matrix4x4& transformation,
-      zisc::pmr::list<std::future<ObjectSet>>& results) const noexcept;
+      zisc::pmr::list<ObjectSetResult>& result) const noexcept;
 
   void makeGroupObject(
       System& system,
       const SettingNodeBase* settings,
       const Matrix4x4& transformation,
-      zisc::pmr::list<std::future<ObjectSet>>& results) const noexcept;
+      zisc::pmr::list<ObjectSetResult>& result) const noexcept;
 
 
   zisc::pmr::vector<const EmitterModel*> emitter_list_;
