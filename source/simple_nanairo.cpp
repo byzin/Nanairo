@@ -33,14 +33,14 @@ struct NanairoParameters
 };
 
 //! Process command line arguments
-std::unique_ptr<NanairoParameters> processCommandLine(int& argc, const char** argv);
+std::unique_ptr<NanairoParameters> processCommandLine(int& argc, char** argv);
 
 //! Load Nanairo binary file
 std::ifstream loadSceneBinary(const std::string& nanabin_file_path);
 
 }
 
-int main(int argc, const char** argv)
+int main(int argc, char** argv)
 {
   std::string output_path;
   std::unique_ptr<std::ofstream> log_stream;
@@ -85,7 +85,7 @@ namespace {
 
 /*!
   */
-std::unique_ptr<NanairoParameters> processCommandLine(int& argc, const char** argv)
+std::unique_ptr<NanairoParameters> processCommandLine(int& argc, char** argv)
 {
   auto parameters = std::make_unique<NanairoParameters>();
 
