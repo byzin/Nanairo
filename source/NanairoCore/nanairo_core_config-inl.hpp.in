@@ -22,6 +22,16 @@ namespace nanairo {
 /*!
   */
 inline
+std::string CoreConfig::brief() noexcept
+{
+  using namespace std::string_literals;
+  const auto b = "@nanairo_brief@"s;
+  return b;
+}
+
+/*!
+  */
+inline
 constexpr uint16 CoreConfig::blueWavelength() noexcept
 {
   constexpr uint16 blue_wavelength = 440;
@@ -150,7 +160,7 @@ constexpr uint CoreConfig::sizeOfRenderingTileSide() noexcept
 inline
 constexpr uint CoreConfig::maxNumOfNodeObjects() noexcept
 {
-  constexpr uint max_num_of_node_objects = @NANAIRO_MAX_NUM_OF_OBJECTS@;
+  constexpr uint max_num_of_node_objects = @NANAIRO_MAX_NUM_OF_OBJECTS_PER_BVH_NODE@;
   return max_num_of_node_objects;
 }
 

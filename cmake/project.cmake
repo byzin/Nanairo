@@ -8,11 +8,23 @@
 
 
 # Retrieve Nanairo version from README.md
-function(retrieveNanairoVersion version_major version_minor version_patch)
+function(retrieveNanairoInfo brief version_major version_minor version_patch)
+  set(paragraph_number 1)
+  set(brief_is_found OFF)
   set(version_is_found OFF)
+  set(brieflines "")
   # Parse README.md and find Nanairo version
   file(STRINGS ${PROJECT_SOURCE_DIR}/README.md readme_text)
   foreach(readme_line ${readme_text})
+    # Description lines
+    if(paragraph_number EQUAL 3)
+      if(NOT brieflines STREQUAL "")
+        set(brieflines "${brieflines}\n")
+      endif()
+      set(brieflines "${brieflines}${readme_line}")
+      set(brief_is_found ON)
+    endif()
+    # Version line
     if(readme_line MATCHES "Version: *([0-9]+)\\.([0-9]+)\\.([0-9]+) *")
       set(version_is_found ON)
       set(major ${CMAKE_MATCH_1})
@@ -20,25 +32,34 @@ function(retrieveNanairoVersion version_major version_minor version_patch)
       set(patch ${CMAKE_MATCH_3})
       break()
     endif()
+    # Empty line
+    if(readme_line MATCHES " *")
+      math(EXPR paragraph_number "${paragraph_number} + 1")
+    endif()
   endforeach(readme_line)
+  if(NOT brief_is_found)
+    message(FATAL_ERROR "Nanairo brief isn't found in README.md.")
+  endif()
   if(NOT version_is_found)
     message(FATAL_ERROR "Nanairo version isn't found in README.md.")
   endif()
 
 
   # Output variables
+  set(${brief} ${brieflines} PARENT_SCOPE)
   set(${version_major} ${major} PARENT_SCOPE)
   set(${version_minor} ${minor} PARENT_SCOPE)
   set(${version_patch} ${patch} PARENT_SCOPE)
-endfunction(retrieveNanairoVersion)
+endfunction(retrieveNanairoInfo)
 
 
 # Set project informations
 macro(setNanairoProperties)
   # Version
-  retrieveNanairoVersion(PROJECT_VERSION_MAJOR
-                         PROJECT_VERSION_MINOR
-                         PROJECT_VERSION_PATCH)
+  retrieveNanairoInfo(nanairo_brief
+                      PROJECT_VERSION_MAJOR
+                      PROJECT_VERSION_MINOR
+                      PROJECT_VERSION_PATCH)
   set(PROJECT_VERSION 
       "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
   set(nanairo_version ${PROJECT_VERSION})
@@ -106,9 +127,8 @@ endmacro(includeZisc)
 
 function(loadLodepng lodepng_include_dir lodepng_library)
   set(lodepng_dir ${PROJECT_SOURCE_DIR}/source/dependencies/lodepng)
-  if(NOT EXISTS ${lodepng_dir})
-    showSubmoduleWarning(lodepng)
-  endif()
+  checkSubmodule(${lodepng_dir})
+
   set(source_files ${lodepng_dir}/lodepng.cpp ${lodepng_dir}/lodepng.h)
   set(lodepng_name "lodepng")
   source_group(${lodepng_name} FILES ${source_files})

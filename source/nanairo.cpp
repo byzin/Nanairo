@@ -151,8 +151,8 @@ std::unique_ptr<NanairoParameters> processCommandLine(
   QCommandLineParser parser;
 
   // Application description
-  const auto application_description = QStringLiteral(
-      "Nanairo is a physically plausible spectral renderer.");
+  const auto application_description = QString::fromStdString(
+      nanairo::CoreConfig::brief());
   parser.setApplicationDescription(application_description);
 
   // Help and version setting

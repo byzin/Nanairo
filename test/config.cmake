@@ -41,11 +41,9 @@ endfunction()
 # Build tests
 function(buildUnitTest)
   # Load GoogleTest
-  include(${zisc_path}/cmake/googletest.cmake)
+  include(${zisc_dir}/cmake/googletest.cmake)
   set(gtest_project_root ${__test_root__}/googletest)
-  if(NOT EXISTS ${gtest_project_root})
-    showSubmoduleWarning(googletest)
-  endif()
+  checkSubmodule(${gtest_project_root})
   buildGoogleTest(${gtest_project_root} gtest_include_dir gtest_libraries)
 
   # Build unit tests

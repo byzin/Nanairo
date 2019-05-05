@@ -8,15 +8,19 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-function(showSubmoduleWarning submodule_name)
-  message(FATAL_ERROR "Submodule '${submodule_name}' not found, please init submodules.")
-endfunction(showSubmoduleWarning)
+function(checkSubmodule submodule_path)
+  if(NOT EXISTS ${submodule_path})
+    get_filename_component(submodule_name "${submodule_path}" NAME)
+    message(FATAL_ERROR "Submodule '${submodule_name}' not found, please init submodules.")
+  endif()
+endfunction(checkSubmodule)
 
 # Set project information
 project(Nanairo LANGUAGES C CXX)
 include(${PROJECT_SOURCE_DIR}/cmake/project.cmake)
 setNanairoProperties()
 message(STATUS "Nanairo version: ${PROJECT_VERSION}")
+message(STATUS "Nanairo brief: ${nanairo_brief}")
 
 # Configure build types
 set(CMAKE_CONFIGURATION_TYPES "Debug" "RelWithDebInfo" "Release")
@@ -25,20 +29,18 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(zisc_path ${CMAKE_SOURCE_DIR}/source/dependencies/zisc)
-if(NOT EXISTS ${zisc_path})
-  showSubmoduleWarning(zisc)
-endif()
+set(zisc_dir ${CMAKE_SOURCE_DIR}/source/dependencies/zisc)
+checkSubmodule(${zisc_dir})
 
 # Build configuration
-include(${zisc_path}/cmake/general.cmake)
+include(${zisc_dir}/cmake/general.cmake)
 restrictBuildDirectory(${PROJECT_SOURCE_DIR}/build)
 detectEnvironment(environment_definitions)
 # Command option
 include(${PROJECT_SOURCE_DIR}/cmake/option.cmake)
 initCommandOptions()
 #
-include(${zisc_path}/cmake/compiler.cmake)
+include(${zisc_dir}/cmake/compiler.cmake)
 initCompilerOption()
 getCxxCompilerOption(cxx_compiler_flags cxx_linker_flags cxx_definitions)
 
@@ -48,7 +50,7 @@ find_package(Threads REQUIRED)
 # LodePNG
 loadLodepng(lodepng_include_dir lodepng_library)
 # Zisc
-include(${zisc_path}/source/zisc/config.cmake)
+include(${zisc_dir}/source/zisc/config.cmake)
 loadZisc(zisc_header_files
          zisc_include_dirs
          zisc_compile_flags

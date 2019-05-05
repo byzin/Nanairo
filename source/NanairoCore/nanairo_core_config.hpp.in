@@ -41,7 +41,7 @@ using uint8 = std::uint8_t;
 using uint16 = std::uint16_t;
 using uint32 = std::uint32_t;
 using uint64 = std::uint64_t;
-using Float = @NANAIRO_FLOATING_POINT_TYPE@;
+using Float = double;
 
 constexpr uint8 kTrue = 1;
 constexpr uint8 kFalse = 0;
@@ -72,6 +72,9 @@ enum class ObjectType : uint32
 class CoreConfig
 {
  public:
+  //! Return the Nanairo brief
+  static std::string brief() noexcept;
+
   //! Return the blue wavelength
   static constexpr uint16 blueWavelength() noexcept;
 

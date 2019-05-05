@@ -60,10 +60,11 @@ Version: 0.0.5
 * Filmic
 * Uncharted2
 
-## Requirement ##
+## Prerequisites ##
 
 ### Build tools ###
 
+* Git
 * C++17 support compiler
 * CMake (version 3.14 or later) [[page](http://www.cmake.org/)]
 
@@ -81,7 +82,7 @@ Building step is tested in the following environments
 
 * macOS High Sierra + Apple Clang 9.1 + Qt 5.11.1 + CMake 3.12.1
 * macOS High Sierra + GCC 8.1 + Qt 5.11.1 + CMake 3.12.1
-* Ubuntu 16.04 + GCC 8.2 + Qt 5.12.3 + CMake 3.14.3
+* ~~Ubuntu 16.04 + GCC 8.2 + Qt 5.12.3 + CMake 3.14.3~~
 * Ubuntu 16.04 + Clang 8.0 + Qt 5.12.3 + CMake 3.14.3
 * Windows 10 (64bit) + MinGW GCC 7.3 + Qt 5.11.1 + CMake 3.12.1
 * Windows 10 (64bit) + MSVC (Visual Studio 2017) + Qt 5.11.1 + CMake 3.12.1

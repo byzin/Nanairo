@@ -53,17 +53,11 @@ function(initCommandOptions)
   setBooleanOption(NANAIRO_BUILD_EXTRA_TOOLS OFF ${option_description})
 
   # Rendering options
-  set(option_description "Set the floating point type of the computation in rendering.")
-  setStringOption(NANAIRO_FLOATING_POINT_TYPE "double" ${option_description})
- 
-  set(option_description "Set the max number of objects that a BVH node can contain.")
-  setStringOption(NANAIRO_MAX_NUM_OF_OBJECTS 8 ${option_description})
+  set(option_description "Set the max number of objects that a BVH leaf node can contain.")
+  setStringOption(NANAIRO_MAX_NUM_OF_OBJECTS_PER_BVH_NODE 8 ${option_description})
 
   set(option_description "Set max FPS")
   setStringOption(NANAIRO_MAX_FPS 50 ${option_description})
-
-  set(option_description "The hash key which is used as the default random seed.")
-  setStringOption(NANAIRO_RANDOM_SEED_KEY "NanairoRenderer" ${option_description})
 
   set(option_description "Build Nanairo application. It requires Qt.")
   setBooleanOption(NANAIRO_BUILD_APP ON ${option_description})

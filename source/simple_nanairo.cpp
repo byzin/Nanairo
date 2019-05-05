@@ -20,6 +20,7 @@
 // Nanairo
 #include "simple_renderer.hpp"
 #include "simple_progress_bar.hpp"
+#include "NanairoCore/nanairo_core_config.hpp"
 #include "NanairoCore/Setting/scene_setting_node.hpp"
 
 namespace {
@@ -90,9 +91,8 @@ std::unique_ptr<NanairoParameters> processCommandLine(int& argc, char** argv)
   auto parameters = std::make_unique<NanairoParameters>();
 
   try {
-    cxxopts::Options options{
-        argv[0],
-        "Nanairo is a physically plausible spectral renderer."};
+    const auto nanairo_brief = nanairo::CoreConfig::brief();
+    cxxopts::Options options{argv[0], nanairo_brief.c_str()};
     options.positional_help("<nanabin>");
 
     // Add options
@@ -100,6 +100,11 @@ std::unique_ptr<NanairoParameters> processCommandLine(int& argc, char** argv)
     {
       options.add_options()
           ("h,help", "Display this help.");
+    }
+    // Version
+    {
+      options.add_options()
+          ("v,version", "Display version information.");
     }
     {
       auto value = cxxopts::value(parameters->nanabin_file_path_);
@@ -119,6 +124,10 @@ std::unique_ptr<NanairoParameters> processCommandLine(int& argc, char** argv)
     // Process command line arguments
     if (0 < result.count("help")) {
       std::cout << options.help({""}) << std::endl;
+      exit(EXIT_SUCCESS);
+    }
+    if (0 < result.count("version")) {
+      std::cout << nanairo::CoreConfig::versionString() << std::endl;
       exit(EXIT_SUCCESS);
     }
     if (result.count("binpath") == 0) {
