@@ -24,4 +24,8 @@ TextField {
   bottomPadding: 0
   font.pixelSize: Definitions.defaultTextFontSize
   font.weight: Font.Light
+
+  Component.onCompleted: {
+    background.anchors.bottom = textField.bottom;
+  }
 }
