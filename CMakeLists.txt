@@ -75,6 +75,12 @@ buildNanairoCore(core_library core_definitions)
 buildSimpleNanairoApp()
 if(${NANAIRO_BUILD_APP})
   # Library
+  ## Assimp
+  include(${PROJECT_SOURCE_DIR}/cmake/assimp.cmake)
+  set(assimp_project_root ${PROJECT_SOURCE_DIR}/source/dependencies/assimp)
+  checkSubmodule(${assimp_project_root})
+  buildAssimp(${assimp_project_root} assimp_include_dir assimp_libraries)
+  ## Qt
   include(${PROJECT_SOURCE_DIR}/cmake/qt5.cmake)
   findQt5(5.11 Core Gui Qml Quick)
   # Nanairo app

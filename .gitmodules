@@ -10,3 +10,6 @@
 [submodule "source/dependencies/cxxopts"]
 	path = source/dependencies/cxxopts
 	url = https://github.com/jarro2783/cxxopts.git
+[submodule "source/dependencies/assimp"]
+	path = source/dependencies/assimp
+	url = https://github.com/assimp/assimp

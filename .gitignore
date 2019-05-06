@@ -156,6 +156,7 @@
 !/source/dependencies/zisc
 !/source/dependencies/lodepng
 !/source/dependencies/cxxopts
+!/source/dependencies/assimp
 ## Test
 !/test/
 !/test/config.cmake

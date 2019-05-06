@@ -323,9 +323,11 @@ function(buildNanairoApp)
                                                  ${PROJECT_SOURCE_DIR}/source
                                                  ${PROJECT_BINARY_DIR}/include)
   includeZisc(${app_name})
-  target_include_directories(${app_name} SYSTEM PRIVATE ${qt5_include_dirs})
+  target_include_directories(${app_name} SYSTEM PRIVATE ${assimp_include_dir}
+                                                        ${qt5_include_dirs})
   target_link_libraries(${app_name} ${CMAKE_THREAD_LIBS_INIT}
                                     ${cxx_linker_flags}
+                                    ${assimp_libraries}
                                     ${qt5_libraries}
                                     ${zisc_linker_flags}
                                     ${core_library})
