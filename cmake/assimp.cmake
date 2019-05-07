@@ -60,7 +60,8 @@ function(buildAssimp assimp_project_root assimp_include_dir assimp_libraries)
     set(msvc_postfix "-${msvc_postfix}-mt")
     set(assimp_postfix "${msvc_postfix}${assimp_postfix}")
 
-    list(APPEND assimp_cmake_options -DCMAKE_VS_PLATFORM_TOOLSET_HOST_ARCHITECTURE=${CMAKE_VS_PLATFORM_TOOLSET_HOST_ARCHITECTURE})
+    list(APPEND assimp_cmake_options -DASSIMP_INSTALL_PDB=OFF
+        -DCMAKE_VS_PLATFORM_TOOLSET_HOST_ARCHITECTURE=${CMAKE_VS_PLATFORM_TOOLSET_HOST_ARCHITECTURE})
     set(libassimp_lib_name "assimp${assimp_postfix}.lib")
   elseif(Z_XCODE)
     set(assimp_toolset ${CMAKE_GENERATOR_TOOLSET})
