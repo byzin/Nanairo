@@ -66,9 +66,13 @@ RouletteResult RussianRoulette::playWithMax(
     Sampler& sampler,
     const PathState& path_state) const noexcept
 {
-  const Float max = weight.max();
-  const Float probability = zisc::min(1.0, max);
-  const bool result = sampler.draw1D(path_state) < probability;
+  bool result = path_state.length() < 4;
+  Float probability = 0.0;
+  if (result) {
+    const Float max = weight.max();
+    probability = zisc::min(1.0, max);
+    result = sampler.draw1D(path_state) < probability;
+  }
   return (result) ? RouletteResult{probability} : RouletteResult{};
 }
 

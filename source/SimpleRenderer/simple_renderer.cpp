@@ -197,8 +197,8 @@ void SimpleRenderer::render(const std::string& output_path) noexcept
     saving_image = saving_image || !rendering_flag;
 
     // Update rendered image and and rendering progress
-    if (saving_image)
-      outputRenderedImage(output_path, cycle);
+//    if (saving_image)
+//      outputRenderedImage(output_path, cycle);
     auto current_time = processElapsedTime(previous_time);
     updateRenderingProgress(cycle, current_time);
 
